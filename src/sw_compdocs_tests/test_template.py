@@ -2,16 +2,6 @@ import sw_compdocs.template
 import unittest
 
 
-class TestAsStr(unittest.TestCase):
-    def test_validate_pass(self):
-        s = sw_compdocs.template.as_str("foo")
-        self.assertEqual(s, "foo")
-
-    def test_validate_error(self):
-        with self.assertRaises(TypeError):
-            sw_compdocs.template.as_str(0)
-
-
 class TestAsMapping(unittest.TestCase):
     def test_validate_pass(self):
         for input_v, want_mapping in [

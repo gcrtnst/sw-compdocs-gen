@@ -1,17 +1,13 @@
 import re
 
-
-def as_str(v):
-    if not isinstance(v, str):
-        raise TypeError
-    return str(v)
+from . import convert as dot_convert
 
 
 def as_mapping(v):
     mapping = {}
     for key, val in v.items():
-        key = as_str(key)
-        val = as_str(val)
+        key = dot_convert.as_str(key)
+        val = dot_convert.as_str(val)
 
         if re.search("\A[A-Za-z0-9_]+\Z", key) is None:
             raise ValueError
@@ -21,7 +17,7 @@ def as_mapping(v):
 
 
 def substitute(s, mapping):
-    s = as_str(s)
+    s = dot_convert.as_str(s)
     mapping = as_mapping(mapping)
 
     def repl(match):
