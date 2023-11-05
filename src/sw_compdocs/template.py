@@ -22,14 +22,16 @@ def as_mapping(v):
 
 def substitute(s, mapping):
     s = dot_convert.as_str(s)
-    mapping = as_mapping(mapping)
+    if not isinstance(mapping, collections.abc.Mapping):
+        raise TypeError
 
     def repl(match):
         key = match["key"]
         try:
-            return mapping[key]
+            val = mapping[key]
         except KeyError:
             raise TemplateKeyError(key)
+        return dot_convert.as_str(val)
 
     return re.sub(r"(?s:\$\[(?P<key>.*?)\])", repl, s)
 

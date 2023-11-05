@@ -66,12 +66,13 @@ class TestAsMapping(unittest.TestCase):
 
 class TestSubstitute(unittest.TestCase):
     def test_validate_type_error(self):
-        with self.assertRaises(TypeError):
-            sw_compdocs.template.substitute(0, {})
-
-    def test_validate_value_error(self):
-        with self.assertRaises(ValueError):
-            sw_compdocs.template.substitute("", {"-": ""})
+        for input_s, input_mapping in [
+            (0, {}),
+            ("", []),
+            ("$[foo]", {"foo": 0}),
+        ]:
+            with self.assertRaises(TypeError):
+                sw_compdocs.template.substitute(input_s, input_mapping)
 
     def test_substitute_pass(self):
         for input_s, input_mapping, want_s in [
@@ -103,6 +104,11 @@ class TestSubstitute(unittest.TestCase):
             (
                 "$[foo]",
                 {"foo": "bar"},
+                "bar",
+            ),
+            (
+                "$[foo]",
+                {"foo": "bar", "baz": 0},
                 "bar",
             ),
             (
