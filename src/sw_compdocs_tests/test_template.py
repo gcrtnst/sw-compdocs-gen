@@ -41,6 +41,7 @@ class TestAsMapping(unittest.TestCase):
 
     def test_validate_type_error(self):
         for v in [
+            [],
             {0: ""},
             {"": 0},
             {"a": "", 0: ""},

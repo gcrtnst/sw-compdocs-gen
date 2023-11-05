@@ -1,9 +1,13 @@
+import collections.abc
 import re
 
 from . import convert as dot_convert
 
 
 def as_mapping(v):
+    if not isinstance(v, collections.abc.Mapping):
+        raise TypeError
+
     mapping = {}
     for key, val in v.items():
         key = dot_convert.as_str(key)
