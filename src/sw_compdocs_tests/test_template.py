@@ -153,3 +153,16 @@ class TestSubstitute(unittest.TestCase):
                 with self.assertRaises(sw_compdocs.template.TemplateKeyError) as cm:
                     sw_compdocs.template.substitute(input_s, input_mapping)
                 self.assertEqual(cm.exception.key, want_key)
+
+
+class TestTemplateKeyErrorInit(unittest.TestCase):
+    def test(self):
+        exc = sw_compdocs.template.TemplateKeyError("key")
+        self.assertEqual(exc.key, "key")
+
+
+class TestTemplateKeyErrorStr(unittest.TestCase):
+    def test(self):
+        exc = sw_compdocs.template.TemplateKeyError("key")
+        s = str(exc)
+        self.assertEqual(s, "missing key 'key' in template mapping")
