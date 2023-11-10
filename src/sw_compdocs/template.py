@@ -1,8 +1,6 @@
 import collections.abc
 import re
 
-from . import convert as dot_convert
-
 
 def as_mapping(v):
     if not isinstance(v, collections.abc.Mapping):
@@ -10,8 +8,10 @@ def as_mapping(v):
 
     mapping = {}
     for key, val in v.items():
-        key = dot_convert.as_str(key)
-        val = dot_convert.as_str(val)
+        if type(key) is not str:
+            raise TypeError
+        if type(val) is not str:
+            raise TypeError
 
         if re.search("\A[A-Za-z0-9_]+\Z", key) is None:
             raise ValueError
@@ -21,7 +21,8 @@ def as_mapping(v):
 
 
 def substitute(s, mapping):
-    s = dot_convert.as_str(s)
+    if type(s) is not str:
+        raise TypeError
     if not isinstance(mapping, collections.abc.Mapping):
         raise TypeError
 
@@ -31,7 +32,9 @@ def substitute(s, mapping):
             val = mapping[key]
         except KeyError:
             raise TemplateKeyError(key)
-        return dot_convert.as_str(val)
+        if type(val) is not str:
+            raise TypeError
+        return val
 
     return re.sub(r"(?s:\$\[(?P<key>.*?)\])", repl, s)
 
