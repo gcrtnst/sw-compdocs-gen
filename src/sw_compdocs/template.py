@@ -36,7 +36,7 @@ def substitute(s, mapping):
     return re.sub(r"(?s:\$\[(?P<key>.*?)\])", repl, s)
 
 
-class TemplateKeyError(KeyError):
+class TemplateKeyError(Exception):
     def __init__(self, key):
         super().__init__(key)
         self.key = key
