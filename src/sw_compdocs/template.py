@@ -13,9 +13,6 @@ def as_mapping(v):
         if type(val) is not str:
             raise TypeError
 
-        if re.search("\A[A-Za-z0-9_]+\Z", key) is None:
-            raise ValueError
-
         mapping[key] = val
     return mapping
 

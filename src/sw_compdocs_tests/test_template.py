@@ -51,18 +51,6 @@ class TestAsMapping(unittest.TestCase):
                 with self.assertRaises(TypeError):
                     sw_compdocs.template.as_mapping(v)
 
-    def test_validate_value_error(self):
-        for v in [
-            {"": ""},
-            {"-": ""},
-            {"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-": ""},
-            {"action-down": ""},
-            {"a": "", "": ""},
-        ]:
-            with self.subTest(v=v):
-                with self.assertRaises(ValueError):
-                    sw_compdocs.template.as_mapping(v)
-
 
 class TestSubstitute(unittest.TestCase):
     def test_validate_type_error(self):
