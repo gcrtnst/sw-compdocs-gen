@@ -36,40 +36,6 @@ class TemplateRenderer:
         return re.sub(r"(?s:\$\[(?P<key>.*?)\])", repl, s)
 
 
-def as_mapping(v):
-    if not isinstance(v, collections.abc.Mapping):
-        raise TypeError
-
-    mapping = {}
-    for key, val in v.items():
-        if type(key) is not str:
-            raise TypeError
-        if type(val) is not str:
-            raise TypeError
-
-        mapping[key] = val
-    return mapping
-
-
-def substitute(s, mapping):
-    if type(s) is not str:
-        raise TypeError
-    if not isinstance(mapping, collections.abc.Mapping):
-        raise TypeError
-
-    def repl(match):
-        key = match["key"]
-        try:
-            val = mapping[key]
-        except KeyError:
-            raise TemplateKeyError(key)
-        if type(val) is not str:
-            raise TypeError
-        return val
-
-    return re.sub(r"(?s:\$\[(?P<key>.*?)\])", repl, s)
-
-
 class TemplateMappingError(Exception):
     pass
 
