@@ -2,7 +2,7 @@ import collections.abc
 import re
 
 
-class TemplateRenderer:
+class TemplateFormatter:
     def __init__(self, mapping):
         if not isinstance(mapping, collections.abc.Mapping):
             raise TemplateMappingError(
@@ -21,7 +21,7 @@ class TemplateRenderer:
                 )
             self._d[key] = val
 
-    def render(self, s):
+    def format(self, s):
         if type(s) is not str:
             raise TypeError
 

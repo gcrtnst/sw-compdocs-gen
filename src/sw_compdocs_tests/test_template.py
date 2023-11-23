@@ -3,7 +3,7 @@ import sw_compdocs.template
 import unittest
 
 
-class TestTemplateRendererInit(unittest.TestCase):
+class TestTemplateFormatterInit(unittest.TestCase):
     def test_validate_pass(self):
         for mapping in [
             {"a": ""},
@@ -15,7 +15,7 @@ class TestTemplateRendererInit(unittest.TestCase):
             {"a": "x", "b": "y"},
         ]:
             with self.subTest(mapping=mapping):
-                ren = sw_compdocs.template.TemplateRenderer(mapping)
+                ren = sw_compdocs.template.TemplateFormatter(mapping)
                 self.assertEqual(ren._d, mapping)
                 self.assertIsNot(ren._d, mapping)
 
@@ -46,15 +46,15 @@ class TestTemplateRendererInit(unittest.TestCase):
         ]:
             with self.subTest(tc=tc):
                 with self.assertRaises(sw_compdocs.template.TemplateMappingError) as cm:
-                    sw_compdocs.template.TemplateRenderer(tc.input_mapping)
+                    sw_compdocs.template.TemplateFormatter(tc.input_mapping)
                 self.assertEqual(cm.exception.args, tc.want_exc_args)
 
 
-class TestTemplateRendererRender(unittest.TestCase):
+class TestTemplateFormatterFormat(unittest.TestCase):
     def test_type_error(self):
-        ren = sw_compdocs.template.TemplateRenderer({})
+        ren = sw_compdocs.template.TemplateFormatter({})
         with self.assertRaises(TypeError):
-            ren.render(0)
+            ren.format(0)
 
     def test_key_error(self):
         tt = collections.namedtuple("tt", ("input_mapping", "input_s", "want_key"))
@@ -65,9 +65,9 @@ class TestTemplateRendererRender(unittest.TestCase):
             tt(input_mapping={"foo": "bar"}, input_s="$[foo] $[baz]", want_key="baz"),
         ]:
             with self.subTest(tc=tc):
-                ren = sw_compdocs.template.TemplateRenderer(tc.input_mapping)
+                ren = sw_compdocs.template.TemplateFormatter(tc.input_mapping)
                 with self.assertRaises(sw_compdocs.template.TemplateKeyError) as cm:
-                    ren.render(tc.input_s)
+                    ren.format(tc.input_s)
                 self.assertEqual(cm.exception.key, tc.want_key)
 
     def test_pass(self):
@@ -89,8 +89,8 @@ class TestTemplateRendererRender(unittest.TestCase):
             ),
         ]:
             with self.subTest(tc=tc):
-                ren = sw_compdocs.template.TemplateRenderer(tc.input_mapping)
-                got_s = ren.render(tc.input_s)
+                ren = sw_compdocs.template.TemplateFormatter(tc.input_mapping)
+                got_s = ren.format(tc.input_s)
                 self.assertEqual(got_s, tc.want_s)
 
 
