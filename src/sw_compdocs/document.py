@@ -170,6 +170,8 @@ class TableData(collections.abc.MutableSequence):
 class TableDataRow(collections.abc.Sequence):
     def __init__(self, iterable=()):
         l = list(iterable)
+        if len(l) <= 0:
+            raise ValueError
         for v in l:
             self._check_type(v)
         self._l = l

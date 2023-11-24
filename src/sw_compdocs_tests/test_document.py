@@ -541,18 +541,6 @@ class TestTableDataInit(unittest.TestCase):
 
         for tc in [
             tt(
-                input_head=sw_compdocs.document.TableDataRow(),
-                input_list=[],
-            ),
-            tt(
-                input_head=sw_compdocs.document.TableDataRow(),
-                input_list=[
-                    sw_compdocs.document.TableDataRow(),
-                    sw_compdocs.document.TableDataRow(),
-                    sw_compdocs.document.TableDataRow(),
-                ],
-            ),
-            tt(
                 input_head=sw_compdocs.document.TableDataRow(("A1", "A2", "A3")),
                 input_list=[],
             ),
@@ -578,33 +566,6 @@ class TestTableDataInit(unittest.TestCase):
             tt(
                 input_head=[],
                 input_list=[],
-                want_exc_type=TypeError,
-            ),
-            tt(
-                input_head=sw_compdocs.document.TableDataRow(),
-                input_list=[
-                    [],
-                    sw_compdocs.document.TableDataRow(),
-                    sw_compdocs.document.TableDataRow(),
-                ],
-                want_exc_type=TypeError,
-            ),
-            tt(
-                input_head=sw_compdocs.document.TableDataRow(),
-                input_list=[
-                    sw_compdocs.document.TableDataRow(),
-                    [],
-                    sw_compdocs.document.TableDataRow(),
-                ],
-                want_exc_type=TypeError,
-            ),
-            tt(
-                input_head=sw_compdocs.document.TableDataRow(),
-                input_list=[
-                    sw_compdocs.document.TableDataRow(),
-                    sw_compdocs.document.TableDataRow(),
-                    [],
-                ],
                 want_exc_type=TypeError,
             ),
             tt(
@@ -1133,7 +1094,6 @@ class TestTableDataInsert(unittest.TestCase):
 class TestTableDataRowInit(unittest.TestCase):
     def test_pass(self):
         for input_list in [
-            [],
             ["foo", "bar", "baz"],
         ]:
             with self.subTest(input_list=input_list):
@@ -1141,14 +1101,17 @@ class TestTableDataRowInit(unittest.TestCase):
                 got_list = list(got_row)
                 self.assertEqual(got_list, input_list)
 
-    def test_exc_type(self):
-        for input_list in [
-            [0],
-            ["foo", 1, "baz"],
+    def test_exc(self):
+        tt = collections.namedtuple("tt", ("input_list", "want_exc_type"))
+
+        for tc in [
+            tt(input_list=[], want_exc_type=ValueError),
+            tt(input_list=[0], want_exc_type=TypeError),
+            tt(input_list=["foo", 1, "baz"], want_exc_type=TypeError),
         ]:
-            with self.subTest(input_list=input_list):
-                with self.assertRaises(TypeError):
-                    sw_compdocs.document.TableDataRow(input_list)
+            with self.subTest(tc=tc):
+                with self.assertRaises(tc.want_exc_type):
+                    sw_compdocs.document.TableDataRow(tc.input_list)
 
 
 class TestTableDataRowGetItem(unittest.TestCase):
