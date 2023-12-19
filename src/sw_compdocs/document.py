@@ -1,42 +1,9 @@
-import collections.abc
+from . import container
 
 
-class Document(collections.abc.MutableSequence):
-    def __init__(self, iterable=()):
-        self._l = []
-        self[:] = iterable
-
-    def __getitem__(self, key):
-        return self._l[key]
-
-    def __setitem__(self, key, value):
-        if type(key) is slice:
-            value = (v for v in value if self._check_type(v) or True)
-        else:
-            self._check_type(value)
-        self._l[key] = value
-
-    def __delitem__(self, key):
-        del self._l[key]
-
-    def __len__(self):
-        return len(self._l)
-
-    def __repr__(self):
-        return f"{type(self).__name__}({repr(self._l)})"
-
-    def __eq__(self, other):
-        if type(self) is type(other):
-            return self._l == other._l
-        return super().__eq__(other)
-
-    def insert(self, i, v):
-        self._check_type(v)
-        self._l.insert(i, v)
-
-    @classmethod
-    def _check_type(self, v):
-        if not isinstance(v, Block):
+class Document(container.MutableSequence):
+    def _check_value(self, value):
+        if not isinstance(value, Block):
             raise TypeError
 
 
@@ -121,63 +88,39 @@ class Table(Block):
         return super().__eq__(other)
 
 
-class TableData(collections.abc.MutableSequence):
+class TableData(container.MutableSequence):
     head = property(lambda self: self._head)
 
     def __init__(self, head, iterable=()):
         if type(head) is not TableDataRow:
             raise TypeError
-
         self._head = head
-        self._l = []
-        self[:] = iterable
 
-    def __getitem__(self, key):
-        return self._l[key]
-
-    def __setitem__(self, key, value):
-        if type(key) is slice:
-            value = (v for v in value if self._check_item(v) or True)
-        else:
-            self._check_item(value)
-        self._l[key] = value
-
-    def __delitem__(self, key):
-        del self._l[key]
-
-    def __len__(self):
-        return len(self._l)
+        super().__init__(iterable)
 
     def __repr__(self):
         return f"{type(self).__name__}({repr(self.head)}, {repr(self._l)})"
 
     def __eq__(self, other):
-        if type(self) is type(other):
-            return self.head == other.head and self._l == other._l
+        if type(self) is type(other) and self.head != other.head:
+            return False
         return super().__eq__(other)
 
-    def insert(self, i, v):
-        self._check_item(v)
-        self._l.insert(i, v)
-
-    def _check_item(self, v):
-        if type(v) is not TableDataRow:
+    def _check_value(self, value):
+        if type(value) is not TableDataRow:
             raise TypeError
-        if len(v) != len(self.head):
+        if len(value) != len(self.head):
             raise ValueError
 
 
-class TableDataRow(collections.abc.Sequence):
+class TableDataRow(container.Sequence):
     def __init__(self, iterable=()):
-        l = list(iterable)
-        if len(l) <= 0:
-            raise ValueError
-        for v in l:
-            self._check_type(v)
-        self._l = l
+        super().__init__(iterable)
 
-    def __getitem__(self, key):
-        return self._l[key]
+        if len(self) <= 0:
+            raise ValueError
+        for v in self:
+            self._check_type(v)
 
     def __setitem__(self, key, value):
         if type(key) is slice:
@@ -189,17 +132,6 @@ class TableDataRow(collections.abc.Sequence):
         else:
             self._check_type(value)
         self._l[key] = value
-
-    def __len__(self):
-        return len(self._l)
-
-    def __repr__(self):
-        return f"{type(self).__name__}({repr(self._l)})"
-
-    def __eq__(self, other):
-        if type(self) is type(other):
-            return self._l == other._l
-        return super().__eq__(other)
 
     @classmethod
     def _check_type(cls, v):
