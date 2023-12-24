@@ -189,39 +189,91 @@ class TestLanguageLen(unittest.TestCase):
 
 
 class TestLanguageTSVErrorInit(unittest.TestCase):
-    def test(self):
-        exc = sw_compdocs.language.LanguageTSVError("msg", file="file", line=52149)
+    def test_pass(self):
+        exc = sw_compdocs.language.LanguageTSVError("msg")
         self.assertEqual(exc.msg, "msg")
-        self.assertEqual(exc.file, "file")
-        self.assertEqual(exc.line, 52149)
+        self.assertEqual(exc.file, None)
+        self.assertEqual(exc.line, None)
+
+    def test_exc_type(self):
+        with self.assertRaises(TypeError):
+            sw_compdocs.language.LanguageTSVError(None)
+
+
+class TestLanguageTSVErrorFileSetter(unittest.TestCase):
+    def test_pass(self):
+        for file in [
+            None,
+            "file",
+            b"file",
+            pathlib.PurePath("file"),
+        ]:
+            with self.subTest(file=file):
+                exc = sw_compdocs.language.LanguageTSVError("msg")
+                exc.file = file
+                self.assertIs(exc.file, file)
+
+    def test_exc_type(self):
+        exc = sw_compdocs.language.LanguageTSVError("msg")
+        exc.file = None
+        with self.assertRaises(TypeError):
+            exc.file = 0
+        self.assertIs(exc.file, None)
+
+
+class TestLanguageTSVErrorLineSetter(unittest.TestCase):
+    def test_pass(self):
+        for line in [None, 52149]:
+            with self.subTest(line=line):
+                exc = sw_compdocs.language.LanguageTSVError("msg")
+                exc.line = line
+                self.assertIs(exc.line, line)
+
+    def test_exc_type(self):
+        exc = sw_compdocs.language.LanguageTSVError("msg")
+        exc.line = None
+        with self.assertRaises(TypeError):
+            exc.line = "52149"
+        self.assertIs(exc.line, None)
 
 
 class TestLanguageTSVErrorStr(unittest.TestCase):
     def test(self):
-        tt = collections.namedtuple("tt", ("input_exc", "want_s"))
+        tt = collections.namedtuple(
+            "tt", ("input_exc_msg", "input_exc_file", "input_exc_line", "want_s")
+        )
 
         for tc in [
             tt(
-                input_exc=sw_compdocs.language.LanguageTSVError("msg"),
+                input_exc_msg="msg",
+                input_exc_file=None,
+                input_exc_line=None,
                 want_s="<language.tsv>: line ?: msg",
             ),
             tt(
-                input_exc=sw_compdocs.language.LanguageTSVError("msg", file="file"),
+                input_exc_msg="msg",
+                input_exc_file="file",
+                input_exc_line=None,
                 want_s="file: line ?: msg",
             ),
             tt(
-                input_exc=sw_compdocs.language.LanguageTSVError("msg", line=0),
-                want_s="<language.tsv>: line 0: msg",
+                input_exc_msg="msg",
+                input_exc_file=None,
+                input_exc_line=52149,
+                want_s="<language.tsv>: line 52149: msg",
             ),
             tt(
-                input_exc=sw_compdocs.language.LanguageTSVError(
-                    "msg", file="file", line=0
-                ),
-                want_s="file: line 0: msg",
+                input_exc_msg="msg",
+                input_exc_file="file",
+                input_exc_line=52149,
+                want_s="file: line 52149: msg",
             ),
         ]:
             with self.subTest(tc=tc):
-                got_s = str(tc.input_exc)
+                input_exc = sw_compdocs.language.LanguageTSVError(tc.input_exc_msg)
+                input_exc.file = tc.input_exc_file
+                input_exc.line = tc.input_exc_line
+                got_s = str(input_exc)
                 self.assertEqual(got_s, tc.want_s)
 
 

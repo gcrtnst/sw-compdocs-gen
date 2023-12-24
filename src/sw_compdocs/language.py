@@ -1,6 +1,7 @@
 import collections.abc
 import csv
 import io
+import os
 
 
 class Language(collections.abc.Mapping):
@@ -14,7 +15,8 @@ class Language(collections.abc.Mapping):
             try:
                 return cls._from_io(f)
             except LanguageTSVError as exc:
-                raise LanguageTSVError(exc.msg, file=file, line=exc.line)
+                exc.file = file
+                raise
 
     @classmethod
     def from_str(cls, s):
@@ -25,19 +27,21 @@ class Language(collections.abc.Mapping):
     def _from_io(cls, f):
         reader = csv.reader(f, dialect=LanguageTSVDialect)
         try:
-            header = next(reader, None)
-            if header != ["id", "description", "en", "local"]:
-                raise LanguageTSVError("invalid header", line=reader.line_num)
+            try:
+                header = next(reader, None)
+                if header != ["id", "description", "en", "local"]:
+                    raise LanguageTSVError("invalid header")
 
-            d = {}
-            for record in reader:
-                if len(record) != 4:
-                    raise LanguageTSVError(
-                        "invalid number of fields", line=reader.line_num
-                    )
-                d[record[2]] = record[3]
-        except csv.Error as exc:
-            raise LanguageTSVError(str(exc), line=reader.line_num)
+                d = {}
+                for record in reader:
+                    if len(record) != 4:
+                        raise LanguageTSVError("invalid number of fields")
+                    d[record[2]] = record[3]
+            except csv.Error as exc:
+                raise LanguageTSVError(str(exc)) from exc
+        except LanguageTSVError as exc:
+            exc.line = reader.line_num
+            raise
 
         lang = cls()
         lang._d = d
@@ -67,14 +71,46 @@ class LanguageTSVDialect(csv.Dialect):
 
 
 class LanguageTSVError(Exception):
-    def __init__(self, msg, file=None, line=None):
-        super().__init__(msg, file, line)
-        self.msg = msg
-        self.file = file
-        self.line = line
+    @property
+    def msg(self):
+        return self._msg
+
+    @property
+    def file(self):
+        return self._file
+
+    @file.setter
+    def file(self, value):
+        if (
+            value is not None
+            and type(value) is not str
+            and type(value) is not bytes
+            and not isinstance(value, os.PathLike)
+        ):
+            raise TypeError
+        self._file = value
+
+    @property
+    def line(self):
+        return self._line
+
+    @line.setter
+    def line(self, value):
+        if value is not None and type(value) is not int:
+            raise TypeError
+        self._line = value
+
+    def __init__(self, msg):
+        if type(msg) is not str:
+            raise TypeError
+
+        super().__init__(msg)
+        self._msg = msg
+        self._file = None
+        self._line = None
 
     def __str__(self):
-        file = str(self.file) if self.file is not None else "<language.tsv>"
+        file = os.fsdecode(self.file) if self.file is not None else "<language.tsv>"
         line = str(self.line) if self.line is not None else "?"
         return f"{file}: line {line}: {self.msg}"
 
