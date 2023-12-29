@@ -1,6 +1,6 @@
 import enum
+import lxml.etree
 import os
-import xml.etree.ElementTree
 
 from . import container
 
@@ -133,7 +133,7 @@ class Definition:
 
     @classmethod
     def from_xml_elem(cls, elem):
-        if type(elem) is not xml.etree.ElementTree.Element:
+        if not isinstance(elem, lxml.etree._Element):
             raise TypeError
 
         name = elem.get("name")
@@ -301,7 +301,7 @@ class TooltipProperties:
 
     @classmethod
     def from_xml_elem(cls, elem):
-        if type(elem) is not xml.etree.ElementTree.Element:
+        if not isinstance(elem, lxml.etree._Element):
             raise TypeError
 
         return cls(
@@ -333,7 +333,7 @@ class TooltipProperties:
 class LogicNodeList(container.MutableSequence):
     @classmethod
     def from_xml_elem(cls, elem):
-        if type(elem) is not xml.etree.ElementTree.Element:
+        if not isinstance(elem, lxml.etree._Element):
             raise TypeError
 
         def generate():
@@ -402,7 +402,7 @@ class LogicNode:
 
     @classmethod
     def from_xml_elem(cls, elem):
-        if type(elem) is not xml.etree.ElementTree.Element:
+        if not isinstance(elem, lxml.etree._Element):
             raise TypeError
 
         label = elem.get("label")
@@ -503,7 +503,7 @@ class VoxelPos:
 
     @classmethod
     def from_xml_elem(cls, elem):
-        if type(elem) is not xml.etree.ElementTree.Element:
+        if not isinstance(elem, lxml.etree._Element):
             raise TypeError
 
         x = elem.get("x")

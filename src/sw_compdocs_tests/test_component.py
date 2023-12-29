@@ -1,8 +1,8 @@
 import collections
+import lxml.etree
 import pathlib
 import sw_compdocs.component
 import unittest
-import xml.etree.ElementTree
 
 
 class TestDefinitionInit(unittest.TestCase):
@@ -673,9 +673,8 @@ class TestDefinitionVoxelMaxSetter(unittest.TestCase):
 
 class TestDefinitionFromXMLElem(unittest.TestCase):
     def test_pass_clock(self):
-        elem = xml.etree.ElementTree.fromstring(
+        elem = lxml.etree.fromstring(
             """\
-<?xml version="1.0" encoding="UTF-8"?>
 <definition name="Clock" category="6" mass="1" value="100" flags="8192" tags="basic">
 	<tooltip_properties description="The clock has a display to visualise the time of day or night. The 12 o'clock position is the white arrow on the face of the display." short_description="An analogue clock display that outputs a number value representing the time of day."/>
 	<logic_nodes>
@@ -732,7 +731,7 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
         self.assertEqual(comp.voxel_max, sw_compdocs.component.VoxelPos(x=0, y=1, z=0))
 
     def test_pass_empty(self):
-        elem = xml.etree.ElementTree.Element("definition")
+        elem = lxml.etree.Element("definition")
         comp = sw_compdocs.component.Definition.from_xml_elem(elem)
         self.assertEqual(comp.name, "")
         self.assertEqual(comp.category, sw_compdocs.component.Category.BLOCKS)
@@ -756,51 +755,51 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
 
         for tc in [
             tt(
-                input_elem=xml.etree.ElementTree.Element("definition", category="nan"),
+                input_elem=lxml.etree.Element("definition", category="nan"),
                 want_msg="invalid component category 'nan'",
                 want_xpath=".",
             ),
             tt(
-                input_elem=xml.etree.ElementTree.Element("definition", category="999"),
+                input_elem=lxml.etree.Element("definition", category="999"),
                 want_msg="invalid component category '999'",
                 want_xpath=".",
             ),
             tt(
-                input_elem=xml.etree.ElementTree.Element("definition", mass="nan"),
+                input_elem=lxml.etree.Element("definition", mass="nan"),
                 want_msg="invalid component mass 'nan'",
                 want_xpath=".",
             ),
             tt(
-                input_elem=xml.etree.ElementTree.Element("definition", value="nan"),
+                input_elem=lxml.etree.Element("definition", value="nan"),
                 want_msg="invalid component value 'nan'",
                 want_xpath=".",
             ),
             tt(
-                input_elem=xml.etree.ElementTree.Element("definition", flags="nan"),
+                input_elem=lxml.etree.Element("definition", flags="nan"),
                 want_msg="invalid component flags 'nan'",
                 want_xpath=".",
             ),
             tt(
-                input_elem=xml.etree.ElementTree.Element("definition", flags="999"),
+                input_elem=lxml.etree.Element("definition", flags="999"),
                 want_msg="invalid component flags '999'",
                 want_xpath=".",
             ),
             tt(
-                input_elem=xml.etree.ElementTree.fromstring(
+                input_elem=lxml.etree.fromstring(
                     """<definition><logic_nodes><logic_node mode="999"/></logic_nodes></definition>"""
                 ),
                 want_msg="invalid logic node mode '999'",
                 want_xpath="./logic_nodes/logic_node[1]",
             ),
             tt(
-                input_elem=xml.etree.ElementTree.fromstring(
+                input_elem=lxml.etree.fromstring(
                     """<definition><voxel_min x="nan"/></definition>"""
                 ),
                 want_msg="invalid voxel x 'nan'",
                 want_xpath="./voxel_min",
             ),
             tt(
-                input_elem=xml.etree.ElementTree.fromstring(
+                input_elem=lxml.etree.fromstring(
                     """<definition><voxel_max x="nan"/></definition>"""
                 ),
                 want_msg="invalid voxel x 'nan'",
@@ -1258,21 +1257,19 @@ class TestTooltipPropertiesFromXMLElem(unittest.TestCase):
 
         for tc in [
             tt(
-                input_elem=xml.etree.ElementTree.Element(
+                input_elem=lxml.etree.Element(
                     "tooltip_properties", short_description="a", description="b"
                 ),
                 want_short_description="a",
                 want_description="b",
             ),
             tt(
-                input_elem=xml.etree.ElementTree.Element(
-                    "tooltip_properties", description="b"
-                ),
+                input_elem=lxml.etree.Element("tooltip_properties", description="b"),
                 want_short_description="",
                 want_description="b",
             ),
             tt(
-                input_elem=xml.etree.ElementTree.Element(
+                input_elem=lxml.etree.Element(
                     "tooltip_properties", short_description="a"
                 ),
                 want_short_description="a",
@@ -1424,9 +1421,9 @@ class TestLogicNodeListFromXMLElem(unittest.TestCase):
             ),
             tt(
                 input_sub_list=[
-                    xml.etree.ElementTree.Element("logic_node", label="a"),
-                    xml.etree.ElementTree.Element("logic_node", label="b"),
-                    xml.etree.ElementTree.Element("logic_node", label="c"),
+                    lxml.etree.Element("logic_node", label="a"),
+                    lxml.etree.Element("logic_node", label="b"),
+                    lxml.etree.Element("logic_node", label="c"),
                 ],
                 want_lns=sw_compdocs.component.LogicNodeList(
                     [
@@ -1438,9 +1435,9 @@ class TestLogicNodeListFromXMLElem(unittest.TestCase):
             ),
             tt(
                 input_sub_list=[
-                    xml.etree.ElementTree.Element("logic_node", label="a"),
-                    xml.etree.ElementTree.Element("dummy", label="b"),
-                    xml.etree.ElementTree.Element("logic_node", label="c"),
+                    lxml.etree.Element("logic_node", label="a"),
+                    lxml.etree.Element("dummy", label="b"),
+                    lxml.etree.Element("logic_node", label="c"),
                 ],
                 want_lns=sw_compdocs.component.LogicNodeList(
                     [
@@ -1451,7 +1448,7 @@ class TestLogicNodeListFromXMLElem(unittest.TestCase):
             ),
         ]:
             with self.subTest(tc=tc):
-                input_elem = xml.etree.ElementTree.Element("logic_nodes")
+                input_elem = lxml.etree.Element("logic_nodes")
                 input_elem.extend(tc.input_sub_list)
                 got_lns = sw_compdocs.component.LogicNodeList.from_xml_elem(input_elem)
                 self.assertEqual(got_lns, tc.want_lns)
@@ -1466,34 +1463,34 @@ class TestLogicNodeListFromXMLElem(unittest.TestCase):
         for tc in [
             tt(
                 input_sub_list=[
-                    xml.etree.ElementTree.Element("logic_node", type="-1"),
-                    xml.etree.ElementTree.Element("logic_node", type="1"),
-                    xml.etree.ElementTree.Element("logic_node", type="2"),
+                    lxml.etree.Element("logic_node", type="-1"),
+                    lxml.etree.Element("logic_node", type="1"),
+                    lxml.etree.Element("logic_node", type="2"),
                 ],
                 want_msg="invalid logic node type '-1'",
                 want_xpath="./logic_node[1]",
             ),
             tt(
                 input_sub_list=[
-                    xml.etree.ElementTree.Element("logic_node", type="0"),
-                    xml.etree.ElementTree.Element("logic_node", type="-1"),
-                    xml.etree.ElementTree.Element("logic_node", type="2"),
+                    lxml.etree.Element("logic_node", type="0"),
+                    lxml.etree.Element("logic_node", type="-1"),
+                    lxml.etree.Element("logic_node", type="2"),
                 ],
                 want_msg="invalid logic node type '-1'",
                 want_xpath="./logic_node[2]",
             ),
             tt(
                 input_sub_list=[
-                    xml.etree.ElementTree.Element("logic_node", type="0"),
-                    xml.etree.ElementTree.Element("logic_node", type="1"),
-                    xml.etree.ElementTree.Element("logic_node", type="-1"),
+                    lxml.etree.Element("logic_node", type="0"),
+                    lxml.etree.Element("logic_node", type="1"),
+                    lxml.etree.Element("logic_node", type="-1"),
                 ],
                 want_msg="invalid logic node type '-1'",
                 want_xpath="./logic_node[3]",
             ),
         ]:
             with self.subTest(tc=tc):
-                input_elem = xml.etree.ElementTree.Element("logic_nodes")
+                input_elem = lxml.etree.Element("logic_nodes")
                 input_elem.extend(tc.input_sub_list)
                 with self.assertRaises(sw_compdocs.component.ComponentXMLError) as ctx:
                     sw_compdocs.component.LogicNodeList.from_xml_elem(input_elem)
@@ -1680,7 +1677,7 @@ class TestLogicNodeFromXMLElem(unittest.TestCase):
 
         for tc in [
             tt(
-                input_elem=xml.etree.ElementTree.Element(
+                input_elem=lxml.etree.Element(
                     "logic_node",
                     label="label",
                     mode="1",
@@ -1693,7 +1690,7 @@ class TestLogicNodeFromXMLElem(unittest.TestCase):
                 want_description="description",
             ),
             tt(
-                input_elem=xml.etree.ElementTree.Element(
+                input_elem=lxml.etree.Element(
                     "logic_node",
                     mode="1",
                     type="2",
@@ -1705,7 +1702,7 @@ class TestLogicNodeFromXMLElem(unittest.TestCase):
                 want_description="description",
             ),
             tt(
-                input_elem=xml.etree.ElementTree.Element(
+                input_elem=lxml.etree.Element(
                     "logic_node",
                     label="label",
                     type="2",
@@ -1717,7 +1714,7 @@ class TestLogicNodeFromXMLElem(unittest.TestCase):
                 want_description="description",
             ),
             tt(
-                input_elem=xml.etree.ElementTree.Element(
+                input_elem=lxml.etree.Element(
                     "logic_node",
                     label="label",
                     mode="1",
@@ -1729,7 +1726,7 @@ class TestLogicNodeFromXMLElem(unittest.TestCase):
                 want_description="description",
             ),
             tt(
-                input_elem=xml.etree.ElementTree.Element(
+                input_elem=lxml.etree.Element(
                     "logic_node",
                     label="label",
                     mode="1",
@@ -1757,7 +1754,7 @@ class TestLogicNodeFromXMLElem(unittest.TestCase):
 
         for tc in [
             tt(
-                input_elem=xml.etree.ElementTree.Element(
+                input_elem=lxml.etree.Element(
                     "logic_node",
                     label="label",
                     mode="a",
@@ -1767,7 +1764,7 @@ class TestLogicNodeFromXMLElem(unittest.TestCase):
                 want_msg="invalid logic node mode 'a'",
             ),
             tt(
-                input_elem=xml.etree.ElementTree.Element(
+                input_elem=lxml.etree.Element(
                     "logic_node",
                     label="label",
                     mode="2",
@@ -1777,7 +1774,7 @@ class TestLogicNodeFromXMLElem(unittest.TestCase):
                 want_msg="invalid logic node mode '2'",
             ),
             tt(
-                input_elem=xml.etree.ElementTree.Element(
+                input_elem=lxml.etree.Element(
                     "logic_node",
                     label="label",
                     mode="1",
@@ -1787,7 +1784,7 @@ class TestLogicNodeFromXMLElem(unittest.TestCase):
                 want_msg="invalid logic node type 'a'",
             ),
             tt(
-                input_elem=xml.etree.ElementTree.Element(
+                input_elem=lxml.etree.Element(
                     "logic_node",
                     label="label",
                     mode="1",
@@ -1995,7 +1992,7 @@ class TestVoxelPosFromXMLElem(unittest.TestCase):
 
         for tc in [
             tt(
-                input_elem=xml.etree.ElementTree.Element(
+                input_elem=lxml.etree.Element(
                     "voxel_max",
                     x="1",
                     y="2",
@@ -2006,7 +2003,7 @@ class TestVoxelPosFromXMLElem(unittest.TestCase):
                 want_z=3,
             ),
             tt(
-                input_elem=xml.etree.ElementTree.Element(
+                input_elem=lxml.etree.Element(
                     "voxel_max",
                     y="2",
                     z="3",
@@ -2016,7 +2013,7 @@ class TestVoxelPosFromXMLElem(unittest.TestCase):
                 want_z=3,
             ),
             tt(
-                input_elem=xml.etree.ElementTree.Element(
+                input_elem=lxml.etree.Element(
                     "voxel_max",
                     x="1",
                     z="3",
@@ -2026,7 +2023,7 @@ class TestVoxelPosFromXMLElem(unittest.TestCase):
                 want_z=3,
             ),
             tt(
-                input_elem=xml.etree.ElementTree.Element(
+                input_elem=lxml.etree.Element(
                     "voxel_max",
                     x="1",
                     y="2",
@@ -2051,21 +2048,15 @@ class TestVoxelPosFromXMLElem(unittest.TestCase):
 
         for tc in [
             tt(
-                input_elem=xml.etree.ElementTree.Element(
-                    "voxel_max", x="", y="2", z="3"
-                ),
+                input_elem=lxml.etree.Element("voxel_max", x="", y="2", z="3"),
                 want_msg="invalid voxel x ''",
             ),
             tt(
-                input_elem=xml.etree.ElementTree.Element(
-                    "voxel_max", x="1", y="", z="3"
-                ),
+                input_elem=lxml.etree.Element("voxel_max", x="1", y="", z="3"),
                 want_msg="invalid voxel y ''",
             ),
             tt(
-                input_elem=xml.etree.ElementTree.Element(
-                    "voxel_max", x="1", y="2", z=""
-                ),
+                input_elem=lxml.etree.Element("voxel_max", x="1", y="2", z=""),
                 want_msg="invalid voxel z ''",
             ),
         ]:
