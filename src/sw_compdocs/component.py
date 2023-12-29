@@ -5,6 +5,44 @@ import os
 from . import container
 
 
+def parse_xml_file(file):
+    if (
+        type(file) is not str
+        and type(file) is not bytes
+        and not isinstance(file, os.PathLike)
+    ):
+        raise TypeError
+
+    tree = lxml.etree.parse(file, parser=_new_xml_parser())
+    elem = tree.getroot()
+
+    try:
+        return Definition.from_xml_elem(elem)
+    except ComponentXMLError as exc:
+        exc.file = file
+        exc.prepend_xpath(elem.tag)
+        exc.prepend_xpath("/")
+        raise
+
+
+def parse_xml_str(s):
+    elem = lxml.etree.fromstring(s, parser=_new_xml_parser())
+
+    try:
+        return Definition.from_xml_elem(elem)
+    except ComponentXMLError as exc:
+        exc.prepend_xpath(elem.tag)
+        exc.prepend_xpath("/")
+        raise
+
+
+def _new_xml_parser():
+    # Stormworks uses XML with invalid attribute names.
+    # To avoid errors, we enable the recover option.
+    # https://nona-takahara.github.io/blog/entry10.html
+    return lxml.etree.XMLParser(recover=True)
+
+
 class Definition:
     @property
     def name(self):
