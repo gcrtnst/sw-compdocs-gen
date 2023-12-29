@@ -2198,13 +2198,28 @@ class TestComponentXMLErrorPrependXPath(unittest.TestCase):
         exc.prepend_xpath("definition")
         self.assertEqual(exc.xpath, "./definition/logic_nodes/logic_node[52149]")
 
+        exc.prepend_xpath("/")
+        self.assertEqual(exc.xpath, "/definition/logic_nodes/logic_node[52149]")
+
+    def test_exc_runtime(self):
+        exc = sw_compdocs.component.ComponentXMLError("msg")
+        exc.prepend_xpath("xpath")
+        exc.prepend_xpath("/")
+        self.assertEqual(exc.xpath, "/xpath")
+
+        for s in ["root", "/", "value/error", None]:
+            with self.subTest(s=s):
+                with self.assertRaises(RuntimeError):
+                    exc.prepend_xpath(s)
+                self.assertEqual(exc.xpath, "/xpath")
+
     def test_exc_type(self):
         exc = sw_compdocs.component.ComponentXMLError("msg")
         with self.assertRaises(TypeError):
             exc.prepend_xpath(None)
 
     def test_exc_value(self):
-        for s in ["", "/", "logic_nodes/logic_node[52149]"]:
+        for s in ["", "logic_nodes/logic_node[52149]"]:
             with self.subTest(s=s):
                 exc = sw_compdocs.component.ComponentXMLError("msg")
                 with self.assertRaises(ValueError):

@@ -578,12 +578,21 @@ class ComponentXMLError(Exception):
         return f"{file}: {self.xpath}: {self.msg}"
 
     def prepend_xpath(self, s):
+        if len(self._xpath_list) >= 1 and self._xpath_list[0] == "/":
+            raise RuntimeError
+
         if type(s) is not str:
             raise TypeError
-        if s == "" or s.find("/") != -1:
-            raise ValueError
-        self._xpath_list.insert(0, s)
-        self._xpath = "./" + "/".join(self._xpath_list)
+
+        if s == "/":
+            self._xpath_list.insert(0, s)
+            self._xpath = "/" + "/".join(self._xpath_list[1:])
+            return
+        if s != "" and s.find("/") == -1:
+            self._xpath_list.insert(0, s)
+            self._xpath = "./" + "/".join(self._xpath_list)
+            return
+        raise ValueError
 
 
 def _coalesce(value, default):
