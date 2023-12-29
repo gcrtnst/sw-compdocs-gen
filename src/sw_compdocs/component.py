@@ -268,8 +268,8 @@ class Flags(enum.Flag):
     MULTIBODY_PARENT = 1 << 6
     MULTIBODY_CHILD = 1 << 7
     DRAGGABLE_IN_X_AXIS = 1 << 3
-    DRAGGABLE_IN_Y = 1 << 4
-    DRAGGABLE_IN_Z = 1 << 5
+    DRAGGABLE_IN_Y_AXIS = 1 << 4
+    DRAGGABLE_IN_Z_AXIS = 1 << 5
     BOUNDING_BOX_PHYSICS = 1 << 10
     RENAMABLE_BY_PLAYER = 1 << 13
 
