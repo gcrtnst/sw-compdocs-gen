@@ -77,7 +77,7 @@ class Definition:
 
     @mass.setter
     def mass(self, value):
-        if type(value) is not int:
+        if type(value) is not float:
             raise TypeError
         self._mass = value
 
@@ -167,7 +167,7 @@ class Definition:
     ):
         self.name = _coalesce(name, "")
         self.category = _coalesce(category, Category.BLOCKS)
-        self.mass = _coalesce(mass, 0)
+        self.mass = _coalesce(mass, 0.0)
         self.value = _coalesce(value, 0)
         self.flags = _coalesce(flags, Flags(0))
         self.tags = _coalesce(tags, "")
@@ -204,7 +204,7 @@ class Definition:
 
         if mass is not None:
             try:
-                mass = int(mass, base=10)
+                mass = float(mass)
             except ValueError as exc:
                 raise ComponentXMLError(f"invalid component mass {mass!r}") from exc
 

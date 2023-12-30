@@ -213,7 +213,7 @@ class TestDefinitionInit(unittest.TestCase):
             tt(
                 input_name="Clock",
                 input_category=sw_compdocs.component.Category.DISPLAYS,
-                input_mass=1,
+                input_mass=1.0,
                 input_value=100,
                 input_flags=sw_compdocs.component.Flags(8192),
                 input_tags="basic",
@@ -247,7 +247,7 @@ class TestDefinitionInit(unittest.TestCase):
                 input_voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=0),
                 want_name="Clock",
                 want_category=sw_compdocs.component.Category.DISPLAYS,
-                want_mass=1,
+                want_mass=1.0,
                 want_value=100,
                 want_flags=sw_compdocs.component.Flags(8192),
                 want_tags="basic",
@@ -293,7 +293,7 @@ class TestDefinitionInit(unittest.TestCase):
                 input_voxel_max=None,
                 want_name="",
                 want_category=sw_compdocs.component.Category.BLOCKS,
-                want_mass=0,
+                want_mass=0.0,
                 want_value=0,
                 want_flags=sw_compdocs.component.Flags(0),
                 want_tags="",
@@ -350,7 +350,7 @@ class TestDefinitionInit(unittest.TestCase):
             tt(
                 input_name=b"Clock",
                 input_category=sw_compdocs.component.Category.DISPLAYS,
-                input_mass=1,
+                input_mass=1.0,
                 input_value=100,
                 input_flags=sw_compdocs.component.Flags(8192),
                 input_tags="basic",
@@ -386,7 +386,7 @@ class TestDefinitionInit(unittest.TestCase):
             tt(
                 input_name="Clock",
                 input_category=6,
-                input_mass=1,
+                input_mass=1.0,
                 input_value=100,
                 input_flags=sw_compdocs.component.Flags(8192),
                 input_tags="basic",
@@ -422,7 +422,7 @@ class TestDefinitionInit(unittest.TestCase):
             tt(
                 input_name="Clock",
                 input_category=sw_compdocs.component.Category.DISPLAYS,
-                input_mass="1",
+                input_mass="1.0",
                 input_value=100,
                 input_flags=sw_compdocs.component.Flags(8192),
                 input_tags="basic",
@@ -458,7 +458,7 @@ class TestDefinitionInit(unittest.TestCase):
             tt(
                 input_name="Clock",
                 input_category=sw_compdocs.component.Category.DISPLAYS,
-                input_mass=1,
+                input_mass=1.0,
                 input_value="100",
                 input_flags=sw_compdocs.component.Flags(8192),
                 input_tags="basic",
@@ -494,7 +494,7 @@ class TestDefinitionInit(unittest.TestCase):
             tt(
                 input_name="Clock",
                 input_category=sw_compdocs.component.Category.DISPLAYS,
-                input_mass=1,
+                input_mass=1.0,
                 input_value=100,
                 input_flags=8192,
                 input_tags="basic",
@@ -530,7 +530,7 @@ class TestDefinitionInit(unittest.TestCase):
             tt(
                 input_name="Clock",
                 input_category=sw_compdocs.component.Category.DISPLAYS,
-                input_mass=1,
+                input_mass=1.0,
                 input_value=100,
                 input_flags=sw_compdocs.component.Flags(8192),
                 input_tags=b"basic",
@@ -566,7 +566,7 @@ class TestDefinitionInit(unittest.TestCase):
             tt(
                 input_name="Clock",
                 input_category=sw_compdocs.component.Category.DISPLAYS,
-                input_mass=1,
+                input_mass=1.0,
                 input_value=100,
                 input_flags=sw_compdocs.component.Flags(8192),
                 input_tags="basic",
@@ -599,7 +599,7 @@ class TestDefinitionInit(unittest.TestCase):
             tt(
                 input_name="Clock",
                 input_category=sw_compdocs.component.Category.DISPLAYS,
-                input_mass=1,
+                input_mass=1.0,
                 input_value=100,
                 input_flags=sw_compdocs.component.Flags(8192),
                 input_tags="basic",
@@ -633,7 +633,7 @@ class TestDefinitionInit(unittest.TestCase):
             tt(
                 input_name="Clock",
                 input_category=sw_compdocs.component.Category.DISPLAYS,
-                input_mass=1,
+                input_mass=1.0,
                 input_value=100,
                 input_flags=sw_compdocs.component.Flags(8192),
                 input_tags="basic",
@@ -669,7 +669,7 @@ class TestDefinitionInit(unittest.TestCase):
             tt(
                 input_name="Clock",
                 input_category=sw_compdocs.component.Category.DISPLAYS,
-                input_mass=1,
+                input_mass=1.0,
                 input_value=100,
                 input_flags=sw_compdocs.component.Flags(8192),
                 input_tags="basic",
@@ -746,8 +746,8 @@ class TestDefinitionCategorySetter(unittest.TestCase):
 class TestDefinitionMassSetter(unittest.TestCase):
     def test_pass(self):
         comp = sw_compdocs.component.Definition()
-        comp.mass = 52149
-        self.assertEqual(comp.mass, 52149)
+        comp.mass = 52149.0
+        self.assertEqual(comp.mass, 52149.0)
 
     def test_exc_type(self):
         comp = sw_compdocs.component.Definition()
@@ -867,7 +867,7 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
         comp = sw_compdocs.component.Definition.from_xml_elem(elem)
         self.assertEqual(comp.name, "Clock")
         self.assertEqual(comp.category, sw_compdocs.component.Category.DISPLAYS)
-        self.assertEqual(comp.mass, 1)
+        self.assertEqual(comp.mass, 1.0)
         self.assertEqual(comp.value, 100)
         self.assertEqual(comp.flags, sw_compdocs.component.Flags(8192))
         self.assertEqual(comp.tags, "basic")
@@ -911,7 +911,7 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
         comp = sw_compdocs.component.Definition.from_xml_elem(elem)
         self.assertEqual(comp.name, "")
         self.assertEqual(comp.category, sw_compdocs.component.Category.BLOCKS)
-        self.assertEqual(comp.mass, 0)
+        self.assertEqual(comp.mass, 0.0)
         self.assertEqual(comp.value, 0)
         self.assertEqual(comp.flags, sw_compdocs.component.Flags(0))
         self.assertEqual(comp.tags, "")
@@ -941,8 +941,8 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
                 want_xpath=".",
             ),
             tt(
-                input_elem=lxml.etree.Element("definition", mass="nan"),
-                want_msg="invalid component mass 'nan'",
+                input_elem=lxml.etree.Element("definition", mass="invalid"),
+                want_msg="invalid component mass 'invalid'",
                 want_xpath=".",
             ),
             tt(
@@ -990,7 +990,7 @@ class TestDefinitionRepr(unittest.TestCase):
         comp = sw_compdocs.component.Definition(
             name="name",
             category=sw_compdocs.component.Category.BLOCKS,
-            mass=1,
+            mass=1.0,
             value=2,
             flags=sw_compdocs.component.Flags(0),
             tags="tags",
@@ -1001,7 +1001,7 @@ class TestDefinitionRepr(unittest.TestCase):
         )
         self.assertEqual(
             repr(comp),
-            "Definition(name='name', category=<Category.BLOCKS: 0>, mass=1, value=2, flags=<Flags: 0>, tags='tags', tooltip_properties=TooltipProperties(short_description='', description=''), logic_nodes=LogicNodeList([]), voxel_min=VoxelPos(x=0, y=1, z=2), voxel_max=VoxelPos(x=3, y=4, z=5))",
+            "Definition(name='name', category=<Category.BLOCKS: 0>, mass=1.0, value=2, flags=<Flags: 0>, tags='tags', tooltip_properties=TooltipProperties(short_description='', description=''), logic_nodes=LogicNodeList([]), voxel_min=VoxelPos(x=0, y=1, z=2), voxel_max=VoxelPos(x=3, y=4, z=5))",
         )
 
 
@@ -1014,7 +1014,7 @@ class TestDefinitionEq(unittest.TestCase):
                 input_self=sw_compdocs.component.Definition(
                     name="name",
                     category=sw_compdocs.component.Category.BLOCKS,
-                    mass=1,
+                    mass=1.0,
                     value=2,
                     flags=sw_compdocs.component.Flags(0),
                     tags="tags",
@@ -1026,7 +1026,7 @@ class TestDefinitionEq(unittest.TestCase):
                 input_other=sw_compdocs.component.Definition(
                     name="name",
                     category=sw_compdocs.component.Category.BLOCKS,
-                    mass=1,
+                    mass=1.0,
                     value=2,
                     flags=sw_compdocs.component.Flags(0),
                     tags="tags",
@@ -1041,7 +1041,7 @@ class TestDefinitionEq(unittest.TestCase):
                 input_self=sw_compdocs.component.Definition(
                     name="name",
                     category=sw_compdocs.component.Category.BLOCKS,
-                    mass=1,
+                    mass=1.0,
                     value=2,
                     flags=sw_compdocs.component.Flags(0),
                     tags="tags",
@@ -1053,7 +1053,7 @@ class TestDefinitionEq(unittest.TestCase):
                 input_other=sw_compdocs.component.Definition(
                     name="",
                     category=sw_compdocs.component.Category.BLOCKS,
-                    mass=1,
+                    mass=1.0,
                     value=2,
                     flags=sw_compdocs.component.Flags(0),
                     tags="tags",
@@ -1068,7 +1068,7 @@ class TestDefinitionEq(unittest.TestCase):
                 input_self=sw_compdocs.component.Definition(
                     name="name",
                     category=sw_compdocs.component.Category.BLOCKS,
-                    mass=1,
+                    mass=1.0,
                     value=2,
                     flags=sw_compdocs.component.Flags(0),
                     tags="tags",
@@ -1080,7 +1080,7 @@ class TestDefinitionEq(unittest.TestCase):
                 input_other=sw_compdocs.component.Definition(
                     name="name",
                     category=sw_compdocs.component.Category.VEHICLE_CONTROL,
-                    mass=1,
+                    mass=1.0,
                     value=2,
                     flags=sw_compdocs.component.Flags(0),
                     tags="tags",
@@ -1095,7 +1095,7 @@ class TestDefinitionEq(unittest.TestCase):
                 input_self=sw_compdocs.component.Definition(
                     name="name",
                     category=sw_compdocs.component.Category.BLOCKS,
-                    mass=1,
+                    mass=1.0,
                     value=2,
                     flags=sw_compdocs.component.Flags(0),
                     tags="tags",
@@ -1107,7 +1107,7 @@ class TestDefinitionEq(unittest.TestCase):
                 input_other=sw_compdocs.component.Definition(
                     name="name",
                     category=sw_compdocs.component.Category.BLOCKS,
-                    mass=3,
+                    mass=3.0,
                     value=2,
                     flags=sw_compdocs.component.Flags(0),
                     tags="tags",
@@ -1122,7 +1122,7 @@ class TestDefinitionEq(unittest.TestCase):
                 input_self=sw_compdocs.component.Definition(
                     name="name",
                     category=sw_compdocs.component.Category.BLOCKS,
-                    mass=1,
+                    mass=1.0,
                     value=2,
                     flags=sw_compdocs.component.Flags(0),
                     tags="tags",
@@ -1134,7 +1134,7 @@ class TestDefinitionEq(unittest.TestCase):
                 input_other=sw_compdocs.component.Definition(
                     name="name",
                     category=sw_compdocs.component.Category.BLOCKS,
-                    mass=1,
+                    mass=1.0,
                     value=3,
                     flags=sw_compdocs.component.Flags(0),
                     tags="tags",
@@ -1149,7 +1149,7 @@ class TestDefinitionEq(unittest.TestCase):
                 input_self=sw_compdocs.component.Definition(
                     name="name",
                     category=sw_compdocs.component.Category.BLOCKS,
-                    mass=1,
+                    mass=1.0,
                     value=2,
                     flags=sw_compdocs.component.Flags(0),
                     tags="tags",
@@ -1161,7 +1161,7 @@ class TestDefinitionEq(unittest.TestCase):
                 input_other=sw_compdocs.component.Definition(
                     name="name",
                     category=sw_compdocs.component.Category.BLOCKS,
-                    mass=1,
+                    mass=1.0,
                     value=2,
                     flags=sw_compdocs.component.Flags(8192),
                     tags="tags",
@@ -1176,7 +1176,7 @@ class TestDefinitionEq(unittest.TestCase):
                 input_self=sw_compdocs.component.Definition(
                     name="name",
                     category=sw_compdocs.component.Category.BLOCKS,
-                    mass=1,
+                    mass=1.0,
                     value=2,
                     flags=sw_compdocs.component.Flags(0),
                     tags="tags",
@@ -1188,7 +1188,7 @@ class TestDefinitionEq(unittest.TestCase):
                 input_other=sw_compdocs.component.Definition(
                     name="name",
                     category=sw_compdocs.component.Category.BLOCKS,
-                    mass=1,
+                    mass=1.0,
                     value=2,
                     flags=sw_compdocs.component.Flags(0),
                     tags="",
@@ -1203,7 +1203,7 @@ class TestDefinitionEq(unittest.TestCase):
                 input_self=sw_compdocs.component.Definition(
                     name="name",
                     category=sw_compdocs.component.Category.BLOCKS,
-                    mass=1,
+                    mass=1.0,
                     value=2,
                     flags=sw_compdocs.component.Flags(0),
                     tags="tags",
@@ -1215,7 +1215,7 @@ class TestDefinitionEq(unittest.TestCase):
                 input_other=sw_compdocs.component.Definition(
                     name="name",
                     category=sw_compdocs.component.Category.BLOCKS,
-                    mass=1,
+                    mass=1.0,
                     value=2,
                     flags=sw_compdocs.component.Flags(0),
                     tags="tags",
@@ -1232,7 +1232,7 @@ class TestDefinitionEq(unittest.TestCase):
                 input_self=sw_compdocs.component.Definition(
                     name="name",
                     category=sw_compdocs.component.Category.BLOCKS,
-                    mass=1,
+                    mass=1.0,
                     value=2,
                     flags=sw_compdocs.component.Flags(0),
                     tags="tags",
@@ -1244,7 +1244,7 @@ class TestDefinitionEq(unittest.TestCase):
                 input_other=sw_compdocs.component.Definition(
                     name="name",
                     category=sw_compdocs.component.Category.BLOCKS,
-                    mass=1,
+                    mass=1.0,
                     value=2,
                     flags=sw_compdocs.component.Flags(0),
                     tags="tags",
@@ -1261,7 +1261,7 @@ class TestDefinitionEq(unittest.TestCase):
                 input_self=sw_compdocs.component.Definition(
                     name="name",
                     category=sw_compdocs.component.Category.BLOCKS,
-                    mass=1,
+                    mass=1.0,
                     value=2,
                     flags=sw_compdocs.component.Flags(0),
                     tags="tags",
@@ -1273,7 +1273,7 @@ class TestDefinitionEq(unittest.TestCase):
                 input_other=sw_compdocs.component.Definition(
                     name="name",
                     category=sw_compdocs.component.Category.BLOCKS,
-                    mass=1,
+                    mass=1.0,
                     value=2,
                     flags=sw_compdocs.component.Flags(0),
                     tags="tags",
@@ -1288,7 +1288,7 @@ class TestDefinitionEq(unittest.TestCase):
                 input_self=sw_compdocs.component.Definition(
                     name="name",
                     category=sw_compdocs.component.Category.BLOCKS,
-                    mass=1,
+                    mass=1.0,
                     value=2,
                     flags=sw_compdocs.component.Flags(0),
                     tags="tags",
@@ -1300,7 +1300,7 @@ class TestDefinitionEq(unittest.TestCase):
                 input_other=sw_compdocs.component.Definition(
                     name="name",
                     category=sw_compdocs.component.Category.BLOCKS,
-                    mass=1,
+                    mass=1.0,
                     value=2,
                     flags=sw_compdocs.component.Flags(0),
                     tags="tags",
@@ -1315,7 +1315,7 @@ class TestDefinitionEq(unittest.TestCase):
                 input_self=sw_compdocs.component.Definition(
                     name="name",
                     category=sw_compdocs.component.Category.BLOCKS,
-                    mass=1,
+                    mass=1.0,
                     value=2,
                     flags=sw_compdocs.component.Flags(0),
                     tags="tags",
