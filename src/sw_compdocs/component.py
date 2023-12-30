@@ -17,16 +17,23 @@ def parse_xml_file(file):
     elem = tree.getroot()
 
     try:
-        return Definition.from_xml_elem(elem)
+        return _parse_xml_root(elem)
     except ComponentXMLError as exc:
         exc.file = file
-        exc.prepend_xpath(elem.tag)
-        exc.prepend_xpath("/")
         raise
 
 
 def parse_xml_str(s):
     elem = lxml.etree.fromstring(s, parser=_new_xml_parser())
+    return _parse_xml_root(elem)
+
+
+def _parse_xml_root(elem):
+    if elem.tag != "definition":
+        exc = ComponentXMLError(f"invalid xml root tag {elem.tag!r}")
+        exc.prepend_xpath(elem.tag)
+        exc.prepend_xpath("/")
+        raise exc
 
     try:
         return Definition.from_xml_elem(elem)

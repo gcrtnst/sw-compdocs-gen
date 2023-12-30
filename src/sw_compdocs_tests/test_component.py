@@ -65,6 +65,35 @@ class TestParseXMLFile(unittest.TestCase):
         with self.assertRaises(TypeError):
             sw_compdocs.component.parse_xml_file(f)
 
+    def test_exc_root(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_file = pathlib.Path(temp_dir, "test.xml")
+            with open(temp_file, mode="xt", encoding="utf-8", newline="\r\n") as f:
+                f.write(
+                    """\
+<?xml version="1.0" encoding="UTF-8"?>
+<invalid name="name">
+    <tooltip_properties description="description"/>
+</invalid>
+"""
+                )
+
+            for path in [
+                os.fsdecode(temp_file),
+                os.fsencode(temp_file),
+                temp_file,
+            ]:
+                with self.subTest(path=path):
+                    with self.assertRaises(
+                        sw_compdocs.component.ComponentXMLError
+                    ) as ctx:
+                        sw_compdocs.component.parse_xml_file(path)
+                    self.assertEqual(
+                        ctx.exception.msg, "invalid xml root tag 'invalid'"
+                    )
+                    self.assertEqual(ctx.exception.file, path)
+                    self.assertEqual(ctx.exception.xpath, "/invalid")
+
     def test_exc_xml(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             temp_file = pathlib.Path(temp_dir, "test.xml")
@@ -122,6 +151,20 @@ class TestParseXMLStr(unittest.TestCase):
 
         self.assertEqual(comp.name, "name")
         self.assertEqual(comp.tooltip_properties.description, "description")
+
+    def test_exc_root(self):
+        with self.assertRaises(sw_compdocs.component.ComponentXMLError) as ctx:
+            sw_compdocs.component.parse_xml_str(
+                """\
+<invalid name="name">
+    <tooltip_properties description="description"/>
+</invalid>
+    """
+            )
+
+        self.assertEqual(ctx.exception.msg, "invalid xml root tag 'invalid'")
+        self.assertEqual(ctx.exception.file, None)
+        self.assertEqual(ctx.exception.xpath, "/invalid")
 
     def test_exc_xml(self):
         with self.assertRaises(sw_compdocs.component.ComponentXMLError) as ctx:
