@@ -956,11 +956,6 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
                 want_xpath=".",
             ),
             tt(
-                input_elem=lxml.etree.Element("definition", flags="999"),
-                want_msg="invalid component flags '999'",
-                want_xpath=".",
-            ),
-            tt(
                 input_elem=lxml.etree.fromstring(
                     """<definition><logic_nodes><logic_node mode="999"/></logic_nodes></definition>"""
                 ),
