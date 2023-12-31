@@ -3,14 +3,11 @@ import lxml.etree
 import os
 
 from . import container
+from . import validator
 
 
 def parse_xml_file(file):
-    if (
-        type(file) is not str
-        and type(file) is not bytes
-        and not isinstance(file, os.PathLike)
-    ):
+    if not validator.is_pathlike(file):
         raise TypeError
 
     tree = lxml.etree.parse(file, parser=_new_xml_parser())
@@ -586,12 +583,7 @@ class ComponentXMLError(Exception):
 
     @file.setter
     def file(self, value):
-        if (
-            value is not None
-            and type(value) is not str
-            and type(value) is not bytes
-            and not isinstance(value, os.PathLike)
-        ):
+        if value is not None and not validator.is_pathlike(value):
             raise TypeError
         self._file = value
 

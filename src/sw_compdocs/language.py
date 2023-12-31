@@ -3,6 +3,8 @@ import csv
 import io
 import os
 
+from . import validator
+
 
 class Language(collections.abc.Mapping):
     def __init__(self):
@@ -81,12 +83,7 @@ class LanguageTSVError(Exception):
 
     @file.setter
     def file(self, value):
-        if (
-            value is not None
-            and type(value) is not str
-            and type(value) is not bytes
-            and not isinstance(value, os.PathLike)
-        ):
+        if value is not None and not validator.is_pathlike(value):
             raise TypeError
         self._file = value
 
