@@ -52,8 +52,8 @@ class Language(collections.abc.Mapping):
     def __getitem__(self, key):
         try:
             return self._d[key]
-        except KeyError:
-            raise LanguageKeyError(key)
+        except KeyError as exc:
+            raise LanguageKeyError(key) from exc
 
     def __iter__(self):
         return iter(self._d)

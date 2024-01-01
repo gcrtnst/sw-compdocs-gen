@@ -29,8 +29,8 @@ class TemplateFormatter:
             key = match["key"]
             try:
                 val = self._d[key]
-            except KeyError:
-                raise TemplateKeyError(key)
+            except KeyError as exc:
+                raise TemplateKeyError(key) from exc
             return val
 
         return re.sub(r"(?s:\$\[(?P<key>.*?)\])", repl, s)
