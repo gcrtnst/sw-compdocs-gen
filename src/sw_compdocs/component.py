@@ -532,6 +532,27 @@ class LogicNodeType(enum.Enum):
     AUDIO = 7
     ROPE = 8
 
+    def __str__(self):
+        if self is self.BOOL:
+            return "on/off"
+        if self is self.FLOAT:
+            return "number"
+        if self is self.TORQUE:
+            return "power"
+        if self is self.WATER:
+            return "fluid"
+        if self is self.ELECTRIC:
+            return "electric"
+        if self is self.COMPOSITE:
+            return "composite"
+        if self is self.VIDEO:
+            return "video"
+        if self is self.AUDIO:
+            return "audio"
+        if self is self.ROPE:
+            return "rope"
+        raise Exception
+
 
 class VoxelPos:
     @property

@@ -2158,6 +2158,53 @@ class TestLogicNodeEq(unittest.TestCase):
                 self.assertEqual(got_eq, tc.want_eq)
 
 
+class TestLogicNodeTypeStr(unittest.TestCase):
+    def test(self):
+        tt = collections.namedtuple("tt", ("input_type", "want_s"))
+
+        for tc in [
+            tt(
+                input_type=sw_compdocs.component.LogicNodeType.BOOL,
+                want_s="on/off",
+            ),
+            tt(
+                input_type=sw_compdocs.component.LogicNodeType.FLOAT,
+                want_s="number",
+            ),
+            tt(
+                input_type=sw_compdocs.component.LogicNodeType.TORQUE,
+                want_s="power",
+            ),
+            tt(
+                input_type=sw_compdocs.component.LogicNodeType.WATER,
+                want_s="fluid",
+            ),
+            tt(
+                input_type=sw_compdocs.component.LogicNodeType.ELECTRIC,
+                want_s="electric",
+            ),
+            tt(
+                input_type=sw_compdocs.component.LogicNodeType.COMPOSITE,
+                want_s="composite",
+            ),
+            tt(
+                input_type=sw_compdocs.component.LogicNodeType.VIDEO,
+                want_s="video",
+            ),
+            tt(
+                input_type=sw_compdocs.component.LogicNodeType.AUDIO,
+                want_s="audio",
+            ),
+            tt(
+                input_type=sw_compdocs.component.LogicNodeType.ROPE,
+                want_s="rope",
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                got_s = str(tc.input_type)
+                self.assertEqual(got_s, tc.want_s)
+
+
 class TestVoxelPosInit(unittest.TestCase):
     def test_pass(self):
         tt = collections.namedtuple(
