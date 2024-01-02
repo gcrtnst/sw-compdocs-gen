@@ -14,8 +14,6 @@ class Block:
 
 
 class Heading(Block):
-    __match_args__ = ("text",)
-
     @property
     def text(self):
         return self._text
@@ -39,8 +37,6 @@ class Heading(Block):
 
 
 class Paragraph(Block):
-    __match_args__ = ("text",)
-
     @property
     def text(self):
         return self._text
@@ -64,8 +60,6 @@ class Paragraph(Block):
 
 
 class Table(Block):
-    __match_args__ = ("data",)
-
     @property
     def data(self):
         return self._data
