@@ -294,7 +294,7 @@ class Category(enum.Enum):
     SENSORS = 7
     DECORATIVE = 8
     FLUID = 9
-    ELECTROC = 10
+    ELECTRIC = 10
     JET_ENGINES = 11
     WEAPONS = 12
     MODULAR_ENGINES = 13
