@@ -1,3 +1,6 @@
+import enum
+
+
 from . import container
 
 
@@ -144,3 +147,43 @@ class TableDataRow(container.Sequence):
     def _check_type(cls, v):
         if type(v) is not str:
             raise TypeError
+
+
+class Callout(Block):
+    @property
+    def text(self):
+        return self._text
+
+    @text.setter
+    def text(self, value):
+        if type(value) is not str:
+            raise TypeError
+        self._text = value
+
+    @property
+    def kind(self):
+        return self._kind
+
+    @kind.setter
+    def kind(self, value):
+        if type(value) is not CalloutKind:
+            raise TypeError
+        self._kind = value
+
+    def __init__(self, text, *, kind=None):
+        self.text = text
+        self.kind = kind if kind is not None else CalloutKind.NOTE
+
+    def __repr__(self):
+        return f"{type(self).__name__}({repr(self.text)}, kind={repr(self.kind)})"
+
+    def __eq__(self, other):
+        if type(self) is type(other):
+            return self.text == other.text and self.kind == other.kind
+        return super().__eq__(other)
+
+
+@enum.unique
+class CalloutKind(enum.Enum):
+    NOTE = enum.auto()
+    WARNING = enum.auto()

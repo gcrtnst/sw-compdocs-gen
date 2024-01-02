@@ -18,6 +18,8 @@ def render_markdown_block(blk):
         return render_markdown_paragraph(blk)
     if isinstance(blk, document.Table):
         return render_markdown_table(blk)
+    if isinstance(blk, document.Callout):
+        return render_markdown_callout(blk)
     raise Exception
 
 
@@ -65,3 +67,20 @@ def render_markdown_table_data_delimiter(n):
         raise ValueError
 
     return "| " + "--- | " * (n - 1) + "--- |\n"
+
+
+def render_markdown_callout(callout):
+    if not isinstance(callout, document.Callout):
+        raise TypeError
+
+    if callout.kind is document.CalloutKind.NOTE:
+        kind = "NOTE"
+    elif callout.kind is document.CalloutKind.WARNING:
+        kind = "WARNING"
+    else:
+        raise Exception
+
+    l = [f"[!{kind}]"]
+    l.extend(callout.text.split("\n"))
+    l = ["> " + s for s in l]
+    return "\n".join(l) + "\n"

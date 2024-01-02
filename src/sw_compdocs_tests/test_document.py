@@ -15,6 +15,7 @@ class TestDocumentInit(unittest.TestCase):
                         sw_compdocs.document.TableDataRow(["tbl"])
                     )
                 ),
+                sw_compdocs.document.Callout("callout"),
             ],
         ]:
             with self.subTest(input_list=input_list):
@@ -32,6 +33,7 @@ class TestDocumentInit(unittest.TestCase):
                         sw_compdocs.document.TableDataRow(["tbl"])
                     )
                 ),
+                sw_compdocs.document.Callout("callout"),
             ],
             [
                 sw_compdocs.document.Heading("head"),
@@ -41,11 +43,23 @@ class TestDocumentInit(unittest.TestCase):
                         sw_compdocs.document.TableDataRow(["tbl"])
                     )
                 ),
+                sw_compdocs.document.Callout("callout"),
             ],
             [
                 sw_compdocs.document.Heading("head"),
                 sw_compdocs.document.Paragraph("para"),
                 "tbl",
+                sw_compdocs.document.Callout("callout"),
+            ],
+            [
+                sw_compdocs.document.Heading("head"),
+                sw_compdocs.document.Paragraph("para"),
+                sw_compdocs.document.Table(
+                    sw_compdocs.document.TableData(
+                        sw_compdocs.document.TableDataRow(["tbl"])
+                    )
+                ),
+                "callout",
             ],
         ]:
             with self.subTest(input_list=input_list):
@@ -64,6 +78,7 @@ class TestDocumentGetItem(unittest.TestCase):
                         sw_compdocs.document.TableDataRow(["tbl"])
                     )
                 ),
+                sw_compdocs.document.Callout("callout"),
             ]
         )
         self.assertEqual(doc[0], sw_compdocs.document.Heading("head"))
@@ -76,6 +91,7 @@ class TestDocumentGetItem(unittest.TestCase):
                 )
             ),
         )
+        self.assertEqual(doc[3], sw_compdocs.document.Callout("callout"))
 
 
 class TestDocumentSetItem(unittest.TestCase):
@@ -229,6 +245,9 @@ class TestDocumentRepr(unittest.TestCase):
                         sw_compdocs.document.TableDataRow(["tbl"])
                     )
                 ),
+                sw_compdocs.document.Callout(
+                    "callout", kind=sw_compdocs.document.CalloutKind.WARNING
+                ),
             ]
         )
 
@@ -236,7 +255,8 @@ class TestDocumentRepr(unittest.TestCase):
             "Document(["
             + "Heading('head', level=1), "
             + "Paragraph('para'), "
-            + "Table(TableData(TableDataRow(['tbl']), []))"
+            + "Table(TableData(TableDataRow(['tbl']), [])), "
+            + "Callout('callout', kind=<CalloutKind.WARNING: 2>)"
             + "])"
         )
         got_s = repr(doc)
@@ -1325,6 +1345,130 @@ class TestTableDataRowEq(unittest.TestCase):
             tt(
                 input_self=sw_compdocs.document.TableDataRow(("foo", "bar", "baz")),
                 input_other=["foo", "bar", "baz"],
+                want_eq=False,
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                got_eq = tc.input_self == tc.input_other
+                self.assertEqual(got_eq, tc.want_eq)
+
+
+class TestCalloutInit(unittest.TestCase):
+    def test_pass(self):
+        tt = collections.namedtuple(
+            "tt", ("input_text", "input_kind", "want_text", "want_kind")
+        )
+
+        for tc in [
+            tt(
+                input_text="callout",
+                input_kind=None,
+                want_text="callout",
+                want_kind=sw_compdocs.document.CalloutKind.NOTE,
+            ),
+            tt(
+                input_text="callout",
+                input_kind=sw_compdocs.document.CalloutKind.NOTE,
+                want_text="callout",
+                want_kind=sw_compdocs.document.CalloutKind.NOTE,
+            ),
+            tt(
+                input_text="callout",
+                input_kind=sw_compdocs.document.CalloutKind.WARNING,
+                want_text="callout",
+                want_kind=sw_compdocs.document.CalloutKind.WARNING,
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                callout = sw_compdocs.document.Callout(
+                    tc.input_text, kind=tc.input_kind
+                )
+                self.assertEqual(callout.text, tc.want_text)
+                self.assertEqual(callout.kind, tc.want_kind)
+
+    def test_exc_type(self):
+        tt = collections.namedtuple("tt", ("input_text", "input_kind"))
+
+        for tc in [
+            tt(input_text=None, input_kind=None),
+            tt(input_text="callout", input_kind="NOTE"),
+        ]:
+            with self.subTest(tc=tc):
+                pass
+
+
+class TestCalloutTextSetter(unittest.TestCase):
+    def test_pass(self):
+        callout = sw_compdocs.document.Callout("text_1")
+        callout.text = "text_2"
+        self.assertEqual(callout.text, "text_2")
+
+    def test_exc_type(self):
+        callout = sw_compdocs.document.Callout("callout")
+        with self.assertRaises(TypeError):
+            callout.text = None
+
+
+class TestCalloutKindSetter(unittest.TestCase):
+    def test_pass(self):
+        callout = sw_compdocs.document.Callout("callout")
+        callout.kind = sw_compdocs.document.CalloutKind.WARNING
+        self.assertIs(callout.kind, sw_compdocs.document.CalloutKind.WARNING)
+
+    def test_exc_type(self):
+        callout = sw_compdocs.document.Callout("callout")
+        with self.assertRaises(TypeError):
+            callout.kind = None
+
+
+class TestCalloutRepr(unittest.TestCase):
+    def test(self):
+        callout = sw_compdocs.document.Callout(
+            "callout", kind=sw_compdocs.document.CalloutKind.WARNING
+        )
+        self.assertEqual(
+            repr(callout),
+            f"Callout('callout', kind={sw_compdocs.document.CalloutKind.WARNING!r})",
+        )
+
+
+class TestCalloutEq(unittest.TestCase):
+    def test_pass(self):
+        tt = collections.namedtuple("tt", ("input_self", "input_other", "want_eq"))
+
+        for tc in [
+            tt(
+                input_self=sw_compdocs.document.Callout(
+                    "callout", kind=sw_compdocs.document.CalloutKind.WARNING
+                ),
+                input_other=sw_compdocs.document.Callout(
+                    "callout", kind=sw_compdocs.document.CalloutKind.WARNING
+                ),
+                want_eq=True,
+            ),
+            tt(
+                input_self=sw_compdocs.document.Callout(
+                    "callout", kind=sw_compdocs.document.CalloutKind.WARNING
+                ),
+                input_other=sw_compdocs.document.Callout(
+                    "callout!", kind=sw_compdocs.document.CalloutKind.WARNING
+                ),
+                want_eq=False,
+            ),
+            tt(
+                input_self=sw_compdocs.document.Callout(
+                    "callout", kind=sw_compdocs.document.CalloutKind.WARNING
+                ),
+                input_other=sw_compdocs.document.Callout(
+                    "callout", kind=sw_compdocs.document.CalloutKind.NOTE
+                ),
+                want_eq=False,
+            ),
+            tt(
+                input_self=sw_compdocs.document.Callout(
+                    "callout", kind=sw_compdocs.document.CalloutKind.WARNING
+                ),
+                input_other=None,
                 want_eq=False,
             ),
         ]:

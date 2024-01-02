@@ -39,6 +39,12 @@ class TestRenderMarkdown(unittest.TestCase):
             ),
             tt(
                 input_doc=sw_compdocs.document.Document(
+                    (sw_compdocs.document.Callout("foo"),)
+                ),
+                want_text="> [!NOTE]\n> foo\n",
+            ),
+            tt(
+                input_doc=sw_compdocs.document.Document(
                     (
                         sw_compdocs.document.Heading("foo"),
                         sw_compdocs.document.Paragraph("bar"),
@@ -47,9 +53,10 @@ class TestRenderMarkdown(unittest.TestCase):
                                 sw_compdocs.document.TableDataRow(("baz",)), []
                             )
                         ),
+                        sw_compdocs.document.Callout("qux"),
                     )
                 ),
-                want_text="# foo\n\nbar\n\n| baz |\n| --- |\n",
+                want_text="# foo\n\nbar\n\n| baz |\n| --- |\n\n> [!NOTE]\n> qux\n",
             ),
         ]:
             with self.subTest(tc=tc):
@@ -263,3 +270,40 @@ class TestRenderMarkdownTableDataDelimiter(unittest.TestCase):
                     sw_compdocs.renderer.render_markdown_table_data_delimiter(
                         tc.input_n
                     )
+
+
+class TestRenderMarkdownCallout(unittest.TestCase):
+    def test_pass(self):
+        tt = collections.namedtuple("tt", ("input_callout", "want_text"))
+
+        for tc in [
+            tt(
+                input_callout=sw_compdocs.document.Callout(
+                    "", kind=sw_compdocs.document.CalloutKind.NOTE
+                ),
+                want_text="> [!NOTE]\n> \n",
+            ),
+            tt(
+                input_callout=sw_compdocs.document.Callout(
+                    "", kind=sw_compdocs.document.CalloutKind.WARNING
+                ),
+                want_text="> [!WARNING]\n> \n",
+            ),
+            tt(
+                input_callout=sw_compdocs.document.Callout("callout"),
+                want_text="> [!NOTE]\n> callout\n",
+            ),
+            tt(
+                input_callout=sw_compdocs.document.Callout("\nline 1\nline 2\n"),
+                want_text="> [!NOTE]\n> \n> line 1\n> line 2\n> \n",
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                got_text = sw_compdocs.renderer.render_markdown_callout(
+                    tc.input_callout
+                )
+                self.assertEqual(got_text, tc.want_text)
+
+    def test_exc_type(self):
+        with self.assertRaises(TypeError):
+            sw_compdocs.renderer.render_markdown_callout("callout")
