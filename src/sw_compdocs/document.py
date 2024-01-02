@@ -24,15 +24,30 @@ class Heading(Block):
             raise TypeError
         self._text = value
 
-    def __init__(self, text):
+    @property
+    def level(self):
+        return self._level
+
+    @level.setter
+    def level(self, value):
+        if type(value) is not int:
+            raise TypeError
+        if value < 1 or 6 < value:
+            raise ValueError
+        self._level = value
+
+    def __init__(self, text, *, level=1):
         self.text = text
+        self.level = level
 
     def __repr__(self):
-        return f"{type(self).__name__}(text={repr(self.text)})"
+        return (
+            f"{type(self).__name__}(text={repr(self.text)}, level={repr(self.level)})"
+        )
 
     def __eq__(self, other):
         if type(self) is type(other):
-            return self.text == other.text
+            return self.text == other.text and self.level == other.level
         return super().__eq__(other)
 
 

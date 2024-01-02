@@ -24,7 +24,7 @@ def render_markdown_block(blk):
 def render_markdown_heading(head):
     if not isinstance(head, document.Heading):
         raise TypeError
-    return "# " + head.text + "\n"
+    return "#" * head.level + " " + head.text + "\n"
 
 
 def render_markdown_paragraph(para):

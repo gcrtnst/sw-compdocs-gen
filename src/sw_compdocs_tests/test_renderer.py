@@ -104,6 +104,12 @@ class TestRenderMarkdownHeading(unittest.TestCase):
         )
         self.assertEqual(text, "# foo\n")
 
+    def test_pass_level(self):
+        text = sw_compdocs.renderer.render_markdown_heading(
+            sw_compdocs.document.Heading("foo", level=6)
+        )
+        self.assertEqual(text, "###### foo\n")
+
     def test_exc_type(self):
         with self.assertRaises(TypeError):
             sw_compdocs.renderer.render_markdown_heading("foo")

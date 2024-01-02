@@ -234,7 +234,7 @@ class TestDocumentRepr(unittest.TestCase):
 
         want_s = (
             "Document(["
-            + "Heading(text='head'), "
+            + "Heading(text='head', level=1), "
             + "Paragraph(text='para'), "
             + "Table(data=TableData(TableDataRow(['tbl']), []))"
             + "])"
@@ -340,12 +340,37 @@ class TestBlockInit(unittest.TestCase):
 
 class TestHeadingInit(unittest.TestCase):
     def test_pass(self):
-        head = sw_compdocs.document.Heading("foo")
-        self.assertEqual(head.text, "foo")
+        tt = collections.namedtuple("tt", ("input_text", "input_level"))
+        for tc in [
+            tt(input_text="foo", input_level=1),
+            tt(input_text="foo", input_level=6),
+        ]:
+            with self.subTest(tc=tc):
+                head = sw_compdocs.document.Heading(tc.input_text, level=tc.input_level)
+                self.assertIs(head.text, tc.input_text)
+                self.assertIs(head.level, tc.input_level)
 
     def test_exc_type(self):
-        with self.assertRaises(TypeError):
-            sw_compdocs.document.Heading(0)
+        tt = collections.namedtuple("tt", ("input_text", "input_level"))
+
+        for tc in [
+            tt(input_text=None, input_level=1),
+            tt(input_text="foo", input_level=1.0),
+        ]:
+            with self.subTest(tc=tc):
+                with self.assertRaises(TypeError):
+                    sw_compdocs.document.Heading(tc.input_text, tc.input_level)
+
+    def test_exc_value(self):
+        tt = collections.namedtuple("tt", ("input_text", "input_level"))
+
+        for tc in [
+            tt(input_text="foo", input_level=0),
+            tt(input_text="foo", input_level=7),
+        ]:
+            with self.subTest(tc=tc):
+                with self.assertRaises(ValueError):
+                    sw_compdocs.document.Heading(tc.input_text, level=tc.input_level)
 
 
 class TestHeadingTextSetter(unittest.TestCase):
@@ -360,11 +385,32 @@ class TestHeadingTextSetter(unittest.TestCase):
             head.text = 0
 
 
+class TestHeadingLevelSetter(unittest.TestCase):
+    def test_pass(self):
+        for level in range(1, 7):
+            with self.subTest(level=level):
+                head = sw_compdocs.document.Heading("foo")
+                head.level = level
+                self.assertIs(head.level, level)
+
+    def test_exc_type(self):
+        head = sw_compdocs.document.Heading("foo")
+        with self.assertRaises(TypeError):
+            head.level = 1.0
+
+    def test_exc_value(self):
+        for level in [0, 7]:
+            with self.subTest(level=level):
+                head = sw_compdocs.document.Heading("foo")
+                with self.assertRaises(ValueError):
+                    head.level = level
+
+
 class TestHeadingRepr(unittest.TestCase):
     def test(self):
-        head = sw_compdocs.document.Heading("foo")
+        head = sw_compdocs.document.Heading("foo", level=2)
         s = repr(head)
-        self.assertEqual(s, "Heading(text='foo')")
+        self.assertEqual(s, "Heading(text='foo', level=2)")
 
 
 class TestHeadingEq(unittest.TestCase):
@@ -373,17 +419,22 @@ class TestHeadingEq(unittest.TestCase):
 
         for tc in [
             tt(
-                input_self=sw_compdocs.document.Heading("foo"),
-                input_other=sw_compdocs.document.Heading("foo"),
+                input_self=sw_compdocs.document.Heading("foo", level=1),
+                input_other=sw_compdocs.document.Heading("foo", level=1),
                 want_eq=True,
             ),
             tt(
-                input_self=sw_compdocs.document.Heading("foo"),
-                input_other=sw_compdocs.document.Heading("bar"),
+                input_self=sw_compdocs.document.Heading("foo", level=1),
+                input_other=sw_compdocs.document.Heading("bar", level=1),
                 want_eq=False,
             ),
             tt(
-                input_self=sw_compdocs.document.Heading("foo"),
+                input_self=sw_compdocs.document.Heading("foo", level=1),
+                input_other=sw_compdocs.document.Heading("foo", level=2),
+                want_eq=False,
+            ),
+            tt(
+                input_self=sw_compdocs.document.Heading("foo", level=1),
                 input_other="foo",
                 want_eq=False,
             ),
