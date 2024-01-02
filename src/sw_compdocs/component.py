@@ -301,6 +301,41 @@ class Category(enum.Enum):
     INDUSTRY = 14
     WINDOWS = 15
 
+    def __str__(self):
+        if self is self.BLOCKS:
+            return "Blocks"
+        if self is self.VEHICLE_CONTROL:
+            return "Vehicle Control"
+        if self is self.MECHANICS:
+            return "Mechanics"
+        if self is self.PROPULSION:
+            return "Propulsion"
+        if self is self.SPECIALIST_EQUIPMENT:
+            return "Specialist Equipment"
+        if self is self.LOGIC:
+            return "Logic"
+        if self is self.DISPLAYS:
+            return "Displays"
+        if self is self.SENSORS:
+            return "Sensors"
+        if self is self.DECORATIVE:
+            return "Decorative"
+        if self is self.FLUID:
+            return "Fluid"
+        if self is self.ELECTRIC:
+            return "Electric"
+        if self is self.JET_ENGINES:
+            return "Jet Engines"
+        if self is self.WEAPONS:
+            return "Weapons"
+        if self is self.MODULAR_ENGINES:
+            return "Modular Engines"
+        if self is self.INDUSTRY:
+            return "Industry"
+        if self is self.WINDOWS:
+            return "Windows"
+        raise Exception
+
 
 @enum.unique
 class Flags(enum.Flag, boundary=enum.KEEP):

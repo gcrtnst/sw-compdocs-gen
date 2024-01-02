@@ -1333,6 +1333,81 @@ class TestDefinitionEq(unittest.TestCase):
                 self.assertEqual(got_eq, tc.want_eq)
 
 
+class TestCategoryStr(unittest.TestCase):
+    def test(self):
+        tt = collections.namedtuple("tt", ("input_category", "want_s"))
+
+        for tc in [
+            tt(
+                input_category=sw_compdocs.component.Category.BLOCKS,
+                want_s="Blocks",
+            ),
+            tt(
+                input_category=sw_compdocs.component.Category.VEHICLE_CONTROL,
+                want_s="Vehicle Control",
+            ),
+            tt(
+                input_category=sw_compdocs.component.Category.MECHANICS,
+                want_s="Mechanics",
+            ),
+            tt(
+                input_category=sw_compdocs.component.Category.PROPULSION,
+                want_s="Propulsion",
+            ),
+            tt(
+                input_category=sw_compdocs.component.Category.SPECIALIST_EQUIPMENT,
+                want_s="Specialist Equipment",
+            ),
+            tt(
+                input_category=sw_compdocs.component.Category.LOGIC,
+                want_s="Logic",
+            ),
+            tt(
+                input_category=sw_compdocs.component.Category.DISPLAYS,
+                want_s="Displays",
+            ),
+            tt(
+                input_category=sw_compdocs.component.Category.SENSORS,
+                want_s="Sensors",
+            ),
+            tt(
+                input_category=sw_compdocs.component.Category.DECORATIVE,
+                want_s="Decorative",
+            ),
+            tt(
+                input_category=sw_compdocs.component.Category.FLUID,
+                want_s="Fluid",
+            ),
+            tt(
+                input_category=sw_compdocs.component.Category.ELECTRIC,
+                want_s="Electric",
+            ),
+            tt(
+                input_category=sw_compdocs.component.Category.JET_ENGINES,
+                want_s="Jet Engines",
+            ),
+            tt(
+                input_category=sw_compdocs.component.Category.WEAPONS,
+                want_s="Weapons",
+            ),
+            tt(
+                input_category=sw_compdocs.component.Category.MODULAR_ENGINES,
+                want_s="Modular Engines",
+            ),
+            tt(
+                input_category=sw_compdocs.component.Category.INDUSTRY,
+                want_s="Industry",
+            ),
+            tt(
+                input_category=sw_compdocs.component.Category.WINDOWS,
+                want_s="Windows",
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                got_s = str(tc.input_category)
+                self.assertEqual(got_s, tc.want_s)
+
+
 class TestTooltipPropertiesInit(unittest.TestCase):
     def test_pass(self):
         tt = collections.namedtuple(
