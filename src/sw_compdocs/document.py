@@ -41,9 +41,7 @@ class Heading(Block):
         self.level = level
 
     def __repr__(self):
-        return (
-            f"{type(self).__name__}(text={repr(self.text)}, level={repr(self.level)})"
-        )
+        return f"{type(self).__name__}({repr(self.text)}, level={repr(self.level)})"
 
     def __eq__(self, other):
         if type(self) is type(other):
@@ -66,7 +64,7 @@ class Paragraph(Block):
         self.text = text
 
     def __repr__(self):
-        return f"{type(self).__name__}(text={repr(self.text)})"
+        return f"{type(self).__name__}({repr(self.text)})"
 
     def __eq__(self, other):
         if type(self) is type(other):
@@ -89,7 +87,7 @@ class Table(Block):
         self.data = data
 
     def __repr__(self):
-        return f"{type(self).__name__}(data={repr(self.data)})"
+        return f"{type(self).__name__}({repr(self.data)})"
 
     def __eq__(self, other):
         if type(self) is type(other):

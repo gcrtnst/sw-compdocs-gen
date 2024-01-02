@@ -234,9 +234,9 @@ class TestDocumentRepr(unittest.TestCase):
 
         want_s = (
             "Document(["
-            + "Heading(text='head', level=1), "
-            + "Paragraph(text='para'), "
-            + "Table(data=TableData(TableDataRow(['tbl']), []))"
+            + "Heading('head', level=1), "
+            + "Paragraph('para'), "
+            + "Table(TableData(TableDataRow(['tbl']), []))"
             + "])"
         )
         got_s = repr(doc)
@@ -410,7 +410,7 @@ class TestHeadingRepr(unittest.TestCase):
     def test(self):
         head = sw_compdocs.document.Heading("foo", level=2)
         s = repr(head)
-        self.assertEqual(s, "Heading(text='foo', level=2)")
+        self.assertEqual(s, "Heading('foo', level=2)")
 
 
 class TestHeadingEq(unittest.TestCase):
@@ -470,7 +470,7 @@ class TestParagraphRepr(unittest.TestCase):
     def test(self):
         para = sw_compdocs.document.Paragraph("foo")
         s = repr(para)
-        self.assertEqual(s, "Paragraph(text='foo')")
+        self.assertEqual(s, "Paragraph('foo')")
 
 
 class TestParagraphEq(unittest.TestCase):
@@ -554,7 +554,7 @@ class TestTableRepr(unittest.TestCase):
         s = repr(tbl)
         self.assertEqual(
             s,
-            "Table(data=TableData(TableDataRow(['A1', 'A2', 'A3']), [TableDataRow(['B1', 'B2', 'B3']), TableDataRow(['C1', 'C2', 'C3']), TableDataRow(['D1', 'D2', 'D3'])]))",
+            "Table(TableData(TableDataRow(['A1', 'A2', 'A3']), [TableDataRow(['B1', 'B2', 'B3']), TableDataRow(['C1', 'C2', 'C3']), TableDataRow(['D1', 'D2', 'D3'])]))",
         )
 
 
