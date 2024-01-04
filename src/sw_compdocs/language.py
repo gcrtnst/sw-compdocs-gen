@@ -7,9 +7,15 @@ from . import validator
 
 
 class Language(collections.abc.Mapping):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, mapping={}):
+        if not isinstance(mapping, collections.abc.Mapping):
+            raise TypeError
+
         self._d = {}
+        for key, val in mapping.items():
+            if type(key) is not str or type(val) is not str:
+                raise TypeError
+            self._d[key] = val
 
     @classmethod
     def from_file(cls, file, *, encoding="utf-8", errors=None):
@@ -44,10 +50,7 @@ class Language(collections.abc.Mapping):
         except LanguageTSVError as exc:
             exc.line = reader.line_num
             raise
-
-        lang = cls()
-        lang._d = d
-        return lang
+        return cls(d)
 
     def __getitem__(self, key):
         try:

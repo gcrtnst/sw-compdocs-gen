@@ -5,6 +5,20 @@ import tempfile
 import unittest
 
 
+class TestLanguageInit(unittest.TestCase):
+    def test_pass(self):
+        mapping = {"english": "日本語"}
+        lang = sw_compdocs.language.Language(mapping)
+        self.assertIsNot(lang._d, mapping)
+        self.assertEqual(lang._d, mapping)
+
+    def test_exc_type(self):
+        for mapping in [None, {b"english": "日本語"}, {"english": "日本語".encode("utf-8")}]:
+            with self.subTest(mapping=mapping):
+                with self.assertRaises(TypeError):
+                    sw_compdocs.language.Language(mapping)
+
+
 class TestLanguageFromFile(unittest.TestCase):
     def test_pass(self):
         for encoding in ["utf-8", "cp932"]:
