@@ -1,6 +1,8 @@
 import enum
 import lxml.etree
 import os
+import pathlib
+import re
 
 from . import container
 from . import validator
@@ -10,22 +12,23 @@ def parse_xml_file(file):
     if not validator.is_pathlike(file):
         raise TypeError
 
+    cid = generate_cid(file)
     tree = lxml.etree.parse(file, parser=_new_xml_parser())
     elem = tree.getroot()
 
     try:
-        return _parse_xml_root(elem)
+        return _parse_xml_root(elem, cid=cid)
     except ComponentXMLError as exc:
         exc.file = file
         raise
 
 
-def parse_xml_str(s):
+def parse_xml_str(s, *, cid=None):
     elem = lxml.etree.fromstring(s, parser=_new_xml_parser())
-    return _parse_xml_root(elem)
+    return _parse_xml_root(elem, cid=cid)
 
 
-def _parse_xml_root(elem):
+def _parse_xml_root(elem, *, cid=None):
     if elem.tag != "definition":
         exc = ComponentXMLError(f"invalid xml root tag {elem.tag!r}")
         exc.prepend_xpath(elem.tag)
@@ -33,7 +36,7 @@ def _parse_xml_root(elem):
         raise exc
 
     try:
-        return Definition.from_xml_elem(elem)
+        return Definition.from_xml_elem(elem, cid=cid)
     except ComponentXMLError as exc:
         exc.prepend_xpath(elem.tag)
         exc.prepend_xpath("/")
@@ -47,7 +50,30 @@ def _new_xml_parser():
     return lxml.etree.XMLParser(recover=True)
 
 
+def generate_cid(file):
+    if not isinstance(file, pathlib.PurePath):
+        file = os.fsdecode(file)
+        file = pathlib.PurePath(file)
+    name = file.name
+
+    # Using regular expression instead of file.stem because pathlib.PurePath.stem does
+    # not match the behavior of Stormworks. For example, pathlib.PurePath(".xml").stem
+    # produces ".xml", while Stormworks produces "".
+    stem = re.sub(r"\.[^.]*\Z", "", name)
+    return stem
+
+
 class Definition:
+    @property
+    def cid(self):
+        return self._cid
+
+    @cid.setter
+    def cid(self, value):
+        if type(value) is not str:
+            raise TypeError
+        self._cid = value
+
     @property
     def name(self):
         return self._name
@@ -151,6 +177,7 @@ class Definition:
     def __init__(
         self,
         *,
+        cid=None,
         name=None,
         category=None,
         mass=None,
@@ -162,6 +189,7 @@ class Definition:
         voxel_min=None,
         voxel_max=None,
     ):
+        self.cid = _coalesce(cid, "")
         self.name = _coalesce(name, "")
         self.category = _coalesce(category, Category.BLOCKS)
         self.mass = _coalesce(mass, 0.0)
@@ -174,7 +202,7 @@ class Definition:
         self.voxel_max = _coalesce(voxel_max, VoxelPos())
 
     @classmethod
-    def from_xml_elem(cls, elem):
+    def from_xml_elem(cls, elem, *, cid=None):
         if not isinstance(elem, lxml.etree._Element):
             raise TypeError
 
@@ -250,6 +278,7 @@ class Definition:
                 raise
 
         return cls(
+            cid=cid,
             name=name,
             category=category,
             mass=mass,

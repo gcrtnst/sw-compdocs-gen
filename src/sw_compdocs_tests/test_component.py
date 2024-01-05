@@ -29,6 +29,7 @@ class TestParseXMLFile(unittest.TestCase):
             ]:
                 with self.subTest(path=path):
                     comp = sw_compdocs.component.parse_xml_file(path)
+                    self.assertEqual(comp.cid, "test")
                     self.assertEqual(comp.name, "name")
                     self.assertEqual(comp.tooltip_properties.description, "description")
 
@@ -57,6 +58,7 @@ class TestParseXMLFile(unittest.TestCase):
             ]:
                 with self.subTest(path=path):
                     comp = sw_compdocs.component.parse_xml_file(path)
+                    self.assertEqual(comp.cid, "test")
                     self.assertEqual(comp.name, "name")
                     self.assertEqual(comp.tooltip_properties.description, "description")
 
@@ -129,9 +131,11 @@ class TestParseXMLStr(unittest.TestCase):
 <definition name="name">
     <tooltip_properties description="description"/>
 </definition>
-"""
+""",
+            cid="cid",
         )
 
+        self.assertEqual(comp.cid, "cid")
         self.assertEqual(comp.name, "name")
         self.assertEqual(comp.tooltip_properties.description, "description")
 
@@ -146,9 +150,11 @@ class TestParseXMLStr(unittest.TestCase):
     </voxels>
     <tooltip_properties description="description"/>
 </definition>
-"""
+""",
+            cid="cid",
         )
 
+        self.assertEqual(comp.cid, "cid")
         self.assertEqual(comp.name, "name")
         self.assertEqual(comp.tooltip_properties.description, "description")
 
@@ -159,7 +165,8 @@ class TestParseXMLStr(unittest.TestCase):
 <invalid name="name">
     <tooltip_properties description="description"/>
 </invalid>
-    """
+    """,
+                cid="cid",
             )
 
         self.assertEqual(ctx.exception.msg, "invalid xml root tag 'invalid'")
@@ -173,7 +180,8 @@ class TestParseXMLStr(unittest.TestCase):
 <definition>
     <voxel_min x="invalid"/>
 </definition>
-"""
+""",
+                cid="cid",
             )
 
         self.assertEqual(ctx.exception.msg, "invalid voxel x 'invalid'")
@@ -181,11 +189,59 @@ class TestParseXMLStr(unittest.TestCase):
         self.assertEqual(ctx.exception.xpath, "/definition/voxel_min")
 
 
+class TestGenerateCID(unittest.TestCase):
+    def test_pass(self):
+        tt = collections.namedtuple("tt", ("input_file", "want_cid"))
+
+        for tc in [
+            tt(
+                input_file="01_block_test.xml",
+                want_cid="01_block_test",
+            ),
+            tt(
+                input_file="01_block_test.test.xml.xml",
+                want_cid="01_block_test.test.xml",
+            ),
+            tt(
+                input_file="01_block_test.dmy",
+                want_cid="01_block_test",
+            ),
+            tt(
+                input_file="01_block-.xml",
+                want_cid="01_block-",
+            ),
+            tt(
+                input_file=".xml",
+                want_cid="",
+            ),
+            tt(
+                input_file=b"01_block_test.xml",
+                want_cid="01_block_test",
+            ),
+            tt(
+                input_file=pathlib.PurePath("01_block_test.xml"),
+                want_cid="01_block_test",
+            ),
+            tt(
+                input_file=pathlib.PurePosixPath("/tmp/01_block_test.xml"),
+                want_cid="01_block_test",
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                got_id = sw_compdocs.component.generate_cid(tc.input_file)
+                self.assertEqual(got_id, tc.want_cid)
+
+    def test_exc_type(self):
+        with self.assertRaises(TypeError):
+            sw_compdocs.component.generate_cid(None)
+
+
 class TestDefinitionInit(unittest.TestCase):
     def test_pass(self):
         tt = collections.namedtuple(
             "tt",
             (
+                "input_cid",
                 "input_name",
                 "input_category",
                 "input_mass",
@@ -196,6 +252,7 @@ class TestDefinitionInit(unittest.TestCase):
                 "input_logic_nodes",
                 "input_voxel_min",
                 "input_voxel_max",
+                "want_cid",
                 "want_name",
                 "want_category",
                 "want_mass",
@@ -211,6 +268,7 @@ class TestDefinitionInit(unittest.TestCase):
 
         for tc in [
             tt(
+                input_cid="clock",
                 input_name="Clock",
                 input_category=sw_compdocs.component.Category.DISPLAYS,
                 input_mass=1.0,
@@ -245,6 +303,7 @@ class TestDefinitionInit(unittest.TestCase):
                 ),
                 input_voxel_min=sw_compdocs.component.VoxelPos(x=0, y=0, z=0),
                 input_voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=0),
+                want_cid="clock",
                 want_name="Clock",
                 want_category=sw_compdocs.component.Category.DISPLAYS,
                 want_mass=1.0,
@@ -281,6 +340,7 @@ class TestDefinitionInit(unittest.TestCase):
                 want_voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=0),
             ),
             tt(
+                input_cid=None,
                 input_name=None,
                 input_category=None,
                 input_mass=None,
@@ -291,6 +351,7 @@ class TestDefinitionInit(unittest.TestCase):
                 input_logic_nodes=None,
                 input_voxel_min=None,
                 input_voxel_max=None,
+                want_cid="",
                 want_name="",
                 want_category=sw_compdocs.component.Category.BLOCKS,
                 want_mass=0.0,
@@ -305,6 +366,7 @@ class TestDefinitionInit(unittest.TestCase):
         ]:
             with self.subTest(tc=tc):
                 got_comp = sw_compdocs.component.Definition(
+                    cid=tc.input_cid,
                     name=tc.input_name,
                     category=tc.input_category,
                     mass=tc.input_mass,
@@ -316,6 +378,7 @@ class TestDefinitionInit(unittest.TestCase):
                     voxel_min=tc.input_voxel_min,
                     voxel_max=tc.input_voxel_max,
                 )
+                self.assertEqual(got_comp.cid, tc.want_cid)
                 self.assertEqual(got_comp.name, tc.want_name)
                 self.assertEqual(got_comp.category, tc.want_category)
                 self.assertEqual(got_comp.mass, tc.want_mass)
@@ -333,6 +396,7 @@ class TestDefinitionInit(unittest.TestCase):
         tt = collections.namedtuple(
             "tt",
             (
+                "input_cid",
                 "input_name",
                 "input_category",
                 "input_mass",
@@ -348,6 +412,44 @@ class TestDefinitionInit(unittest.TestCase):
 
         for tc in [
             tt(
+                input_cid=b"clock",
+                input_name="Clock",
+                input_category=sw_compdocs.component.Category.DISPLAYS,
+                input_mass=1.0,
+                input_value=100,
+                input_flags=sw_compdocs.component.Flags(8192),
+                input_tags="basic",
+                input_tooltip_properties=sw_compdocs.component.TooltipProperties(
+                    short_description="An analogue clock display that outputs a number value representing the time of day.",
+                    description="The clock has a display to visualise the time of day or night. The 12 o'clock position is the white arrow on the face of the display.",
+                ),
+                input_logic_nodes=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(
+                            label="Time",
+                            mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
+                            type=sw_compdocs.component.LogicNodeType.FLOAT,
+                            description="The time as a factor of a day, from 0 (midnight) to 1 (midnight).",
+                        ),
+                        sw_compdocs.component.LogicNode(
+                            label="Backlight",
+                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                            type=sw_compdocs.component.LogicNodeType.BOOL,
+                            description="Enables the backlight when receiving an on signal.",
+                        ),
+                        sw_compdocs.component.LogicNode(
+                            label="Electric",
+                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                            type=sw_compdocs.component.LogicNodeType.ELECTRIC,
+                            description="Electrical power connection.",
+                        ),
+                    ]
+                ),
+                input_voxel_min=sw_compdocs.component.VoxelPos(x=0, y=0, z=0),
+                input_voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=0),
+            ),
+            tt(
+                input_cid="clock",
                 input_name=b"Clock",
                 input_category=sw_compdocs.component.Category.DISPLAYS,
                 input_mass=1.0,
@@ -384,6 +486,7 @@ class TestDefinitionInit(unittest.TestCase):
                 input_voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=0),
             ),
             tt(
+                input_cid="clock",
                 input_name="Clock",
                 input_category=6,
                 input_mass=1.0,
@@ -420,6 +523,7 @@ class TestDefinitionInit(unittest.TestCase):
                 input_voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=0),
             ),
             tt(
+                input_cid="clock",
                 input_name="Clock",
                 input_category=sw_compdocs.component.Category.DISPLAYS,
                 input_mass="1.0",
@@ -456,6 +560,7 @@ class TestDefinitionInit(unittest.TestCase):
                 input_voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=0),
             ),
             tt(
+                input_cid="clock",
                 input_name="Clock",
                 input_category=sw_compdocs.component.Category.DISPLAYS,
                 input_mass=1.0,
@@ -492,6 +597,7 @@ class TestDefinitionInit(unittest.TestCase):
                 input_voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=0),
             ),
             tt(
+                input_cid="clock",
                 input_name="Clock",
                 input_category=sw_compdocs.component.Category.DISPLAYS,
                 input_mass=1.0,
@@ -528,6 +634,7 @@ class TestDefinitionInit(unittest.TestCase):
                 input_voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=0),
             ),
             tt(
+                input_cid="clock",
                 input_name="Clock",
                 input_category=sw_compdocs.component.Category.DISPLAYS,
                 input_mass=1.0,
@@ -564,6 +671,7 @@ class TestDefinitionInit(unittest.TestCase):
                 input_voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=0),
             ),
             tt(
+                input_cid="clock",
                 input_name="Clock",
                 input_category=sw_compdocs.component.Category.DISPLAYS,
                 input_mass=1.0,
@@ -597,6 +705,7 @@ class TestDefinitionInit(unittest.TestCase):
                 input_voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=0),
             ),
             tt(
+                input_cid="clock",
                 input_name="Clock",
                 input_category=sw_compdocs.component.Category.DISPLAYS,
                 input_mass=1.0,
@@ -631,6 +740,7 @@ class TestDefinitionInit(unittest.TestCase):
                 input_voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=0),
             ),
             tt(
+                input_cid="clock",
                 input_name="Clock",
                 input_category=sw_compdocs.component.Category.DISPLAYS,
                 input_mass=1.0,
@@ -667,6 +777,7 @@ class TestDefinitionInit(unittest.TestCase):
                 input_voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=0),
             ),
             tt(
+                input_cid="clock",
                 input_name="Clock",
                 input_category=sw_compdocs.component.Category.DISPLAYS,
                 input_mass=1.0,
@@ -706,6 +817,7 @@ class TestDefinitionInit(unittest.TestCase):
             with self.subTest(tc=tc):
                 with self.assertRaises(TypeError):
                     sw_compdocs.component.Definition(
+                        cid=tc.input_cid,
                         name=tc.input_name,
                         category=tc.input_category,
                         mass=tc.input_mass,
@@ -717,6 +829,18 @@ class TestDefinitionInit(unittest.TestCase):
                         voxel_min=tc.input_voxel_min,
                         voxel_max=tc.input_voxel_max,
                     )
+
+
+class TestDefinitionCIDSetter(unittest.TestCase):
+    def test_pass(self):
+        comp = sw_compdocs.component.Definition()
+        comp.cid = "cid"
+        self.assertEqual(comp.cid, "cid")
+
+    def test_exc_type(self):
+        comp = sw_compdocs.component.Definition()
+        with self.assertRaises(TypeError):
+            comp.cid = None
 
 
 class TestDefinitionNameSetter(unittest.TestCase):
@@ -864,7 +988,8 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
 """
         )
 
-        comp = sw_compdocs.component.Definition.from_xml_elem(elem)
+        comp = sw_compdocs.component.Definition.from_xml_elem(elem, cid="clock")
+        self.assertEqual(comp.cid, "clock")
         self.assertEqual(comp.name, "Clock")
         self.assertEqual(comp.category, sw_compdocs.component.Category.DISPLAYS)
         self.assertEqual(comp.mass, 1.0)
@@ -909,6 +1034,7 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
     def test_pass_empty(self):
         elem = lxml.etree.Element("definition")
         comp = sw_compdocs.component.Definition.from_xml_elem(elem)
+        self.assertEqual(comp.cid, "")
         self.assertEqual(comp.name, "")
         self.assertEqual(comp.category, sw_compdocs.component.Category.BLOCKS)
         self.assertEqual(comp.mass, 0.0)
