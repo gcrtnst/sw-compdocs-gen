@@ -1,21 +1,18 @@
-import collections.abc
 import csv
 import io
 import os
 
+from . import container
 from . import validator
 
 
-class Language(collections.abc.Mapping):
-    def __init__(self, mapping={}):
-        if not isinstance(mapping, collections.abc.Mapping):
-            raise TypeError
+class Language(container.Sequence):
+    def __init__(self, iterable=()):
+        super().__init__(iterable)
 
-        self._d = {}
-        for key, val in mapping.items():
-            if type(key) is not str or type(val) is not str:
+        for trans in self:
+            if type(trans) is not Translation:
                 raise TypeError
-            self._d[key] = val
 
     @classmethod
     def from_file(cls, file, *, encoding="utf-8", errors=None):
@@ -40,29 +37,105 @@ class Language(collections.abc.Mapping):
                 if header != ["id", "description", "en", "local"]:
                     raise LanguageTSVError("invalid header")
 
-                d = {}
+                trans_list = []
                 for record in reader:
                     if len(record) != 4:
                         raise LanguageTSVError("invalid number of fields")
-                    d[record[2]] = record[3]
+                    trans = Translation(*record)
+                    trans_list.append(trans)
             except csv.Error as exc:
                 raise LanguageTSVError(str(exc)) from exc
         except LanguageTSVError as exc:
             exc.line = reader.line_num
             raise
-        return cls(d)
+        return cls(trans_list)
 
-    def __getitem__(self, key):
-        try:
-            return self._d[key]
-        except KeyError as exc:
-            raise LanguageKeyError(key) from exc
+    def find_id(self, id, default=None):
+        trans_list = self.find_id_all(id)
 
-    def __iter__(self):
-        return iter(self._d)
+        trans = default
+        if len(trans_list) > 0:
+            trans = trans_list[0]
+        return trans
 
-    def __len__(self):
-        return len(self._d)
+    def find_id_all(self, id):
+        if type(id) is not str:
+            raise TypeError
+        return [trans for trans in self if trans.id == id]
+
+    def find_en(self, en, default=None):
+        trans_list = self.find_en_all(en)
+
+        trans = default
+        if len(trans_list) > 0:
+            trans = trans_list[0]
+        return trans
+
+    def find_en_all(self, en):
+        if type(en) is not str:
+            raise TypeError
+        return [trans for trans in self if trans.en == en]
+
+
+class Translation:
+    @property
+    def id(self):
+        return self._id
+
+    @id.setter
+    def id(self, value):
+        if type(value) is not str:
+            raise TypeError
+        self._id = value
+
+    @property
+    def description(self):
+        return self._description
+
+    @description.setter
+    def description(self, value):
+        if type(value) is not str:
+            raise TypeError
+        self._description = value
+
+    @property
+    def en(self):
+        return self._en
+
+    @en.setter
+    def en(self, value):
+        if type(value) is not str:
+            raise TypeError
+        self._en = value
+
+    @property
+    def local(self):
+        return self._local
+
+    @local.setter
+    def local(self, value):
+        if type(value) is not str:
+            raise TypeError
+        self._local = value
+
+    def __init__(self, id, description, en, local):
+        self.id = id
+        self.description = description
+        self.en = en
+        self.local = local
+
+    def __repr__(self):
+        return f"{type(self).__name__}({self.id!r}, {self.description!r}, {self.en!r}, {self.local!r})"
+
+    def __eq__(self, other):
+        if type(self) is type(other):
+            return (
+                self.id == other.id
+                and self.description == other.description
+                and self.en == other.en
+                and self.local == other.local
+            )
+        return super().__eq__(other)
 
 
 class LanguageTSVDialect(csv.Dialect):
