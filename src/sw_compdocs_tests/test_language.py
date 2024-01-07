@@ -232,9 +232,7 @@ class TestLanguageFromIO(unittest.TestCase):
 
 class TestLanguageFindID(unittest.TestCase):
     def test_pass(self):
-        tt = collections.namedtuple(
-            "tt", ("input_lang", "input_id", "input_default", "want_trans")
-        )
+        tt = collections.namedtuple("tt", ("input_lang", "input_id", "want_trans"))
 
         for tc in [
             tt(
@@ -252,7 +250,6 @@ class TestLanguageFindID(unittest.TestCase):
                     ]
                 ),
                 input_id="id_0",
-                input_default="default",
                 want_trans=sw_compdocs.language.Translation(
                     "id_0", "description_0", "en_0", "local_0"
                 ),
@@ -272,38 +269,37 @@ class TestLanguageFindID(unittest.TestCase):
                     ]
                 ),
                 input_id="id_1",
-                input_default="default",
                 want_trans=sw_compdocs.language.Translation(
                     "id_1", "description_1", "en_1", "local_1"
                 ),
             ),
-            tt(
-                input_lang=sw_compdocs.language.Language(
-                    [
-                        sw_compdocs.language.Translation(
-                            "id_0", "description_0", "en_0", "local_0"
-                        ),
-                        sw_compdocs.language.Translation(
-                            "id_1", "description_1", "en_1", "local_1"
-                        ),
-                        sw_compdocs.language.Translation(
-                            "id_1", "description_2", "en_2", "local_2"
-                        ),
-                    ]
-                ),
-                input_id="id_2",
-                input_default="default",
-                want_trans="default",
-            ),
         ]:
             with self.subTest(tc=tc):
-                got_trans = tc.input_lang.find_id(tc.input_id, default=tc.input_default)
+                got_trans = tc.input_lang.find_id(tc.input_id)
                 self.assertEqual(got_trans, tc.want_trans)
 
     def test_exc_type(self):
         lang = sw_compdocs.language.Language()
         with self.assertRaises(TypeError):
             lang.find_id(None)
+
+    def test_exc_find(self):
+        lang = sw_compdocs.language.Language(
+            [
+                sw_compdocs.language.Translation(
+                    "id_0", "description_0", "en_0", "local_0"
+                ),
+                sw_compdocs.language.Translation(
+                    "id_1", "description_1", "en_1", "local_1"
+                ),
+                sw_compdocs.language.Translation(
+                    "id_1", "description_2", "en_2", "local_2"
+                ),
+            ]
+        )
+        with self.assertRaises(sw_compdocs.language.LanguageFindIDError) as ctx:
+            lang.find_id("id_2")
+        self.assertEqual(ctx.exception.id, "id_2")
 
 
 class TestLanguageFindIDAll(unittest.TestCase):
@@ -386,9 +382,7 @@ class TestLanguageFindIDAll(unittest.TestCase):
 
 class TestLanguageFindEn(unittest.TestCase):
     def test_pass(self):
-        tt = collections.namedtuple(
-            "tt", ("input_lang", "input_en", "input_default", "want_trans")
-        )
+        tt = collections.namedtuple("tt", ("input_lang", "input_en", "want_trans"))
 
         for tc in [
             tt(
@@ -406,7 +400,6 @@ class TestLanguageFindEn(unittest.TestCase):
                     ]
                 ),
                 input_en="en_0",
-                input_default="default",
                 want_trans=sw_compdocs.language.Translation(
                     "id_0", "description_0", "en_0", "local_0"
                 ),
@@ -426,38 +419,37 @@ class TestLanguageFindEn(unittest.TestCase):
                     ]
                 ),
                 input_en="en_1",
-                input_default="default",
                 want_trans=sw_compdocs.language.Translation(
                     "id_1", "description_1", "en_1", "local_1"
                 ),
             ),
-            tt(
-                input_lang=sw_compdocs.language.Language(
-                    [
-                        sw_compdocs.language.Translation(
-                            "id_0", "description_0", "en_0", "local_0"
-                        ),
-                        sw_compdocs.language.Translation(
-                            "id_1", "description_1", "en_1", "local_1"
-                        ),
-                        sw_compdocs.language.Translation(
-                            "id_2", "description_2", "en_1", "local_2"
-                        ),
-                    ]
-                ),
-                input_en="en_2",
-                input_default="default",
-                want_trans="default",
-            ),
         ]:
             with self.subTest(tc=tc):
-                got_trans = tc.input_lang.find_en(tc.input_en, default=tc.input_default)
+                got_trans = tc.input_lang.find_en(tc.input_en)
                 self.assertEqual(got_trans, tc.want_trans)
 
     def test_exc_type(self):
         lang = sw_compdocs.language.Language()
         with self.assertRaises(TypeError):
-            lang.find_id(None)
+            lang.find_en(None)
+
+    def test_exc_find(self):
+        lang = sw_compdocs.language.Language(
+            [
+                sw_compdocs.language.Translation(
+                    "id_0", "description_0", "en_0", "local_0"
+                ),
+                sw_compdocs.language.Translation(
+                    "id_1", "description_1", "en_1", "local_1"
+                ),
+                sw_compdocs.language.Translation(
+                    "id_2", "description_2", "en_1", "local_2"
+                ),
+            ]
+        )
+        with self.assertRaises(sw_compdocs.language.LanguageFindEnError) as ctx:
+            lang.find_en("en_2")
+        self.assertEqual(ctx.exception.en, "en_2")
 
 
 class TestLanguageFindEnAll(unittest.TestCase):
@@ -796,14 +788,59 @@ class TestLanguageTSVErrorStr(unittest.TestCase):
                 self.assertEqual(got_s, tc.want_s)
 
 
-class TestLanguageKeyErrorInit(unittest.TestCase):
-    def test(self):
-        exc = sw_compdocs.language.LanguageKeyError("key")
-        self.assertEqual(exc.key, "key")
+class TestLanguageFindIDErrorInit(unittest.TestCase):
+    def test_pass(self):
+        exc = sw_compdocs.language.LanguageFindIDError("id")
+        self.assertEqual(exc.args, ("id",))
+        self.assertEqual(exc.id, "id")
+
+    def test_exc_type(self):
+        with self.assertRaises(TypeError):
+            sw_compdocs.language.LanguageFindIDError(None)
 
 
-class TestLanguageKeyErrorStr(unittest.TestCase):
+class TestLanguageFindIDErrorIDSetter(unittest.TestCase):
+    def test_pass(self):
+        exc = sw_compdocs.language.LanguageFindIDError("id")
+        exc.id = "set"
+        self.assertEqual(exc.id, "set")
+
+    def test_exc_type(self):
+        exc = sw_compdocs.language.LanguageFindIDError("id")
+        with self.assertRaises(TypeError):
+            exc.id = None
+
+
+class TestLanguageFindIDErrorStr(unittest.TestCase):
     def test(self):
-        exc = sw_compdocs.language.LanguageKeyError("key")
-        s = str(exc)
-        self.assertEqual(s, "missing translation for 'key'")
+        exc = sw_compdocs.language.LanguageFindIDError("id")
+        self.assertEqual(str(exc), "missing translation for id 'id'")
+
+
+class TestLanguageFindEnErrorInit(unittest.TestCase):
+    def test_pass(self):
+        exc = sw_compdocs.language.LanguageFindEnError("en")
+        self.assertEqual(exc.args, ("en",))
+        self.assertEqual(exc.en, "en")
+
+    def test_exc_type(self):
+        with self.assertRaises(TypeError):
+            sw_compdocs.language.LanguageFindEnError(None)
+
+
+class TestLanguageFindIDErrorEnSetter(unittest.TestCase):
+    def test_pass(self):
+        exc = sw_compdocs.language.LanguageFindEnError("en")
+        exc.en = "set"
+        self.assertEqual(exc.en, "set")
+
+    def test_exc_type(self):
+        exc = sw_compdocs.language.LanguageFindEnError("en")
+        with self.assertRaises(TypeError):
+            exc.en = None
+
+
+class TestLanguageFindEnErrorStr(unittest.TestCase):
+    def test(self):
+        exc = sw_compdocs.language.LanguageFindEnError("en")
+        self.assertEqual(str(exc), "missing translation for text 'en'")

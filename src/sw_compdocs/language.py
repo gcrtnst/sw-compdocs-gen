@@ -50,26 +50,22 @@ class Language(container.Sequence):
             raise
         return cls(trans_list)
 
-    def find_id(self, id, default=None):
+    def find_id(self, id):
         trans_list = self.find_id_all(id)
-
-        trans = default
-        if len(trans_list) > 0:
-            trans = trans_list[0]
-        return trans
+        if len(trans_list) <= 0:
+            raise LanguageFindIDError(id)
+        return trans_list[0]
 
     def find_id_all(self, id):
         if type(id) is not str:
             raise TypeError
         return [trans for trans in self if trans.id == id]
 
-    def find_en(self, en, default=None):
+    def find_en(self, en):
         trans_list = self.find_en_all(en)
-
-        trans = default
-        if len(trans_list) > 0:
-            trans = trans_list[0]
-        return trans
+        if len(trans_list) <= 0:
+            raise LanguageFindEnError(en)
+        return trans_list[0]
 
     def find_en_all(self, en):
         if type(en) is not str:
@@ -188,10 +184,43 @@ class LanguageTSVError(Exception):
         return f"{file}: line {line}: {self.msg}"
 
 
-class LanguageKeyError(KeyError):
-    def __init__(self, key):
-        super().__init__(key)
-        self.key = key
+class LanguageFindError(Exception):
+    pass
+
+
+class LanguageFindIDError(LanguageFindError):
+    @property
+    def id(self):
+        return self._id
+
+    @id.setter
+    def id(self, value):
+        if type(value) is not str:
+            raise TypeError
+        self._id = value
+
+    def __init__(self, id):
+        super().__init__(id)
+        self.id = id
 
     def __str__(self):
-        return f"missing translation for {repr(self.key)}"
+        return f"missing translation for id {self.id!r}"
+
+
+class LanguageFindEnError(LanguageFindError):
+    @property
+    def en(self):
+        return self._en
+
+    @en.setter
+    def en(self, value):
+        if type(value) is not str:
+            raise TypeError
+        self._en = value
+
+    def __init__(self, en):
+        super().__init__(en)
+        self.en = en
+
+    def __str__(self):
+        return f"missing translation for text {self.en!r}"
