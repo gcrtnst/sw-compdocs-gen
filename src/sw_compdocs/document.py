@@ -9,6 +9,14 @@ class Document(container.MutableSequence):
         if not isinstance(value, Block):
             raise TypeError
 
+    def shift(self, level=1):
+        if type(level) is not int:
+            raise TypeError
+
+        for blk in self:
+            if isinstance(blk, Heading):
+                blk.level += level
+
 
 class Block:
     def __init__(self):

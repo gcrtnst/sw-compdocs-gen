@@ -352,6 +352,66 @@ class TestDocumentInsert(unittest.TestCase):
             doc.insert(1, "bar")
 
 
+class TestDocumentShift(unittest.TestCase):
+    def test_pass(self):
+        tt = collections.namedtuple("tt", ("input_doc", "input_level", "want_doc"))
+
+        for tc in [
+            tt(
+                input_doc=sw_compdocs.document.Document(),
+                input_level=1,
+                want_doc=sw_compdocs.document.Document(),
+            ),
+            tt(
+                input_doc=sw_compdocs.document.Document(
+                    [
+                        sw_compdocs.document.Heading("head_a", level=1),
+                        sw_compdocs.document.Paragraph("para_a"),
+                        sw_compdocs.document.Heading("head_b", level=2),
+                        sw_compdocs.document.Paragraph("para_b"),
+                    ]
+                ),
+                input_level=1,
+                want_doc=sw_compdocs.document.Document(
+                    [
+                        sw_compdocs.document.Heading("head_a", level=2),
+                        sw_compdocs.document.Paragraph("para_a"),
+                        sw_compdocs.document.Heading("head_b", level=3),
+                        sw_compdocs.document.Paragraph("para_b"),
+                    ]
+                ),
+            ),
+            tt(
+                input_doc=sw_compdocs.document.Document(
+                    [
+                        sw_compdocs.document.Heading("head_a", level=2),
+                        sw_compdocs.document.Paragraph("para_a"),
+                        sw_compdocs.document.Heading("head_b", level=3),
+                        sw_compdocs.document.Paragraph("para_b"),
+                    ]
+                ),
+                input_level=-1,
+                want_doc=sw_compdocs.document.Document(
+                    [
+                        sw_compdocs.document.Heading("head_a", level=1),
+                        sw_compdocs.document.Paragraph("para_a"),
+                        sw_compdocs.document.Heading("head_b", level=2),
+                        sw_compdocs.document.Paragraph("para_b"),
+                    ]
+                ),
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                doc = sw_compdocs.document.Document(tc.input_doc)  # copy
+                doc.shift(tc.input_level)
+                self.assertEqual(doc, tc.want_doc)
+
+    def test_exc_type(self):
+        doc = sw_compdocs.document.Document()
+        with self.assertRaises(TypeError):
+            doc.shift(None)
+
+
 class TestBlockInit(unittest.TestCase):
     def test(self):
         with self.assertRaises(NotImplementedError):
