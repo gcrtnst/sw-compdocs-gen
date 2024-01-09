@@ -292,12 +292,13 @@ class Definition:
         )
 
     def __repr__(self):
-        return f"{type(self).__name__}(name={self.name!r}, category={self.category!r}, mass={self.mass!r}, value={self.value!r}, flags={self.flags!r}, tags={self.tags!r}, tooltip_properties={self.tooltip_properties!r}, logic_nodes={self.logic_nodes}, voxel_min={self.voxel_min!r}, voxel_max={self.voxel_max})"
+        return f"{type(self).__name__}(cid={self.cid!r}, name={self.name!r}, category={self.category!r}, mass={self.mass!r}, value={self.value!r}, flags={self.flags!r}, tags={self.tags!r}, tooltip_properties={self.tooltip_properties!r}, logic_nodes={self.logic_nodes}, voxel_min={self.voxel_min!r}, voxel_max={self.voxel_max})"
 
     def __eq__(self, other):
         if type(self) is type(other):
             return (
-                self.name == other.name
+                self.cid == other.cid
+                and self.name == other.name
                 and self.category == other.category
                 and self.mass == other.mass
                 and self.value == other.value

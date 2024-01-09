@@ -1114,6 +1114,7 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
 class TestDefinitionRepr(unittest.TestCase):
     def test(self):
         comp = sw_compdocs.component.Definition(
+            cid="cid",
             name="name",
             category=sw_compdocs.component.Category.BLOCKS,
             mass=1.0,
@@ -1127,7 +1128,7 @@ class TestDefinitionRepr(unittest.TestCase):
         )
         self.assertEqual(
             repr(comp),
-            "Definition(name='name', category=<Category.BLOCKS: 0>, mass=1.0, value=2, flags=<Flags: 0>, tags='tags', tooltip_properties=TooltipProperties(short_description='', description=''), logic_nodes=LogicNodeList([]), voxel_min=VoxelPos(x=0, y=1, z=2), voxel_max=VoxelPos(x=3, y=4, z=5))",
+            "Definition(cid='cid', name='name', category=<Category.BLOCKS: 0>, mass=1.0, value=2, flags=<Flags: 0>, tags='tags', tooltip_properties=TooltipProperties(short_description='', description=''), logic_nodes=LogicNodeList([]), voxel_min=VoxelPos(x=0, y=1, z=2), voxel_max=VoxelPos(x=3, y=4, z=5))",
         )
 
 
@@ -1138,6 +1139,7 @@ class TestDefinitionEq(unittest.TestCase):
         for tc in [
             tt(
                 input_self=sw_compdocs.component.Definition(
+                    cid="cid",
                     name="name",
                     category=sw_compdocs.component.Category.BLOCKS,
                     mass=1.0,
@@ -1150,6 +1152,7 @@ class TestDefinitionEq(unittest.TestCase):
                     voxel_max=sw_compdocs.component.VoxelPos(),
                 ),
                 input_other=sw_compdocs.component.Definition(
+                    cid="cid",
                     name="name",
                     category=sw_compdocs.component.Category.BLOCKS,
                     mass=1.0,
@@ -1165,6 +1168,7 @@ class TestDefinitionEq(unittest.TestCase):
             ),
             tt(
                 input_self=sw_compdocs.component.Definition(
+                    cid="cid",
                     name="name",
                     category=sw_compdocs.component.Category.BLOCKS,
                     mass=1.0,
@@ -1177,6 +1181,36 @@ class TestDefinitionEq(unittest.TestCase):
                     voxel_max=sw_compdocs.component.VoxelPos(),
                 ),
                 input_other=sw_compdocs.component.Definition(
+                    cid="",
+                    name="name",
+                    category=sw_compdocs.component.Category.BLOCKS,
+                    mass=1.0,
+                    value=2,
+                    flags=sw_compdocs.component.Flags(0),
+                    tags="tags",
+                    tooltip_properties=sw_compdocs.component.TooltipProperties(),
+                    logic_nodes=sw_compdocs.component.LogicNodeList(),
+                    voxel_min=sw_compdocs.component.VoxelPos(),
+                    voxel_max=sw_compdocs.component.VoxelPos(),
+                ),
+                want_eq=False,
+            ),
+            tt(
+                input_self=sw_compdocs.component.Definition(
+                    cid="cid",
+                    name="name",
+                    category=sw_compdocs.component.Category.BLOCKS,
+                    mass=1.0,
+                    value=2,
+                    flags=sw_compdocs.component.Flags(0),
+                    tags="tags",
+                    tooltip_properties=sw_compdocs.component.TooltipProperties(),
+                    logic_nodes=sw_compdocs.component.LogicNodeList(),
+                    voxel_min=sw_compdocs.component.VoxelPos(),
+                    voxel_max=sw_compdocs.component.VoxelPos(),
+                ),
+                input_other=sw_compdocs.component.Definition(
+                    cid="cid",
                     name="",
                     category=sw_compdocs.component.Category.BLOCKS,
                     mass=1.0,
@@ -1192,6 +1226,7 @@ class TestDefinitionEq(unittest.TestCase):
             ),
             tt(
                 input_self=sw_compdocs.component.Definition(
+                    cid="cid",
                     name="name",
                     category=sw_compdocs.component.Category.BLOCKS,
                     mass=1.0,
@@ -1204,6 +1239,7 @@ class TestDefinitionEq(unittest.TestCase):
                     voxel_max=sw_compdocs.component.VoxelPos(),
                 ),
                 input_other=sw_compdocs.component.Definition(
+                    cid="cid",
                     name="name",
                     category=sw_compdocs.component.Category.VEHICLE_CONTROL,
                     mass=1.0,
@@ -1219,6 +1255,7 @@ class TestDefinitionEq(unittest.TestCase):
             ),
             tt(
                 input_self=sw_compdocs.component.Definition(
+                    cid="cid",
                     name="name",
                     category=sw_compdocs.component.Category.BLOCKS,
                     mass=1.0,
@@ -1231,6 +1268,7 @@ class TestDefinitionEq(unittest.TestCase):
                     voxel_max=sw_compdocs.component.VoxelPos(),
                 ),
                 input_other=sw_compdocs.component.Definition(
+                    cid="cid",
                     name="name",
                     category=sw_compdocs.component.Category.BLOCKS,
                     mass=3.0,
@@ -1246,6 +1284,7 @@ class TestDefinitionEq(unittest.TestCase):
             ),
             tt(
                 input_self=sw_compdocs.component.Definition(
+                    cid="cid",
                     name="name",
                     category=sw_compdocs.component.Category.BLOCKS,
                     mass=1.0,
@@ -1258,6 +1297,7 @@ class TestDefinitionEq(unittest.TestCase):
                     voxel_max=sw_compdocs.component.VoxelPos(),
                 ),
                 input_other=sw_compdocs.component.Definition(
+                    cid="cid",
                     name="name",
                     category=sw_compdocs.component.Category.BLOCKS,
                     mass=1.0,
@@ -1273,6 +1313,7 @@ class TestDefinitionEq(unittest.TestCase):
             ),
             tt(
                 input_self=sw_compdocs.component.Definition(
+                    cid="cid",
                     name="name",
                     category=sw_compdocs.component.Category.BLOCKS,
                     mass=1.0,
@@ -1285,6 +1326,7 @@ class TestDefinitionEq(unittest.TestCase):
                     voxel_max=sw_compdocs.component.VoxelPos(),
                 ),
                 input_other=sw_compdocs.component.Definition(
+                    cid="cid",
                     name="name",
                     category=sw_compdocs.component.Category.BLOCKS,
                     mass=1.0,
@@ -1300,6 +1342,7 @@ class TestDefinitionEq(unittest.TestCase):
             ),
             tt(
                 input_self=sw_compdocs.component.Definition(
+                    cid="cid",
                     name="name",
                     category=sw_compdocs.component.Category.BLOCKS,
                     mass=1.0,
@@ -1312,6 +1355,7 @@ class TestDefinitionEq(unittest.TestCase):
                     voxel_max=sw_compdocs.component.VoxelPos(),
                 ),
                 input_other=sw_compdocs.component.Definition(
+                    cid="cid",
                     name="name",
                     category=sw_compdocs.component.Category.BLOCKS,
                     mass=1.0,
@@ -1327,6 +1371,7 @@ class TestDefinitionEq(unittest.TestCase):
             ),
             tt(
                 input_self=sw_compdocs.component.Definition(
+                    cid="cid",
                     name="name",
                     category=sw_compdocs.component.Category.BLOCKS,
                     mass=1.0,
@@ -1339,6 +1384,7 @@ class TestDefinitionEq(unittest.TestCase):
                     voxel_max=sw_compdocs.component.VoxelPos(),
                 ),
                 input_other=sw_compdocs.component.Definition(
+                    cid="cid",
                     name="name",
                     category=sw_compdocs.component.Category.BLOCKS,
                     mass=1.0,
@@ -1356,6 +1402,7 @@ class TestDefinitionEq(unittest.TestCase):
             ),
             tt(
                 input_self=sw_compdocs.component.Definition(
+                    cid="cid",
                     name="name",
                     category=sw_compdocs.component.Category.BLOCKS,
                     mass=1.0,
@@ -1368,6 +1415,7 @@ class TestDefinitionEq(unittest.TestCase):
                     voxel_max=sw_compdocs.component.VoxelPos(),
                 ),
                 input_other=sw_compdocs.component.Definition(
+                    cid="cid",
                     name="name",
                     category=sw_compdocs.component.Category.BLOCKS,
                     mass=1.0,
@@ -1385,6 +1433,7 @@ class TestDefinitionEq(unittest.TestCase):
             ),
             tt(
                 input_self=sw_compdocs.component.Definition(
+                    cid="cid",
                     name="name",
                     category=sw_compdocs.component.Category.BLOCKS,
                     mass=1.0,
@@ -1397,6 +1446,7 @@ class TestDefinitionEq(unittest.TestCase):
                     voxel_max=sw_compdocs.component.VoxelPos(),
                 ),
                 input_other=sw_compdocs.component.Definition(
+                    cid="cid",
                     name="name",
                     category=sw_compdocs.component.Category.BLOCKS,
                     mass=1.0,
@@ -1412,6 +1462,7 @@ class TestDefinitionEq(unittest.TestCase):
             ),
             tt(
                 input_self=sw_compdocs.component.Definition(
+                    cid="cid",
                     name="name",
                     category=sw_compdocs.component.Category.BLOCKS,
                     mass=1.0,
@@ -1424,6 +1475,7 @@ class TestDefinitionEq(unittest.TestCase):
                     voxel_max=sw_compdocs.component.VoxelPos(),
                 ),
                 input_other=sw_compdocs.component.Definition(
+                    cid="cid",
                     name="name",
                     category=sw_compdocs.component.Category.BLOCKS,
                     mass=1.0,
@@ -1439,6 +1491,7 @@ class TestDefinitionEq(unittest.TestCase):
             ),
             tt(
                 input_self=sw_compdocs.component.Definition(
+                    cid="cid",
                     name="name",
                     category=sw_compdocs.component.Category.BLOCKS,
                     mass=1.0,
