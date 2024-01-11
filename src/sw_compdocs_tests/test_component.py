@@ -1008,18 +1008,21 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
             sw_compdocs.component.LogicNodeList(
                 [
                     sw_compdocs.component.LogicNode(
+                        idx=0,
                         label="Time",
                         mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
                         type=sw_compdocs.component.LogicNodeType.FLOAT,
                         description="The time as a factor of a day, from 0 (midnight) to 1 (midnight).",
                     ),
                     sw_compdocs.component.LogicNode(
+                        idx=1,
                         label="Backlight",
                         mode=sw_compdocs.component.LogicNodeMode.INPUT,
                         type=sw_compdocs.component.LogicNodeType.BOOL,
                         description="Enables the backlight when receiving an on signal.",
                     ),
                     sw_compdocs.component.LogicNode(
+                        idx=2,
                         label="Electric",
                         mode=sw_compdocs.component.LogicNodeMode.INPUT,
                         type=sw_compdocs.component.LogicNodeType.ELECTRIC,
@@ -1852,9 +1855,9 @@ class TestLogicNodeListFromXMLElem(unittest.TestCase):
                 ],
                 want_lns=sw_compdocs.component.LogicNodeList(
                     [
-                        sw_compdocs.component.LogicNode(label="a"),
-                        sw_compdocs.component.LogicNode(label="b"),
-                        sw_compdocs.component.LogicNode(label="c"),
+                        sw_compdocs.component.LogicNode(idx=0, label="a"),
+                        sw_compdocs.component.LogicNode(idx=1, label="b"),
+                        sw_compdocs.component.LogicNode(idx=2, label="c"),
                     ]
                 ),
             ),
@@ -1866,8 +1869,8 @@ class TestLogicNodeListFromXMLElem(unittest.TestCase):
                 ],
                 want_lns=sw_compdocs.component.LogicNodeList(
                     [
-                        sw_compdocs.component.LogicNode(label="a"),
-                        sw_compdocs.component.LogicNode(label="c"),
+                        sw_compdocs.component.LogicNode(idx=0, label="a"),
+                        sw_compdocs.component.LogicNode(idx=1, label="c"),
                     ]
                 ),
             ),
@@ -1929,10 +1932,12 @@ class TestLogicNodeInit(unittest.TestCase):
         tt = collections.namedtuple(
             "tt",
             (
+                "input_idx",
                 "input_label",
                 "input_mode",
                 "input_type",
                 "input_description",
+                "want_idx",
                 "want_label",
                 "want_mode",
                 "want_type",
@@ -1942,50 +1947,72 @@ class TestLogicNodeInit(unittest.TestCase):
 
         for tc in [
             tt(
+                input_idx=52149,
                 input_label="label",
                 input_mode=sw_compdocs.component.LogicNodeMode.INPUT,
                 input_type=sw_compdocs.component.LogicNodeType.FLOAT,
                 input_description="description",
+                want_idx=52149,
                 want_label="label",
                 want_mode=sw_compdocs.component.LogicNodeMode.INPUT,
                 want_type=sw_compdocs.component.LogicNodeType.FLOAT,
                 want_description="description",
             ),
             tt(
+                input_idx=None,
+                input_label="label",
+                input_mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                input_type=sw_compdocs.component.LogicNodeType.FLOAT,
+                input_description="description",
+                want_idx=0,
+                want_label="label",
+                want_mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                want_type=sw_compdocs.component.LogicNodeType.FLOAT,
+                want_description="description",
+            ),
+            tt(
+                input_idx=52149,
                 input_label=None,
                 input_mode=sw_compdocs.component.LogicNodeMode.INPUT,
                 input_type=sw_compdocs.component.LogicNodeType.FLOAT,
                 input_description="description",
+                want_idx=52149,
                 want_label="",
                 want_mode=sw_compdocs.component.LogicNodeMode.INPUT,
                 want_type=sw_compdocs.component.LogicNodeType.FLOAT,
                 want_description="description",
             ),
             tt(
+                input_idx=52149,
                 input_label="label",
                 input_mode=None,
                 input_type=sw_compdocs.component.LogicNodeType.FLOAT,
                 input_description="description",
+                want_idx=52149,
                 want_label="label",
                 want_mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
                 want_type=sw_compdocs.component.LogicNodeType.FLOAT,
                 want_description="description",
             ),
             tt(
+                input_idx=52149,
                 input_label="label",
                 input_mode=sw_compdocs.component.LogicNodeMode.INPUT,
                 input_type=None,
                 input_description="description",
+                want_idx=52149,
                 want_label="label",
                 want_mode=sw_compdocs.component.LogicNodeMode.INPUT,
                 want_type=sw_compdocs.component.LogicNodeType.BOOL,
                 want_description="description",
             ),
             tt(
+                input_idx=52149,
                 input_label="label",
                 input_mode=sw_compdocs.component.LogicNodeMode.INPUT,
                 input_type=sw_compdocs.component.LogicNodeType.FLOAT,
                 input_description=None,
+                want_idx=52149,
                 want_label="label",
                 want_mode=sw_compdocs.component.LogicNodeMode.INPUT,
                 want_type=sw_compdocs.component.LogicNodeType.FLOAT,
@@ -1994,11 +2021,13 @@ class TestLogicNodeInit(unittest.TestCase):
         ]:
             with self.subTest(tc=tc):
                 got = sw_compdocs.component.LogicNode(
+                    idx=tc.input_idx,
                     label=tc.input_label,
                     mode=tc.input_mode,
                     type=tc.input_type,
                     description=tc.input_description,
                 )
+                self.assertEqual(got.idx, tc.want_idx)
                 self.assertEqual(got.label, tc.want_label)
                 self.assertEqual(got.mode, tc.want_mode)
                 self.assertEqual(got.type, tc.want_type)
@@ -2006,29 +2035,47 @@ class TestLogicNodeInit(unittest.TestCase):
 
     def test_exc_type(self):
         tt = collections.namedtuple(
-            "tt", ("input_label", "input_mode", "input_type", "input_description")
+            "tt",
+            (
+                "input_idx",
+                "input_label",
+                "input_mode",
+                "input_type",
+                "input_description",
+            ),
         )
 
         for tc in [
             tt(
+                input_idx=52149.0,
+                input_label="label",
+                input_mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                input_type=sw_compdocs.component.LogicNodeType.FLOAT,
+                input_description="description",
+            ),
+            tt(
+                input_idx=52149,
                 input_label=0,
                 input_mode=sw_compdocs.component.LogicNodeMode.INPUT,
                 input_type=sw_compdocs.component.LogicNodeType.FLOAT,
                 input_description="description",
             ),
             tt(
+                input_idx=52149,
                 input_label="label",
                 input_mode=0,
                 input_type=sw_compdocs.component.LogicNodeType.FLOAT,
                 input_description="description",
             ),
             tt(
+                input_idx=52149,
                 input_label="label",
                 input_mode=sw_compdocs.component.LogicNodeMode.INPUT,
                 input_type=0,
                 input_description="description",
             ),
             tt(
+                input_idx=52149,
                 input_label="label",
                 input_mode=sw_compdocs.component.LogicNodeMode.INPUT,
                 input_type=sw_compdocs.component.LogicNodeType.FLOAT,
@@ -2038,11 +2085,24 @@ class TestLogicNodeInit(unittest.TestCase):
             with self.subTest(tc=tc):
                 with self.assertRaises(TypeError):
                     sw_compdocs.component.LogicNode(
+                        idx=tc.input_idx,
                         label=tc.input_label,
                         mode=tc.input_mode,
                         type=tc.input_type,
                         description=tc.input_description,
                     )
+
+
+class TestLogicNodeIdxSetter(unittest.TestCase):
+    def test_pass(self):
+        ln = sw_compdocs.component.LogicNode()
+        ln.idx = 52149
+        self.assertEqual(ln.idx, 52149)
+
+    def test_exc_type(self):
+        ln = sw_compdocs.component.LogicNode()
+        with self.assertRaises(TypeError):
+            ln.idx = None
 
 
 class TestLogicNodeLabelSetter(unittest.TestCase):
@@ -2097,7 +2157,15 @@ class TestLogicNodeFromXMLElem(unittest.TestCase):
     def test_pass(self):
         tt = collections.namedtuple(
             "tt",
-            ("input_elem", "want_label", "want_mode", "want_type", "want_description"),
+            (
+                "input_elem",
+                "input_idx",
+                "want_idx",
+                "want_label",
+                "want_mode",
+                "want_type",
+                "want_description",
+            ),
         )
 
         for tc in [
@@ -2109,6 +2177,8 @@ class TestLogicNodeFromXMLElem(unittest.TestCase):
                     type="2",
                     description="description",
                 ),
+                input_idx=52149,
+                want_idx=52149,
                 want_label="label",
                 want_mode=sw_compdocs.component.LogicNodeMode.INPUT,
                 want_type=sw_compdocs.component.LogicNodeType.TORQUE,
@@ -2121,6 +2191,8 @@ class TestLogicNodeFromXMLElem(unittest.TestCase):
                     type="2",
                     description="description",
                 ),
+                input_idx=52149,
+                want_idx=52149,
                 want_label="",
                 want_mode=sw_compdocs.component.LogicNodeMode.INPUT,
                 want_type=sw_compdocs.component.LogicNodeType.TORQUE,
@@ -2133,6 +2205,8 @@ class TestLogicNodeFromXMLElem(unittest.TestCase):
                     type="2",
                     description="description",
                 ),
+                input_idx=52149,
+                want_idx=52149,
                 want_label="label",
                 want_mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
                 want_type=sw_compdocs.component.LogicNodeType.TORQUE,
@@ -2145,6 +2219,8 @@ class TestLogicNodeFromXMLElem(unittest.TestCase):
                     mode="1",
                     description="description",
                 ),
+                input_idx=52149,
+                want_idx=52149,
                 want_label="label",
                 want_mode=sw_compdocs.component.LogicNodeMode.INPUT,
                 want_type=sw_compdocs.component.LogicNodeType.BOOL,
@@ -2157,6 +2233,8 @@ class TestLogicNodeFromXMLElem(unittest.TestCase):
                     mode="1",
                     type="2",
                 ),
+                input_idx=52149,
+                want_idx=52149,
                 want_label="label",
                 want_mode=sw_compdocs.component.LogicNodeMode.INPUT,
                 want_type=sw_compdocs.component.LogicNodeType.TORQUE,
@@ -2164,7 +2242,10 @@ class TestLogicNodeFromXMLElem(unittest.TestCase):
             ),
         ]:
             with self.subTest(tc=tc):
-                got = sw_compdocs.component.LogicNode.from_xml_elem(tc.input_elem)
+                got = sw_compdocs.component.LogicNode.from_xml_elem(
+                    tc.input_elem, idx=tc.input_idx
+                )
+                self.assertEqual(got.idx, tc.want_idx)
                 self.assertEqual(got.label, tc.want_label)
                 self.assertEqual(got.mode, tc.want_mode)
                 self.assertEqual(got.type, tc.want_type)
@@ -2230,6 +2311,7 @@ class TestLogicNodeFromXMLElem(unittest.TestCase):
 class TestLogicNodeRepr(unittest.TestCase):
     def test(self):
         ln = sw_compdocs.component.LogicNode(
+            idx=52149,
             label="label",
             mode=sw_compdocs.component.LogicNodeMode.INPUT,
             type=sw_compdocs.component.LogicNodeType.FLOAT,
@@ -2237,7 +2319,7 @@ class TestLogicNodeRepr(unittest.TestCase):
         )
         self.assertEqual(
             repr(ln),
-            f"LogicNode(label='label', mode={sw_compdocs.component.LogicNodeMode.INPUT!r}, type={sw_compdocs.component.LogicNodeType.FLOAT!r}, description='description')",
+            f"LogicNode(idx=52149, label='label', mode={sw_compdocs.component.LogicNodeMode.INPUT!r}, type={sw_compdocs.component.LogicNodeType.FLOAT!r}, description='description')",
         )
 
 
@@ -2248,12 +2330,14 @@ class TestLogicNodeEq(unittest.TestCase):
         for tc in [
             tt(
                 input_self=sw_compdocs.component.LogicNode(
+                    idx=52149,
                     label="label",
                     mode=sw_compdocs.component.LogicNodeMode.INPUT,
                     type=sw_compdocs.component.LogicNodeType.FLOAT,
                     description="description",
                 ),
                 input_other=sw_compdocs.component.LogicNode(
+                    idx=52149,
                     label="label",
                     mode=sw_compdocs.component.LogicNodeMode.INPUT,
                     type=sw_compdocs.component.LogicNodeType.FLOAT,
@@ -2263,12 +2347,31 @@ class TestLogicNodeEq(unittest.TestCase):
             ),
             tt(
                 input_self=sw_compdocs.component.LogicNode(
+                    idx=52149,
                     label="label",
                     mode=sw_compdocs.component.LogicNodeMode.INPUT,
                     type=sw_compdocs.component.LogicNodeType.FLOAT,
                     description="description",
                 ),
                 input_other=sw_compdocs.component.LogicNode(
+                    idx=52150,
+                    label="label",
+                    mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                    type=sw_compdocs.component.LogicNodeType.FLOAT,
+                    description="description",
+                ),
+                want_eq=False,
+            ),
+            tt(
+                input_self=sw_compdocs.component.LogicNode(
+                    idx=52149,
+                    label="label",
+                    mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                    type=sw_compdocs.component.LogicNodeType.FLOAT,
+                    description="description",
+                ),
+                input_other=sw_compdocs.component.LogicNode(
+                    idx=52149,
                     label="labe1",
                     mode=sw_compdocs.component.LogicNodeMode.INPUT,
                     type=sw_compdocs.component.LogicNodeType.FLOAT,
@@ -2278,12 +2381,14 @@ class TestLogicNodeEq(unittest.TestCase):
             ),
             tt(
                 input_self=sw_compdocs.component.LogicNode(
+                    idx=52149,
                     label="label",
                     mode=sw_compdocs.component.LogicNodeMode.INPUT,
                     type=sw_compdocs.component.LogicNodeType.FLOAT,
                     description="description",
                 ),
                 input_other=sw_compdocs.component.LogicNode(
+                    idx=52149,
                     label="label",
                     mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
                     type=sw_compdocs.component.LogicNodeType.FLOAT,
@@ -2293,12 +2398,14 @@ class TestLogicNodeEq(unittest.TestCase):
             ),
             tt(
                 input_self=sw_compdocs.component.LogicNode(
+                    idx=52149,
                     label="label",
                     mode=sw_compdocs.component.LogicNodeMode.INPUT,
                     type=sw_compdocs.component.LogicNodeType.FLOAT,
                     description="description",
                 ),
                 input_other=sw_compdocs.component.LogicNode(
+                    idx=52149,
                     label="label",
                     mode=sw_compdocs.component.LogicNodeMode.INPUT,
                     type=sw_compdocs.component.LogicNodeType.TORQUE,
@@ -2308,12 +2415,14 @@ class TestLogicNodeEq(unittest.TestCase):
             ),
             tt(
                 input_self=sw_compdocs.component.LogicNode(
+                    idx=52149,
                     label="label",
                     mode=sw_compdocs.component.LogicNodeMode.INPUT,
                     type=sw_compdocs.component.LogicNodeType.FLOAT,
                     description="description",
                 ),
                 input_other=sw_compdocs.component.LogicNode(
+                    idx=52149,
                     label="label",
                     mode=sw_compdocs.component.LogicNodeMode.INPUT,
                     type=sw_compdocs.component.LogicNodeType.FLOAT,
@@ -2323,6 +2432,7 @@ class TestLogicNodeEq(unittest.TestCase):
             ),
             tt(
                 input_self=sw_compdocs.component.LogicNode(
+                    idx=52149,
                     label="label",
                     mode=sw_compdocs.component.LogicNodeMode.INPUT,
                     type=sw_compdocs.component.LogicNodeType.FLOAT,

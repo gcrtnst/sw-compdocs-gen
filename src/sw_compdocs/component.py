@@ -438,7 +438,7 @@ class LogicNodeList(container.MutableSequence):
             tag = "logic_node"
             for idx, sub in enumerate(elem.findall(tag)):
                 try:
-                    ln = LogicNode.from_xml_elem(sub)
+                    ln = LogicNode.from_xml_elem(sub, idx=idx)
                 except ComponentXMLError as exc:
                     exc.prepend_xpath(f"{tag}[{idx + 1}]")
                     raise
@@ -452,6 +452,18 @@ class LogicNodeList(container.MutableSequence):
 
 
 class LogicNode:
+    @property
+    def idx(self):
+        return self._idx
+
+    @idx.setter
+    def idx(self, value):
+        if type(value) is not int:
+            raise TypeError
+        if value < 0:
+            raise ValueError
+        self._idx = value
+
     @property
     def label(self):
         return self._label
@@ -492,14 +504,15 @@ class LogicNode:
             raise TypeError
         self._description = value
 
-    def __init__(self, *, label=None, mode=None, type=None, description=None):
+    def __init__(self, *, idx=None, label=None, mode=None, type=None, description=None):
+        self.idx = _coalesce(idx, 0)
         self.label = _coalesce(label, "")
         self.mode = _coalesce(mode, LogicNodeMode.OUTPUT)
         self.type = _coalesce(type, LogicNodeType.BOOL)
         self.description = _coalesce(description, "")
 
     @classmethod
-    def from_xml_elem(cls, elem):
+    def from_xml_elem(cls, elem, *, idx=None):
         if not isinstance(elem, lxml.etree._Element):
             raise TypeError
 
@@ -528,15 +541,16 @@ class LogicNode:
                     f"invalid logic node type {typo_raw!r}"
                 ) from exc
 
-        return cls(label=label, mode=mode, type=typo, description=description)
+        return cls(idx=idx, label=label, mode=mode, type=typo, description=description)
 
     def __repr__(self):
-        return f"{type(self).__name__}(label={self.label!r}, mode={self.mode!r}, type={self.type!r}, description={self.description!r})"
+        return f"{type(self).__name__}(idx={self.idx!r}, label={self.label!r}, mode={self.mode!r}, type={self.type!r}, description={self.description!r})"
 
     def __eq__(self, other):
         if type(self) is type(other):
             return (
-                self.label == other.label
+                self.idx == other.idx
+                and self.label == other.label
                 and self.mode == other.mode
                 and self.type == other.type
                 and self.description == other.description
