@@ -1817,7 +1817,7 @@ class TestLogicNodeListInit(unittest.TestCase):
             ]
         )
         self.assertEqual(
-            lns[:],
+            lns._l,
             [
                 sw_compdocs.component.LogicNode(label="a"),
                 sw_compdocs.component.LogicNode(label="b"),
