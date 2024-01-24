@@ -3,13 +3,13 @@ import re
 
 
 class TemplateFormatter:
-    def __init__(self, mapping):
+    def __init__(self, mapping: collections.abc.Mapping[str, str]) -> None:
         if not isinstance(mapping, collections.abc.Mapping):
             raise TemplateMappingError(
                 f"template mapping must be mapping, not '{type(mapping).__name__}'"
             )
 
-        self._d = {}
+        self._d: dict[str, str] = {}
         for key, val in mapping.items():
             if type(key) is not str:
                 raise TemplateMappingError(
@@ -21,11 +21,11 @@ class TemplateFormatter:
                 )
             self._d[key] = val
 
-    def format(self, s):
+    def format(self, s: str):
         if type(s) is not str:
             raise TypeError
 
-        def repl(match):
+        def repl(match: re.Match[str]) -> str:
             key = match["key"]
             try:
                 val = self._d[key]
@@ -41,9 +41,9 @@ class TemplateMappingError(Exception):
 
 
 class TemplateKeyError(Exception):
-    def __init__(self, key):
+    def __init__(self, key: object) -> None:
         super().__init__(key)
         self.key = key
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"missing key {repr(self.key)} in template mapping"
