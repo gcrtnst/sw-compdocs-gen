@@ -4,20 +4,6 @@ import enum
 from . import container
 
 
-class Document(container.MutableSequence):
-    def _check_value(self, value):
-        if not isinstance(value, Block):
-            raise TypeError
-
-    def shift(self, level=1):
-        if type(level) is not int:
-            raise TypeError
-
-        for blk in self:
-            if isinstance(blk, Heading):
-                blk.level += level
-
-
 class Block:
     def __init__(self):
         if type(self) is Block:
@@ -83,27 +69,30 @@ class Paragraph(Block):
         return super().__eq__(other)
 
 
-class Table(Block):
-    @property
-    def data(self):
-        return self._data
+class TableDataRow(container.Sequence):
+    def __init__(self, iterable=()):
+        super().__init__(iterable)
 
-    @data.setter
-    def data(self, value):
-        if type(value) is not TableData:
+        if len(self) <= 0:
+            raise ValueError
+        for v in self:
+            self._check_type(v)
+
+    def __setitem__(self, key, value):
+        if type(key) is slice:
+            value = list(value)
+            if len(self[key]) != len(value):
+                raise ValueError
+            for v in value:
+                self._check_type(v)
+        else:
+            self._check_type(value)
+        self._l[key] = value
+
+    @classmethod
+    def _check_type(cls, v):
+        if type(v) is not str:
             raise TypeError
-        self._data = value
-
-    def __init__(self, data):
-        self.data = data
-
-    def __repr__(self):
-        return f"{type(self).__name__}({repr(self.data)})"
-
-    def __eq__(self, other):
-        if type(self) is type(other):
-            return self.data == other.data
-        return super().__eq__(other)
 
 
 class TableData(container.MutableSequence):
@@ -131,30 +120,33 @@ class TableData(container.MutableSequence):
             raise ValueError
 
 
-class TableDataRow(container.Sequence):
-    def __init__(self, iterable=()):
-        super().__init__(iterable)
+class Table(Block):
+    @property
+    def data(self):
+        return self._data
 
-        if len(self) <= 0:
-            raise ValueError
-        for v in self:
-            self._check_type(v)
-
-    def __setitem__(self, key, value):
-        if type(key) is slice:
-            value = list(value)
-            if len(self[key]) != len(value):
-                raise ValueError
-            for v in value:
-                self._check_type(v)
-        else:
-            self._check_type(value)
-        self._l[key] = value
-
-    @classmethod
-    def _check_type(cls, v):
-        if type(v) is not str:
+    @data.setter
+    def data(self, value):
+        if type(value) is not TableData:
             raise TypeError
+        self._data = value
+
+    def __init__(self, data):
+        self.data = data
+
+    def __repr__(self):
+        return f"{type(self).__name__}({repr(self.data)})"
+
+    def __eq__(self, other):
+        if type(self) is type(other):
+            return self.data == other.data
+        return super().__eq__(other)
+
+
+@enum.unique
+class CalloutKind(enum.Enum):
+    NOTE = enum.auto()
+    WARNING = enum.auto()
 
 
 class Callout(Block):
@@ -191,7 +183,15 @@ class Callout(Block):
         return super().__eq__(other)
 
 
-@enum.unique
-class CalloutKind(enum.Enum):
-    NOTE = enum.auto()
-    WARNING = enum.auto()
+class Document(container.MutableSequence):
+    def _check_value(self, value):
+        if not isinstance(value, Block):
+            raise TypeError
+
+    def shift(self, level=1):
+        if type(level) is not int:
+            raise TypeError
+
+        for blk in self:
+            if isinstance(blk, Heading):
+                blk.level += level
