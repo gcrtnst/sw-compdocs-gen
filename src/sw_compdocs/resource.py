@@ -1,7 +1,7 @@
 import re
 
 
-def format_toml_key(key):
+def format_toml_key(key: str) -> str:
     if type(key) is not str:
         raise TypeError
 
@@ -10,7 +10,7 @@ def format_toml_key(key):
     return format_toml_string(key)
 
 
-def format_toml_string(s):
+def format_toml_string(s: str) -> str:
     if type(s) is not str:
         raise TypeError
 
