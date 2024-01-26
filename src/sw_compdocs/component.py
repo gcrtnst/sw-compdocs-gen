@@ -1,14 +1,19 @@
+import collections.abc
 import enum
 import lxml.etree
 import os
 import pathlib
 import re
+import typing
 
 from . import container
 from . import validator
 
 
-def _coalesce(value, default):
+_T = typing.TypeVar("_T")
+
+
+def _coalesce(value: _T | None, default: _T) -> _T:
     if value is None:
         return default
     return value
@@ -16,24 +21,24 @@ def _coalesce(value, default):
 
 class ComponentXMLError(Exception):
     @property
-    def msg(self):
+    def msg(self) -> str:
         return self._msg
 
     @property
-    def file(self):
+    def file(self) -> validator.StrOrBytesPath | None:
         return self._file
 
     @file.setter
-    def file(self, value):
+    def file(self, value: validator.StrOrBytesPath | None) -> None:
         if value is not None and not validator.is_pathlike(value):
             raise TypeError
         self._file = value
 
     @property
-    def xpath(self):
+    def xpath(self) -> str:
         return self._xpath
 
-    def __init__(self, msg):
+    def __init__(self, msg: str) -> None:
         if type(msg) is not str:
             raise TypeError
 
@@ -41,13 +46,13 @@ class ComponentXMLError(Exception):
         self._msg = msg
         self._file = None
         self._xpath = "."
-        self._xpath_list = []
+        self._xpath_list: list[str] = []
 
-    def __str__(self):
+    def __str__(self) -> str:
         file = os.fsdecode(self.file) if self.file is not None else "<component.xml>"
         return f"{file}: {self.xpath}: {self.msg}"
 
-    def prepend_xpath(self, s):
+    def prepend_xpath(self, s: str) -> None:
         if len(self._xpath_list) >= 1 and self._xpath_list[0] == "/":
             raise RuntimeError
 
@@ -65,7 +70,7 @@ class ComponentXMLError(Exception):
         raise ValueError
 
 
-def generate_cid(file):
+def generate_cid(file: validator.StrOrBytesPath) -> str:
     if not isinstance(file, pathlib.PurePath):
         file = os.fsdecode(file)
         file = pathlib.PurePath(file)
@@ -97,40 +102,41 @@ class Category(enum.Enum):
     INDUSTRY = 14
     WINDOWS = 15
 
-    def __str__(self):
-        if self is self.BLOCKS:
+    def __str__(self) -> str:
+        cls = type(self)
+        if self is cls.BLOCKS:
             return "Blocks"
-        if self is self.VEHICLE_CONTROL:
+        if self is cls.VEHICLE_CONTROL:
             return "Vehicle Control"
-        if self is self.MECHANICS:
+        if self is cls.MECHANICS:
             return "Mechanics"
-        if self is self.PROPULSION:
+        if self is cls.PROPULSION:
             return "Propulsion"
-        if self is self.SPECIALIST_EQUIPMENT:
+        if self is cls.SPECIALIST_EQUIPMENT:
             return "Specialist Equipment"
-        if self is self.LOGIC:
+        if self is cls.LOGIC:
             return "Logic"
-        if self is self.DISPLAYS:
+        if self is cls.DISPLAYS:
             return "Displays"
-        if self is self.SENSORS:
+        if self is cls.SENSORS:
             return "Sensors"
-        if self is self.DECORATIVE:
+        if self is cls.DECORATIVE:
             return "Decorative"
-        if self is self.FLUID:
+        if self is cls.FLUID:
             return "Fluid"
-        if self is self.ELECTRIC:
+        if self is cls.ELECTRIC:
             return "Electric"
-        if self is self.JET_ENGINES:
+        if self is cls.JET_ENGINES:
             return "Jet Engines"
-        if self is self.WEAPONS:
+        if self is cls.WEAPONS:
             return "Weapons"
-        if self is self.MODULAR_ENGINES:
+        if self is cls.MODULAR_ENGINES:
             return "Modular Engines"
-        if self is self.INDUSTRY:
+        if self is cls.INDUSTRY:
             return "Industry"
-        if self is self.WINDOWS:
+        if self is cls.WINDOWS:
             return "Windows"
-        raise Exception
+        typing.assert_never(self)
 
 
 @enum.unique
@@ -140,31 +146,33 @@ class Flags(enum.Flag, boundary=enum.KEEP):
 
 class TooltipProperties:
     @property
-    def short_description(self):
+    def short_description(self) -> str:
         return self._short_description
 
     @short_description.setter
-    def short_description(self, value):
+    def short_description(self, value: str) -> None:
         if type(value) is not str:
             raise TypeError
         self._short_description = value
 
     @property
-    def description(self):
+    def description(self) -> str:
         return self._description
 
     @description.setter
-    def description(self, value):
+    def description(self, value: str) -> None:
         if type(value) is not str:
             raise TypeError
         self._description = value
 
-    def __init__(self, *, short_description=None, description=None):
+    def __init__(
+        self, *, short_description: str | None = None, description: str | None = None
+    ) -> None:
         self.short_description = _coalesce(short_description, "")
         self.description = _coalesce(description, "")
 
     @classmethod
-    def from_xml_elem(cls, elem):
+    def from_xml_elem(cls, elem: lxml.etree._Element) -> typing.Self:
         if not isinstance(elem, lxml.etree._Element):
             raise TypeError
 
@@ -173,18 +181,21 @@ class TooltipProperties:
             description=elem.get("description"),
         )
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{type(self).__name__}(short_description={self.short_description!r}, description={self.description!r})"
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         if type(self) is type(other):
+            # type narrowing assertion for mypy 1.8.0
+            assert isinstance(other, type(self))
+
             return (
                 self.short_description == other.short_description
                 and self.description == other.description
             )
         return super().__eq__(other)
 
-    def full_description(self):
+    def full_description(self) -> str:
         if self.short_description == "" and self.description == "":
             return ""
         elif self.short_description == "":
@@ -212,35 +223,36 @@ class LogicNodeType(enum.Enum):
     AUDIO = 7
     ROPE = 8
 
-    def __str__(self):
-        if self is self.BOOL:
+    def __str__(self) -> str:
+        cls = type(self)
+        if self is cls.BOOL:
             return "on/off"
-        if self is self.FLOAT:
+        if self is cls.FLOAT:
             return "number"
-        if self is self.TORQUE:
+        if self is cls.TORQUE:
             return "power"
-        if self is self.WATER:
+        if self is cls.WATER:
             return "fluid"
-        if self is self.ELECTRIC:
+        if self is cls.ELECTRIC:
             return "electric"
-        if self is self.COMPOSITE:
+        if self is cls.COMPOSITE:
             return "composite"
-        if self is self.VIDEO:
+        if self is cls.VIDEO:
             return "video"
-        if self is self.AUDIO:
+        if self is cls.AUDIO:
             return "audio"
-        if self is self.ROPE:
+        if self is cls.ROPE:
             return "rope"
-        raise Exception
+        typing.assert_never(self)
 
 
 class LogicNode:
     @property
-    def idx(self):
+    def idx(self) -> int:
         return self._idx
 
     @idx.setter
-    def idx(self, value):
+    def idx(self, value: int) -> None:
         if type(value) is not int:
             raise TypeError
         if value < 0:
@@ -248,46 +260,54 @@ class LogicNode:
         self._idx = value
 
     @property
-    def label(self):
+    def label(self) -> str:
         return self._label
 
     @label.setter
-    def label(self, value):
+    def label(self, value: str) -> None:
         if type(value) is not str:
             raise TypeError
         self._label = value
 
     @property
-    def mode(self):
+    def mode(self) -> LogicNodeMode:
         return self._mode
 
     @mode.setter
-    def mode(self, value):
+    def mode(self, value: LogicNodeMode) -> None:
         if type(value) is not LogicNodeMode:
             raise TypeError
         self._mode = value
 
     @property
-    def type(self):
+    def type(self) -> LogicNodeType:
         return self._type
 
     @type.setter
-    def type(self, value):
+    def type(self, value: LogicNodeType) -> None:
         if type(value) is not LogicNodeType:
             raise TypeError
         self._type = value
 
     @property
-    def description(self):
+    def description(self) -> str:
         return self._description
 
     @description.setter
-    def description(self, value):
+    def description(self, value: str) -> None:
         if type(value) is not str:
             raise TypeError
         self._description = value
 
-    def __init__(self, *, idx=None, label=None, mode=None, type=None, description=None):
+    def __init__(
+        self,
+        *,
+        idx: int | None = None,
+        label: str | None = None,
+        mode: LogicNodeMode | None = None,
+        type: LogicNodeType | None = None,
+        description: str | None = None,
+    ):
         self.idx = _coalesce(idx, 0)
         self.label = _coalesce(label, "")
         self.mode = _coalesce(mode, LogicNodeMode.OUTPUT)
@@ -295,42 +315,45 @@ class LogicNode:
         self.description = _coalesce(description, "")
 
     @classmethod
-    def from_xml_elem(cls, elem, *, idx=None):
+    def from_xml_elem(
+        cls, elem: lxml.etree._Element, *, idx: int | None = None
+    ) -> typing.Self:
         if not isinstance(elem, lxml.etree._Element):
             raise TypeError
 
         label = elem.get("label")
-        mode = elem.get("mode")
-        typo = elem.get("type")
+        mode_attr = elem.get("mode")
+        typo_attr = elem.get("type")
         description = elem.get("description")
 
-        if mode is not None:
-            mode_raw = mode
+        mode = None
+        if mode_attr is not None:
             try:
-                mode = int(mode, base=10)
-                mode = LogicNodeMode(mode)
+                mode = LogicNodeMode(int(mode_attr, base=10))
             except ValueError as exc:
                 raise ComponentXMLError(
-                    f"invalid logic node mode {mode_raw!r}"
+                    f"invalid logic node mode {mode_attr!r}"
                 ) from exc
 
-        if typo is not None:
-            typo_raw = typo
+        typo = None
+        if typo_attr is not None:
             try:
-                typo = int(typo, base=10)
-                typo = LogicNodeType(typo)
+                typo = LogicNodeType(int(typo_attr, base=10))
             except ValueError as exc:
                 raise ComponentXMLError(
-                    f"invalid logic node type {typo_raw!r}"
+                    f"invalid logic node type {typo_attr!r}"
                 ) from exc
 
         return cls(idx=idx, label=label, mode=mode, type=typo, description=description)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{type(self).__name__}(idx={self.idx!r}, label={self.label!r}, mode={self.mode!r}, type={self.type!r}, description={self.description!r})"
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         if type(self) is type(other):
+            # type narrowing assertion for mypy 1.8.0
+            assert isinstance(other, type(self))
+
             return (
                 self.idx == other.idx
                 and self.label == other.label
@@ -341,13 +364,13 @@ class LogicNode:
         return super().__eq__(other)
 
 
-class LogicNodeList(container.MutableSequence):
+class LogicNodeList(container.MutableSequence[LogicNode]):
     @classmethod
-    def from_xml_elem(cls, elem):
+    def from_xml_elem(cls, elem: lxml.etree._Element) -> typing.Self:
         if not isinstance(elem, lxml.etree._Element):
             raise TypeError
 
-        def generate():
+        def generate() -> collections.abc.Iterator[LogicNode]:
             tag = "logic_node"
             for idx, sub in enumerate(elem.findall(tag)):
                 try:
@@ -359,192 +382,200 @@ class LogicNodeList(container.MutableSequence):
 
         return cls(generate())
 
-    def _check_value(self, value):
+    def _check_value(self, value: LogicNode) -> None:
         if not isinstance(value, LogicNode):
             raise TypeError
 
 
 class VoxelPos:
     @property
-    def x(self):
+    def x(self) -> int:
         return self._x
 
     @x.setter
-    def x(self, value):
+    def x(self, value: int) -> None:
         if type(value) is not int:
             raise TypeError
         self._x = value
 
     @property
-    def y(self):
+    def y(self) -> int:
         return self._y
 
     @y.setter
-    def y(self, value):
+    def y(self, value: int) -> None:
         if type(value) is not int:
             raise TypeError
         self._y = value
 
     @property
-    def z(self):
+    def z(self) -> int:
         return self._z
 
     @z.setter
-    def z(self, value):
+    def z(self, value: int) -> None:
         if type(value) is not int:
             raise TypeError
         self._z = value
 
-    def __init__(self, *, x=None, y=None, z=None):
+    def __init__(
+        self, *, x: int | None = None, y: int | None = None, z: int | None = None
+    ):
         self.x = _coalesce(x, 0)
         self.y = _coalesce(y, 0)
         self.z = _coalesce(z, 0)
 
     @classmethod
-    def from_xml_elem(cls, elem):
+    def from_xml_elem(cls, elem: lxml.etree._Element) -> typing.Self:
         if not isinstance(elem, lxml.etree._Element):
             raise TypeError
 
-        x = elem.get("x")
-        y = elem.get("y")
-        z = elem.get("z")
+        x_attr = elem.get("x")
+        y_attr = elem.get("y")
+        z_attr = elem.get("z")
 
-        if x is not None:
+        x = None
+        if x_attr is not None:
             try:
-                x = int(x, base=10)
+                x = int(x_attr, base=10)
             except ValueError as exc:
-                raise ComponentXMLError(f"invalid voxel x {x!r}") from exc
+                raise ComponentXMLError(f"invalid voxel x {x_attr!r}") from exc
 
-        if y is not None:
+        y = None
+        if y_attr is not None:
             try:
-                y = int(y, base=10)
+                y = int(y_attr, base=10)
             except ValueError as exc:
-                raise ComponentXMLError(f"invalid voxel y {y!r}") from exc
+                raise ComponentXMLError(f"invalid voxel y {y_attr!r}") from exc
 
-        if z is not None:
+        z = None
+        if z_attr is not None:
             try:
-                z = int(z, base=10)
+                z = int(z_attr, base=10)
             except ValueError as exc:
-                raise ComponentXMLError(f"invalid voxel z {z!r}") from exc
+                raise ComponentXMLError(f"invalid voxel z {z_attr!r}") from exc
 
         return cls(x=x, y=y, z=z)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{type(self).__name__}(x={self.x!r}, y={self.y!r}, z={self.z!r})"
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         if type(self) is type(other):
+            # type narrowing assertion for mypy 1.8.0
+            assert isinstance(other, type(self))
+
             return self.x == other.x and self.y == other.y and self.z == other.z
         return super().__eq__(other)
 
 
 class Definition:
     @property
-    def cid(self):
+    def cid(self) -> str:
         return self._cid
 
     @cid.setter
-    def cid(self, value):
+    def cid(self, value: str) -> None:
         if type(value) is not str:
             raise TypeError
         self._cid = value
 
     @property
-    def name(self):
+    def name(self) -> str:
         return self._name
 
     @name.setter
-    def name(self, value):
+    def name(self, value: str) -> None:
         if type(value) is not str:
             raise TypeError
         self._name = value
 
     @property
-    def category(self):
+    def category(self) -> Category:
         return self._category
 
     @category.setter
-    def category(self, value):
+    def category(self, value: Category) -> None:
         if type(value) is not Category:
             raise TypeError
         self._category = value
 
     @property
-    def mass(self):
+    def mass(self) -> float:
         return self._mass
 
     @mass.setter
-    def mass(self, value):
+    def mass(self, value: float) -> None:
         if type(value) is not float:
             raise TypeError
         self._mass = value
 
     @property
-    def value(self):
+    def value(self) -> int:
         return self._value
 
     @value.setter
-    def value(self, value):
+    def value(self, value: int) -> None:
         if type(value) is not int:
             raise TypeError
         self._value = value
 
     @property
-    def flags(self):
+    def flags(self) -> Flags:
         return self._flags
 
     @flags.setter
-    def flags(self, value):
+    def flags(self, value: Flags) -> None:
         if type(value) is not Flags:
             raise TypeError
         self._flags = value
 
     @property
-    def tags(self):
+    def tags(self) -> str:
         return self._tags
 
     @tags.setter
-    def tags(self, value):
+    def tags(self, value: str) -> None:
         if type(value) is not str:
             raise TypeError
         self._tags = value
 
     @property
-    def tooltip_properties(self):
+    def tooltip_properties(self) -> TooltipProperties:
         return self._tooltip_properties
 
     @tooltip_properties.setter
-    def tooltip_properties(self, value):
+    def tooltip_properties(self, value: TooltipProperties) -> None:
         if type(value) is not TooltipProperties:
             raise TypeError
         self._tooltip_properties = value
 
     @property
-    def logic_nodes(self):
+    def logic_nodes(self) -> LogicNodeList:
         return self._logic_nodes
 
     @logic_nodes.setter
-    def logic_nodes(self, value):
+    def logic_nodes(self, value: LogicNodeList) -> None:
         if type(value) is not LogicNodeList:
             raise TypeError
         self._logic_nodes = value
 
     @property
-    def voxel_min(self):
+    def voxel_min(self) -> VoxelPos:
         return self._voxel_min
 
     @voxel_min.setter
-    def voxel_min(self, value):
+    def voxel_min(self, value: VoxelPos) -> None:
         if type(value) is not VoxelPos:
             raise TypeError
         self._voxel_min = value
 
     @property
-    def voxel_max(self):
+    def voxel_max(self) -> VoxelPos:
         return self._voxel_max
 
     @voxel_max.setter
-    def voxel_max(self, value):
+    def voxel_max(self, value: VoxelPos) -> None:
         if type(value) is not VoxelPos:
             raise TypeError
         self._voxel_max = value
@@ -552,18 +583,18 @@ class Definition:
     def __init__(
         self,
         *,
-        cid=None,
-        name=None,
-        category=None,
-        mass=None,
-        value=None,
-        flags=None,
-        tags=None,
-        tooltip_properties=None,
-        logic_nodes=None,
-        voxel_min=None,
-        voxel_max=None,
-    ):
+        cid: str | None = None,
+        name: str | None = None,
+        category: Category | None = None,
+        mass: float | None = None,
+        value: int | None = None,
+        flags: Flags | None = None,
+        tags: str | None = None,
+        tooltip_properties: TooltipProperties | None = None,
+        logic_nodes: LogicNodeList | None = None,
+        voxel_min: VoxelPos | None = None,
+        voxel_max: VoxelPos | None = None,
+    ) -> None:
         self.cid = _coalesce(cid, "")
         self.name = _coalesce(name, "")
         self.category = _coalesce(category, Category.BLOCKS)
@@ -577,77 +608,89 @@ class Definition:
         self.voxel_max = _coalesce(voxel_max, VoxelPos())
 
     @classmethod
-    def from_xml_elem(cls, elem, *, cid=None):
+    def from_xml_elem(
+        cls, elem: lxml.etree._Element, *, cid: str | None = None
+    ) -> typing.Self:
         if not isinstance(elem, lxml.etree._Element):
             raise TypeError
 
         name = elem.get("name")
-        category = elem.get("category")
-        mass = elem.get("mass")
-        value = elem.get("value")
-        flags = elem.get("flags")
+        category_attr = elem.get("category")
+        mass_attr = elem.get("mass")
+        value_attr = elem.get("value")
+        flags_attr = elem.get("flags")
         tags = elem.get("tags")
-        tooltip_properties = elem.find("tooltip_properties")
-        logic_nodes = elem.find("logic_nodes")
-        voxel_min = elem.find("voxel_min")
-        voxel_max = elem.find("voxel_max")
+        tooltip_properties_elem = elem.find("tooltip_properties")
+        logic_nodes_elem = elem.find("logic_nodes")
+        voxel_min_elem = elem.find("voxel_min")
+        voxel_max_elem = elem.find("voxel_max")
 
-        if category is not None:
-            category_raw = category
+        category = None
+        if category_attr is not None:
             try:
-                category = int(category, base=10)
-                category = Category(category)
+                category = Category(int(category_attr, base=10))
             except ValueError as exc:
                 raise ComponentXMLError(
-                    f"invalid component category {category_raw!r}"
+                    f"invalid component category {category_attr!r}"
                 ) from exc
 
-        if mass is not None:
+        mass = None
+        if mass_attr is not None:
             try:
-                mass = float(mass)
-            except ValueError as exc:
-                raise ComponentXMLError(f"invalid component mass {mass!r}") from exc
-
-        if value is not None:
-            try:
-                value = int(value, base=10)
-            except ValueError as exc:
-                raise ComponentXMLError(f"invalid component value {value!r}") from exc
-
-        if flags is not None:
-            flags_raw = flags
-            try:
-                flags = int(flags, base=10)
-                flags = Flags(flags)
+                mass = float(mass_attr)
             except ValueError as exc:
                 raise ComponentXMLError(
-                    f"invalid component flags {flags_raw!r}"
+                    f"invalid component mass {mass_attr!r}"
                 ) from exc
 
-        if tooltip_properties is not None:
+        value = None
+        if value_attr is not None:
             try:
-                tooltip_properties = TooltipProperties.from_xml_elem(tooltip_properties)
+                value = int(value_attr, base=10)
+            except ValueError as exc:
+                raise ComponentXMLError(
+                    f"invalid component value {value_attr!r}"
+                ) from exc
+
+        flags = None
+        if flags_attr is not None:
+            try:
+                flags = Flags(int(flags_attr, base=10))
+            except ValueError as exc:
+                raise ComponentXMLError(
+                    f"invalid component flags {flags_attr!r}"
+                ) from exc
+
+        tooltip_properties = None
+        if tooltip_properties_elem is not None:
+            try:
+                tooltip_properties = TooltipProperties.from_xml_elem(
+                    tooltip_properties_elem
+                )
             except ComponentXMLError as exc:
                 exc.prepend_xpath("tooltip_properties")
                 raise
 
-        if logic_nodes is not None:
+        logic_nodes = None
+        if logic_nodes_elem is not None:
             try:
-                logic_nodes = LogicNodeList.from_xml_elem(logic_nodes)
+                logic_nodes = LogicNodeList.from_xml_elem(logic_nodes_elem)
             except ComponentXMLError as exc:
                 exc.prepend_xpath("logic_nodes")
                 raise
 
-        if voxel_min is not None:
+        voxel_min = None
+        if voxel_min_elem is not None:
             try:
-                voxel_min = VoxelPos.from_xml_elem(voxel_min)
+                voxel_min = VoxelPos.from_xml_elem(voxel_min_elem)
             except ComponentXMLError as exc:
                 exc.prepend_xpath("voxel_min")
                 raise
 
-        if voxel_max is not None:
+        voxel_max = None
+        if voxel_max_elem is not None:
             try:
-                voxel_max = VoxelPos.from_xml_elem(voxel_max)
+                voxel_max = VoxelPos.from_xml_elem(voxel_max_elem)
             except ComponentXMLError as exc:
                 exc.prepend_xpath("voxel_max")
                 raise
@@ -666,11 +709,14 @@ class Definition:
             voxel_max=voxel_max,
         )
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{type(self).__name__}(cid={self.cid!r}, name={self.name!r}, category={self.category!r}, mass={self.mass!r}, value={self.value!r}, flags={self.flags!r}, tags={self.tags!r}, tooltip_properties={self.tooltip_properties!r}, logic_nodes={self.logic_nodes}, voxel_min={self.voxel_min!r}, voxel_max={self.voxel_max})"
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         if type(self) is type(other):
+            # type narrowing assertion for mypy 1.8.0
+            assert isinstance(other, type(self))
+
             return (
                 self.cid == other.cid
                 and self.name == other.name
@@ -687,14 +733,16 @@ class Definition:
         return super().__eq__(other)
 
 
-def _new_xml_parser():
+# lxml.etree.XMLParser is generic in stub but not at runtime.
+# To avoid errors, we use string literal type.
+def _new_xml_parser() -> "lxml.etree.XMLParser[lxml.etree._Element]":
     # Stormworks uses XML with invalid attribute names.
     # To avoid errors, we enable the recover option.
     # https://nona-takahara.github.io/blog/entry10.html
     return lxml.etree.XMLParser(recover=True)
 
 
-def _parse_xml_root(elem, *, cid=None):
+def _parse_xml_root(elem: lxml.etree._Element, *, cid: str | None = None) -> Definition:
     if elem.tag != "definition":
         exc = ComponentXMLError(f"invalid xml root tag {elem.tag!r}")
         exc.prepend_xpath(elem.tag)
@@ -709,7 +757,7 @@ def _parse_xml_root(elem, *, cid=None):
         raise
 
 
-def parse_xml_file(file):
+def parse_xml_file(file: validator.StrOrBytesPath) -> Definition:
     if not validator.is_pathlike(file):
         raise TypeError
 
@@ -724,6 +772,6 @@ def parse_xml_file(file):
         raise
 
 
-def parse_xml_str(s, *, cid=None):
+def parse_xml_str(s: str, *, cid: str | None = None) -> Definition:
     elem = lxml.etree.fromstring(s, parser=_new_xml_parser())
     return _parse_xml_root(elem, cid=cid)
