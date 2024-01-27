@@ -9,27 +9,6 @@ from . import template
 from . import validator
 
 
-class LabelDictError(Exception):
-    @property
-    def msg(self):
-        return self._msg
-
-    def __init__(self, msg):
-        if type(msg) is not str:
-            raise TypeError
-
-        super().__init__(msg)
-        self._msg = msg
-
-    def __str__(self):
-        return self.msg
-
-    def with_file(self, file):
-        exc = LabelFileError(self.msg)
-        exc.file = file
-        return exc
-
-
 class LabelFileError(Exception):
     @property
     def msg(self):
@@ -56,6 +35,27 @@ class LabelFileError(Exception):
     def __str__(self):
         file = os.fsdecode(self.file) if self.file is not None else "<label.toml>"
         return f"{file}: {self.msg}"
+
+
+class LabelDictError(Exception):
+    @property
+    def msg(self):
+        return self._msg
+
+    def __init__(self, msg):
+        if type(msg) is not str:
+            raise TypeError
+
+        super().__init__(msg)
+        self._msg = msg
+
+    def __str__(self):
+        return self.msg
+
+    def with_file(self, file):
+        exc = LabelFileError(self.msg)
+        exc.file = file
+        return exc
 
 
 class LabelKeyError(KeyError):
