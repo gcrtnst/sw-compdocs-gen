@@ -97,7 +97,7 @@ class TableDataRow(container.Sequence[str]):
     def __setitem__(
         self, index: int | slice, value: str | collections.abc.Iterable[str]
     ) -> None:
-        if isinstance(index, slice):
+        if isinstance(index, slice):  # type: ignore[misc]  # suppress warning for Any types in slice type
             # type cast is safe because of overloads
             value = typing.cast(collections.abc.Iterable[str], value)
 

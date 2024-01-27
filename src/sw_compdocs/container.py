@@ -21,7 +21,7 @@ class Sequence(collections.abc.Sequence[_T_co]):
     def __getitem__(self, index: int | slice) -> _T_co | typing.Self:
         if isinstance(index, int):
             return self._l[index]
-        if isinstance(index, slice):
+        if isinstance(index, slice):  # type: ignore[misc]  # suppress warning for Any types in slice type
             return type(self)(self._l[index])
         typing.assert_never(index)
 
@@ -56,7 +56,7 @@ class MutableSequence(collections.abc.MutableSequence[_T]):
     def __getitem__(self, index: int | slice) -> _T | typing.Self:
         if isinstance(index, int):
             return self._l[index]
-        if isinstance(index, slice):
+        if isinstance(index, slice):  # type: ignore[misc]  # suppress warning for Any types in slice type
             return type(self)(self._l[index])
         typing.assert_never(index)
 
@@ -71,7 +71,7 @@ class MutableSequence(collections.abc.MutableSequence[_T]):
     def __setitem__(
         self, index: int | slice, value: _T | collections.abc.Iterable[_T]
     ) -> None:
-        if isinstance(index, slice):
+        if isinstance(index, slice):  # type: ignore[misc]  # suppress warning for Any types in slice type
             # type cast is safe because of overloads
             value = typing.cast(collections.abc.Iterable[_T], value)
 
