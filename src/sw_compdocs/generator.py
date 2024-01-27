@@ -1,6 +1,7 @@
 import collections.abc
 import os
 import tomllib
+import typing
 
 from . import component
 from . import document
@@ -11,20 +12,20 @@ from . import validator
 
 class LabelFileError(Exception):
     @property
-    def msg(self):
+    def msg(self) -> str:
         return self._msg
 
     @property
-    def file(self):
+    def file(self) -> validator.StrOrBytesPath | None:
         return self._file
 
     @file.setter
-    def file(self, value):
+    def file(self, value: validator.StrOrBytesPath | None) -> None:
         if value is not None and not validator.is_pathlike(value):
             raise TypeError
         self._file = value
 
-    def __init__(self, msg):
+    def __init__(self, msg: str) -> None:
         if type(msg) is not str:
             raise TypeError
 
@@ -32,43 +33,43 @@ class LabelFileError(Exception):
         self._msg = msg
         self._file = None
 
-    def __str__(self):
+    def __str__(self) -> str:
         file = os.fsdecode(self.file) if self.file is not None else "<label.toml>"
         return f"{file}: {self.msg}"
 
 
 class LabelDictError(Exception):
     @property
-    def msg(self):
+    def msg(self) -> str:
         return self._msg
 
-    def __init__(self, msg):
+    def __init__(self, msg: str) -> None:
         if type(msg) is not str:
             raise TypeError
 
         super().__init__(msg)
         self._msg = msg
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.msg
 
-    def with_file(self, file):
+    def with_file(self, file: validator.StrOrBytesPath | None) -> LabelFileError:
         exc = LabelFileError(self.msg)
         exc.file = file
         return exc
 
 
 class LabelKeyError(KeyError):
-    def __init__(self, key):
+    def __init__(self, key: object) -> None:
         super().__init__(key)
         self.key = key
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"missing label text for key {self.key!r}"
 
 
-class LabelDict(collections.abc.Mapping):
-    def __init__(self, mapping={}):
+class LabelDict(collections.abc.Mapping[str, str]):
+    def __init__(self, mapping: object = {}):
         if not isinstance(mapping, collections.abc.Mapping):
             raise LabelDictError(
                 f"invalid label mapping type: {type(mapping).__name__}"
@@ -76,14 +77,14 @@ class LabelDict(collections.abc.Mapping):
 
         self._d = {}
         for k, v in mapping.items():
-            if type(k) is not str:
+            if not isinstance(k, str):
                 raise LabelDictError(f"expected string for label key: {k!r}")
-            if type(v) is not str:
+            if not isinstance(v, str):
                 raise LabelDictError(f"expected string for label text: {v!r}")
             self._d[k] = v
 
     @classmethod
-    def _from_toml(cls, toml):
+    def _from_toml(cls, toml: dict[str, object]) -> typing.Self:
         mapping = toml.get("label")
         if mapping is None:
             raise LabelFileError("missing label table")
@@ -94,7 +95,7 @@ class LabelDict(collections.abc.Mapping):
             raise exc.with_file(None) from exc
 
     @classmethod
-    def from_toml_file(cls, file):
+    def from_toml_file(cls, file: validator.StrOrBytesPath) -> typing.Self:
         if not validator.is_pathlike(file):
             raise TypeError
 
@@ -108,60 +109,66 @@ class LabelDict(collections.abc.Mapping):
             raise
 
     @classmethod
-    def from_toml_str(cls, s):
+    def from_toml_str(cls, s: str) -> typing.Self:
         toml = tomllib.loads(s)
         return cls._from_toml(toml)
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: str) -> str:
         try:
             return self._d[key]
         except KeyError as exc:
             raise LabelKeyError(key) from exc
 
-    def __iter__(self):
+    def __iter__(self) -> collections.abc.Iterator[str]:
         return iter(self._d)
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self._d)
 
 
 class DocumentGenerator:
     @property
-    def label(self):
+    def label(self) -> LabelDict | None:
         return self._label
 
     @label.setter
-    def label(self, value):
+    def label(self, value: LabelDict | None) -> None:
         if value is not None and type(value) is not LabelDict:
             raise TypeError
         self._label = value
 
     @property
-    def lang(self):
+    def lang(self) -> language.Language | None:
         return self._lang
 
     @lang.setter
-    def lang(self, value):
+    def lang(self, value: language.Language | None) -> None:
         if value is not None and type(value) is not language.Language:
             raise TypeError
         self._lang = value
 
     @property
-    def fmt(self):
+    def fmt(self) -> template.TemplateFormatter | None:
         return self._fmt
 
     @fmt.setter
-    def fmt(self, value):
+    def fmt(self, value: template.TemplateFormatter | None) -> None:
         if value is not None and type(value) is not template.TemplateFormatter:
             raise TypeError
         self._fmt = value
 
-    def __init__(self, *, label=None, lang=None, fmt=None):
+    def __init__(
+        self,
+        *,
+        label: LabelDict | None = None,
+        lang: language.Language | None = None,
+        fmt: template.TemplateFormatter | None = None,
+    ):
         self.label = label
         self.lang = lang
         self.fmt = fmt
 
-    def _label_get(self, s):
+    def _label_get(self, s: str) -> str:
         if type(s) is not str:
             raise TypeError
 
@@ -169,21 +176,21 @@ class DocumentGenerator:
             s = self.label[s]
         return s
 
-    def _lang_find_id(self, lang_id, lang_en):
+    def _lang_find_id(self, lang_id: str, lang_en: str) -> str:
         if type(lang_en) is not str:
             raise TypeError
         if self.lang is None:
             return lang_en
         return self.lang.find_id(lang_id).local
 
-    def _lang_find_en(self, lang_en):
+    def _lang_find_en(self, lang_en: str) -> str:
         if type(lang_en) is not str:
             raise TypeError
         if self.lang is None:
             return lang_en
         return self.lang.find_en(lang_en).local
 
-    def _fmt_format(self, s):
+    def _fmt_format(self, s: str) -> str:
         if type(s) is not str:
             raise TypeError
 
@@ -191,7 +198,7 @@ class DocumentGenerator:
             s = self.fmt.format(s)
         return s
 
-    def generate_property_table(self, comp):
+    def generate_property_table(self, comp: component.Definition) -> document.Table:
         if type(comp) is not component.Definition:
             raise TypeError
 
@@ -222,7 +229,7 @@ class DocumentGenerator:
         data.append(document.TableDataRow([tags_label, comp.tags]))
         return document.Table(data)
 
-    def generate_property(self, comp):
+    def generate_property(self, comp: component.Definition) -> document.Document:
         return document.Document(
             [
                 document.Heading(self._lang_find_en("PROPERTIES")),
@@ -230,7 +237,9 @@ class DocumentGenerator:
             ]
         )
 
-    def generate_logic_table(self, cid, lns):
+    def generate_logic_table(
+        self, cid: str, lns: component.LogicNodeList
+    ) -> document.Table:
         if type(cid) is not str or type(lns) is not component.LogicNodeList:
             raise TypeError
 
@@ -254,7 +263,9 @@ class DocumentGenerator:
             data.append(document.TableDataRow([ln_type, ln_label, ln_desc]))
         return document.Table(data)
 
-    def generate_logic(self, cid, lns):
+    def generate_logic(
+        self, cid: str, lns: component.LogicNodeList
+    ) -> document.Document:
         if type(cid) is not str or type(lns) is not component.LogicNodeList:
             raise TypeError
 
@@ -301,7 +312,7 @@ class DocumentGenerator:
             doc.append(self.generate_logic_table(cid, conn_lns))
         return doc
 
-    def generate_component(self, comp):
+    def generate_component(self, comp: component.Definition) -> document.Document:
         if type(comp) is not component.Definition:
             raise TypeError
         doc = document.Document()
@@ -342,21 +353,26 @@ class DocumentGenerator:
 
         return doc
 
-    def generate_component_list(self, comp_list):
+    def generate_component_list(
+        self, comp_list: collections.abc.Iterable[component.Definition]
+    ) -> document.Document:
         doc = document.Document()
         for comp in comp_list:
             comp_doc = self.generate_component(comp)
             doc.extend(comp_doc)
         return doc
 
-    def generate(self, comp_list):
-        category_comp_dict = {}
+    def generate(
+        self, comp_list: collections.abc.Iterable[component.Definition]
+    ) -> document.Document:
+        category_comp_dict: dict[component.Category, list[component.Definition]] = {}
         for comp in comp_list:
             if type(comp) is not component.Definition:
                 raise TypeError
             category_comp_list = category_comp_dict.setdefault(comp.category, [])
             category_comp_list.append(comp)
 
+        category_list: collections.abc.Iterable[component.Category]
         category_list = category_comp_dict.keys()
         category_list = sorted(category_list, key=lambda category: category.value)
 
