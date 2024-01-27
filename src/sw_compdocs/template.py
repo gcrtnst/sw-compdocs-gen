@@ -26,7 +26,7 @@ class TemplateFormatter:
             raise TypeError
 
         def repl(match: re.Match[str]) -> str:
-            key = match["key"]
+            key: str = match["key"]
             try:
                 val = self._d[key]
             except KeyError as exc:

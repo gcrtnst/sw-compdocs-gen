@@ -100,7 +100,7 @@ class LabelDict(collections.abc.Mapping[str, str]):
             raise TypeError
 
         with open(file, mode="rb") as fp:
-            toml = tomllib.load(fp)
+            toml: dict[str, object] = tomllib.load(fp)
 
         try:
             return cls._from_toml(toml)
@@ -110,7 +110,7 @@ class LabelDict(collections.abc.Mapping[str, str]):
 
     @classmethod
     def from_toml_str(cls, s: str) -> typing.Self:
-        toml = tomllib.loads(s)
+        toml: dict[str, object] = tomllib.loads(s)
         return cls._from_toml(toml)
 
     def __getitem__(self, key: str) -> str:
@@ -365,6 +365,12 @@ class DocumentGenerator:
     def generate(
         self, comp_list: collections.abc.Iterable[component.Definition]
     ) -> document.Document:
+        def sort_key_category(category: component.Category) -> int:
+            return category.value
+
+        def sort_key_component(comp: component.Definition) -> tuple[str, str]:
+            return comp.name, comp.cid
+
         category_comp_dict: dict[component.Category, list[component.Definition]] = {}
         for comp in comp_list:
             if type(comp) is not component.Definition:
@@ -374,12 +380,12 @@ class DocumentGenerator:
 
         category_list: collections.abc.Iterable[component.Category]
         category_list = category_comp_dict.keys()
-        category_list = sorted(category_list, key=lambda category: category.value)
+        category_list = sorted(category_list, key=sort_key_category)
 
         doc = document.Document()
         for category in category_list:
             category_comp_list = category_comp_dict[category]
-            category_comp_list.sort(key=lambda comp: (comp.name, comp.cid))
+            category_comp_list.sort(key=sort_key_component)
             category_comp_list_doc = self.generate_component_list(category_comp_list)
             category_comp_list_doc.shift(1)
 
