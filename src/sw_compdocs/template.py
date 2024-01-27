@@ -21,7 +21,7 @@ class TemplateFormatter:
                 )
             self._d[key] = val
 
-    def format(self, s: str):
+    def format(self, s: str) -> str:
         if type(s) is not str:
             raise TypeError
 
