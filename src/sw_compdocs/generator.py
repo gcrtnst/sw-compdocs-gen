@@ -147,19 +147,19 @@ class DocumentGenerator:
         self._lang = value
 
     @property
-    def template(self):
-        return self._template
+    def fmt(self):
+        return self._fmt
 
-    @template.setter
-    def template(self, value):
+    @fmt.setter
+    def fmt(self, value):
         if value is not None and type(value) is not template.TemplateFormatter:
             raise TypeError
-        self._template = value
+        self._fmt = value
 
-    def __init__(self, *, label=None, lang=None, template=None):
+    def __init__(self, *, label=None, lang=None, fmt=None):
         self.label = label
         self.lang = lang
-        self.template = template
+        self.fmt = fmt
 
     def _label_get(self, s):
         if type(s) is not str:
@@ -183,12 +183,12 @@ class DocumentGenerator:
             return lang_en
         return self.lang.find_en(lang_en).local
 
-    def _template_format(self, s):
+    def _fmt_format(self, s):
         if type(s) is not str:
             raise TypeError
 
-        if self.template is not None:
-            s = self.template.format(s)
+        if self.fmt is not None:
+            s = self.fmt.format(s)
         return s
 
     def generate_property_table(self, comp):
@@ -248,9 +248,9 @@ class DocumentGenerator:
 
             ln_type = self._lang_find_en(str(ln.type))
             ln_label = self._lang_find_id(lang_id_label, ln.label)
-            ln_label = self._template_format(ln_label)
+            ln_label = self._fmt_format(ln_label)
             ln_desc = self._lang_find_id(lang_id_desc, ln.description)
-            ln_desc = self._template_format(ln_desc)
+            ln_desc = self._fmt_format(ln_desc)
             data.append(document.TableDataRow([ln_type, ln_label, ln_desc]))
         return document.Table(data)
 
@@ -321,14 +321,14 @@ class DocumentGenerator:
         comp_s_desc_id = f"def_{comp.cid}_s_desc"
         comp_s_desc = comp.tooltip_properties.short_description
         comp_s_desc = self._lang_find_id(comp_s_desc_id, comp_s_desc)
-        comp_s_desc = self._template_format(comp_s_desc)
+        comp_s_desc = self._fmt_format(comp_s_desc)
         if comp_s_desc != "":
             doc.append(document.Paragraph(comp_s_desc))
 
         comp_desc_id = f"def_{comp.cid}_desc"
         comp_desc = comp.tooltip_properties.description
         comp_desc = self._lang_find_id(comp_desc_id, comp_desc)
-        comp_desc = self._template_format(comp_desc)
+        comp_desc = self._fmt_format(comp_desc)
         if comp_desc != "":
             doc.append(document.Paragraph(comp_desc))
 
@@ -370,4 +370,3 @@ class DocumentGenerator:
             doc.append(document.Heading(str(category)))
             doc.extend(category_comp_list_doc)
         return doc
-

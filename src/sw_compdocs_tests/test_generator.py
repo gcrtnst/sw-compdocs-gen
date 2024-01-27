@@ -11,60 +11,56 @@ import unittest
 
 class TestDocumentGeneratorInit(unittest.TestCase):
     def test_pass(self):
-        tt = collections.namedtuple(
-            "tt", ("input_label", "input_lang", "input_template")
-        )
+        tt = collections.namedtuple("tt", ("input_label", "input_lang", "input_fmt"))
 
         for tc in [
             tt(
                 input_label=sw_compdocs.generator.LabelDict(),
                 input_lang=sw_compdocs.language.Language(),
-                input_template=sw_compdocs.template.TemplateFormatter({}),
+                input_fmt=sw_compdocs.template.TemplateFormatter({}),
             ),
             tt(
                 input_label=None,
                 input_lang=sw_compdocs.language.Language(),
-                input_template=sw_compdocs.template.TemplateFormatter({}),
+                input_fmt=sw_compdocs.template.TemplateFormatter({}),
             ),
             tt(
                 input_label=sw_compdocs.generator.LabelDict(),
                 input_lang=None,
-                input_template=sw_compdocs.template.TemplateFormatter({}),
+                input_fmt=sw_compdocs.template.TemplateFormatter({}),
             ),
             tt(
                 input_label=sw_compdocs.generator.LabelDict(),
                 input_lang=sw_compdocs.language.Language(),
-                input_template=None,
+                input_fmt=None,
             ),
         ]:
             with self.subTest(tc=tc):
                 gen = sw_compdocs.generator.DocumentGenerator(
-                    label=tc.input_label, lang=tc.input_lang, template=tc.input_template
+                    label=tc.input_label, lang=tc.input_lang, fmt=tc.input_fmt
                 )
                 self.assertIs(gen.label, tc.input_label)
                 self.assertIs(gen.lang, tc.input_lang)
-                self.assertIs(gen.template, tc.input_template)
+                self.assertIs(gen.fmt, tc.input_fmt)
 
     def test_exc_type(self):
-        tt = collections.namedtuple(
-            "tt", ("input_label", "input_lang", "input_template")
-        )
+        tt = collections.namedtuple("tt", ("input_label", "input_lang", "input_fmt"))
 
         for tc in [
             tt(
                 input_label={},
                 input_lang=sw_compdocs.language.Language(),
-                input_template=sw_compdocs.template.TemplateFormatter({}),
+                input_fmt=sw_compdocs.template.TemplateFormatter({}),
             ),
             tt(
                 input_label=sw_compdocs.generator.LabelDict(),
                 input_lang={},
-                input_template=sw_compdocs.template.TemplateFormatter({}),
+                input_fmt=sw_compdocs.template.TemplateFormatter({}),
             ),
             tt(
                 input_label=sw_compdocs.generator.LabelDict(),
                 input_lang=sw_compdocs.language.Language(),
-                input_template={},
+                input_fmt={},
             ),
         ]:
             with self.subTest(tc=tc):
@@ -72,7 +68,7 @@ class TestDocumentGeneratorInit(unittest.TestCase):
                     sw_compdocs.generator.DocumentGenerator(
                         label=tc.input_label,
                         lang=tc.input_lang,
-                        template=tc.input_template,
+                        fmt=tc.input_fmt,
                     )
 
 
@@ -102,17 +98,17 @@ class TestDocumentGeneratorLangSetter(unittest.TestCase):
             gen.lang = {}
 
 
-class TestDocumentGeneratorTemplateSetter(unittest.TestCase):
+class TestDocumentGeneratorFmtSetter(unittest.TestCase):
     def test_pass(self):
-        for template in [sw_compdocs.template.TemplateFormatter({}), None]:
+        for fmt in [sw_compdocs.template.TemplateFormatter({}), None]:
             gen = sw_compdocs.generator.DocumentGenerator()
-            gen.template = template
-            self.assertIs(gen.template, template)
+            gen.fmt = fmt
+            self.assertIs(gen.fmt, fmt)
 
     def test_exc_type(self):
         gen = sw_compdocs.generator.DocumentGenerator()
         with self.assertRaises(TypeError):
-            gen.template = {}
+            gen.fmt = {}
 
 
 class TestDocumentGeneratorGenerate(unittest.TestCase):
@@ -917,14 +913,14 @@ class TestDocumentGeneratorGenerateComponent(unittest.TestCase):
     def test_pass(self):
         tt = collections.namedtuple(
             "tt",
-            ("input_label", "input_lang", "input_template", "input_comp", "want_doc"),
+            ("input_label", "input_lang", "input_fmt", "input_comp", "want_doc"),
         )
 
         for tc in [
             tt(  # normal
                 input_label=None,
                 input_lang=None,
-                input_template=None,
+                input_fmt=None,
                 input_comp=sw_compdocs.component.Definition(
                     cid="clock",
                     name="Clock",
@@ -1065,7 +1061,7 @@ class TestDocumentGeneratorGenerateComponent(unittest.TestCase):
             tt(  # deprecated
                 input_label=None,
                 input_lang=None,
-                input_template=None,
+                input_fmt=None,
                 input_comp=sw_compdocs.component.Definition(
                     cid="clock",
                     name="Clock",
@@ -1322,7 +1318,7 @@ class TestDocumentGeneratorGenerateComponent(unittest.TestCase):
                         ),
                     ]
                 ),
-                input_template=sw_compdocs.template.TemplateFormatter({}),
+                input_fmt=sw_compdocs.template.TemplateFormatter({}),
                 input_comp=sw_compdocs.component.Definition(
                     cid="clock",
                     name="Clock",
@@ -1544,7 +1540,7 @@ class TestDocumentGeneratorGenerateComponent(unittest.TestCase):
                         ),
                     ]
                 ),
-                input_template=sw_compdocs.template.TemplateFormatter(
+                input_fmt=sw_compdocs.template.TemplateFormatter(
                     {"action_interact_left": "q", "action_interact_right": "e"}
                 ),
                 input_comp=sw_compdocs.component.Definition(
@@ -1700,7 +1696,7 @@ class TestDocumentGeneratorGenerateComponent(unittest.TestCase):
                         ),
                     ]
                 ),
-                input_template=sw_compdocs.template.TemplateFormatter(
+                input_fmt=sw_compdocs.template.TemplateFormatter(
                     {"action_interact_left": "q", "action_interact_right": "e"}
                 ),
                 input_comp=sw_compdocs.component.Definition(
@@ -1746,7 +1742,7 @@ class TestDocumentGeneratorGenerateComponent(unittest.TestCase):
             tt(  # omit short_description
                 input_label=None,
                 input_lang=None,
-                input_template=None,
+                input_fmt=None,
                 input_comp=sw_compdocs.component.Definition(
                     cid="clock",
                     name="Clock",
@@ -1884,7 +1880,7 @@ class TestDocumentGeneratorGenerateComponent(unittest.TestCase):
             tt(  # omit description
                 input_label=None,
                 input_lang=None,
-                input_template=None,
+                input_fmt=None,
                 input_comp=sw_compdocs.component.Definition(
                     cid="clock",
                     name="Clock",
@@ -2022,7 +2018,7 @@ class TestDocumentGeneratorGenerateComponent(unittest.TestCase):
         ]:
             with self.subTest(tc=tc):
                 gen = sw_compdocs.generator.DocumentGenerator(
-                    label=tc.input_label, lang=tc.input_lang, template=tc.input_template
+                    label=tc.input_label, lang=tc.input_lang, fmt=tc.input_fmt
                 )
                 got_doc = gen.generate_component(tc.input_comp)
                 self.assertEqual(got_doc, tc.want_doc)
@@ -2257,7 +2253,7 @@ class TestDocumentGeneratorGenerateLogic(unittest.TestCase):
             (
                 "input_label",
                 "input_lang",
-                "input_template",
+                "input_fmt",
                 "input_cid",
                 "input_lns",
                 "want_doc",
@@ -2269,7 +2265,7 @@ class TestDocumentGeneratorGenerateLogic(unittest.TestCase):
             tt(
                 input_label=None,
                 input_lang=None,
-                input_template=None,
+                input_fmt=None,
                 input_cid="test",
                 input_lns=sw_compdocs.component.LogicNodeList(),
                 want_doc=sw_compdocs.document.Document(),
@@ -2278,7 +2274,7 @@ class TestDocumentGeneratorGenerateLogic(unittest.TestCase):
             tt(
                 input_label=None,
                 input_lang=None,
-                input_template=None,
+                input_fmt=None,
                 input_cid="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
@@ -2315,7 +2311,7 @@ class TestDocumentGeneratorGenerateLogic(unittest.TestCase):
             tt(
                 input_label=None,
                 input_lang=None,
-                input_template=None,
+                input_fmt=None,
                 input_cid="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
@@ -2352,7 +2348,7 @@ class TestDocumentGeneratorGenerateLogic(unittest.TestCase):
             tt(
                 input_label=None,
                 input_lang=None,
-                input_template=None,
+                input_fmt=None,
                 input_cid="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
@@ -2389,7 +2385,7 @@ class TestDocumentGeneratorGenerateLogic(unittest.TestCase):
             tt(
                 input_label=None,
                 input_lang=None,
-                input_template=None,
+                input_fmt=None,
                 input_cid="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
@@ -2426,7 +2422,7 @@ class TestDocumentGeneratorGenerateLogic(unittest.TestCase):
             tt(
                 input_label=None,
                 input_lang=None,
-                input_template=None,
+                input_fmt=None,
                 input_cid="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
@@ -2463,7 +2459,7 @@ class TestDocumentGeneratorGenerateLogic(unittest.TestCase):
             tt(
                 input_label=None,
                 input_lang=None,
-                input_template=None,
+                input_fmt=None,
                 input_cid="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
@@ -2500,7 +2496,7 @@ class TestDocumentGeneratorGenerateLogic(unittest.TestCase):
             tt(
                 input_label=None,
                 input_lang=None,
-                input_template=None,
+                input_fmt=None,
                 input_cid="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
@@ -2537,7 +2533,7 @@ class TestDocumentGeneratorGenerateLogic(unittest.TestCase):
             tt(
                 input_label=None,
                 input_lang=None,
-                input_template=None,
+                input_fmt=None,
                 input_cid="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
@@ -2574,7 +2570,7 @@ class TestDocumentGeneratorGenerateLogic(unittest.TestCase):
             tt(
                 input_label=None,
                 input_lang=None,
-                input_template=None,
+                input_fmt=None,
                 input_cid="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
@@ -2612,7 +2608,7 @@ class TestDocumentGeneratorGenerateLogic(unittest.TestCase):
             tt(
                 input_label=None,
                 input_lang=None,
-                input_template=None,
+                input_fmt=None,
                 input_cid="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
@@ -2663,7 +2659,7 @@ class TestDocumentGeneratorGenerateLogic(unittest.TestCase):
                         ),
                     ]
                 ),
-                input_template=None,
+                input_fmt=None,
                 input_cid="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
@@ -2713,7 +2709,7 @@ class TestDocumentGeneratorGenerateLogic(unittest.TestCase):
                         ),
                     ]
                 ),
-                input_template=None,
+                input_fmt=None,
                 input_cid="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
@@ -2761,7 +2757,7 @@ class TestDocumentGeneratorGenerateLogic(unittest.TestCase):
                         ),
                     ]
                 ),
-                input_template=None,
+                input_fmt=None,
                 input_cid="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
@@ -2849,7 +2845,7 @@ class TestDocumentGeneratorGenerateLogic(unittest.TestCase):
                         ),
                     ]
                 ),
-                input_template=None,
+                input_fmt=None,
                 input_cid="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
@@ -2965,7 +2961,7 @@ class TestDocumentGeneratorGenerateLogic(unittest.TestCase):
         ]:
             with self.subTest(tc=tc):
                 gen = sw_compdocs.generator.DocumentGenerator(
-                    label=tc.input_label, lang=tc.input_lang, template=tc.input_template
+                    label=tc.input_label, lang=tc.input_lang, fmt=tc.input_fmt
                 )
                 got_doc = gen.generate_logic(tc.input_cid, tc.input_lns)
                 self.assertEqual(got_doc, tc.want_doc)
@@ -2990,7 +2986,7 @@ class TestDocumentGeneratorGenerateLogicTable(unittest.TestCase):
             (
                 "input_label",
                 "input_lang",
-                "input_template",
+                "input_fmt",
                 "input_cid",
                 "input_lns",
                 "want_tbl",
@@ -3007,7 +3003,7 @@ class TestDocumentGeneratorGenerateLogicTable(unittest.TestCase):
                     }
                 ),
                 input_lang=None,
-                input_template=None,
+                input_fmt=None,
                 input_cid="test",
                 input_lns=sw_compdocs.component.LogicNodeList([]),
                 want_tbl=sw_compdocs.document.Table(
@@ -3065,7 +3061,7 @@ class TestDocumentGeneratorGenerateLogicTable(unittest.TestCase):
                         ),
                     ]
                 ),
-                input_template=sw_compdocs.template.TemplateFormatter(
+                input_fmt=sw_compdocs.template.TemplateFormatter(
                     {
                         "label_0": "label_0_fmt",
                         "desc_0": "desc_0_fmt",
@@ -3146,7 +3142,7 @@ class TestDocumentGeneratorGenerateLogicTable(unittest.TestCase):
                         ),
                     ]
                 ),
-                input_template=sw_compdocs.template.TemplateFormatter(
+                input_fmt=sw_compdocs.template.TemplateFormatter(
                     {
                         "label_0": "label_0_fmt",
                         "desc_0": "desc_0_fmt",
@@ -3200,7 +3196,7 @@ class TestDocumentGeneratorGenerateLogicTable(unittest.TestCase):
                     }
                 ),
                 input_lang=None,
-                input_template=sw_compdocs.template.TemplateFormatter(
+                input_fmt=sw_compdocs.template.TemplateFormatter(
                     {
                         "label_0": "label_0_fmt",
                         "desc_0": "desc_0_fmt",
@@ -3287,7 +3283,7 @@ class TestDocumentGeneratorGenerateLogicTable(unittest.TestCase):
                         ),
                     ]
                 ),
-                input_template=None,
+                input_fmt=None,
                 input_cid="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
@@ -3367,7 +3363,7 @@ class TestDocumentGeneratorGenerateLogicTable(unittest.TestCase):
                         ),
                     ]
                 ),
-                input_template=sw_compdocs.template.TemplateFormatter(
+                input_fmt=sw_compdocs.template.TemplateFormatter(
                     {
                         "label_0": "label_0_fmt",
                         "desc_0": "desc_0_fmt",
@@ -3409,7 +3405,7 @@ class TestDocumentGeneratorGenerateLogicTable(unittest.TestCase):
         ]:
             with self.subTest(tc=tc):
                 gen = sw_compdocs.generator.DocumentGenerator(
-                    label=tc.input_label, lang=tc.input_lang, template=tc.input_template
+                    label=tc.input_label, lang=tc.input_lang, fmt=tc.input_fmt
                 )
                 got_tbl = gen.generate_logic_table(tc.input_cid, tc.input_lns)
                 self.assertEqual(got_tbl, tc.want_tbl)
@@ -3524,33 +3520,31 @@ class TestDocumentGeneratorLangFindEn(unittest.TestCase):
             gen._lang_find_en(None)
 
 
-class TestDocumentGeneratorTemplateFormat(unittest.TestCase):
+class TestDocumentGeneratorFmtFormat(unittest.TestCase):
     def test_pass(self):
-        tt = collections.namedtuple("tt", ("input_template", "input_s", "want_s"))
+        tt = collections.namedtuple("tt", ("input_fmt", "input_s", "want_s"))
 
         for tc in [
             tt(
-                input_template=None,
+                input_fmt=None,
                 input_s="$[var]",
                 want_s="$[var]",
             ),
             tt(
-                input_template=sw_compdocs.template.TemplateFormatter({"var": "text"}),
+                input_fmt=sw_compdocs.template.TemplateFormatter({"var": "text"}),
                 input_s="$[var]",
                 want_s="text",
             ),
         ]:
             with self.subTest(tc=tc):
-                gen = sw_compdocs.generator.DocumentGenerator(
-                    template=tc.input_template
-                )
-                got_s = gen._template_format(tc.input_s)
+                gen = sw_compdocs.generator.DocumentGenerator(fmt=tc.input_fmt)
+                got_s = gen._fmt_format(tc.input_s)
                 self.assertEqual(got_s, tc.want_s)
 
     def test_exc_type(self):
         gen = sw_compdocs.generator.DocumentGenerator()
         with self.assertRaises(TypeError):
-            gen._template_format(None)
+            gen._fmt_format(None)
 
 
 class TestLabelDictInit(unittest.TestCase):
