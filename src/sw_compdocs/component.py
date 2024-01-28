@@ -6,6 +6,7 @@ import pathlib
 import re
 import typing
 
+from . import _types
 from . import container
 from . import validator
 
@@ -25,11 +26,11 @@ class ComponentXMLError(Exception):
         return self._msg
 
     @property
-    def file(self) -> validator.StrOrBytesPath | None:
+    def file(self) -> _types.StrOrBytesPath | None:
         return self._file
 
     @file.setter
-    def file(self, value: validator.StrOrBytesPath | None) -> None:
+    def file(self, value: _types.StrOrBytesPath | None) -> None:
         if value is not None and not validator.is_pathlike(value):
             raise TypeError
         self._file = value
@@ -70,7 +71,7 @@ class ComponentXMLError(Exception):
         raise ValueError
 
 
-def generate_cid(file: validator.StrOrBytesPath) -> str:
+def generate_cid(file: _types.StrOrBytesPath) -> str:
     if not isinstance(file, pathlib.PurePath):
         file = os.fsdecode(file)
         file = pathlib.PurePath(file)
@@ -757,7 +758,7 @@ def _parse_xml_root(elem: lxml.etree._Element, *, cid: str | None = None) -> Def
         raise
 
 
-def parse_xml_file(file: validator.StrOrBytesPath) -> Definition:
+def parse_xml_file(file: _types.StrOrBytesPath) -> Definition:
     if not validator.is_pathlike(file):
         raise TypeError
 

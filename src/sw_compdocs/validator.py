@@ -1,9 +1,8 @@
 import os
 import typing
 
+from . import _types
 
-StrOrBytesPath: typing.TypeAlias = str | bytes | os.PathLike[str] | os.PathLike[bytes]
 
-
-def is_pathlike(v: object) -> typing.TypeGuard[StrOrBytesPath]:
+def is_pathlike(v: object) -> typing.TypeGuard[_types.StrOrBytesPath]:
     return type(v) is str or type(v) is bytes or isinstance(v, os.PathLike)

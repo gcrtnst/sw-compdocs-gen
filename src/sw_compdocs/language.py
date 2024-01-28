@@ -4,6 +4,7 @@ import io
 import os
 import typing
 
+from . import _types
 from . import container
 from . import validator
 
@@ -88,11 +89,11 @@ class LanguageTSVError(Exception):
         return self._msg
 
     @property
-    def file(self) -> validator.StrOrBytesPath | None:
+    def file(self) -> _types.StrOrBytesPath | None:
         return self._file
 
     @file.setter
-    def file(self, value: validator.StrOrBytesPath | None) -> None:
+    def file(self, value: _types.StrOrBytesPath | None) -> None:
         if value is not None and not validator.is_pathlike(value):
             raise TypeError
         self._file = value
@@ -175,7 +176,7 @@ class Language(container.Sequence[Translation]):
     @classmethod
     def from_file(
         cls,
-        file: validator.StrOrBytesPath,
+        file: _types.StrOrBytesPath,
         *,
         encoding: str | None = "utf-8",
         errors: str | None = None,

@@ -3,6 +3,7 @@ import os
 import tomllib
 import typing
 
+from . import _types
 from . import component
 from . import document
 from . import language
@@ -16,11 +17,11 @@ class LabelFileError(Exception):
         return self._msg
 
     @property
-    def file(self) -> validator.StrOrBytesPath | None:
+    def file(self) -> _types.StrOrBytesPath | None:
         return self._file
 
     @file.setter
-    def file(self, value: validator.StrOrBytesPath | None) -> None:
+    def file(self, value: _types.StrOrBytesPath | None) -> None:
         if value is not None and not validator.is_pathlike(value):
             raise TypeError
         self._file = value
@@ -53,7 +54,7 @@ class LabelDictError(Exception):
     def __str__(self) -> str:
         return self.msg
 
-    def with_file(self, file: validator.StrOrBytesPath | None) -> LabelFileError:
+    def with_file(self, file: _types.StrOrBytesPath | None) -> LabelFileError:
         exc = LabelFileError(self.msg)
         exc.file = file
         return exc
@@ -95,7 +96,7 @@ class LabelDict(collections.abc.Mapping[str, str]):
             raise exc.with_file(None) from exc
 
     @classmethod
-    def from_toml_file(cls, file: validator.StrOrBytesPath) -> typing.Self:
+    def from_toml_file(cls, file: _types.StrOrBytesPath) -> typing.Self:
         if not validator.is_pathlike(file):
             raise TypeError
 
