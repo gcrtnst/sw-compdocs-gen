@@ -1,15 +1,15 @@
-import collections
-import io
 import lxml.etree
 import os
 import pathlib
+import sw_compdocs._types
 import sw_compdocs.component
 import tempfile
+import typing
 import unittest
 
 
 class TestParseXMLFile(unittest.TestCase):
-    def test_pass(self):
+    def test_pass(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             temp_file = pathlib.Path(temp_dir, "test.xml")
             with open(temp_file, mode="xt", encoding="utf-8", newline="\r\n") as f:
@@ -22,18 +22,19 @@ class TestParseXMLFile(unittest.TestCase):
 """
                 )
 
-            for path in [
+            path_list: list[sw_compdocs._types.StrOrBytesPath] = [
                 os.fsdecode(temp_file),
                 os.fsencode(temp_file),
                 temp_file,
-            ]:
+            ]
+            for path in path_list:
                 with self.subTest(path=path):
                     comp = sw_compdocs.component.parse_xml_file(path)
                     self.assertEqual(comp.cid, "test")
                     self.assertEqual(comp.name, "name")
                     self.assertEqual(comp.tooltip_properties.description, "description")
 
-    def test_pass_recover(self):
+    def test_pass_recover(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             temp_file = pathlib.Path(temp_dir, "test.xml")
             with open(temp_file, mode="xt", encoding="utf-8", newline="\r\n") as f:
@@ -51,23 +52,19 @@ class TestParseXMLFile(unittest.TestCase):
 """
                 )
 
-            for path in [
+            path_list: list[sw_compdocs._types.StrOrBytesPath] = [
                 os.fsdecode(temp_file),
                 os.fsencode(temp_file),
                 temp_file,
-            ]:
+            ]
+            for path in path_list:
                 with self.subTest(path=path):
                     comp = sw_compdocs.component.parse_xml_file(path)
                     self.assertEqual(comp.cid, "test")
                     self.assertEqual(comp.name, "name")
                     self.assertEqual(comp.tooltip_properties.description, "description")
 
-    def test_exc_type(self):
-        f = io.StringIO()
-        with self.assertRaises(TypeError):
-            sw_compdocs.component.parse_xml_file(f)
-
-    def test_exc_root(self):
+    def test_exc_root(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             temp_file = pathlib.Path(temp_dir, "test.xml")
             with open(temp_file, mode="xt", encoding="utf-8", newline="\r\n") as f:
@@ -80,11 +77,12 @@ class TestParseXMLFile(unittest.TestCase):
 """
                 )
 
-            for path in [
+            path_list: list[sw_compdocs._types.StrOrBytesPath] = [
                 os.fsdecode(temp_file),
                 os.fsencode(temp_file),
                 temp_file,
-            ]:
+            ]
+            for path in path_list:
                 with self.subTest(path=path):
                     with self.assertRaises(
                         sw_compdocs.component.ComponentXMLError
@@ -96,7 +94,7 @@ class TestParseXMLFile(unittest.TestCase):
                     self.assertEqual(ctx.exception.file, path)
                     self.assertEqual(ctx.exception.xpath, "/invalid")
 
-    def test_exc_xml(self):
+    def test_exc_xml(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             temp_file = pathlib.Path(temp_dir, "test.xml")
             with open(temp_file, mode="xt", encoding="utf-8", newline="\r\n") as f:
@@ -109,11 +107,12 @@ class TestParseXMLFile(unittest.TestCase):
 """
                 )
 
-            for path in [
+            path_list: list[sw_compdocs._types.StrOrBytesPath] = [
                 os.fsdecode(temp_file),
                 os.fsencode(temp_file),
                 temp_file,
-            ]:
+            ]
+            for path in path_list:
                 with self.subTest(path=path):
                     with self.assertRaises(
                         sw_compdocs.component.ComponentXMLError
@@ -125,7 +124,7 @@ class TestParseXMLFile(unittest.TestCase):
 
 
 class TestParseXMLStr(unittest.TestCase):
-    def test_pass(self):
+    def test_pass(self) -> None:
         comp = sw_compdocs.component.parse_xml_str(
             """\
 <definition name="name">
@@ -139,7 +138,7 @@ class TestParseXMLStr(unittest.TestCase):
         self.assertEqual(comp.name, "name")
         self.assertEqual(comp.tooltip_properties.description, "description")
 
-    def test_pass_recover(self):
+    def test_pass_recover(self) -> None:
         comp = sw_compdocs.component.parse_xml_str(
             """\
 <definition name="name">
@@ -158,7 +157,7 @@ class TestParseXMLStr(unittest.TestCase):
         self.assertEqual(comp.name, "name")
         self.assertEqual(comp.tooltip_properties.description, "description")
 
-    def test_exc_root(self):
+    def test_exc_root(self) -> None:
         with self.assertRaises(sw_compdocs.component.ComponentXMLError) as ctx:
             sw_compdocs.component.parse_xml_str(
                 """\
@@ -173,7 +172,7 @@ class TestParseXMLStr(unittest.TestCase):
         self.assertEqual(ctx.exception.file, None)
         self.assertEqual(ctx.exception.xpath, "/invalid")
 
-    def test_exc_xml(self):
+    def test_exc_xml(self) -> None:
         with self.assertRaises(sw_compdocs.component.ComponentXMLError) as ctx:
             sw_compdocs.component.parse_xml_str(
                 """\
@@ -190,8 +189,14 @@ class TestParseXMLStr(unittest.TestCase):
 
 
 class TestGenerateCID(unittest.TestCase):
-    def test_pass(self):
-        tt = collections.namedtuple("tt", ("input_file", "want_cid"))
+    def test_pass(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_file", sw_compdocs._types.StrOrBytesPath),
+                ("want_cid", str),
+            ],
+        )
 
         for tc in [
             tt(
@@ -231,39 +236,101 @@ class TestGenerateCID(unittest.TestCase):
                 got_id = sw_compdocs.component.generate_cid(tc.input_file)
                 self.assertEqual(got_id, tc.want_cid)
 
-    def test_exc_type(self):
-        with self.assertRaises(TypeError):
-            sw_compdocs.component.generate_cid(None)
-
 
 class TestDefinitionInit(unittest.TestCase):
-    def test_pass(self):
-        tt = collections.namedtuple(
+    def test_pass(self) -> None:
+        tt = typing.NamedTuple(
             "tt",
-            (
-                "input_cid",
-                "input_name",
-                "input_category",
-                "input_mass",
-                "input_value",
-                "input_flags",
-                "input_tags",
-                "input_tooltip_properties",
-                "input_logic_nodes",
-                "input_voxel_min",
-                "input_voxel_max",
-                "want_cid",
-                "want_name",
-                "want_category",
-                "want_mass",
-                "want_value",
-                "want_flags",
-                "want_tags",
-                "want_tooltip_properties",
-                "want_logic_nodes",
-                "want_voxel_min",
-                "want_voxel_max",
-            ),
+            [
+                (
+                    "input_cid",
+                    str | None,
+                ),
+                (
+                    "input_name",
+                    str | None,
+                ),
+                (
+                    "input_category",
+                    sw_compdocs.component.Category | None,
+                ),
+                (
+                    "input_mass",
+                    float | None,
+                ),
+                (
+                    "input_value",
+                    int | None,
+                ),
+                (
+                    "input_flags",
+                    sw_compdocs.component.Flags | None,
+                ),
+                (
+                    "input_tags",
+                    str | None,
+                ),
+                (
+                    "input_tooltip_properties",
+                    sw_compdocs.component.TooltipProperties | None,
+                ),
+                (
+                    "input_logic_nodes",
+                    sw_compdocs.component.LogicNodeList | None,
+                ),
+                (
+                    "input_voxel_min",
+                    sw_compdocs.component.VoxelPos | None,
+                ),
+                (
+                    "input_voxel_max",
+                    sw_compdocs.component.VoxelPos | None,
+                ),
+                (
+                    "want_cid",
+                    str,
+                ),
+                (
+                    "want_name",
+                    str,
+                ),
+                (
+                    "want_category",
+                    sw_compdocs.component.Category,
+                ),
+                (
+                    "want_mass",
+                    float,
+                ),
+                (
+                    "want_value",
+                    int,
+                ),
+                (
+                    "want_flags",
+                    sw_compdocs.component.Flags,
+                ),
+                (
+                    "want_tags",
+                    str,
+                ),
+                (
+                    "want_tooltip_properties",
+                    sw_compdocs.component.TooltipProperties,
+                ),
+                (
+                    "want_logic_nodes",
+                    sw_compdocs.component.LogicNodeList,
+                ),
+                (
+                    "want_voxel_min",
+                    sw_compdocs.component.VoxelPos,
+                ),
+                (
+                    "want_voxel_max",
+                    sw_compdocs.component.VoxelPos,
+                ),
+            ],
         )
 
         for tc in [
@@ -392,587 +459,94 @@ class TestDefinitionInit(unittest.TestCase):
                 self.assertEqual(got_comp.voxel_min, tc.want_voxel_min)
                 self.assertEqual(got_comp.voxel_max, tc.want_voxel_max)
 
-    def test_exc_type(self):
-        tt = collections.namedtuple(
-            "tt",
-            (
-                "input_cid",
-                "input_name",
-                "input_category",
-                "input_mass",
-                "input_value",
-                "input_flags",
-                "input_tags",
-                "input_tooltip_properties",
-                "input_logic_nodes",
-                "input_voxel_min",
-                "input_voxel_max",
-            ),
-        )
-
-        for tc in [
-            tt(
-                input_cid=b"clock",
-                input_name="Clock",
-                input_category=sw_compdocs.component.Category.DISPLAYS,
-                input_mass=1.0,
-                input_value=100,
-                input_flags=sw_compdocs.component.Flags(8192),
-                input_tags="basic",
-                input_tooltip_properties=sw_compdocs.component.TooltipProperties(
-                    short_description="An analogue clock display that outputs a number value representing the time of day.",
-                    description="The clock has a display to visualise the time of day or night. The 12 o'clock position is the white arrow on the face of the display.",
-                ),
-                input_logic_nodes=sw_compdocs.component.LogicNodeList(
-                    [
-                        sw_compdocs.component.LogicNode(
-                            label="Time",
-                            mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
-                            type=sw_compdocs.component.LogicNodeType.FLOAT,
-                            description="The time as a factor of a day, from 0 (midnight) to 1 (midnight).",
-                        ),
-                        sw_compdocs.component.LogicNode(
-                            label="Backlight",
-                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                            type=sw_compdocs.component.LogicNodeType.BOOL,
-                            description="Enables the backlight when receiving an on signal.",
-                        ),
-                        sw_compdocs.component.LogicNode(
-                            label="Electric",
-                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                            type=sw_compdocs.component.LogicNodeType.ELECTRIC,
-                            description="Electrical power connection.",
-                        ),
-                    ]
-                ),
-                input_voxel_min=sw_compdocs.component.VoxelPos(x=0, y=0, z=0),
-                input_voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=0),
-            ),
-            tt(
-                input_cid="clock",
-                input_name=b"Clock",
-                input_category=sw_compdocs.component.Category.DISPLAYS,
-                input_mass=1.0,
-                input_value=100,
-                input_flags=sw_compdocs.component.Flags(8192),
-                input_tags="basic",
-                input_tooltip_properties=sw_compdocs.component.TooltipProperties(
-                    short_description="An analogue clock display that outputs a number value representing the time of day.",
-                    description="The clock has a display to visualise the time of day or night. The 12 o'clock position is the white arrow on the face of the display.",
-                ),
-                input_logic_nodes=sw_compdocs.component.LogicNodeList(
-                    [
-                        sw_compdocs.component.LogicNode(
-                            label="Time",
-                            mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
-                            type=sw_compdocs.component.LogicNodeType.FLOAT,
-                            description="The time as a factor of a day, from 0 (midnight) to 1 (midnight).",
-                        ),
-                        sw_compdocs.component.LogicNode(
-                            label="Backlight",
-                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                            type=sw_compdocs.component.LogicNodeType.BOOL,
-                            description="Enables the backlight when receiving an on signal.",
-                        ),
-                        sw_compdocs.component.LogicNode(
-                            label="Electric",
-                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                            type=sw_compdocs.component.LogicNodeType.ELECTRIC,
-                            description="Electrical power connection.",
-                        ),
-                    ]
-                ),
-                input_voxel_min=sw_compdocs.component.VoxelPos(x=0, y=0, z=0),
-                input_voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=0),
-            ),
-            tt(
-                input_cid="clock",
-                input_name="Clock",
-                input_category=6,
-                input_mass=1.0,
-                input_value=100,
-                input_flags=sw_compdocs.component.Flags(8192),
-                input_tags="basic",
-                input_tooltip_properties=sw_compdocs.component.TooltipProperties(
-                    short_description="An analogue clock display that outputs a number value representing the time of day.",
-                    description="The clock has a display to visualise the time of day or night. The 12 o'clock position is the white arrow on the face of the display.",
-                ),
-                input_logic_nodes=sw_compdocs.component.LogicNodeList(
-                    [
-                        sw_compdocs.component.LogicNode(
-                            label="Time",
-                            mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
-                            type=sw_compdocs.component.LogicNodeType.FLOAT,
-                            description="The time as a factor of a day, from 0 (midnight) to 1 (midnight).",
-                        ),
-                        sw_compdocs.component.LogicNode(
-                            label="Backlight",
-                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                            type=sw_compdocs.component.LogicNodeType.BOOL,
-                            description="Enables the backlight when receiving an on signal.",
-                        ),
-                        sw_compdocs.component.LogicNode(
-                            label="Electric",
-                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                            type=sw_compdocs.component.LogicNodeType.ELECTRIC,
-                            description="Electrical power connection.",
-                        ),
-                    ]
-                ),
-                input_voxel_min=sw_compdocs.component.VoxelPos(x=0, y=0, z=0),
-                input_voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=0),
-            ),
-            tt(
-                input_cid="clock",
-                input_name="Clock",
-                input_category=sw_compdocs.component.Category.DISPLAYS,
-                input_mass="1.0",
-                input_value=100,
-                input_flags=sw_compdocs.component.Flags(8192),
-                input_tags="basic",
-                input_tooltip_properties=sw_compdocs.component.TooltipProperties(
-                    short_description="An analogue clock display that outputs a number value representing the time of day.",
-                    description="The clock has a display to visualise the time of day or night. The 12 o'clock position is the white arrow on the face of the display.",
-                ),
-                input_logic_nodes=sw_compdocs.component.LogicNodeList(
-                    [
-                        sw_compdocs.component.LogicNode(
-                            label="Time",
-                            mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
-                            type=sw_compdocs.component.LogicNodeType.FLOAT,
-                            description="The time as a factor of a day, from 0 (midnight) to 1 (midnight).",
-                        ),
-                        sw_compdocs.component.LogicNode(
-                            label="Backlight",
-                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                            type=sw_compdocs.component.LogicNodeType.BOOL,
-                            description="Enables the backlight when receiving an on signal.",
-                        ),
-                        sw_compdocs.component.LogicNode(
-                            label="Electric",
-                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                            type=sw_compdocs.component.LogicNodeType.ELECTRIC,
-                            description="Electrical power connection.",
-                        ),
-                    ]
-                ),
-                input_voxel_min=sw_compdocs.component.VoxelPos(x=0, y=0, z=0),
-                input_voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=0),
-            ),
-            tt(
-                input_cid="clock",
-                input_name="Clock",
-                input_category=sw_compdocs.component.Category.DISPLAYS,
-                input_mass=1.0,
-                input_value="100",
-                input_flags=sw_compdocs.component.Flags(8192),
-                input_tags="basic",
-                input_tooltip_properties=sw_compdocs.component.TooltipProperties(
-                    short_description="An analogue clock display that outputs a number value representing the time of day.",
-                    description="The clock has a display to visualise the time of day or night. The 12 o'clock position is the white arrow on the face of the display.",
-                ),
-                input_logic_nodes=sw_compdocs.component.LogicNodeList(
-                    [
-                        sw_compdocs.component.LogicNode(
-                            label="Time",
-                            mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
-                            type=sw_compdocs.component.LogicNodeType.FLOAT,
-                            description="The time as a factor of a day, from 0 (midnight) to 1 (midnight).",
-                        ),
-                        sw_compdocs.component.LogicNode(
-                            label="Backlight",
-                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                            type=sw_compdocs.component.LogicNodeType.BOOL,
-                            description="Enables the backlight when receiving an on signal.",
-                        ),
-                        sw_compdocs.component.LogicNode(
-                            label="Electric",
-                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                            type=sw_compdocs.component.LogicNodeType.ELECTRIC,
-                            description="Electrical power connection.",
-                        ),
-                    ]
-                ),
-                input_voxel_min=sw_compdocs.component.VoxelPos(x=0, y=0, z=0),
-                input_voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=0),
-            ),
-            tt(
-                input_cid="clock",
-                input_name="Clock",
-                input_category=sw_compdocs.component.Category.DISPLAYS,
-                input_mass=1.0,
-                input_value=100,
-                input_flags=8192,
-                input_tags="basic",
-                input_tooltip_properties=sw_compdocs.component.TooltipProperties(
-                    short_description="An analogue clock display that outputs a number value representing the time of day.",
-                    description="The clock has a display to visualise the time of day or night. The 12 o'clock position is the white arrow on the face of the display.",
-                ),
-                input_logic_nodes=sw_compdocs.component.LogicNodeList(
-                    [
-                        sw_compdocs.component.LogicNode(
-                            label="Time",
-                            mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
-                            type=sw_compdocs.component.LogicNodeType.FLOAT,
-                            description="The time as a factor of a day, from 0 (midnight) to 1 (midnight).",
-                        ),
-                        sw_compdocs.component.LogicNode(
-                            label="Backlight",
-                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                            type=sw_compdocs.component.LogicNodeType.BOOL,
-                            description="Enables the backlight when receiving an on signal.",
-                        ),
-                        sw_compdocs.component.LogicNode(
-                            label="Electric",
-                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                            type=sw_compdocs.component.LogicNodeType.ELECTRIC,
-                            description="Electrical power connection.",
-                        ),
-                    ]
-                ),
-                input_voxel_min=sw_compdocs.component.VoxelPos(x=0, y=0, z=0),
-                input_voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=0),
-            ),
-            tt(
-                input_cid="clock",
-                input_name="Clock",
-                input_category=sw_compdocs.component.Category.DISPLAYS,
-                input_mass=1.0,
-                input_value=100,
-                input_flags=sw_compdocs.component.Flags(8192),
-                input_tags=b"basic",
-                input_tooltip_properties=sw_compdocs.component.TooltipProperties(
-                    short_description="An analogue clock display that outputs a number value representing the time of day.",
-                    description="The clock has a display to visualise the time of day or night. The 12 o'clock position is the white arrow on the face of the display.",
-                ),
-                input_logic_nodes=sw_compdocs.component.LogicNodeList(
-                    [
-                        sw_compdocs.component.LogicNode(
-                            label="Time",
-                            mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
-                            type=sw_compdocs.component.LogicNodeType.FLOAT,
-                            description="The time as a factor of a day, from 0 (midnight) to 1 (midnight).",
-                        ),
-                        sw_compdocs.component.LogicNode(
-                            label="Backlight",
-                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                            type=sw_compdocs.component.LogicNodeType.BOOL,
-                            description="Enables the backlight when receiving an on signal.",
-                        ),
-                        sw_compdocs.component.LogicNode(
-                            label="Electric",
-                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                            type=sw_compdocs.component.LogicNodeType.ELECTRIC,
-                            description="Electrical power connection.",
-                        ),
-                    ]
-                ),
-                input_voxel_min=sw_compdocs.component.VoxelPos(x=0, y=0, z=0),
-                input_voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=0),
-            ),
-            tt(
-                input_cid="clock",
-                input_name="Clock",
-                input_category=sw_compdocs.component.Category.DISPLAYS,
-                input_mass=1.0,
-                input_value=100,
-                input_flags=sw_compdocs.component.Flags(8192),
-                input_tags="basic",
-                input_tooltip_properties="An analogue clock display that outputs a number value representing the time of day.",
-                input_logic_nodes=sw_compdocs.component.LogicNodeList(
-                    [
-                        sw_compdocs.component.LogicNode(
-                            label="Time",
-                            mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
-                            type=sw_compdocs.component.LogicNodeType.FLOAT,
-                            description="The time as a factor of a day, from 0 (midnight) to 1 (midnight).",
-                        ),
-                        sw_compdocs.component.LogicNode(
-                            label="Backlight",
-                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                            type=sw_compdocs.component.LogicNodeType.BOOL,
-                            description="Enables the backlight when receiving an on signal.",
-                        ),
-                        sw_compdocs.component.LogicNode(
-                            label="Electric",
-                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                            type=sw_compdocs.component.LogicNodeType.ELECTRIC,
-                            description="Electrical power connection.",
-                        ),
-                    ]
-                ),
-                input_voxel_min=sw_compdocs.component.VoxelPos(x=0, y=0, z=0),
-                input_voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=0),
-            ),
-            tt(
-                input_cid="clock",
-                input_name="Clock",
-                input_category=sw_compdocs.component.Category.DISPLAYS,
-                input_mass=1.0,
-                input_value=100,
-                input_flags=sw_compdocs.component.Flags(8192),
-                input_tags="basic",
-                input_tooltip_properties=sw_compdocs.component.TooltipProperties(
-                    short_description="An analogue clock display that outputs a number value representing the time of day.",
-                    description="The clock has a display to visualise the time of day or night. The 12 o'clock position is the white arrow on the face of the display.",
-                ),
-                input_logic_nodes=[
-                    sw_compdocs.component.LogicNode(
-                        label="Time",
-                        mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
-                        type=sw_compdocs.component.LogicNodeType.FLOAT,
-                        description="The time as a factor of a day, from 0 (midnight) to 1 (midnight).",
-                    ),
-                    sw_compdocs.component.LogicNode(
-                        label="Backlight",
-                        mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                        type=sw_compdocs.component.LogicNodeType.BOOL,
-                        description="Enables the backlight when receiving an on signal.",
-                    ),
-                    sw_compdocs.component.LogicNode(
-                        label="Electric",
-                        mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                        type=sw_compdocs.component.LogicNodeType.ELECTRIC,
-                        description="Electrical power connection.",
-                    ),
-                ],
-                input_voxel_min=sw_compdocs.component.VoxelPos(x=0, y=0, z=0),
-                input_voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=0),
-            ),
-            tt(
-                input_cid="clock",
-                input_name="Clock",
-                input_category=sw_compdocs.component.Category.DISPLAYS,
-                input_mass=1.0,
-                input_value=100,
-                input_flags=sw_compdocs.component.Flags(8192),
-                input_tags="basic",
-                input_tooltip_properties=sw_compdocs.component.TooltipProperties(
-                    short_description="An analogue clock display that outputs a number value representing the time of day.",
-                    description="The clock has a display to visualise the time of day or night. The 12 o'clock position is the white arrow on the face of the display.",
-                ),
-                input_logic_nodes=sw_compdocs.component.LogicNodeList(
-                    [
-                        sw_compdocs.component.LogicNode(
-                            label="Time",
-                            mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
-                            type=sw_compdocs.component.LogicNodeType.FLOAT,
-                            description="The time as a factor of a day, from 0 (midnight) to 1 (midnight).",
-                        ),
-                        sw_compdocs.component.LogicNode(
-                            label="Backlight",
-                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                            type=sw_compdocs.component.LogicNodeType.BOOL,
-                            description="Enables the backlight when receiving an on signal.",
-                        ),
-                        sw_compdocs.component.LogicNode(
-                            label="Electric",
-                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                            type=sw_compdocs.component.LogicNodeType.ELECTRIC,
-                            description="Electrical power connection.",
-                        ),
-                    ]
-                ),
-                input_voxel_min=(0, 0, 0),
-                input_voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=0),
-            ),
-            tt(
-                input_cid="clock",
-                input_name="Clock",
-                input_category=sw_compdocs.component.Category.DISPLAYS,
-                input_mass=1.0,
-                input_value=100,
-                input_flags=sw_compdocs.component.Flags(8192),
-                input_tags="basic",
-                input_tooltip_properties=sw_compdocs.component.TooltipProperties(
-                    short_description="An analogue clock display that outputs a number value representing the time of day.",
-                    description="The clock has a display to visualise the time of day or night. The 12 o'clock position is the white arrow on the face of the display.",
-                ),
-                input_logic_nodes=sw_compdocs.component.LogicNodeList(
-                    [
-                        sw_compdocs.component.LogicNode(
-                            label="Time",
-                            mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
-                            type=sw_compdocs.component.LogicNodeType.FLOAT,
-                            description="The time as a factor of a day, from 0 (midnight) to 1 (midnight).",
-                        ),
-                        sw_compdocs.component.LogicNode(
-                            label="Backlight",
-                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                            type=sw_compdocs.component.LogicNodeType.BOOL,
-                            description="Enables the backlight when receiving an on signal.",
-                        ),
-                        sw_compdocs.component.LogicNode(
-                            label="Electric",
-                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                            type=sw_compdocs.component.LogicNodeType.ELECTRIC,
-                            description="Electrical power connection.",
-                        ),
-                    ]
-                ),
-                input_voxel_min=sw_compdocs.component.VoxelPos(x=0, y=0, z=0),
-                input_voxel_max=(0, 1, 0),
-            ),
-        ]:
-            with self.subTest(tc=tc):
-                with self.assertRaises(TypeError):
-                    sw_compdocs.component.Definition(
-                        cid=tc.input_cid,
-                        name=tc.input_name,
-                        category=tc.input_category,
-                        mass=tc.input_mass,
-                        value=tc.input_value,
-                        flags=tc.input_flags,
-                        tags=tc.input_tags,
-                        tooltip_properties=tc.input_tooltip_properties,
-                        logic_nodes=tc.input_logic_nodes,
-                        voxel_min=tc.input_voxel_min,
-                        voxel_max=tc.input_voxel_max,
-                    )
-
 
 class TestDefinitionCIDSetter(unittest.TestCase):
-    def test_pass(self):
+    def test_pass(self) -> None:
         comp = sw_compdocs.component.Definition()
         comp.cid = "cid"
         self.assertEqual(comp.cid, "cid")
 
-    def test_exc_type(self):
-        comp = sw_compdocs.component.Definition()
-        with self.assertRaises(TypeError):
-            comp.cid = None
-
 
 class TestDefinitionNameSetter(unittest.TestCase):
-    def test_pass(self):
+    def test_pass(self) -> None:
         comp = sw_compdocs.component.Definition()
         comp.name = "name"
         self.assertEqual(comp.name, "name")
 
-    def test_exc_type(self):
-        comp = sw_compdocs.component.Definition()
-        with self.assertRaises(TypeError):
-            comp.name = None
-
 
 class TestDefinitionCategorySetter(unittest.TestCase):
-    def test_pass(self):
+    def test_pass(self) -> None:
         comp = sw_compdocs.component.Definition()
         comp.category = sw_compdocs.component.Category.VEHICLE_CONTROL
         self.assertEqual(comp.category, sw_compdocs.component.Category.VEHICLE_CONTROL)
 
-    def test_exc_type(self):
-        comp = sw_compdocs.component.Definition()
-        with self.assertRaises(TypeError):
-            comp.category = None
-
 
 class TestDefinitionMassSetter(unittest.TestCase):
-    def test_pass(self):
+    def test_pass(self) -> None:
         comp = sw_compdocs.component.Definition()
         comp.mass = 52149.0
         self.assertEqual(comp.mass, 52149.0)
 
-    def test_exc_type(self):
-        comp = sw_compdocs.component.Definition()
-        with self.assertRaises(TypeError):
-            comp.mass = None
-
 
 class TestDefinitionValueSetter(unittest.TestCase):
-    def test_pass(self):
+    def test_pass(self) -> None:
         comp = sw_compdocs.component.Definition()
         comp.value = 52149
         self.assertEqual(comp.value, 52149)
 
-    def test_exc_type(self):
-        comp = sw_compdocs.component.Definition()
-        with self.assertRaises(TypeError):
-            comp.value = None
-
 
 class TestDefinitionFlagsSetter(unittest.TestCase):
-    def test_pass(self):
+    def test_pass(self) -> None:
         comp = sw_compdocs.component.Definition()
         comp.flags = sw_compdocs.component.Flags(8192)
         self.assertEqual(comp.flags, sw_compdocs.component.Flags(8192))
 
-    def test_exc_type(self):
-        comp = sw_compdocs.component.Definition()
-        with self.assertRaises(TypeError):
-            comp.flags = None
-
 
 class TestDefinitionTagsSetter(unittest.TestCase):
-    def test_pass(self):
+    def test_pass(self) -> None:
         comp = sw_compdocs.component.Definition()
         comp.tags = "basic"
         self.assertEqual(comp.tags, "basic")
 
-    def test_exc_type(self):
-        comp = sw_compdocs.component.Definition()
-        with self.assertRaises(TypeError):
-            comp.tags = None
-
 
 class TestDefinitionTooltipPropertiesSetter(unittest.TestCase):
-    def test_pass(self):
+    def test_pass(self) -> None:
         tooltip_properties = sw_compdocs.component.TooltipProperties()
 
         comp = sw_compdocs.component.Definition()
         comp.tooltip_properties = tooltip_properties
         self.assertIs(comp.tooltip_properties, tooltip_properties)
 
-    def test_exc_type(self):
-        comp = sw_compdocs.component.Definition()
-        with self.assertRaises(TypeError):
-            comp.tooltip_properties = None
-
 
 class TestDefinitionLogicNodesSetter(unittest.TestCase):
-    def test_pass(self):
+    def test_pass(self) -> None:
         logic_nodes = sw_compdocs.component.LogicNodeList()
 
         comp = sw_compdocs.component.Definition()
         comp.logic_nodes = logic_nodes
         self.assertIs(comp.logic_nodes, logic_nodes)
 
-    def test_exc_type(self):
-        comp = sw_compdocs.component.Definition()
-        with self.assertRaises(TypeError):
-            comp.logic_nodes = None
-
 
 class TestDefinitionVoxelMinSetter(unittest.TestCase):
-    def test_pass(self):
+    def test_pass(self) -> None:
         voxel_min = sw_compdocs.component.VoxelPos()
 
         comp = sw_compdocs.component.Definition()
         comp.voxel_min = voxel_min
         self.assertIs(comp.voxel_min, voxel_min)
 
-    def test_exc_type(self):
-        comp = sw_compdocs.component.Definition()
-        with self.assertRaises(TypeError):
-            comp.voxel_min = None
-
 
 class TestDefinitionVoxelMaxSetter(unittest.TestCase):
-    def test_pass(self):
+    def test_pass(self) -> None:
         voxel_max = sw_compdocs.component.VoxelPos()
 
         comp = sw_compdocs.component.Definition()
         comp.voxel_max = voxel_max
         self.assertIs(comp.voxel_max, voxel_max)
 
-    def test_exc_type(self):
-        comp = sw_compdocs.component.Definition()
-        with self.assertRaises(TypeError):
-            comp.voxel_max = None
-
 
 class TestDefinitionFromXMLElem(unittest.TestCase):
-    def test_pass_clock(self):
+    def test_pass_clock(self) -> None:
         elem = lxml.etree.fromstring(
             """\
 <definition name="Clock" category="6" mass="1" value="100" flags="8192" tags="basic">
@@ -1034,7 +608,7 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
         self.assertEqual(comp.voxel_min, sw_compdocs.component.VoxelPos(x=0, y=0, z=0))
         self.assertEqual(comp.voxel_max, sw_compdocs.component.VoxelPos(x=0, y=1, z=0))
 
-    def test_pass_empty(self):
+    def test_pass_empty(self) -> None:
         elem = lxml.etree.Element("definition")
         comp = sw_compdocs.component.Definition.from_xml_elem(elem)
         self.assertEqual(comp.cid, "")
@@ -1051,12 +625,15 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
         self.assertEqual(comp.voxel_min, sw_compdocs.component.VoxelPos())
         self.assertEqual(comp.voxel_max, sw_compdocs.component.VoxelPos())
 
-    def test_exc_type(self):
-        with self.assertRaises(TypeError):
-            sw_compdocs.component.Definition.from_xml_elem(None)
-
-    def test_exc_xml(self):
-        tt = collections.namedtuple("tt", ("input_elem", "want_msg", "want_xpath"))
+    def test_exc_xml(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_elem", lxml.etree._Element),
+                ("want_msg", str),
+                ("want_xpath", str),
+            ],
+        )
 
         for tc in [
             tt(
@@ -1115,7 +692,7 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
 
 
 class TestDefinitionRepr(unittest.TestCase):
-    def test(self):
+    def test(self) -> None:
         comp = sw_compdocs.component.Definition(
             cid="cid",
             name="name",
@@ -1136,8 +713,15 @@ class TestDefinitionRepr(unittest.TestCase):
 
 
 class TestDefinitionEq(unittest.TestCase):
-    def test(self):
-        tt = collections.namedtuple("tt", ("input_self", "input_other", "want_eq"))
+    def test(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_self", sw_compdocs.component.Definition),
+                ("input_other", object),
+                ("want_eq", bool),
+            ],
+        )
 
         for tc in [
             tt(
@@ -1516,8 +1100,14 @@ class TestDefinitionEq(unittest.TestCase):
 
 
 class TestCategoryStr(unittest.TestCase):
-    def test(self):
-        tt = collections.namedtuple("tt", ("input_category", "want_s"))
+    def test(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_category", sw_compdocs.component.Category),
+                ("want_s", str),
+            ],
+        )
 
         for tc in [
             tt(
@@ -1591,15 +1181,15 @@ class TestCategoryStr(unittest.TestCase):
 
 
 class TestTooltipPropertiesInit(unittest.TestCase):
-    def test_pass(self):
-        tt = collections.namedtuple(
+    def test_pass(self) -> None:
+        tt = typing.NamedTuple(
             "tt",
-            (
-                "input_short_description",
-                "input_description",
-                "want_short_description",
-                "want_description",
-            ),
+            [
+                ("input_short_description", str | None),
+                ("input_description", str | None),
+                ("want_short_description", str),
+                ("want_description", str),
+            ],
         )
 
         for tc in [
@@ -1636,51 +1226,30 @@ class TestTooltipPropertiesInit(unittest.TestCase):
                 self.assertEqual(got.short_description, tc.want_short_description)
                 self.assertEqual(got.description, tc.want_description)
 
-    def test_exc_type(self):
-        tt = collections.namedtuple(
-            "tt", ("input_short_description", "input_description")
-        )
-
-        for tc in [
-            tt(input_short_description=0, input_description=""),
-            tt(input_short_description="", input_description=0),
-        ]:
-            with self.subTest(tc=tc):
-                with self.assertRaises(TypeError):
-                    sw_compdocs.component.TooltipProperties(
-                        short_description=tc.input_short_description,
-                        description=tc.input_description,
-                    )
-
 
 class TestTooltipPropertiesShortDescriptionSetter(unittest.TestCase):
-    def test_pass(self):
+    def test_pass(self) -> None:
         tp = sw_compdocs.component.TooltipProperties()
         tp.short_description = "a"
         self.assertEqual(tp.short_description, "a")
 
-    def test_exc_type(self):
-        tp = sw_compdocs.component.TooltipProperties()
-        with self.assertRaises(TypeError):
-            tp.short_description = None
-
 
 class TestTooltipPropertiesDescriptionSetter(unittest.TestCase):
-    def test_pass(self):
+    def test_pass(self) -> None:
         tp = sw_compdocs.component.TooltipProperties()
         tp.description = "b"
         self.assertEqual(tp.description, "b")
 
-    def test_exc_type(self):
-        tp = sw_compdocs.component.TooltipProperties()
-        with self.assertRaises(TypeError):
-            tp.description = None
-
 
 class TestTooltipPropertiesFromXMLElem(unittest.TestCase):
-    def test_pass(self):
-        tt = collections.namedtuple(
-            "tt", ("input_elem", "want_short_description", "want_description")
+    def test_pass(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_elem", lxml.etree._Element),
+                ("want_short_description", str),
+                ("want_description", str),
+            ],
         )
 
         for tc in [
@@ -1711,13 +1280,9 @@ class TestTooltipPropertiesFromXMLElem(unittest.TestCase):
                 self.assertEqual(got.short_description, tc.want_short_description)
                 self.assertEqual(got.description, tc.want_description)
 
-    def test_exc_type(self):
-        with self.assertRaises(TypeError):
-            sw_compdocs.component.TooltipProperties.from_xml_elem(None)
-
 
 class TestTooltipPropertiesRepr(unittest.TestCase):
-    def test(self):
+    def test(self) -> None:
         tp = sw_compdocs.component.TooltipProperties(
             short_description="a", description="b"
         )
@@ -1727,8 +1292,15 @@ class TestTooltipPropertiesRepr(unittest.TestCase):
 
 
 class TestTooltipPropertiesEq(unittest.TestCase):
-    def test(self):
-        tt = collections.namedtuple("tt", ("input_self", "input_other", "want_eq"))
+    def test(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_self", sw_compdocs.component.TooltipProperties),
+                ("input_other", object),
+                ("want_eq", bool),
+            ],
+        )
 
         for tc in [
             tt(
@@ -1772,8 +1344,14 @@ class TestTooltipPropertiesEq(unittest.TestCase):
 
 
 class TestTooltipPropertiesFullDescription(unittest.TestCase):
-    def test(self):
-        tt = collections.namedtuple("tt", ("input_self", "want_s"))
+    def test(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_self", sw_compdocs.component.TooltipProperties),
+                ("want_s", str),
+            ],
+        )
 
         for tc in [
             tt(
@@ -1807,40 +1385,26 @@ class TestTooltipPropertiesFullDescription(unittest.TestCase):
 
 
 class TestLogicNodeListInit(unittest.TestCase):
-    def test_pass(self):
-        lns = sw_compdocs.component.LogicNodeList(
-            [
-                sw_compdocs.component.LogicNode(label="a"),
-                sw_compdocs.component.LogicNode(label="b"),
-                sw_compdocs.component.LogicNode(label="c"),
-                sw_compdocs.component.LogicNode(label="d"),
-            ]
-        )
-        self.assertEqual(
-            lns._l,
-            [
-                sw_compdocs.component.LogicNode(label="a"),
-                sw_compdocs.component.LogicNode(label="b"),
-                sw_compdocs.component.LogicNode(label="c"),
-                sw_compdocs.component.LogicNode(label="d"),
-            ],
-        )
-
-    def test_exc_type(self):
-        with self.assertRaises(TypeError):
-            sw_compdocs.component.LogicNodeList(
-                [
-                    sw_compdocs.component.LogicNode(label="a"),
-                    sw_compdocs.component.LogicNode(label="b"),
-                    sw_compdocs.component.LogicNode(label="c"),
-                    None,
-                ]
-            )
+    def test_pass(self) -> None:
+        ln_list = [
+            sw_compdocs.component.LogicNode(label="a"),
+            sw_compdocs.component.LogicNode(label="b"),
+            sw_compdocs.component.LogicNode(label="c"),
+            sw_compdocs.component.LogicNode(label="d"),
+        ]
+        lns = sw_compdocs.component.LogicNodeList(ln_list)
+        self.assertEqual(lns._l, ln_list)
 
 
 class TestLogicNodeListFromXMLElem(unittest.TestCase):
-    def test_pass(self):
-        tt = collections.namedtuple("tt", ("input_sub_list", "want_lns"))
+    def test_pass(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_sub_list", list[lxml.etree._Element]),
+                ("want_lns", sw_compdocs.component.LogicNodeList),
+            ],
+        )
 
         for tc in [
             tt(
@@ -1881,12 +1445,15 @@ class TestLogicNodeListFromXMLElem(unittest.TestCase):
                 got_lns = sw_compdocs.component.LogicNodeList.from_xml_elem(input_elem)
                 self.assertEqual(got_lns, tc.want_lns)
 
-    def test_exc_type(self):
-        with self.assertRaises(TypeError):
-            sw_compdocs.component.LogicNodeList.from_xml_elem(None)
-
-    def test_exc_xml(self):
-        tt = collections.namedtuple("tt", ("input_sub_list", "want_msg", "want_xpath"))
+    def test_exc_xml(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_sub_list", list[lxml.etree._Element]),
+                ("want_msg", str),
+                ("want_xpath", str),
+            ],
+        )
 
         for tc in [
             tt(
@@ -1928,21 +1495,21 @@ class TestLogicNodeListFromXMLElem(unittest.TestCase):
 
 
 class TestLogicNodeInit(unittest.TestCase):
-    def test_pass(self):
-        tt = collections.namedtuple(
+    def test_pass(self) -> None:
+        tt = typing.NamedTuple(
             "tt",
-            (
-                "input_idx",
-                "input_label",
-                "input_mode",
-                "input_type",
-                "input_description",
-                "want_idx",
-                "want_label",
-                "want_mode",
-                "want_type",
-                "want_description",
-            ),
+            [
+                ("input_idx", int | None),
+                ("input_label", str | None),
+                ("input_mode", sw_compdocs.component.LogicNodeMode | None),
+                ("input_type", sw_compdocs.component.LogicNodeType | None),
+                ("input_description", str | None),
+                ("want_idx", int),
+                ("want_label", str),
+                ("want_mode", sw_compdocs.component.LogicNodeMode),
+                ("want_type", sw_compdocs.component.LogicNodeType),
+                ("want_description", str),
+            ],
         )
 
         for tc in [
@@ -2033,139 +1600,55 @@ class TestLogicNodeInit(unittest.TestCase):
                 self.assertEqual(got.type, tc.want_type)
                 self.assertEqual(got.description, tc.want_description)
 
-    def test_exc_type(self):
-        tt = collections.namedtuple(
-            "tt",
-            (
-                "input_idx",
-                "input_label",
-                "input_mode",
-                "input_type",
-                "input_description",
-            ),
-        )
-
-        for tc in [
-            tt(
-                input_idx=52149.0,
-                input_label="label",
-                input_mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                input_type=sw_compdocs.component.LogicNodeType.FLOAT,
-                input_description="description",
-            ),
-            tt(
-                input_idx=52149,
-                input_label=0,
-                input_mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                input_type=sw_compdocs.component.LogicNodeType.FLOAT,
-                input_description="description",
-            ),
-            tt(
-                input_idx=52149,
-                input_label="label",
-                input_mode=0,
-                input_type=sw_compdocs.component.LogicNodeType.FLOAT,
-                input_description="description",
-            ),
-            tt(
-                input_idx=52149,
-                input_label="label",
-                input_mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                input_type=0,
-                input_description="description",
-            ),
-            tt(
-                input_idx=52149,
-                input_label="label",
-                input_mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                input_type=sw_compdocs.component.LogicNodeType.FLOAT,
-                input_description=0,
-            ),
-        ]:
-            with self.subTest(tc=tc):
-                with self.assertRaises(TypeError):
-                    sw_compdocs.component.LogicNode(
-                        idx=tc.input_idx,
-                        label=tc.input_label,
-                        mode=tc.input_mode,
-                        type=tc.input_type,
-                        description=tc.input_description,
-                    )
-
 
 class TestLogicNodeIdxSetter(unittest.TestCase):
-    def test_pass(self):
+    def test_pass(self) -> None:
         ln = sw_compdocs.component.LogicNode()
         ln.idx = 52149
         self.assertEqual(ln.idx, 52149)
 
-    def test_exc_type(self):
-        ln = sw_compdocs.component.LogicNode()
-        with self.assertRaises(TypeError):
-            ln.idx = None
-
 
 class TestLogicNodeLabelSetter(unittest.TestCase):
-    def test_pass(self):
+    def test_pass(self) -> None:
         ln = sw_compdocs.component.LogicNode()
         ln.label = "label"
         self.assertEqual(ln.label, "label")
 
-    def test_exc_type(self):
-        ln = sw_compdocs.component.LogicNode()
-        with self.assertRaises(TypeError):
-            ln.label = None
-
 
 class TestLogicNodeModeSetter(unittest.TestCase):
-    def test_pass(self):
+    def test_pass(self) -> None:
         ln = sw_compdocs.component.LogicNode()
         ln.mode = sw_compdocs.component.LogicNodeMode.INPUT
         self.assertEqual(ln.mode, sw_compdocs.component.LogicNodeMode.INPUT)
 
-    def test_exc_type(self):
-        ln = sw_compdocs.component.LogicNode()
-        with self.assertRaises(TypeError):
-            ln.mode = None
-
 
 class TestLogicNodeTypeSetter(unittest.TestCase):
-    def test_pass(self):
+    def test_pass(self) -> None:
         ln = sw_compdocs.component.LogicNode()
         ln.type = sw_compdocs.component.LogicNodeType.FLOAT
         self.assertEqual(ln.type, sw_compdocs.component.LogicNodeType.FLOAT)
 
-    def test_exc_type(self):
-        ln = sw_compdocs.component.LogicNode()
-        with self.assertRaises(TypeError):
-            ln.type = None
-
 
 class TestLogicNodeDescriptionSetter(unittest.TestCase):
-    def test_pass(self):
+    def test_pass(self) -> None:
         ln = sw_compdocs.component.LogicNode()
         ln.description = "description"
         self.assertEqual(ln.description, "description")
 
-    def test_exc_type(self):
-        ln = sw_compdocs.component.LogicNode()
-        with self.assertRaises(TypeError):
-            ln.description = None
-
 
 class TestLogicNodeFromXMLElem(unittest.TestCase):
-    def test_pass(self):
-        tt = collections.namedtuple(
+    def test_pass(self) -> None:
+        tt = typing.NamedTuple(
             "tt",
-            (
-                "input_elem",
-                "input_idx",
-                "want_idx",
-                "want_label",
-                "want_mode",
-                "want_type",
-                "want_description",
-            ),
+            [
+                ("input_elem", lxml.etree._Element),
+                ("input_idx", int | None),
+                ("want_idx", int),
+                ("want_label", str),
+                ("want_mode", sw_compdocs.component.LogicNodeMode),
+                ("want_type", sw_compdocs.component.LogicNodeType),
+                ("want_description", str),
+            ],
         )
 
         for tc in [
@@ -2251,12 +1734,14 @@ class TestLogicNodeFromXMLElem(unittest.TestCase):
                 self.assertEqual(got.type, tc.want_type)
                 self.assertEqual(got.description, tc.want_description)
 
-    def test_exc_type(self):
-        with self.assertRaises(TypeError):
-            sw_compdocs.component.LogicNode.from_xml_elem(None)
-
-    def test_exc_xml(self):
-        tt = collections.namedtuple("tt", ("input_elem", "want_msg"))
+    def test_exc_xml(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_elem", lxml.etree._Element),
+                ("want_msg", str),
+            ],
+        )
 
         for tc in [
             tt(
@@ -2309,7 +1794,7 @@ class TestLogicNodeFromXMLElem(unittest.TestCase):
 
 
 class TestLogicNodeRepr(unittest.TestCase):
-    def test(self):
+    def test(self) -> None:
         ln = sw_compdocs.component.LogicNode(
             idx=52149,
             label="label",
@@ -2324,8 +1809,15 @@ class TestLogicNodeRepr(unittest.TestCase):
 
 
 class TestLogicNodeEq(unittest.TestCase):
-    def test(self):
-        tt = collections.namedtuple("tt", ("input_self", "input_other", "want_eq"))
+    def test(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_self", sw_compdocs.component.LogicNode),
+                ("input_other", object),
+                ("want_eq", bool),
+            ],
+        )
 
         for tc in [
             tt(
@@ -2448,8 +1940,14 @@ class TestLogicNodeEq(unittest.TestCase):
 
 
 class TestLogicNodeTypeStr(unittest.TestCase):
-    def test(self):
-        tt = collections.namedtuple("tt", ("input_type", "want_s"))
+    def test(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_type", sw_compdocs.component.LogicNodeType),
+                ("want_s", str),
+            ],
+        )
 
         for tc in [
             tt(
@@ -2495,9 +1993,17 @@ class TestLogicNodeTypeStr(unittest.TestCase):
 
 
 class TestVoxelPosInit(unittest.TestCase):
-    def test_pass(self):
-        tt = collections.namedtuple(
-            "tt", ("input_x", "input_y", "input_z", "want_x", "want_y", "want_z")
+    def test_pass(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_x", int | None),
+                ("input_y", int | None),
+                ("input_z", int | None),
+                ("want_x", int),
+                ("want_y", int),
+                ("want_z", int),
+            ],
         )
 
         for tc in [
@@ -2514,63 +2020,39 @@ class TestVoxelPosInit(unittest.TestCase):
                 self.assertEqual(pos.y, tc.want_y)
                 self.assertEqual(pos.z, tc.want_z)
 
-    def test_exc_type(self):
-        tt = collections.namedtuple("tt", ("input_x", "input_y", "input_z"))
-
-        for tc in [
-            tt(input_x="1", input_y=2, input_z=3),
-            tt(input_x=1, input_y="2", input_z=3),
-            tt(input_x=1, input_y=2, input_z="3"),
-        ]:
-            with self.subTest(tc=tc):
-                with self.assertRaises(TypeError):
-                    sw_compdocs.component.VoxelPos(
-                        x=tc.input_x, y=tc.input_y, z=tc.input_z
-                    )
-
 
 class TestVoxelPosXSetter(unittest.TestCase):
-    def test_pass(self):
+    def test_pass(self) -> None:
         pos = sw_compdocs.component.VoxelPos()
         pos.x = 52149
         self.assertEqual(pos.x, 52149)
 
-    def test_exc_type(self):
-        pos = sw_compdocs.component.VoxelPos(x=52149)
-        with self.assertRaises(TypeError):
-            pos.x = None
-        self.assertEqual(pos.x, 52149)
-
 
 class TestVoxelPosYSetter(unittest.TestCase):
-    def test_pass(self):
+    def test_pass(self) -> None:
         pos = sw_compdocs.component.VoxelPos()
         pos.y = 52149
         self.assertEqual(pos.y, 52149)
 
-    def test_exc_type(self):
-        pos = sw_compdocs.component.VoxelPos(y=52149)
-        with self.assertRaises(TypeError):
-            pos.y = None
-        self.assertEqual(pos.y, 52149)
-
 
 class TestVoxelPosZSetter(unittest.TestCase):
-    def test_pass(self):
+    def test_pass(self) -> None:
         pos = sw_compdocs.component.VoxelPos()
         pos.z = 52149
         self.assertEqual(pos.z, 52149)
 
-    def test_exc_type(self):
-        pos = sw_compdocs.component.VoxelPos(z=52149)
-        with self.assertRaises(TypeError):
-            pos.z = None
-        self.assertEqual(pos.z, 52149)
-
 
 class TestVoxelPosFromXMLElem(unittest.TestCase):
-    def test_pass(self):
-        tt = collections.namedtuple("tt", ("input_elem", "want_x", "want_y", "want_z"))
+    def test_pass(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_elem", lxml.etree._Element),
+                ("want_x", int),
+                ("want_y", int),
+                ("want_z", int),
+            ],
+        )
 
         for tc in [
             tt(
@@ -2621,12 +2103,14 @@ class TestVoxelPosFromXMLElem(unittest.TestCase):
                 self.assertEqual(pos.y, tc.want_y)
                 self.assertEqual(pos.z, tc.want_z)
 
-    def test_exc_type(self):
-        with self.assertRaises(TypeError):
-            sw_compdocs.component.VoxelPos.from_xml_elem(None)
-
-    def test_exc_xml(self):
-        tt = collections.namedtuple("tt", ("input_elem", "want_msg"))
+    def test_exc_xml(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_elem", lxml.etree._Element),
+                ("want_msg", str),
+            ],
+        )
 
         for tc in [
             tt(
@@ -2651,14 +2135,21 @@ class TestVoxelPosFromXMLElem(unittest.TestCase):
 
 
 class TestVoxelPosRepr(unittest.TestCase):
-    def test(self):
+    def test(self) -> None:
         pos = sw_compdocs.component.VoxelPos(x=1, y=2, z=3)
         self.assertEqual(str(pos), "VoxelPos(x=1, y=2, z=3)")
 
 
 class TestVoxelPosEq(unittest.TestCase):
-    def test(self):
-        tt = collections.namedtuple("tt", ("input_self", "input_other", "want_eq"))
+    def test(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_self", sw_compdocs.component.VoxelPos),
+                ("input_other", object),
+                ("want_eq", bool),
+            ],
+        )
 
         for tc in [
             tt(
@@ -2693,27 +2184,29 @@ class TestVoxelPosEq(unittest.TestCase):
 
 
 class TestComponentXMLErrorInit(unittest.TestCase):
-    def test_pass(self):
+    def test_pass(self) -> None:
         exc = sw_compdocs.component.ComponentXMLError("msg")
-        self.assertEqual(exc.args, ("msg",))
+        exc_args: tuple[object, ...] = exc.args
+        self.assertEqual(exc_args, ("msg",))
         self.assertEqual(exc.msg, "msg")
         self.assertEqual(exc.file, None)
         self.assertEqual(exc.xpath, ".")
 
-    def test_exc_type(self):
-        with self.assertRaises(TypeError):
-            sw_compdocs.component.ComponentXMLError(None)
-
 
 class TestComponentXMLErrorFileSetter(unittest.TestCase):
-    def test_pass(self):
-        for file in ["file", b"file", pathlib.PurePath("file")]:
+    def test_pass(self) -> None:
+        file_list: list[sw_compdocs._types.StrOrBytesPath] = [
+            "file",
+            b"file",
+            pathlib.PurePath("file"),
+        ]
+        for file in file_list:
             with self.subTest(file=file):
                 exc = sw_compdocs.component.ComponentXMLError("msg")
                 exc.file = file
                 self.assertIs(exc.file, file)
 
-    def test_pass_none(self):
+    def test_pass_none(self) -> None:
         exc = sw_compdocs.component.ComponentXMLError("msg")
         self.assertEqual(exc.file, None)
 
@@ -2723,14 +2216,9 @@ class TestComponentXMLErrorFileSetter(unittest.TestCase):
         exc.file = None
         self.assertEqual(exc.file, None)
 
-    def test_exc_type(self):
-        exc = sw_compdocs.component.ComponentXMLError("msg")
-        with self.assertRaises(TypeError):
-            exc.file = 0
-
 
 class TestComponentXMLErrorStr(unittest.TestCase):
-    def test(self):
+    def test(self) -> None:
         exc = sw_compdocs.component.ComponentXMLError("any useful message")
         exc.file = "01_block.xml"
         exc.prepend_xpath("logic_node[52149]")
@@ -2741,8 +2229,14 @@ class TestComponentXMLErrorStr(unittest.TestCase):
             "01_block.xml: ./definition/logic_nodes/logic_node[52149]: any useful message",
         )
 
-    def test_table(self):
-        tt = collections.namedtuple("tt", ("input_file", "want_s"))
+    def test_table(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_file", sw_compdocs._types.StrOrBytesPath | None),
+                ("want_s", str),
+            ],
+        )
 
         exc = sw_compdocs.component.ComponentXMLError("msg")
         for tc in [
@@ -2758,7 +2252,7 @@ class TestComponentXMLErrorStr(unittest.TestCase):
 
 
 class TestComponentXMLErrorPrependXPath(unittest.TestCase):
-    def test_pass(self):
+    def test_pass(self) -> None:
         exc = sw_compdocs.component.ComponentXMLError("msg")
         self.assertEqual(exc.xpath, ".")
 
@@ -2774,24 +2268,19 @@ class TestComponentXMLErrorPrependXPath(unittest.TestCase):
         exc.prepend_xpath("/")
         self.assertEqual(exc.xpath, "/definition/logic_nodes/logic_node[52149]")
 
-    def test_exc_runtime(self):
+    def test_exc_runtime(self) -> None:
         exc = sw_compdocs.component.ComponentXMLError("msg")
         exc.prepend_xpath("xpath")
         exc.prepend_xpath("/")
         self.assertEqual(exc.xpath, "/xpath")
 
-        for s in ["root", "/", "value/error", None]:
+        for s in ["root", "/", "value/error"]:
             with self.subTest(s=s):
                 with self.assertRaises(RuntimeError):
                     exc.prepend_xpath(s)
                 self.assertEqual(exc.xpath, "/xpath")
 
-    def test_exc_type(self):
-        exc = sw_compdocs.component.ComponentXMLError("msg")
-        with self.assertRaises(TypeError):
-            exc.prepend_xpath(None)
-
-    def test_exc_value(self):
+    def test_exc_value(self) -> None:
         for s in ["", "logic_nodes/logic_node[52149]"]:
             with self.subTest(s=s):
                 exc = sw_compdocs.component.ComponentXMLError("msg")
@@ -2800,8 +2289,15 @@ class TestComponentXMLErrorPrependXPath(unittest.TestCase):
 
 
 class TestCoalesce(unittest.TestCase):
-    def test(self):
-        tt = collections.namedtuple("tt", ("input_value", "input_default", "want"))
+    def test(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_value", object | None),
+                ("input_default", object),
+                ("want", object),
+            ],
+        )
 
         for tc in [
             tt(input_value=0, input_default=1, want=0),
