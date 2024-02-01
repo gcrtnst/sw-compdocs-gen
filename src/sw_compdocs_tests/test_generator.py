@@ -1,17 +1,26 @@
-import collections
+import collections.abc
 import os
 import pathlib
+import sw_compdocs._types
 import sw_compdocs.component
 import sw_compdocs.generator
 import sw_compdocs.language
 import sw_compdocs.template
 import tempfile
+import typing
 import unittest
 
 
 class TestDocumentGeneratorInit(unittest.TestCase):
-    def test_pass(self):
-        tt = collections.namedtuple("tt", ("input_label", "input_lang", "input_fmt"))
+    def test_pass(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_label", sw_compdocs.generator.LabelDict | None),
+                ("input_lang", sw_compdocs.language.Language | None),
+                ("input_fmt", sw_compdocs.template.TemplateFormatter | None),
+            ],
+        )
 
         for tc in [
             tt(
@@ -43,77 +52,40 @@ class TestDocumentGeneratorInit(unittest.TestCase):
                 self.assertIs(gen.lang, tc.input_lang)
                 self.assertIs(gen.fmt, tc.input_fmt)
 
-    def test_exc_type(self):
-        tt = collections.namedtuple("tt", ("input_label", "input_lang", "input_fmt"))
-
-        for tc in [
-            tt(
-                input_label={},
-                input_lang=sw_compdocs.language.Language(),
-                input_fmt=sw_compdocs.template.TemplateFormatter({}),
-            ),
-            tt(
-                input_label=sw_compdocs.generator.LabelDict(),
-                input_lang={},
-                input_fmt=sw_compdocs.template.TemplateFormatter({}),
-            ),
-            tt(
-                input_label=sw_compdocs.generator.LabelDict(),
-                input_lang=sw_compdocs.language.Language(),
-                input_fmt={},
-            ),
-        ]:
-            with self.subTest(tc=tc):
-                with self.assertRaises(TypeError):
-                    sw_compdocs.generator.DocumentGenerator(
-                        label=tc.input_label,
-                        lang=tc.input_lang,
-                        fmt=tc.input_fmt,
-                    )
-
 
 class TestDocumentGeneratorLabelSetter(unittest.TestCase):
-    def test_pass(self):
+    def test_pass(self) -> None:
         for label in [sw_compdocs.generator.LabelDict(), None]:
             gen = sw_compdocs.generator.DocumentGenerator()
             gen.label = label
             self.assertIs(gen.label, label)
 
-    def test_exc_type(self):
-        gen = sw_compdocs.generator.DocumentGenerator()
-        with self.assertRaises(TypeError):
-            gen.label = {}
-
 
 class TestDocumentGeneratorLangSetter(unittest.TestCase):
-    def test_pass(self):
+    def test_pass(self) -> None:
         for lang in [sw_compdocs.language.Language(), None]:
             gen = sw_compdocs.generator.DocumentGenerator()
             gen.lang = lang
             self.assertIs(gen.lang, lang)
 
-    def test_exc_type(self):
-        gen = sw_compdocs.generator.DocumentGenerator()
-        with self.assertRaises(TypeError):
-            gen.lang = {}
-
 
 class TestDocumentGeneratorFmtSetter(unittest.TestCase):
-    def test_pass(self):
+    def test_pass(self) -> None:
         for fmt in [sw_compdocs.template.TemplateFormatter({}), None]:
             gen = sw_compdocs.generator.DocumentGenerator()
             gen.fmt = fmt
             self.assertIs(gen.fmt, fmt)
 
-    def test_exc_type(self):
-        gen = sw_compdocs.generator.DocumentGenerator()
-        with self.assertRaises(TypeError):
-            gen.fmt = {}
-
 
 class TestDocumentGeneratorGenerate(unittest.TestCase):
-    def test_pass(self):
-        tt = collections.namedtuple("tt", ("input_comp_list", "want_doc"))
+    def test_pass(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_comp_list", list[sw_compdocs.component.Definition]),
+                ("want_doc", sw_compdocs.document.Document),
+            ],
+        )
 
         for tc in [
             # empty
@@ -814,21 +786,16 @@ class TestDocumentGeneratorGenerate(unittest.TestCase):
                 got_doc = gen.generate(tc.input_comp_list)
                 self.assertEqual(got_doc, tc.want_doc)
 
-    def test_exc_type(self):
-        for comp_list in [
-            None,
-            [None, sw_compdocs.component.Definition()],
-            [sw_compdocs.component.Definition(), None],
-        ]:
-            with self.subTest(comp_list=comp_list):
-                gen = sw_compdocs.generator.DocumentGenerator()
-                with self.assertRaises(TypeError):
-                    gen.generate(comp_list)
-
 
 class TestDocumentGeneratorGenerateComponentList(unittest.TestCase):
-    def test_pass(self):
-        tt = collections.namedtuple("tt", ("input_comp_list", "want_doc"))
+    def test_pass(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_comp_list", list[sw_compdocs.component.Definition]),
+                ("want_doc", sw_compdocs.document.Document),
+            ],
+        )
 
         for tc in [
             tt(
@@ -897,23 +864,18 @@ class TestDocumentGeneratorGenerateComponentList(unittest.TestCase):
                 got_doc = gen.generate_component_list(tc.input_comp_list)
                 self.assertEqual(got_doc, tc.want_doc)
 
-    def test_exc_type(self):
-        for comp_list in [
-            None,
-            [None, sw_compdocs.component.Definition(name="B")],
-            [sw_compdocs.component.Definition(name="A"), None],
-        ]:
-            with self.subTest(comp_list=comp_list):
-                gen = sw_compdocs.generator.DocumentGenerator()
-                with self.assertRaises(TypeError):
-                    gen.generate_component_list(comp_list)
-
 
 class TestDocumentGeneratorGenerateComponent(unittest.TestCase):
-    def test_pass(self):
-        tt = collections.namedtuple(
+    def test_pass(self) -> None:
+        tt = typing.NamedTuple(
             "tt",
-            ("input_label", "input_lang", "input_fmt", "input_comp", "want_doc"),
+            [
+                ("input_label", sw_compdocs.generator.LabelDict | None),
+                ("input_lang", sw_compdocs.language.Language | None),
+                ("input_fmt", sw_compdocs.template.TemplateFormatter | None),
+                ("input_comp", sw_compdocs.component.Definition),
+                ("want_doc", sw_compdocs.document.Document),
+            ],
         )
 
         for tc in [
@@ -2025,9 +1987,15 @@ class TestDocumentGeneratorGenerateComponent(unittest.TestCase):
 
 
 class TestDocumentGeneratorGenerateProperty(unittest.TestCase):
-    def test_pass(self):
-        tt = collections.namedtuple(
-            "tt", ("input_label", "input_lang", "input_comp", "want_doc")
+    def test_pass(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_label", sw_compdocs.generator.LabelDict | None),
+                ("input_lang", sw_compdocs.language.Language | None),
+                ("input_comp", sw_compdocs.component.Definition),
+                ("want_doc", sw_compdocs.document.Document),
+            ],
         )
 
         for tc in [
@@ -2105,8 +2073,15 @@ class TestDocumentGeneratorGenerateProperty(unittest.TestCase):
 
 
 class TestDocumentGeneratorGeneratePropertyTable(unittest.TestCase):
-    def test_pass(self):
-        tt = collections.namedtuple("tt", ("input_label", "input_comp", "want_tbl"))
+    def test_pass(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_label", sw_compdocs.generator.LabelDict | None),
+                ("input_comp", sw_compdocs.component.Definition),
+                ("want_tbl", sw_compdocs.document.Table),
+            ],
+        )
 
         for tc in [
             tt(
@@ -2240,24 +2215,19 @@ class TestDocumentGeneratorGeneratePropertyTable(unittest.TestCase):
                 got_tbl = gen.generate_property_table(tc.input_comp)
                 self.assertEqual(got_tbl, tc.want_tbl)
 
-    def test_exc_type(self):
-        gen = sw_compdocs.generator.DocumentGenerator()
-        with self.assertRaises(TypeError):
-            gen.generate_property_table(None)
-
 
 class TestDocumentGeneratorGenerateLogic(unittest.TestCase):
-    def test_pass(self):
-        tt = collections.namedtuple(
+    def test_pass(self) -> None:
+        tt = typing.NamedTuple(
             "tt",
-            (
-                "input_label",
-                "input_lang",
-                "input_fmt",
-                "input_cid",
-                "input_lns",
-                "want_doc",
-            ),
+            [
+                ("input_label", sw_compdocs.generator.LabelDict | None),
+                ("input_lang", sw_compdocs.language.Language | None),
+                ("input_fmt", sw_compdocs.template.TemplateFormatter | None),
+                ("input_cid", str),
+                ("input_lns", sw_compdocs.component.LogicNodeList),
+                ("want_doc", sw_compdocs.document.Document),
+            ],
         )
 
         for tc in [
@@ -2966,31 +2936,19 @@ class TestDocumentGeneratorGenerateLogic(unittest.TestCase):
                 got_doc = gen.generate_logic(tc.input_cid, tc.input_lns)
                 self.assertEqual(got_doc, tc.want_doc)
 
-    def test_exc_type(self):
-        tt = collections.namedtuple("tt", ("input_cid", "input_lns"))
-
-        for tc in [
-            tt(input_cid=None, input_lns=sw_compdocs.component.LogicNodeList()),
-            tt(input_cid="cid", input_lns=None),
-        ]:
-            with self.subTest(tc=tc):
-                gen = sw_compdocs.generator.DocumentGenerator()
-                with self.assertRaises(TypeError):
-                    gen.generate_logic(tc.input_cid, tc.input_lns)
-
 
 class TestDocumentGeneratorGenerateLogicTable(unittest.TestCase):
-    def test_pass(self):
-        tt = collections.namedtuple(
+    def test_pass(self) -> None:
+        tt = typing.NamedTuple(
             "tt",
-            (
-                "input_label",
-                "input_lang",
-                "input_fmt",
-                "input_cid",
-                "input_lns",
-                "want_tbl",
-            ),
+            [
+                ("input_label", sw_compdocs.generator.LabelDict | None),
+                ("input_lang", sw_compdocs.language.Language | None),
+                ("input_fmt", sw_compdocs.template.TemplateFormatter | None),
+                ("input_cid", str),
+                ("input_lns", sw_compdocs.component.LogicNodeList),
+                ("want_tbl", sw_compdocs.document.Table),
+            ],
         )
 
         for tc in [
@@ -3410,22 +3368,17 @@ class TestDocumentGeneratorGenerateLogicTable(unittest.TestCase):
                 got_tbl = gen.generate_logic_table(tc.input_cid, tc.input_lns)
                 self.assertEqual(got_tbl, tc.want_tbl)
 
-    def test_exc_type(self):
-        tt = collections.namedtuple("tt", ("input_cid", "input_lns"))
-
-        for tc in [
-            tt(input_cid=None, input_lns=sw_compdocs.component.LogicNodeList()),
-            tt(input_cid="cid", input_lns=None),
-        ]:
-            with self.subTest(tc=tc):
-                gen = sw_compdocs.generator.DocumentGenerator()
-                with self.assertRaises(TypeError):
-                    gen.generate_logic_table(tc.input_cid, tc.input_lns)
-
 
 class TestDocumentGenerateLabelGet(unittest.TestCase):
-    def test_pass(self):
-        tt = collections.namedtuple("tt", ("input_label", "input_s", "want_s"))
+    def test_pass(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_label", sw_compdocs.generator.LabelDict | None),
+                ("input_s", str),
+                ("want_s", str),
+            ],
+        )
 
         for tc in [
             tt(
@@ -3444,16 +3397,17 @@ class TestDocumentGenerateLabelGet(unittest.TestCase):
                 got_s = gen._label_get(tc.input_s)
                 self.assertEqual(got_s, tc.want_s)
 
-    def test_exc_type(self):
-        gen = sw_compdocs.generator.DocumentGenerator()
-        with self.assertRaises(TypeError):
-            gen._label_get(None)
-
 
 class TestDocumentGeneratorLangFindID(unittest.TestCase):
-    def test_pass(self):
-        tt = collections.namedtuple(
-            "tt", ("input_lang", "input_lang_id", "input_lang_en", "want_s")
+    def test_pass(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_lang", sw_compdocs.language.Language | None),
+                ("input_lang_id", str),
+                ("input_lang_en", str),
+                ("want_s", str),
+            ],
         )
 
         for tc in [
@@ -3481,15 +3435,17 @@ class TestDocumentGeneratorLangFindID(unittest.TestCase):
                 got_s = gen._lang_find_id(tc.input_lang_id, tc.input_lang_en)
                 self.assertEqual(got_s, tc.want_s)
 
-    def test_exc_type(self):
-        gen = sw_compdocs.generator.DocumentGenerator()
-        with self.assertRaises(TypeError):
-            gen._lang_find_id("id", None)
-
 
 class TestDocumentGeneratorLangFindEn(unittest.TestCase):
-    def test_pass(self):
-        tt = collections.namedtuple("tt", ("input_lang", "input_lang_en", "want_s"))
+    def test_pass(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_lang", sw_compdocs.language.Language | None),
+                ("input_lang_en", str),
+                ("want_s", str),
+            ],
+        )
 
         for tc in [
             tt(
@@ -3514,15 +3470,17 @@ class TestDocumentGeneratorLangFindEn(unittest.TestCase):
                 got_s = gen._lang_find_en(tc.input_lang_en)
                 self.assertEqual(got_s, tc.want_s)
 
-    def test_exc_type(self):
-        gen = sw_compdocs.generator.DocumentGenerator()
-        with self.assertRaises(TypeError):
-            gen._lang_find_en(None)
-
 
 class TestDocumentGeneratorFmtFormat(unittest.TestCase):
-    def test_pass(self):
-        tt = collections.namedtuple("tt", ("input_fmt", "input_s", "want_s"))
+    def test_pass(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_fmt", sw_compdocs.template.TemplateFormatter | None),
+                ("input_s", str),
+                ("want_s", str),
+            ],
+        )
 
         for tc in [
             tt(
@@ -3541,15 +3499,16 @@ class TestDocumentGeneratorFmtFormat(unittest.TestCase):
                 got_s = gen._fmt_format(tc.input_s)
                 self.assertEqual(got_s, tc.want_s)
 
-    def test_exc_type(self):
-        gen = sw_compdocs.generator.DocumentGenerator()
-        with self.assertRaises(TypeError):
-            gen._fmt_format(None)
-
 
 class TestLabelDictInit(unittest.TestCase):
-    def test_pass(self):
-        tt = collections.namedtuple("tt", ("input_mapping", "want_label_d"))
+    def test_pass(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_mapping", collections.abc.Mapping[str, str]),
+                ("want_label_d", dict[str, str]),
+            ],
+        )
 
         for tc in [
             tt(
@@ -3572,31 +3531,9 @@ class TestLabelDictInit(unittest.TestCase):
                 self.assertEqual(got_label._d, tc.want_label_d)
                 self.assertIsNot(got_label._d, tc.input_mapping)
 
-    def test_exc_label(self):
-        tt = collections.namedtuple("tt", ("input_mapping", "want_exc_msg"))
-
-        for tc in [
-            tt(
-                input_mapping=None,
-                want_exc_msg="invalid label mapping type: NoneType",
-            ),
-            tt(
-                input_mapping={"key_1": "value_1", 0: "value_2"},
-                want_exc_msg="expected string for label key: 0",
-            ),
-            tt(
-                input_mapping={"key_1": "value_1", "key_2": 0},
-                want_exc_msg="expected string for label text: 0",
-            ),
-        ]:
-            with self.subTest(tc=tc):
-                with self.assertRaises(sw_compdocs.generator.LabelDictError) as ctx:
-                    sw_compdocs.generator.LabelDict(tc.input_mapping)
-                self.assertEqual(ctx.exception.msg, tc.want_exc_msg)
-
 
 class TestLabelDictFromTOMLFile(unittest.TestCase):
-    def test_pass(self):
+    def test_pass(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             tmp_file = pathlib.Path(tmp_dir, "label.toml")
             with open(tmp_file, mode="xt", encoding="utf-8", newline="\n") as fd:
@@ -3608,16 +3545,24 @@ key_2 = "value_2"
 """
                 )
 
-            for file in [os.fsdecode(tmp_file), os.fsencode(tmp_file), tmp_file]:
+            file_list: list[sw_compdocs._types.StrOrBytesPath] = [
+                os.fsdecode(tmp_file),
+                os.fsencode(tmp_file),
+                tmp_file,
+            ]
+            for file in file_list:
                 label = sw_compdocs.generator.LabelDict.from_toml_file(file)
-                self.assertEqual(label._d, {"key_1": "value_1", "key_2": "value_2"})
+                want_d = {"key_1": "value_1", "key_2": "value_2"}
+                self.assertEqual(label._d, want_d)
 
-    def test_exc_type(self):
-        with self.assertRaises(TypeError):
-            sw_compdocs.generator.LabelDict.from_toml_file(None)
-
-    def test_exc_label(self):
-        tt = collections.namedtuple("tt", ("input_s", "want_exc_msg"))
+    def test_exc_label(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_s", str),
+                ("want_exc_msg", str),
+            ],
+        )
 
         for tc in [
             tt(
@@ -3645,11 +3590,12 @@ key_2 = 2
                     ) as fp:
                         fp.write(tc.input_s)
 
-                    for file in [
+                    file_list: list[sw_compdocs._types.StrOrBytesPath] = [
                         os.fsdecode(tmp_file),
                         os.fsencode(tmp_file),
                         tmp_file,
-                    ]:
+                    ]
+                    for file in file_list:
                         with self.assertRaises(
                             sw_compdocs.generator.LabelFileError
                         ) as ctx:
@@ -3659,7 +3605,7 @@ key_2 = 2
 
 
 class TestLabelDictFromTOMLStr(unittest.TestCase):
-    def test_pass(self):
+    def test_pass(self) -> None:
         label = sw_compdocs.generator.LabelDict.from_toml_str(
             """\
 [label]
@@ -3667,10 +3613,17 @@ key_1 = "value_1"
 key_2 = "value_2"
 """
         )
-        self.assertEqual(label._d, {"key_1": "value_1", "key_2": "value_2"})
+        want_d = {"key_1": "value_1", "key_2": "value_2"}
+        self.assertEqual(label._d, want_d)
 
-    def test_exc_label(self):
-        tt = collections.namedtuple("tt", ("input_s", "want_exc_msg"))
+    def test_exc_label(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_s", str),
+                ("want_exc_msg", str),
+            ],
+        )
 
         for tc in [
             tt(
@@ -3698,14 +3651,14 @@ key_2 = 2
 
 
 class TestLabelDictGetItem(unittest.TestCase):
-    def test_pass(self):
+    def test_pass(self) -> None:
         label = sw_compdocs.generator.LabelDict(
             {"key_1": "value_1", "key_2": "value_2"}
         )
         self.assertEqual(label["key_1"], "value_1")
         self.assertEqual(label["key_2"], "value_2")
 
-    def test_exc_key(self):
+    def test_exc_key(self) -> None:
         label = sw_compdocs.generator.LabelDict({"key_1": "value_1"})
         with self.assertRaises(sw_compdocs.generator.LabelKeyError) as ctx:
             label["key_2"]
@@ -3713,15 +3666,15 @@ class TestLabelDictGetItem(unittest.TestCase):
 
 
 class TestLabelDictIter(unittest.TestCase):
-    def test(self):
+    def test(self) -> None:
         label = sw_compdocs.generator.LabelDict(
             {"key_1": "value_1", "key_2": "value_2"}
         )
-        self.assertEqual(list(label), ["key_1", "key_2"])
+        self.assertEqual(list[str](label), list[str](["key_1", "key_2"]))
 
 
 class TestLabelDictLen(unittest.TestCase):
-    def test(self):
+    def test(self) -> None:
         label = sw_compdocs.generator.LabelDict(
             {"key_1": "value_1", "key_2": "value_2"}
         )
@@ -3729,23 +3682,19 @@ class TestLabelDictLen(unittest.TestCase):
 
 
 class TestLabelDictErrorInit(unittest.TestCase):
-    def test_pass(self):
+    def test_pass(self) -> None:
         exc = sw_compdocs.generator.LabelDictError("msg")
         self.assertEqual(exc.msg, "msg")
 
-    def test_exc_type(self):
-        with self.assertRaises(TypeError):
-            sw_compdocs.generator.LabelDictError(None)
-
 
 class TestLabelDictErrorStr(unittest.TestCase):
-    def test(self):
+    def test(self) -> None:
         exc = sw_compdocs.generator.LabelDictError("msg")
         self.assertEqual(str(exc), "msg")
 
 
 class TestLabelDictErrorWithFile(unittest.TestCase):
-    def test(self):
+    def test(self) -> None:
         dict_exc = sw_compdocs.generator.LabelDictError("msg")
         file_exc = dict_exc.with_file("file")
         self.assertEqual(file_exc.msg, "msg")
@@ -3753,36 +3702,33 @@ class TestLabelDictErrorWithFile(unittest.TestCase):
 
 
 class TestLabelFileErrorInit(unittest.TestCase):
-    def test_pass(self):
+    def test_pass(self) -> None:
         exc = sw_compdocs.generator.LabelFileError("msg")
-        self.assertEqual(exc.args, ("msg",))
+        exc_args: tuple[object] = exc.args
+        self.assertEqual(exc_args, ("msg",))
         self.assertEqual(exc.msg, "msg")
         self.assertEqual(exc.file, None)
 
-    def test_exc_type(self):
-        with self.assertRaises(TypeError):
-            sw_compdocs.generator.LabelFileError(None)
-
 
 class TestLabelFileErrorFileSetter(unittest.TestCase):
-    def test_pass(self):
+    def test_pass(self) -> None:
         for file in [None, "file", b"file", pathlib.PurePath("file")]:
             with self.subTest(file=file):
                 exc = sw_compdocs.generator.LabelFileError("msg")
                 exc.file = file
                 self.assertIs(exc.file, file)
 
-    def test_exc_type(self):
-        exc = sw_compdocs.generator.LabelFileError("msg")
-        exc.file = None
-        with self.assertRaises(TypeError):
-            exc.file = 0
-        self.assertIs(exc.file, None)
-
 
 class TestLabelFileErrorStr(unittest.TestCase):
-    def test(self):
-        tt = collections.namedtuple("tt", ("input_msg", "input_file", "want_s"))
+    def test(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_msg", str),
+                ("input_file", sw_compdocs._types.StrOrBytesPath | None),
+                ("want_s", str),
+            ],
+        )
 
         for tc in [
             tt(
@@ -3814,13 +3760,14 @@ class TestLabelFileErrorStr(unittest.TestCase):
 
 
 class TestLabelKeyErrorInit(unittest.TestCase):
-    def test(self):
+    def test(self) -> None:
         exc = sw_compdocs.generator.LabelKeyError("key")
-        self.assertEqual(exc.args, ("key",))
+        exc_args: tuple[object] = exc.args
+        self.assertEqual(exc_args, ("key",))
         self.assertEqual(exc.key, "key")
 
 
 class TestLabelKeyErrorStr(unittest.TestCase):
-    def test(self):
+    def test(self) -> None:
         exc = sw_compdocs.generator.LabelKeyError("key")
         self.assertEqual(str(exc), "missing label text for key 'key'")
