@@ -194,7 +194,7 @@ class Language(container.Sequence[Translation]):
         return cls._from_io(f)
 
     @classmethod
-    def _from_io(cls, f: io.TextIOWrapper) -> typing.Self:
+    def _from_io(cls, f: collections.abc.Iterable[str]) -> typing.Self:
         reader = csv.reader(f, dialect=LanguageTSVDialect)
         try:
             try:
