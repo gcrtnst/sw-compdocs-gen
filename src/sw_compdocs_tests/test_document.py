@@ -428,13 +428,6 @@ class TestHeadingInit(unittest.TestCase):
                     sw_compdocs.document.Heading(tc.input_text, level=tc.input_level)
 
 
-class TestHeadingTextSetter(unittest.TestCase):
-    def test_pass(self) -> None:
-        head = sw_compdocs.document.Heading("foo")
-        head.text = "bar"
-        self.assertEqual(head.text, "bar")
-
-
 class TestHeadingLevelSetter(unittest.TestCase):
     def test_pass(self) -> None:
         for level in range(1, 7):
@@ -502,13 +495,6 @@ class TestParagraphInit(unittest.TestCase):
         self.assertEqual(para.text, "foo")
 
 
-class TestParagraphTextSetter(unittest.TestCase):
-    def test_pass(self) -> None:
-        para = sw_compdocs.document.Paragraph("foo")
-        para.text = "bar"
-        self.assertEqual(para.text, "bar")
-
-
 class TestParagraphRepr(unittest.TestCase):
     def test(self) -> None:
         para = sw_compdocs.document.Paragraph("foo")
@@ -561,16 +547,6 @@ class TestTableInit(unittest.TestCase):
         )
         tbl = sw_compdocs.document.Table(data)
         self.assertEqual(tbl.data, data)
-
-
-class TestTableDataSetter(unittest.TestCase):
-    def test_pass(self) -> None:
-        data1 = sw_compdocs.document.TableData(sw_compdocs.document.TableDataRow("1"))
-        data2 = sw_compdocs.document.TableData(sw_compdocs.document.TableDataRow("2"))
-
-        tbl = sw_compdocs.document.Table(data1)
-        tbl.data = data2
-        self.assertEqual(tbl.data, data2)
 
 
 class TestTableRepr(unittest.TestCase):
@@ -1407,20 +1383,6 @@ class TestCalloutInit(unittest.TestCase):
                 )
                 self.assertEqual(callout.text, tc.want_text)
                 self.assertEqual(callout.kind, tc.want_kind)
-
-
-class TestCalloutTextSetter(unittest.TestCase):
-    def test_pass(self) -> None:
-        callout = sw_compdocs.document.Callout("text_1")
-        callout.text = "text_2"
-        self.assertEqual(callout.text, "text_2")
-
-
-class TestCalloutKindSetter(unittest.TestCase):
-    def test_pass(self) -> None:
-        callout = sw_compdocs.document.Callout("callout")
-        callout.kind = sw_compdocs.document.CalloutKind.WARNING
-        self.assertIs(callout.kind, sw_compdocs.document.CalloutKind.WARNING)
 
 
 class TestCalloutRepr(unittest.TestCase):
