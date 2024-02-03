@@ -4,7 +4,7 @@ import unittest
 
 
 class TestFormatTOMLKey(unittest.TestCase):
-    def test_pass(self):
+    def test_pass(self) -> None:
         for input_key in [
             "",
             "\x00",
@@ -97,16 +97,14 @@ class TestFormatTOMLKey(unittest.TestCase):
         ]:
             with self.subTest(input_key=input_key):
                 enc_key = sw_compdocs.resource.format_toml_key(input_key)
-                dec_key = next(iter(tomllib.loads(f"{enc_key} = 0").keys()))
+                enc_toml = f"{enc_key} = 0"
+                dec_toml: dict[str, object] = tomllib.loads(enc_toml)
+                dec_key = next(iter(dec_toml.keys()))
                 self.assertEqual(dec_key, input_key)
-
-    def test_exc_type(self):
-        with self.assertRaises(TypeError):
-            sw_compdocs.resource.format_toml_key(None)
 
 
 class TestFormatTOMLString(unittest.TestCase):
-    def test_pass(self):
+    def test_pass(self) -> None:
         for input_s in [
             "",
             "\x00",
@@ -180,9 +178,7 @@ class TestFormatTOMLString(unittest.TestCase):
         ]:
             with self.subTest(input_s=input_s):
                 enc_s = sw_compdocs.resource.format_toml_string(input_s)
-                dec_s = tomllib.loads(f"s = {enc_s}")["s"]
+                enc_toml = f"s = {enc_s}"
+                dec_toml: dict[str, object] = tomllib.loads(enc_toml)
+                dec_s = dec_toml["s"]
                 self.assertEqual(dec_s, input_s)
-
-    def test_exc_type(self):
-        with self.assertRaises(TypeError):
-            sw_compdocs.resource.format_toml_string(None)
