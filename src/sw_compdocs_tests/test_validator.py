@@ -1,12 +1,12 @@
-import collections
 import pathlib
 import sw_compdocs.validator
+import typing
 import unittest
 
 
 class TestIsPathLike(unittest.TestCase):
-    def test(self):
-        tt = collections.namedtuple("tt", ("input_v", "want_ret"))
+    def test(self) -> None:
+        tt = typing.NamedTuple("tt", [("input_v", object), ("want_ret", bool)])
 
         for tc in [
             tt(input_v="pathlike", want_ret=True),
