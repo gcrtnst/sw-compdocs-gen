@@ -1,10 +1,11 @@
-import collections
+import collections.abc
 import sw_compdocs.template
+import typing
 import unittest
 
 
 class TestTemplateFormatterInit(unittest.TestCase):
-    def test_validate_pass(self):
+    def test_validate_pass(self) -> None:
         for mapping in [
             {"a": ""},
             {"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_": ""},
@@ -19,45 +20,17 @@ class TestTemplateFormatterInit(unittest.TestCase):
                 self.assertEqual(ren._d, mapping)
                 self.assertIsNot(ren._d, mapping)
 
-    def test_validate_error(self):
-        tt = collections.namedtuple("tt", ("input_mapping", "want_exc_args"))
-
-        for tc in [
-            tt(
-                input_mapping=[],
-                want_exc_args=("template mapping must be mapping, not 'list'",),
-            ),
-            tt(
-                input_mapping={0: ""},
-                want_exc_args=("template mapping entry key must be str, not 'int'",),
-            ),
-            tt(
-                input_mapping={"": 0},
-                want_exc_args=("template mapping entry value must be str, not 'int'",),
-            ),
-            tt(
-                input_mapping={"a": "", 0: ""},
-                want_exc_args=("template mapping entry key must be str, not 'int'",),
-            ),
-            tt(
-                input_mapping={"a": "", "": 0},
-                want_exc_args=("template mapping entry value must be str, not 'int'",),
-            ),
-        ]:
-            with self.subTest(tc=tc):
-                with self.assertRaises(sw_compdocs.template.TemplateMappingError) as cm:
-                    sw_compdocs.template.TemplateFormatter(tc.input_mapping)
-                self.assertEqual(cm.exception.args, tc.want_exc_args)
-
 
 class TestTemplateFormatterFormat(unittest.TestCase):
-    def test_type_error(self):
-        ren = sw_compdocs.template.TemplateFormatter({})
-        with self.assertRaises(TypeError):
-            ren.format(0)
-
-    def test_key_error(self):
-        tt = collections.namedtuple("tt", ("input_mapping", "input_s", "want_key"))
+    def test_key_error(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_mapping", collections.abc.Mapping[str, str]),
+                ("input_s", str),
+                ("want_key", str),
+            ],
+        )
 
         for tc in [
             tt(input_mapping={"bar": "baz"}, input_s="$[foo]", want_key="foo"),
@@ -70,8 +43,15 @@ class TestTemplateFormatterFormat(unittest.TestCase):
                     ren.format(tc.input_s)
                 self.assertEqual(cm.exception.key, tc.want_key)
 
-    def test_pass(self):
-        tt = collections.namedtuple("tt", ("input_mapping", "input_s", "want_s"))
+    def test_pass(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_mapping", collections.abc.Mapping[str, str]),
+                ("input_s", str),
+                ("want_s", str),
+            ],
+        )
 
         for tc in [
             tt(input_mapping={}, input_s="", want_s=""),
@@ -95,13 +75,13 @@ class TestTemplateFormatterFormat(unittest.TestCase):
 
 
 class TestTemplateKeyErrorInit(unittest.TestCase):
-    def test(self):
+    def test(self) -> None:
         exc = sw_compdocs.template.TemplateKeyError("key")
         self.assertEqual(exc.key, "key")
 
 
 class TestTemplateKeyErrorStr(unittest.TestCase):
-    def test(self):
+    def test(self) -> None:
         exc = sw_compdocs.template.TemplateKeyError("key")
         s = str(exc)
         self.assertEqual(s, "missing key 'key' in template mapping")
