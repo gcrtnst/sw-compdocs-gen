@@ -1502,13 +1502,6 @@ class TestLogicNodeInit(unittest.TestCase):
                 self.assertEqual(got.description, tc.want_description)
 
 
-class TestLogicNodeIdxSetter(unittest.TestCase):
-    def test_pass(self) -> None:
-        ln = sw_compdocs.component.LogicNode()
-        ln.idx = 52149
-        self.assertEqual(ln.idx, 52149)
-
-
 class TestLogicNodeFromXMLElem(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(

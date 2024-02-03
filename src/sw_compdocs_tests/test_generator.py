@@ -3360,6 +3360,63 @@ class TestDocumentGeneratorGenerateLogicTable(unittest.TestCase):
                     )
                 ),
             ),
+            tt(
+                input_label=None,
+                input_lang=sw_compdocs.language.Language(
+                    [
+                        sw_compdocs.language.Translation(
+                            "",
+                            "",
+                            "on/off",
+                            "オン/オフ",
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_-1_label",
+                            "",
+                            "label -1",
+                            "ラベル -1",
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_-1_desc",
+                            "",
+                            "desc -1",
+                            "説明 -1",
+                        ),
+                    ]
+                ),
+                input_fmt=None,
+                input_cid="test",
+                input_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(
+                            idx=-1,
+                            label="",
+                            type=sw_compdocs.component.LogicNodeType.BOOL,
+                            description="",
+                        )
+                    ]
+                ),
+                want_tbl=sw_compdocs.document.Table(
+                    sw_compdocs.document.TableData(
+                        sw_compdocs.document.TableDataRow(
+                            [
+                                "LOGIC_TABLE_HEAD_TYPE",
+                                "LOGIC_TABLE_HEAD_LABEL",
+                                "LOGIC_TABLE_HEAD_DESC",
+                            ]
+                        ),
+                        [
+                            sw_compdocs.document.TableDataRow(
+                                [
+                                    "オン/オフ",
+                                    "ラベル -1",
+                                    "説明 -1",
+                                ]
+                            )
+                        ],
+                    )
+                ),
+            ),
         ]:
             with self.subTest(tc=tc):
                 gen = sw_compdocs.generator.DocumentGenerator(

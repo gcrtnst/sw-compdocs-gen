@@ -204,16 +204,6 @@ class LogicNodeType(enum.Enum):
 
 
 class LogicNode:
-    @property
-    def idx(self) -> int:
-        return self._idx
-
-    @idx.setter
-    def idx(self, value: int) -> None:
-        if value < 0:
-            raise ValueError
-        self._idx = value
-
     def __init__(
         self,
         *,
@@ -223,7 +213,7 @@ class LogicNode:
         type: LogicNodeType | None = None,
         description: str | None = None,
     ):
-        self.idx = _coalesce(idx, 0)
+        self.idx: int = _coalesce(idx, 0)
         self.label: str = _coalesce(label, "")
         self.mode: LogicNodeMode = _coalesce(mode, LogicNodeMode.OUTPUT)
         self.type: LogicNodeType = _coalesce(type, LogicNodeType.BOOL)
