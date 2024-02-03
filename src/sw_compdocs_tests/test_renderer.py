@@ -1,12 +1,18 @@
-import collections
 import sw_compdocs.document
 import sw_compdocs.renderer
+import typing
 import unittest
 
 
 class TestRenderMarkdown(unittest.TestCase):
-    def test_pass(self):
-        tt = collections.namedtuple("tt", ("input_doc", "want_text"))
+    def test_pass(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_doc", sw_compdocs.document.Document),
+                ("want_text", str),
+            ],
+        )
 
         for tc in [
             tt(
@@ -63,14 +69,16 @@ class TestRenderMarkdown(unittest.TestCase):
                 got_text = sw_compdocs.renderer.render_markdown(tc.input_doc)
                 self.assertEqual(got_text, tc.want_text)
 
-    def test_exc_type(self):
-        with self.assertRaises(TypeError):
-            sw_compdocs.renderer.render_markdown([])
-
 
 class TestRenderMarkdownBlock(unittest.TestCase):
-    def test_pass(self):
-        tt = collections.namedtuple("tt", ("input_blk", "want_text"))
+    def test_pass(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_blk", sw_compdocs.document.Block),
+                ("want_text", str),
+            ],
+        )
 
         for tc in [
             tt(
@@ -99,43 +107,31 @@ class TestRenderMarkdownBlock(unittest.TestCase):
                 got_text = sw_compdocs.renderer.render_markdown_block(tc.input_blk)
                 self.assertEqual(got_text, tc.want_text)
 
-    def test_exc_type(self):
-        with self.assertRaises(TypeError):
-            sw_compdocs.renderer.render_markdown_block("foo")
-
 
 class TestRenderMarkdownHeading(unittest.TestCase):
-    def test_pass(self):
+    def test_pass(self) -> None:
         text = sw_compdocs.renderer.render_markdown_heading(
             sw_compdocs.document.Heading("foo")
         )
         self.assertEqual(text, "# foo\n")
 
-    def test_pass_level(self):
+    def test_pass_level(self) -> None:
         text = sw_compdocs.renderer.render_markdown_heading(
             sw_compdocs.document.Heading("foo", level=6)
         )
         self.assertEqual(text, "###### foo\n")
 
-    def test_exc_type(self):
-        with self.assertRaises(TypeError):
-            sw_compdocs.renderer.render_markdown_heading("foo")
-
 
 class TestRenderMarkdownParagraph(unittest.TestCase):
-    def test_pass(self):
+    def test_pass(self) -> None:
         text = sw_compdocs.renderer.render_markdown_paragraph(
             sw_compdocs.document.Paragraph("foo")
         )
         self.assertEqual(text, "foo\n")
 
-    def test_exc_type(self):
-        with self.assertRaises(TypeError):
-            sw_compdocs.renderer.render_markdown_paragraph("foo")
-
 
 class TestRenderMarkdownTable(unittest.TestCase):
-    def test_pass(self):
+    def test_pass(self) -> None:
         text = sw_compdocs.renderer.render_markdown_table(
             sw_compdocs.document.Table(
                 sw_compdocs.document.TableData(
@@ -153,22 +149,16 @@ class TestRenderMarkdownTable(unittest.TestCase):
             "| A1 | A2 | A3 |\n| --- | --- | --- |\n| B1 | B2 | B3 |\n| C1 | C2 | C3 |\n| D1 | D2 | D3 |\n",
         )
 
-    def test_exc_type(self):
-        data = sw_compdocs.document.TableData(
-            sw_compdocs.document.TableDataRow(("A1", "A2", "A3")),
-            (
-                sw_compdocs.document.TableDataRow(("B1", "B2", "B3")),
-                sw_compdocs.document.TableDataRow(("C1", "C2", "C3")),
-                sw_compdocs.document.TableDataRow(("D1", "D2", "D3")),
-            ),
-        )
-        with self.assertRaises(TypeError):
-            sw_compdocs.renderer.render_markdown_table(data)
-
 
 class TestRenderMarkdownTableData(unittest.TestCase):
-    def test_pass(self):
-        tt = collections.namedtuple("tt", ("input_data", "want_text"))
+    def test_pass(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_data", sw_compdocs.document.TableData),
+                ("want_text", str),
+            ],
+        )
 
         for tc in [
             tt(
@@ -214,14 +204,16 @@ class TestRenderMarkdownTableData(unittest.TestCase):
                 )
                 self.assertEqual(got_text, tc.want_text)
 
-    def test_exc_type(self):
-        with self.assertRaises(TypeError):
-            sw_compdocs.renderer.render_markdown_table_data([])
-
 
 class TestRenderMarkdownTableDataRow(unittest.TestCase):
-    def test_pass(self):
-        tt = collections.namedtuple("tt", ("input_row", "want_text"))
+    def test_pass(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_row", sw_compdocs.document.TableDataRow),
+                ("want_text", str),
+            ],
+        )
 
         for tc in [
             tt(
@@ -239,14 +231,10 @@ class TestRenderMarkdownTableDataRow(unittest.TestCase):
                 )
                 self.assertEqual(got_text, tc.want_text)
 
-    def test_exc_type(self):
-        with self.assertRaises(TypeError):
-            sw_compdocs.renderer.render_markdown_table_data_row(["foo"])
-
 
 class TestRenderMarkdownTableDataDelimiter(unittest.TestCase):
-    def test_pass(self):
-        tt = collections.namedtuple("tt", ("input_n", "want_text"))
+    def test_pass(self) -> None:
+        tt = typing.NamedTuple("tt", [("input_n", int), ("want_text", str)])
 
         for tc in [
             tt(input_n=1, want_text="| --- |\n"),
@@ -258,23 +246,20 @@ class TestRenderMarkdownTableDataDelimiter(unittest.TestCase):
                 )
                 self.assertEqual(got_text, tc.want_text)
 
-    def test_exc(self):
-        tt = collections.namedtuple("tt", ("input_n", "want_exc_type"))
-
-        for tc in [
-            tt(input_n=1.0, want_exc_type=TypeError),
-            tt(input_n=0, want_exc_type=ValueError),
-        ]:
-            with self.subTest(tc=tc):
-                with self.assertRaises(tc.want_exc_type):
-                    sw_compdocs.renderer.render_markdown_table_data_delimiter(
-                        tc.input_n
-                    )
+    def test_exc_value(self) -> None:
+        with self.assertRaises(ValueError):
+            sw_compdocs.renderer.render_markdown_table_data_delimiter(0)
 
 
 class TestRenderMarkdownCallout(unittest.TestCase):
-    def test_pass(self):
-        tt = collections.namedtuple("tt", ("input_callout", "want_text"))
+    def test_pass(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_callout", sw_compdocs.document.Callout),
+                ("want_text", str),
+            ],
+        )
 
         for tc in [
             tt(
@@ -303,7 +288,3 @@ class TestRenderMarkdownCallout(unittest.TestCase):
                     tc.input_callout
                 )
                 self.assertEqual(got_text, tc.want_text)
-
-    def test_exc_type(self):
-        with self.assertRaises(TypeError):
-            sw_compdocs.renderer.render_markdown_callout("callout")
