@@ -14,29 +14,17 @@ class Block:
 
 class Heading(Block):
     @property
-    def text(self) -> str:
-        return self._text
-
-    @text.setter
-    def text(self, value: str) -> None:
-        if type(value) is not str:
-            raise TypeError
-        self._text = value
-
-    @property
     def level(self) -> int:
         return self._level
 
     @level.setter
     def level(self, value: int) -> None:
-        if type(value) is not int:
-            raise TypeError
         if value < 1 or 6 < value:
             raise ValueError
         self._level = value
 
     def __init__(self, text: str, *, level: int = 1) -> None:
-        self.text = text
+        self.text: str = text
         self.level = level
 
     def __repr__(self) -> str:
@@ -52,18 +40,8 @@ class Heading(Block):
 
 
 class Paragraph(Block):
-    @property
-    def text(self) -> str:
-        return self._text
-
-    @text.setter
-    def text(self, value: str) -> None:
-        if type(value) is not str:
-            raise TypeError
-        self._text = value
-
     def __init__(self, text: str) -> None:
-        self.text = text
+        self.text: str = text
 
     def __repr__(self) -> str:
         return f"{type(self).__name__}({repr(self.text)})"
@@ -83,8 +61,6 @@ class TableDataRow(container.Sequence[str]):
 
         if len(self) <= 0:
             raise ValueError
-        for v in self:
-            self._check_type(v)
 
     @typing.overload
     def __setitem__(self, index: int, value: str) -> None:
@@ -104,8 +80,6 @@ class TableDataRow(container.Sequence[str]):
             value = list(value)
             if len(self[index]) != len(value):
                 raise ValueError
-            for v in value:
-                self._check_type(v)
             self._l[index] = value
             return
 
@@ -113,30 +87,17 @@ class TableDataRow(container.Sequence[str]):
             # type cast is safe because of overloads
             value = typing.cast(str, value)
 
-            self._check_type(value)
             self._l[index] = value
             return
 
         typing.assert_never(index)
 
-    @classmethod
-    def _check_type(cls, v: str) -> None:
-        if type(v) is not str:
-            raise TypeError
-
 
 class TableData(container.MutableSequence[TableDataRow]):
-    @property
-    def head(self) -> TableDataRow:
-        return self._head
-
     def __init__(
         self, head: TableDataRow, iterable: collections.abc.Iterable[TableDataRow] = ()
     ) -> None:
-        if type(head) is not TableDataRow:
-            raise TypeError
-        self._head = head
-
+        self.head: typing.Final[TableDataRow] = head
         super().__init__(iterable)
 
     def __repr__(self) -> str:
@@ -152,25 +113,13 @@ class TableData(container.MutableSequence[TableDataRow]):
         return super().__eq__(other)
 
     def _check_value(self, value: TableDataRow) -> None:
-        if type(value) is not TableDataRow:
-            raise TypeError
         if len(value) != len(self.head):
             raise ValueError
 
 
 class Table(Block):
-    @property
-    def data(self) -> TableData:
-        return self._data
-
-    @data.setter
-    def data(self, value: TableData) -> None:
-        if type(value) is not TableData:
-            raise TypeError
-        self._data = value
-
     def __init__(self, data: TableData) -> None:
-        self.data = data
+        self.data: TableData = data
 
     def __repr__(self) -> str:
         return f"{type(self).__name__}({repr(self.data)})"
@@ -191,29 +140,9 @@ class CalloutKind(enum.Enum):
 
 
 class Callout(Block):
-    @property
-    def text(self) -> str:
-        return self._text
-
-    @text.setter
-    def text(self, value: str) -> None:
-        if type(value) is not str:
-            raise TypeError
-        self._text = value
-
-    @property
-    def kind(self) -> CalloutKind:
-        return self._kind
-
-    @kind.setter
-    def kind(self, value: CalloutKind) -> None:
-        if type(value) is not CalloutKind:
-            raise TypeError
-        self._kind = value
-
     def __init__(self, text: str, *, kind: CalloutKind | None = None) -> None:
-        self.text = text
-        self.kind = kind if kind is not None else CalloutKind.NOTE
+        self.text: str = text
+        self.kind: CalloutKind = kind if kind is not None else CalloutKind.NOTE
 
     def __repr__(self) -> str:
         return f"{type(self).__name__}({repr(self.text)}, kind={repr(self.kind)})"
@@ -228,14 +157,7 @@ class Callout(Block):
 
 
 class Document(container.MutableSequence[Block]):
-    def _check_value(self, value: Block) -> None:
-        if not isinstance(value, Block):
-            raise TypeError
-
     def shift(self, level: int = 1) -> None:
-        if type(level) is not int:
-            raise TypeError
-
         for blk in self:
             if isinstance(blk, Heading):
                 blk.level += level
