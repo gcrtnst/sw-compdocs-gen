@@ -495,7 +495,7 @@ class Definition:
 
 
 # lxml.etree.XMLParser is generic in stub but not at runtime.
-# To avoid errors, we use string literal type.
+# To avoid errors, we use string literal annotation.
 def _new_xml_parser() -> "lxml.etree.XMLParser[lxml.etree._Element]":
     # Stormworks uses XML with invalid attribute names.
     # To avoid errors, we enable the recover option.
