@@ -460,91 +460,6 @@ class TestDefinitionInit(unittest.TestCase):
                 self.assertEqual(got_comp.voxel_max, tc.want_voxel_max)
 
 
-class TestDefinitionCIDSetter(unittest.TestCase):
-    def test_pass(self) -> None:
-        comp = sw_compdocs.component.Definition()
-        comp.cid = "cid"
-        self.assertEqual(comp.cid, "cid")
-
-
-class TestDefinitionNameSetter(unittest.TestCase):
-    def test_pass(self) -> None:
-        comp = sw_compdocs.component.Definition()
-        comp.name = "name"
-        self.assertEqual(comp.name, "name")
-
-
-class TestDefinitionCategorySetter(unittest.TestCase):
-    def test_pass(self) -> None:
-        comp = sw_compdocs.component.Definition()
-        comp.category = sw_compdocs.component.Category.VEHICLE_CONTROL
-        self.assertEqual(comp.category, sw_compdocs.component.Category.VEHICLE_CONTROL)
-
-
-class TestDefinitionMassSetter(unittest.TestCase):
-    def test_pass(self) -> None:
-        comp = sw_compdocs.component.Definition()
-        comp.mass = 52149.0
-        self.assertEqual(comp.mass, 52149.0)
-
-
-class TestDefinitionValueSetter(unittest.TestCase):
-    def test_pass(self) -> None:
-        comp = sw_compdocs.component.Definition()
-        comp.value = 52149
-        self.assertEqual(comp.value, 52149)
-
-
-class TestDefinitionFlagsSetter(unittest.TestCase):
-    def test_pass(self) -> None:
-        comp = sw_compdocs.component.Definition()
-        comp.flags = sw_compdocs.component.Flags(8192)
-        self.assertEqual(comp.flags, sw_compdocs.component.Flags(8192))
-
-
-class TestDefinitionTagsSetter(unittest.TestCase):
-    def test_pass(self) -> None:
-        comp = sw_compdocs.component.Definition()
-        comp.tags = "basic"
-        self.assertEqual(comp.tags, "basic")
-
-
-class TestDefinitionTooltipPropertiesSetter(unittest.TestCase):
-    def test_pass(self) -> None:
-        tooltip_properties = sw_compdocs.component.TooltipProperties()
-
-        comp = sw_compdocs.component.Definition()
-        comp.tooltip_properties = tooltip_properties
-        self.assertIs(comp.tooltip_properties, tooltip_properties)
-
-
-class TestDefinitionLogicNodesSetter(unittest.TestCase):
-    def test_pass(self) -> None:
-        logic_nodes = sw_compdocs.component.LogicNodeList()
-
-        comp = sw_compdocs.component.Definition()
-        comp.logic_nodes = logic_nodes
-        self.assertIs(comp.logic_nodes, logic_nodes)
-
-
-class TestDefinitionVoxelMinSetter(unittest.TestCase):
-    def test_pass(self) -> None:
-        voxel_min = sw_compdocs.component.VoxelPos()
-
-        comp = sw_compdocs.component.Definition()
-        comp.voxel_min = voxel_min
-        self.assertIs(comp.voxel_min, voxel_min)
-
-
-class TestDefinitionVoxelMaxSetter(unittest.TestCase):
-    def test_pass(self) -> None:
-        voxel_max = sw_compdocs.component.VoxelPos()
-
-        comp = sw_compdocs.component.Definition()
-        comp.voxel_max = voxel_max
-        self.assertIs(comp.voxel_max, voxel_max)
-
-
 class TestDefinitionFromXMLElem(unittest.TestCase):
     def test_pass_clock(self) -> None:
         elem = lxml.etree.fromstring(
@@ -1227,20 +1142,6 @@ class TestTooltipPropertiesInit(unittest.TestCase):
                 self.assertEqual(got.description, tc.want_description)
 
 
-class TestTooltipPropertiesShortDescriptionSetter(unittest.TestCase):
-    def test_pass(self) -> None:
-        tp = sw_compdocs.component.TooltipProperties()
-        tp.short_description = "a"
-        self.assertEqual(tp.short_description, "a")
-
-
-class TestTooltipPropertiesDescriptionSetter(unittest.TestCase):
-    def test_pass(self) -> None:
-        tp = sw_compdocs.component.TooltipProperties()
-        tp.description = "b"
-        self.assertEqual(tp.description, "b")
-
-
 class TestTooltipPropertiesFromXMLElem(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(
@@ -1606,34 +1507,6 @@ class TestLogicNodeIdxSetter(unittest.TestCase):
         ln = sw_compdocs.component.LogicNode()
         ln.idx = 52149
         self.assertEqual(ln.idx, 52149)
-
-
-class TestLogicNodeLabelSetter(unittest.TestCase):
-    def test_pass(self) -> None:
-        ln = sw_compdocs.component.LogicNode()
-        ln.label = "label"
-        self.assertEqual(ln.label, "label")
-
-
-class TestLogicNodeModeSetter(unittest.TestCase):
-    def test_pass(self) -> None:
-        ln = sw_compdocs.component.LogicNode()
-        ln.mode = sw_compdocs.component.LogicNodeMode.INPUT
-        self.assertEqual(ln.mode, sw_compdocs.component.LogicNodeMode.INPUT)
-
-
-class TestLogicNodeTypeSetter(unittest.TestCase):
-    def test_pass(self) -> None:
-        ln = sw_compdocs.component.LogicNode()
-        ln.type = sw_compdocs.component.LogicNodeType.FLOAT
-        self.assertEqual(ln.type, sw_compdocs.component.LogicNodeType.FLOAT)
-
-
-class TestLogicNodeDescriptionSetter(unittest.TestCase):
-    def test_pass(self) -> None:
-        ln = sw_compdocs.component.LogicNode()
-        ln.description = "description"
-        self.assertEqual(ln.description, "description")
 
 
 class TestLogicNodeFromXMLElem(unittest.TestCase):
@@ -2021,27 +1894,6 @@ class TestVoxelPosInit(unittest.TestCase):
                 self.assertEqual(pos.z, tc.want_z)
 
 
-class TestVoxelPosXSetter(unittest.TestCase):
-    def test_pass(self) -> None:
-        pos = sw_compdocs.component.VoxelPos()
-        pos.x = 52149
-        self.assertEqual(pos.x, 52149)
-
-
-class TestVoxelPosYSetter(unittest.TestCase):
-    def test_pass(self) -> None:
-        pos = sw_compdocs.component.VoxelPos()
-        pos.y = 52149
-        self.assertEqual(pos.y, 52149)
-
-
-class TestVoxelPosZSetter(unittest.TestCase):
-    def test_pass(self) -> None:
-        pos = sw_compdocs.component.VoxelPos()
-        pos.z = 52149
-        self.assertEqual(pos.z, 52149)
-
-
 class TestVoxelPosFromXMLElem(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(
@@ -2191,30 +2043,6 @@ class TestComponentXMLErrorInit(unittest.TestCase):
         self.assertEqual(exc.msg, "msg")
         self.assertEqual(exc.file, None)
         self.assertEqual(exc.xpath, ".")
-
-
-class TestComponentXMLErrorFileSetter(unittest.TestCase):
-    def test_pass(self) -> None:
-        file_list: list[sw_compdocs._types.StrOrBytesPath] = [
-            "file",
-            b"file",
-            pathlib.PurePath("file"),
-        ]
-        for file in file_list:
-            with self.subTest(file=file):
-                exc = sw_compdocs.component.ComponentXMLError("msg")
-                exc.file = file
-                self.assertIs(exc.file, file)
-
-    def test_pass_none(self) -> None:
-        exc = sw_compdocs.component.ComponentXMLError("msg")
-        self.assertEqual(exc.file, None)
-
-        exc.file = "file"
-        self.assertEqual(exc.file, "file")
-
-        exc.file = None
-        self.assertEqual(exc.file, None)
 
 
 class TestComponentXMLErrorStr(unittest.TestCase):
