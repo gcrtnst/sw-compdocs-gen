@@ -8,31 +8,13 @@ from . import component
 from . import document
 from . import language
 from . import template
-from . import validator
 
 
 class LabelFileError(Exception):
-    @property
-    def msg(self) -> str:
-        return self._msg
-
-    @property
-    def file(self) -> _types.StrOrBytesPath | None:
-        return self._file
-
-    @file.setter
-    def file(self, value: _types.StrOrBytesPath | None) -> None:
-        if value is not None and not validator.is_pathlike(value):
-            raise TypeError
-        self._file = value
-
     def __init__(self, msg: str) -> None:
-        if type(msg) is not str:
-            raise TypeError
-
         super().__init__(msg)
-        self._msg = msg
-        self._file = None
+        self.msg: typing.Final[str] = msg
+        self.file: _types.StrOrBytesPath | None = None
 
     def __str__(self) -> str:
         file = os.fsdecode(self.file) if self.file is not None else "<label.toml>"
@@ -40,16 +22,9 @@ class LabelFileError(Exception):
 
 
 class LabelDictError(Exception):
-    @property
-    def msg(self) -> str:
-        return self._msg
-
     def __init__(self, msg: str) -> None:
-        if type(msg) is not str:
-            raise TypeError
-
         super().__init__(msg)
-        self._msg = msg
+        self.msg: typing.Final[str] = msg
 
     def __str__(self) -> str:
         return self.msg
@@ -63,7 +38,7 @@ class LabelDictError(Exception):
 class LabelKeyError(KeyError):
     def __init__(self, key: object) -> None:
         super().__init__(key)
-        self.key = key
+        self.key: typing.Final[object] = key
 
     def __str__(self) -> str:
         return f"missing label text for key {self.key!r}"
@@ -76,7 +51,7 @@ class LabelDict(collections.abc.Mapping[str, str]):
                 f"invalid label mapping type: {type(mapping).__name__}"
             )
 
-        self._d = {}
+        self._d: dict[str, str] = {}
         for k, v in mapping.items():
             if not isinstance(k, str):
                 raise LabelDictError(f"expected string for label key: {k!r}")
@@ -97,9 +72,6 @@ class LabelDict(collections.abc.Mapping[str, str]):
 
     @classmethod
     def from_toml_file(cls, file: _types.StrOrBytesPath) -> typing.Self:
-        if not validator.is_pathlike(file):
-            raise TypeError
-
         with open(file, mode="rb") as fp:
             toml: dict[str, object] = tomllib.load(fp)
 
@@ -128,36 +100,6 @@ class LabelDict(collections.abc.Mapping[str, str]):
 
 
 class DocumentGenerator:
-    @property
-    def label(self) -> LabelDict | None:
-        return self._label
-
-    @label.setter
-    def label(self, value: LabelDict | None) -> None:
-        if value is not None and type(value) is not LabelDict:
-            raise TypeError
-        self._label = value
-
-    @property
-    def lang(self) -> language.Language | None:
-        return self._lang
-
-    @lang.setter
-    def lang(self, value: language.Language | None) -> None:
-        if value is not None and type(value) is not language.Language:
-            raise TypeError
-        self._lang = value
-
-    @property
-    def fmt(self) -> template.TemplateFormatter | None:
-        return self._fmt
-
-    @fmt.setter
-    def fmt(self, value: template.TemplateFormatter | None) -> None:
-        if value is not None and type(value) is not template.TemplateFormatter:
-            raise TypeError
-        self._fmt = value
-
     def __init__(
         self,
         *,
@@ -165,44 +107,31 @@ class DocumentGenerator:
         lang: language.Language | None = None,
         fmt: template.TemplateFormatter | None = None,
     ):
-        self.label = label
-        self.lang = lang
-        self.fmt = fmt
+        self.label: LabelDict | None = label
+        self.lang: language.Language | None = lang
+        self.fmt: template.TemplateFormatter | None = fmt
 
     def _label_get(self, s: str) -> str:
-        if type(s) is not str:
-            raise TypeError
-
         if self.label is not None:
             s = self.label[s]
         return s
 
     def _lang_find_id(self, lang_id: str, lang_en: str) -> str:
-        if type(lang_en) is not str:
-            raise TypeError
         if self.lang is None:
             return lang_en
         return self.lang.find_id(lang_id).local
 
     def _lang_find_en(self, lang_en: str) -> str:
-        if type(lang_en) is not str:
-            raise TypeError
         if self.lang is None:
             return lang_en
         return self.lang.find_en(lang_en).local
 
     def _fmt_format(self, s: str) -> str:
-        if type(s) is not str:
-            raise TypeError
-
         if self.fmt is not None:
             s = self.fmt.format(s)
         return s
 
     def generate_property_table(self, comp: component.Definition) -> document.Table:
-        if type(comp) is not component.Definition:
-            raise TypeError
-
         head = document.TableDataRow(
             [
                 self._label_get("PROP_TABLE_HEAD_LABEL"),
@@ -241,9 +170,6 @@ class DocumentGenerator:
     def generate_logic_table(
         self, cid: str, lns: component.LogicNodeList
     ) -> document.Table:
-        if type(cid) is not str or type(lns) is not component.LogicNodeList:
-            raise TypeError
-
         head = document.TableDataRow(
             [
                 self._label_get("LOGIC_TABLE_HEAD_TYPE"),
@@ -267,19 +193,16 @@ class DocumentGenerator:
     def generate_logic(
         self, cid: str, lns: component.LogicNodeList
     ) -> document.Document:
-        if type(cid) is not str or type(lns) is not component.LogicNodeList:
-            raise TypeError
-
         in_lns = component.LogicNodeList()
         out_lns = component.LogicNodeList()
         conn_lns = component.LogicNodeList()
         for ln in lns:
-            if ln.type in (
-                component.LogicNodeType.BOOL,
-                component.LogicNodeType.FLOAT,
-                component.LogicNodeType.COMPOSITE,
-                component.LogicNodeType.VIDEO,
-                component.LogicNodeType.AUDIO,
+            if (
+                ln.type is component.LogicNodeType.BOOL
+                or ln.type is component.LogicNodeType.FLOAT
+                or ln.type is component.LogicNodeType.COMPOSITE
+                or ln.type is component.LogicNodeType.VIDEO
+                or ln.type is component.LogicNodeType.AUDIO
             ):
                 if ln.mode is component.LogicNodeMode.INPUT:
                     in_lns.append(ln)
@@ -287,16 +210,16 @@ class DocumentGenerator:
                 if ln.mode is component.LogicNodeMode.OUTPUT:
                     out_lns.append(ln)
                     continue
-                raise Exception
-            if ln.type in (
-                component.LogicNodeType.TORQUE,
-                component.LogicNodeType.WATER,
-                component.LogicNodeType.ELECTRIC,
-                component.LogicNodeType.ROPE,
+                typing.assert_never(ln.mode)
+            if (
+                ln.type is component.LogicNodeType.TORQUE
+                or ln.type is component.LogicNodeType.WATER
+                or ln.type is component.LogicNodeType.ELECTRIC
+                or ln.type is component.LogicNodeType.ROPE
             ):
                 conn_lns.append(ln)
                 continue
-            raise Exception
+            typing.assert_never(ln.type)
 
         doc = document.Document()
         if len(in_lns) > 0:
@@ -314,8 +237,6 @@ class DocumentGenerator:
         return doc
 
     def generate_component(self, comp: component.Definition) -> document.Document:
-        if type(comp) is not component.Definition:
-            raise TypeError
         doc = document.Document()
 
         comp_name_id = f"def_{comp.cid}_name"
@@ -374,8 +295,6 @@ class DocumentGenerator:
 
         category_comp_dict: dict[component.Category, list[component.Definition]] = {}
         for comp in comp_list:
-            if type(comp) is not component.Definition:
-                raise TypeError
             category_comp_list = category_comp_dict.setdefault(comp.category, [])
             category_comp_list.append(comp)
 
