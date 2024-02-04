@@ -4,16 +4,10 @@ from . import document
 
 
 def render_markdown(doc: document.Document) -> str:
-    if not isinstance(doc, document.Document):
-        raise TypeError
-
     return "\n".join(render_markdown_block(blk) for blk in doc)
 
 
 def render_markdown_block(blk: document.Block) -> str:
-    if not isinstance(blk, document.Block):
-        raise TypeError
-
     if isinstance(blk, document.Heading):
         return render_markdown_heading(blk)
     if isinstance(blk, document.Paragraph):
@@ -26,30 +20,20 @@ def render_markdown_block(blk: document.Block) -> str:
 
 
 def render_markdown_heading(head: document.Heading) -> str:
-    if not isinstance(head, document.Heading):
-        raise TypeError
     if head.level < 1 or 6 < head.level:
         raise ValueError
     return "#" * head.level + " " + head.text + "\n"
 
 
 def render_markdown_paragraph(para: document.Paragraph) -> str:
-    if not isinstance(para, document.Paragraph):
-        raise TypeError
     return para.text + "\n"
 
 
 def render_markdown_table(tbl: document.Table) -> str:
-    if not isinstance(tbl, document.Table):
-        raise TypeError
-
     return render_markdown_table_data(tbl.data)
 
 
 def render_markdown_table_data(data: document.TableData) -> str:
-    if not isinstance(data, document.TableData):
-        raise TypeError
-
     return (
         render_markdown_table_data_row(data.head)
         + render_markdown_table_data_delimiter(len(data.head))
@@ -58,15 +42,10 @@ def render_markdown_table_data(data: document.TableData) -> str:
 
 
 def render_markdown_table_data_row(row: document.TableDataRow) -> str:
-    if not isinstance(row, document.TableDataRow):
-        raise TypeError
-
     return "| " + " | ".join(row) + " |\n"
 
 
 def render_markdown_table_data_delimiter(n: int) -> str:
-    if type(n) is not int:
-        raise TypeError
     if n <= 0:
         raise ValueError
 
@@ -74,9 +53,6 @@ def render_markdown_table_data_delimiter(n: int) -> str:
 
 
 def render_markdown_callout(callout: document.Callout) -> str:
-    if not isinstance(callout, document.Callout):
-        raise TypeError
-
     if callout.kind is document.CalloutKind.NOTE:
         kind = "NOTE"
     elif callout.kind is document.CalloutKind.WARNING:
