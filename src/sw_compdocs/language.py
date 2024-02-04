@@ -6,55 +6,14 @@ import typing
 
 from . import _types
 from . import container
-from . import validator
 
 
 class Translation:
-    @property
-    def id(self) -> str:
-        return self._id
-
-    @id.setter
-    def id(self, value: str) -> None:
-        if type(value) is not str:
-            raise TypeError
-        self._id = value
-
-    @property
-    def description(self) -> str:
-        return self._description
-
-    @description.setter
-    def description(self, value: str) -> None:
-        if type(value) is not str:
-            raise TypeError
-        self._description = value
-
-    @property
-    def en(self) -> str:
-        return self._en
-
-    @en.setter
-    def en(self, value: str) -> None:
-        if type(value) is not str:
-            raise TypeError
-        self._en = value
-
-    @property
-    def local(self) -> str:
-        return self._local
-
-    @local.setter
-    def local(self, value: str) -> None:
-        if type(value) is not str:
-            raise TypeError
-        self._local = value
-
     def __init__(self, id: str, description: str, en: str, local: str) -> None:
-        self.id = id
-        self.description = description
-        self.en = en
-        self.local = local
+        self.id: str = id
+        self.description: str = description
+        self.en: str = en
+        self.local: str = local
 
     def __repr__(self) -> str:
         return f"{type(self).__name__}({self.id!r}, {self.description!r}, {self.en!r}, {self.local!r})"
@@ -84,38 +43,14 @@ class LanguageTSVDialect(csv.Dialect):
 
 
 class LanguageTSVError(Exception):
-    @property
-    def msg(self) -> str:
-        return self._msg
-
-    @property
-    def file(self) -> _types.StrOrBytesPath | None:
-        return self._file
-
-    @file.setter
-    def file(self, value: _types.StrOrBytesPath | None) -> None:
-        if value is not None and not validator.is_pathlike(value):
-            raise TypeError
-        self._file = value
-
-    @property
-    def line(self) -> int | None:
-        return self._line
-
-    @line.setter
-    def line(self, value: int | None) -> None:
-        if value is not None and type(value) is not int:
-            raise TypeError
-        self._line = value
-
     def __init__(self, msg: str) -> None:
         if type(msg) is not str:
             raise TypeError
 
         super().__init__(msg)
-        self._msg = msg
-        self._file = None
-        self._line = None
+        self.msg: typing.Final[str] = msg
+        self.file: _types.StrOrBytesPath | None = None
+        self.line: int | None = None
 
     def __str__(self) -> str:
         file = os.fsdecode(self.file) if self.file is not None else "<language.tsv>"
@@ -128,38 +63,18 @@ class LanguageFindError(Exception):
 
 
 class LanguageFindIDError(LanguageFindError):
-    @property
-    def id(self) -> str:
-        return self._id
-
-    @id.setter
-    def id(self, value: str) -> None:
-        if type(value) is not str:
-            raise TypeError
-        self._id = value
-
     def __init__(self, id: str) -> None:
         super().__init__(id)
-        self.id = id
+        self.id: typing.Final[str] = id
 
     def __str__(self) -> str:
         return f"missing translation for id {self.id!r}"
 
 
 class LanguageFindEnError(LanguageFindError):
-    @property
-    def en(self) -> str:
-        return self._en
-
-    @en.setter
-    def en(self, value: str) -> None:
-        if type(value) is not str:
-            raise TypeError
-        self._en = value
-
     def __init__(self, en: str) -> None:
         super().__init__(en)
-        self.en = en
+        self.en: typing.Final[str] = en
 
     def __str__(self) -> str:
         return f"missing translation for text {self.en!r}"
@@ -168,10 +83,6 @@ class LanguageFindEnError(LanguageFindError):
 class Language(container.Sequence[Translation]):
     def __init__(self, iterable: collections.abc.Iterable[Translation] = ()) -> None:
         super().__init__(iterable)
-
-        for trans in self:
-            if type(trans) is not Translation:
-                raise TypeError
 
     @classmethod
     def from_file(
@@ -222,8 +133,6 @@ class Language(container.Sequence[Translation]):
         return trans_list[0]
 
     def find_id_all(self, id: str) -> list[Translation]:
-        if type(id) is not str:
-            raise TypeError
         return [trans for trans in self if trans.id == id]
 
     def find_en(self, en: str) -> Translation:
@@ -233,6 +142,4 @@ class Language(container.Sequence[Translation]):
         return trans_list[0]
 
     def find_en_all(self, en: str) -> list[Translation]:
-        if type(en) is not str:
-            raise TypeError
         return [trans for trans in self if trans.en == en]

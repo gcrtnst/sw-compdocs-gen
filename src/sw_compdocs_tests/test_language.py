@@ -746,13 +746,6 @@ class TestLanguageFindIDErrorInit(unittest.TestCase):
         self.assertEqual(exc.id, "id")
 
 
-class TestLanguageFindIDErrorIDSetter(unittest.TestCase):
-    def test_pass(self) -> None:
-        exc = sw_compdocs.language.LanguageFindIDError("id")
-        exc.id = "set"
-        self.assertEqual(exc.id, "set")
-
-
 class TestLanguageFindIDErrorStr(unittest.TestCase):
     def test(self) -> None:
         exc = sw_compdocs.language.LanguageFindIDError("id")
@@ -765,13 +758,6 @@ class TestLanguageFindEnErrorInit(unittest.TestCase):
         exc_args: tuple[object, ...] = exc.args
         self.assertEqual(exc_args, ("en",))
         self.assertEqual(exc.en, "en")
-
-
-class TestLanguageFindIDErrorEnSetter(unittest.TestCase):
-    def test_pass(self) -> None:
-        exc = sw_compdocs.language.LanguageFindEnError("en")
-        exc.en = "set"
-        self.assertEqual(exc.en, "set")
 
 
 class TestLanguageFindEnErrorStr(unittest.TestCase):
