@@ -45,30 +45,27 @@ class LabelKeyError(KeyError):
 
 
 class LabelDict(collections.abc.Mapping[str, str]):
-    def __init__(self, mapping: object = {}):
-        if not isinstance(mapping, collections.abc.Mapping):
-            raise LabelDictError(
-                f"invalid label mapping type: {type(mapping).__name__}"
-            )
-
-        self._d: dict[str, str] = {}
-        for k, v in mapping.items():
-            if not isinstance(k, str):
-                raise LabelDictError(f"expected string for label key: {k!r}")
-            if not isinstance(v, str):
-                raise LabelDictError(f"expected string for label text: {v!r}")
-            self._d[k] = v
+    def __init__(self, mapping: collections.abc.Mapping[str, str] = {}):
+        self._d: dict[str, str] = dict(mapping)
 
     @classmethod
     def _from_toml(cls, toml: dict[str, object]) -> typing.Self:
-        mapping = toml.get("label")
-        if mapping is None:
+        obj = toml.get("label")
+        if obj is None:
             raise LabelFileError("missing label table")
+        if not isinstance(obj, collections.abc.Mapping):
+            raise LabelFileError(f"invalid label table type: {type(obj).__name__}")
 
-        try:
-            return cls(mapping)
-        except LabelDictError as exc:
-            raise exc.with_file(None) from exc
+        mapping: dict[str, str] = {}
+        for k, v in obj.items():
+            if not isinstance(k, str):
+                # In TOML, keys are always strings.
+                # If a non-string key is given, it is a bug in tomllib.
+                raise Exception
+            if not isinstance(v, str):
+                raise LabelFileError(f"expected string for label text: {v!r}")
+            mapping[k] = v
+        return cls(mapping)
 
     @classmethod
     def from_toml_file(cls, file: _types.StrOrBytesPath) -> typing.Self:

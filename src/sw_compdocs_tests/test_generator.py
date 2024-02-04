@@ -3608,6 +3608,12 @@ key_2 = "value_2"
             ),
             tt(
                 input_s="""\
+label = 0
+""",
+                want_exc_msg="invalid label table type: int",
+            ),
+            tt(
+                input_s="""\
 [label]
 key_1 = "value_1"
 key_2 = 2
@@ -3666,6 +3672,12 @@ key_1 = "value_1"
 key_2 = "value_2"
 """,
                 want_exc_msg="missing label table",
+            ),
+            tt(
+                input_s="""\
+label = 0
+""",
+                want_exc_msg="invalid label table type: int",
             ),
             tt(
                 input_s="""\
