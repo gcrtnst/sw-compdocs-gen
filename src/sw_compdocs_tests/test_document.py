@@ -416,33 +416,6 @@ class TestHeadingInit(unittest.TestCase):
                 self.assertIs(head.text, tc.input_text)
                 self.assertIs(head.level, tc.input_level)
 
-    def test_exc_value(self) -> None:
-        tt = typing.NamedTuple("tt", [("input_text", str), ("input_level", int)])
-
-        for tc in [
-            tt(input_text="foo", input_level=0),
-            tt(input_text="foo", input_level=7),
-        ]:
-            with self.subTest(tc=tc):
-                with self.assertRaises(ValueError):
-                    sw_compdocs.document.Heading(tc.input_text, level=tc.input_level)
-
-
-class TestHeadingLevelSetter(unittest.TestCase):
-    def test_pass(self) -> None:
-        for level in range(1, 7):
-            with self.subTest(level=level):
-                head = sw_compdocs.document.Heading("foo")
-                head.level = level
-                self.assertIs(head.level, level)
-
-    def test_exc_value(self) -> None:
-        for level in [0, 7]:
-            with self.subTest(level=level):
-                head = sw_compdocs.document.Heading("foo")
-                with self.assertRaises(ValueError):
-                    head.level = level
-
 
 class TestHeadingRepr(unittest.TestCase):
     def test(self) -> None:

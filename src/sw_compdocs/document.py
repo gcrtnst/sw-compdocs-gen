@@ -13,19 +13,9 @@ class Block:
 
 
 class Heading(Block):
-    @property
-    def level(self) -> int:
-        return self._level
-
-    @level.setter
-    def level(self, value: int) -> None:
-        if value < 1 or 6 < value:
-            raise ValueError
-        self._level = value
-
     def __init__(self, text: str, *, level: int = 1) -> None:
         self.text: str = text
-        self.level = level
+        self.level: int = level
 
     def __repr__(self) -> str:
         return f"{type(self).__name__}({repr(self.text)}, level={repr(self.level)})"

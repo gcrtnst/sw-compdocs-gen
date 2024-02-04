@@ -28,6 +28,8 @@ def render_markdown_block(blk: document.Block) -> str:
 def render_markdown_heading(head: document.Heading) -> str:
     if not isinstance(head, document.Heading):
         raise TypeError
+    if head.level < 1 or 6 < head.level:
+        raise ValueError
     return "#" * head.level + " " + head.text + "\n"
 
 
