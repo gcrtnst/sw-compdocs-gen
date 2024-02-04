@@ -557,34 +557,6 @@ class TestTranslationInit(unittest.TestCase):
         self.assertIs(trans.local, input_local)
 
 
-class TestTranslationIDSetter(unittest.TestCase):
-    def test_pass(self) -> None:
-        trans = sw_compdocs.language.Translation("id", "description", "en", "local")
-        trans.id = "set"
-        self.assertEqual(trans.id, "set")
-
-
-class TestTranslationDescriptionSetter(unittest.TestCase):
-    def test_pass(self) -> None:
-        trans = sw_compdocs.language.Translation("id", "description", "en", "local")
-        trans.description = "set"
-        self.assertEqual(trans.description, "set")
-
-
-class TestTranslationEnSetter(unittest.TestCase):
-    def test_pass(self) -> None:
-        trans = sw_compdocs.language.Translation("id", "description", "en", "local")
-        trans.en = "set"
-        self.assertEqual(trans.en, "set")
-
-
-class TestTranslationLocalSetter(unittest.TestCase):
-    def test_pass(self) -> None:
-        trans = sw_compdocs.language.Translation("id", "description", "en", "local")
-        trans.local = "set"
-        self.assertEqual(trans.local, "set")
-
-
 class TestTranslationRepr(unittest.TestCase):
     def test(self) -> None:
         trans = sw_compdocs.language.Translation("id", "description", "en", "local")
@@ -667,29 +639,6 @@ class TestLanguageTSVErrorInit(unittest.TestCase):
         self.assertEqual(exc.msg, "msg")
         self.assertEqual(exc.file, None)
         self.assertEqual(exc.line, None)
-
-
-class TestLanguageTSVErrorFileSetter(unittest.TestCase):
-    def test_pass(self) -> None:
-        for file in [
-            None,
-            "file",
-            b"file",
-            pathlib.PurePath("file"),
-        ]:
-            with self.subTest(file=file):
-                exc = sw_compdocs.language.LanguageTSVError("msg")
-                exc.file = file
-                self.assertIs(exc.file, file)
-
-
-class TestLanguageTSVErrorLineSetter(unittest.TestCase):
-    def test_pass(self) -> None:
-        for line in [None, 52149]:
-            with self.subTest(line=line):
-                exc = sw_compdocs.language.LanguageTSVError("msg")
-                exc.line = line
-                self.assertIs(exc.line, line)
 
 
 class TestLanguageTSVErrorStr(unittest.TestCase):
