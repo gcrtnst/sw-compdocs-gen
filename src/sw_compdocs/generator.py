@@ -21,20 +21,6 @@ class LabelFileError(Exception):
         return f"{file}: {self.msg}"
 
 
-class LabelDictError(Exception):
-    def __init__(self, msg: str) -> None:
-        super().__init__(msg)
-        self.msg: typing.Final[str] = msg
-
-    def __str__(self) -> str:
-        return self.msg
-
-    def with_file(self, file: _types.StrOrBytesPath | None) -> LabelFileError:
-        exc = LabelFileError(self.msg)
-        exc.file = file
-        return exc
-
-
 class LabelKeyError(KeyError):
     def __init__(self, key: str) -> None:
         super().__init__(key)

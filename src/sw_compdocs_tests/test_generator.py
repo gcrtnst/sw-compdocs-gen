@@ -3726,26 +3726,6 @@ class TestLabelDictLen(unittest.TestCase):
         self.assertEqual(len(label), 2)
 
 
-class TestLabelDictErrorInit(unittest.TestCase):
-    def test_pass(self) -> None:
-        exc = sw_compdocs.generator.LabelDictError("msg")
-        self.assertEqual(exc.msg, "msg")
-
-
-class TestLabelDictErrorStr(unittest.TestCase):
-    def test(self) -> None:
-        exc = sw_compdocs.generator.LabelDictError("msg")
-        self.assertEqual(str(exc), "msg")
-
-
-class TestLabelDictErrorWithFile(unittest.TestCase):
-    def test(self) -> None:
-        dict_exc = sw_compdocs.generator.LabelDictError("msg")
-        file_exc = dict_exc.with_file("file")
-        self.assertEqual(file_exc.msg, "msg")
-        self.assertEqual(file_exc.file, "file")
-
-
 class TestLabelFileErrorInit(unittest.TestCase):
     def test_pass(self) -> None:
         exc = sw_compdocs.generator.LabelFileError("msg")
