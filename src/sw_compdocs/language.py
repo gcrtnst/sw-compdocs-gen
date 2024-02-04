@@ -44,9 +44,6 @@ class LanguageTSVDialect(csv.Dialect):
 
 class LanguageTSVError(Exception):
     def __init__(self, msg: str) -> None:
-        if type(msg) is not str:
-            raise TypeError
-
         super().__init__(msg)
         self.msg: typing.Final[str] = msg
         self.file: _types.StrOrBytesPath | None = None
