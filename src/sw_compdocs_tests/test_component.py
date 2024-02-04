@@ -244,47 +244,47 @@ class TestDefinitionInit(unittest.TestCase):
             [
                 (
                     "input_cid",
-                    str | None,
+                    str,
                 ),
                 (
                     "input_name",
-                    str | None,
+                    str,
                 ),
                 (
                     "input_category",
-                    sw_compdocs.component.Category | None,
+                    sw_compdocs.component.Category,
                 ),
                 (
                     "input_mass",
-                    float | None,
+                    float,
                 ),
                 (
                     "input_value",
-                    int | None,
+                    int,
                 ),
                 (
                     "input_flags",
-                    sw_compdocs.component.Flags | None,
+                    sw_compdocs.component.Flags,
                 ),
                 (
                     "input_tags",
-                    str | None,
+                    str,
                 ),
                 (
                     "input_tooltip_properties",
-                    sw_compdocs.component.TooltipProperties | None,
+                    sw_compdocs.component.TooltipProperties,
                 ),
                 (
                     "input_logic_nodes",
-                    sw_compdocs.component.LogicNodeList | None,
+                    sw_compdocs.component.LogicNodeList,
                 ),
                 (
                     "input_voxel_min",
-                    sw_compdocs.component.VoxelPos | None,
+                    sw_compdocs.component.VoxelPos,
                 ),
                 (
                     "input_voxel_max",
-                    sw_compdocs.component.VoxelPos | None,
+                    sw_compdocs.component.VoxelPos,
                 ),
                 (
                     "want_cid",
@@ -405,30 +405,6 @@ class TestDefinitionInit(unittest.TestCase):
                 ),
                 want_voxel_min=sw_compdocs.component.VoxelPos(x=0, y=0, z=0),
                 want_voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=0),
-            ),
-            tt(
-                input_cid=None,
-                input_name=None,
-                input_category=None,
-                input_mass=None,
-                input_value=None,
-                input_flags=None,
-                input_tags=None,
-                input_tooltip_properties=None,
-                input_logic_nodes=None,
-                input_voxel_min=None,
-                input_voxel_max=None,
-                want_cid="",
-                want_name="",
-                want_category=sw_compdocs.component.Category.BLOCKS,
-                want_mass=0.0,
-                want_value=0,
-                want_flags=sw_compdocs.component.Flags(0),
-                want_tags="",
-                want_tooltip_properties=sw_compdocs.component.TooltipProperties(),
-                want_logic_nodes=sw_compdocs.component.LogicNodeList(),
-                want_voxel_min=sw_compdocs.component.VoxelPos(),
-                want_voxel_max=sw_compdocs.component.VoxelPos(),
             ),
         ]:
             with self.subTest(tc=tc):
@@ -1100,8 +1076,8 @@ class TestTooltipPropertiesInit(unittest.TestCase):
         tt = typing.NamedTuple(
             "tt",
             [
-                ("input_short_description", str | None),
-                ("input_description", str | None),
+                ("input_short_description", str),
+                ("input_description", str),
                 ("want_short_description", str),
                 ("want_description", str),
             ],
@@ -1119,18 +1095,6 @@ class TestTooltipPropertiesInit(unittest.TestCase):
                 input_description="b",
                 want_short_description="a",
                 want_description="b",
-            ),
-            tt(
-                input_short_description=None,
-                input_description="b",
-                want_short_description="",
-                want_description="b",
-            ),
-            tt(
-                input_short_description="a",
-                input_description=None,
-                want_short_description="a",
-                want_description="",
             ),
         ]:
             with self.subTest(tc=tc):
@@ -1397,109 +1361,18 @@ class TestLogicNodeListFromXMLElem(unittest.TestCase):
 
 class TestLogicNodeInit(unittest.TestCase):
     def test_pass(self) -> None:
-        tt = typing.NamedTuple(
-            "tt",
-            [
-                ("input_idx", int | None),
-                ("input_label", str | None),
-                ("input_mode", sw_compdocs.component.LogicNodeMode | None),
-                ("input_type", sw_compdocs.component.LogicNodeType | None),
-                ("input_description", str | None),
-                ("want_idx", int),
-                ("want_label", str),
-                ("want_mode", sw_compdocs.component.LogicNodeMode),
-                ("want_type", sw_compdocs.component.LogicNodeType),
-                ("want_description", str),
-            ],
+        ln = sw_compdocs.component.LogicNode(
+            idx=52149,
+            label="label",
+            mode=sw_compdocs.component.LogicNodeMode.INPUT,
+            type=sw_compdocs.component.LogicNodeType.FLOAT,
+            description="description",
         )
-
-        for tc in [
-            tt(
-                input_idx=52149,
-                input_label="label",
-                input_mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                input_type=sw_compdocs.component.LogicNodeType.FLOAT,
-                input_description="description",
-                want_idx=52149,
-                want_label="label",
-                want_mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                want_type=sw_compdocs.component.LogicNodeType.FLOAT,
-                want_description="description",
-            ),
-            tt(
-                input_idx=None,
-                input_label="label",
-                input_mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                input_type=sw_compdocs.component.LogicNodeType.FLOAT,
-                input_description="description",
-                want_idx=0,
-                want_label="label",
-                want_mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                want_type=sw_compdocs.component.LogicNodeType.FLOAT,
-                want_description="description",
-            ),
-            tt(
-                input_idx=52149,
-                input_label=None,
-                input_mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                input_type=sw_compdocs.component.LogicNodeType.FLOAT,
-                input_description="description",
-                want_idx=52149,
-                want_label="",
-                want_mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                want_type=sw_compdocs.component.LogicNodeType.FLOAT,
-                want_description="description",
-            ),
-            tt(
-                input_idx=52149,
-                input_label="label",
-                input_mode=None,
-                input_type=sw_compdocs.component.LogicNodeType.FLOAT,
-                input_description="description",
-                want_idx=52149,
-                want_label="label",
-                want_mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
-                want_type=sw_compdocs.component.LogicNodeType.FLOAT,
-                want_description="description",
-            ),
-            tt(
-                input_idx=52149,
-                input_label="label",
-                input_mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                input_type=None,
-                input_description="description",
-                want_idx=52149,
-                want_label="label",
-                want_mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                want_type=sw_compdocs.component.LogicNodeType.BOOL,
-                want_description="description",
-            ),
-            tt(
-                input_idx=52149,
-                input_label="label",
-                input_mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                input_type=sw_compdocs.component.LogicNodeType.FLOAT,
-                input_description=None,
-                want_idx=52149,
-                want_label="label",
-                want_mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                want_type=sw_compdocs.component.LogicNodeType.FLOAT,
-                want_description="",
-            ),
-        ]:
-            with self.subTest(tc=tc):
-                got = sw_compdocs.component.LogicNode(
-                    idx=tc.input_idx,
-                    label=tc.input_label,
-                    mode=tc.input_mode,
-                    type=tc.input_type,
-                    description=tc.input_description,
-                )
-                self.assertEqual(got.idx, tc.want_idx)
-                self.assertEqual(got.label, tc.want_label)
-                self.assertEqual(got.mode, tc.want_mode)
-                self.assertEqual(got.type, tc.want_type)
-                self.assertEqual(got.description, tc.want_description)
+        self.assertEqual(ln.idx, 52149)
+        self.assertEqual(ln.label, "label")
+        self.assertEqual(ln.mode, sw_compdocs.component.LogicNodeMode.INPUT)
+        self.assertEqual(ln.type, sw_compdocs.component.LogicNodeType.FLOAT)
+        self.assertEqual(ln.description, "description")
 
 
 class TestLogicNodeFromXMLElem(unittest.TestCase):
@@ -1860,31 +1733,10 @@ class TestLogicNodeTypeStr(unittest.TestCase):
 
 class TestVoxelPosInit(unittest.TestCase):
     def test_pass(self) -> None:
-        tt = typing.NamedTuple(
-            "tt",
-            [
-                ("input_x", int | None),
-                ("input_y", int | None),
-                ("input_z", int | None),
-                ("want_x", int),
-                ("want_y", int),
-                ("want_z", int),
-            ],
-        )
-
-        for tc in [
-            tt(input_x=1, input_y=2, input_z=3, want_x=1, want_y=2, want_z=3),
-            tt(input_x=None, input_y=2, input_z=3, want_x=0, want_y=2, want_z=3),
-            tt(input_x=1, input_y=None, input_z=3, want_x=1, want_y=0, want_z=3),
-            tt(input_x=1, input_y=2, input_z=None, want_x=1, want_y=2, want_z=0),
-        ]:
-            with self.subTest(tc=tc):
-                pos = sw_compdocs.component.VoxelPos(
-                    x=tc.input_x, y=tc.input_y, z=tc.input_z
-                )
-                self.assertEqual(pos.x, tc.want_x)
-                self.assertEqual(pos.y, tc.want_y)
-                self.assertEqual(pos.z, tc.want_z)
+        pos = sw_compdocs.component.VoxelPos(x=1, y=2, z=3)
+        self.assertEqual(pos.x, 1)
+        self.assertEqual(pos.y, 2)
+        self.assertEqual(pos.z, 3)
 
 
 class TestVoxelPosFromXMLElem(unittest.TestCase):
