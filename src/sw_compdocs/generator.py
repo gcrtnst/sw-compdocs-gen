@@ -36,9 +36,9 @@ class LabelDictError(Exception):
 
 
 class LabelKeyError(KeyError):
-    def __init__(self, key: object) -> None:
+    def __init__(self, key: str) -> None:
         super().__init__(key)
-        self.key: typing.Final[object] = key
+        self.key: typing.Final[str] = key
 
     def __str__(self) -> str:
         return f"missing label text for key {self.key!r}"
