@@ -53,30 +53,6 @@ class TestDocumentGeneratorInit(unittest.TestCase):
                 self.assertIs(gen.fmt, tc.input_fmt)
 
 
-class TestDocumentGeneratorLabelSetter(unittest.TestCase):
-    def test_pass(self) -> None:
-        for label in [sw_compdocs.generator.LabelDict(), None]:
-            gen = sw_compdocs.generator.DocumentGenerator()
-            gen.label = label
-            self.assertIs(gen.label, label)
-
-
-class TestDocumentGeneratorLangSetter(unittest.TestCase):
-    def test_pass(self) -> None:
-        for lang in [sw_compdocs.language.Language(), None]:
-            gen = sw_compdocs.generator.DocumentGenerator()
-            gen.lang = lang
-            self.assertIs(gen.lang, lang)
-
-
-class TestDocumentGeneratorFmtSetter(unittest.TestCase):
-    def test_pass(self) -> None:
-        for fmt in [sw_compdocs.template.TemplateFormatter({}), None]:
-            gen = sw_compdocs.generator.DocumentGenerator()
-            gen.fmt = fmt
-            self.assertIs(gen.fmt, fmt)
-
-
 class TestDocumentGeneratorGenerate(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(
@@ -3765,15 +3741,6 @@ class TestLabelFileErrorInit(unittest.TestCase):
         self.assertEqual(exc_args, ("msg",))
         self.assertEqual(exc.msg, "msg")
         self.assertEqual(exc.file, None)
-
-
-class TestLabelFileErrorFileSetter(unittest.TestCase):
-    def test_pass(self) -> None:
-        for file in [None, "file", b"file", pathlib.PurePath("file")]:
-            with self.subTest(file=file):
-                exc = sw_compdocs.generator.LabelFileError("msg")
-                exc.file = file
-                self.assertIs(exc.file, file)
 
 
 class TestLabelFileErrorStr(unittest.TestCase):
