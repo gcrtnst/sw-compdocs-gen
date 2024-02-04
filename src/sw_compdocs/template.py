@@ -19,10 +19,6 @@ class TemplateFormatter:
         return re.sub(r"(?s:\$\[(?P<key>.*?)\])", repl, s)
 
 
-class TemplateMappingError(Exception):
-    pass
-
-
 class TemplateKeyError(Exception):
     def __init__(self, key: object) -> None:
         super().__init__(key)
