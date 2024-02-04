@@ -1036,23 +1036,3 @@ class TestComponentXMLErrorPrependXPath(unittest.TestCase):
                 exc = sw_compdocs.component.ComponentXMLError("msg")
                 with self.assertRaises(ValueError):
                     exc.prepend_xpath(s)
-
-
-class TestCoalesce(unittest.TestCase):
-    def test(self) -> None:
-        tt = typing.NamedTuple(
-            "tt",
-            [
-                ("input_value", object | None),
-                ("input_default", object),
-                ("want", object),
-            ],
-        )
-
-        for tc in [
-            tt(input_value=0, input_default=1, want=0),
-            tt(input_value=None, input_default=1, want=1),
-        ]:
-            with self.subTest(tc=tc):
-                got = sw_compdocs.component._coalesce(tc.input_value, tc.input_default)
-                self.assertEqual(got, tc.want)

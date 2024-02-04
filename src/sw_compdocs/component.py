@@ -11,15 +11,6 @@ from . import _types
 from . import container
 
 
-_T = typing.TypeVar("_T")
-
-
-def _coalesce(value: _T | None, default: _T) -> _T:
-    if value is None:
-        return default
-    return value
-
-
 class ComponentXMLError(Exception):
     def __init__(self, msg: str) -> None:
         super().__init__(msg)
