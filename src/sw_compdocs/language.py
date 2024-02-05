@@ -1,5 +1,6 @@
 import collections.abc
 import csv
+import dataclasses
 import io
 import os
 import typing
@@ -8,28 +9,12 @@ from . import _types
 from . import container
 
 
+@dataclasses.dataclass
 class Translation:
-    def __init__(self, id: str, description: str, en: str, local: str) -> None:
-        self.id: str = id
-        self.description: str = description
-        self.en: str = en
-        self.local: str = local
-
-    def __repr__(self) -> str:
-        return f"{type(self).__name__}({self.id!r}, {self.description!r}, {self.en!r}, {self.local!r})"
-
-    def __eq__(self, other: object) -> bool:
-        if type(self) is type(other):
-            # type narrowing assertion for mypy 1.8.0
-            assert isinstance(other, type(self))
-
-            return (
-                self.id == other.id
-                and self.description == other.description
-                and self.en == other.en
-                and self.local == other.local
-            )
-        return super().__eq__(other)
+    id: str
+    description: str
+    en: str
+    local: str
 
 
 class LanguageTSVDialect(csv.Dialect):

@@ -560,7 +560,10 @@ class TestTranslationInit(unittest.TestCase):
 class TestTranslationRepr(unittest.TestCase):
     def test(self) -> None:
         trans = sw_compdocs.language.Translation("id", "description", "en", "local")
-        self.assertEqual(repr(trans), "Translation('id', 'description', 'en', 'local')")
+        self.assertEqual(
+            repr(trans),
+            "Translation(id='id', description='description', en='en', local='local')",
+        )
 
 
 class TestTranslationEq(unittest.TestCase):
