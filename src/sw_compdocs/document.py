@@ -1,4 +1,5 @@
 import collections.abc
+import dataclasses
 import enum
 import typing
 
@@ -12,37 +13,16 @@ class Block:
             raise NotImplementedError
 
 
+@dataclasses.dataclass
 class Heading(Block):
-    def __init__(self, text: str, *, level: int = 1) -> None:
-        self.text: str = text
-        self.level: int = level
-
-    def __repr__(self) -> str:
-        return f"{type(self).__name__}({repr(self.text)}, level={repr(self.level)})"
-
-    def __eq__(self, other: object) -> bool:
-        if type(self) is type(other):
-            # type narrowing assertion for mypy 1.8.0
-            assert isinstance(other, type(self))
-
-            return self.text == other.text and self.level == other.level
-        return super().__eq__(other)
+    text: str
+    _: dataclasses.KW_ONLY
+    level: int = 1
 
 
+@dataclasses.dataclass
 class Paragraph(Block):
-    def __init__(self, text: str) -> None:
-        self.text: str = text
-
-    def __repr__(self) -> str:
-        return f"{type(self).__name__}({repr(self.text)})"
-
-    def __eq__(self, other: object) -> bool:
-        if type(self) is type(other):
-            # type narrowing assertion for mypy 1.8.0
-            assert isinstance(other, type(self))
-
-            return self.text == other.text
-        return super().__eq__(other)
+    text: str
 
 
 class TableDataRow(container.Sequence[str]):
@@ -107,20 +87,9 @@ class TableData(container.MutableSequence[TableDataRow]):
             raise ValueError
 
 
+@dataclasses.dataclass
 class Table(Block):
-    def __init__(self, data: TableData) -> None:
-        self.data: TableData = data
-
-    def __repr__(self) -> str:
-        return f"{type(self).__name__}({repr(self.data)})"
-
-    def __eq__(self, other: object) -> bool:
-        if type(self) is type(other):
-            # type narrowing assertion for mypy 1.8.0
-            assert isinstance(other, type(self))
-
-            return self.data == other.data
-        return super().__eq__(other)
+    data: TableData
 
 
 @enum.unique
@@ -129,21 +98,11 @@ class CalloutKind(enum.Enum):
     WARNING = enum.auto()
 
 
+@dataclasses.dataclass
 class Callout(Block):
-    def __init__(self, text: str, *, kind: CalloutKind | None = None) -> None:
-        self.text: str = text
-        self.kind: CalloutKind = kind if kind is not None else CalloutKind.NOTE
-
-    def __repr__(self) -> str:
-        return f"{type(self).__name__}({repr(self.text)}, kind={repr(self.kind)})"
-
-    def __eq__(self, other: object) -> bool:
-        if type(self) is type(other):
-            # type narrowing assertion for mypy 1.8.0
-            assert isinstance(other, type(self))
-
-            return self.text == other.text and self.kind == other.kind
-        return super().__eq__(other)
+    text: str
+    _: dataclasses.KW_ONLY
+    kind: CalloutKind = CalloutKind.NOTE
 
 
 class Document(container.MutableSequence[Block]):

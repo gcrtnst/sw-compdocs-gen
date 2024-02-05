@@ -238,10 +238,10 @@ class TestDocumentRepr(unittest.TestCase):
 
         want_s = (
             "Document(["
-            + "Heading('head', level=1), "
-            + "Paragraph('para'), "
-            + "Table(TableData(TableDataRow(['tbl']), [])), "
-            + "Callout('callout', kind=<CalloutKind.WARNING: 2>)"
+            + "Heading(text='head', level=1), "
+            + "Paragraph(text='para'), "
+            + "Table(data=TableData(TableDataRow(['tbl']), [])), "
+            + "Callout(text='callout', kind=<CalloutKind.WARNING: 2>)"
             + "])"
         )
         got_s = repr(doc)
@@ -421,7 +421,7 @@ class TestHeadingRepr(unittest.TestCase):
     def test(self) -> None:
         head = sw_compdocs.document.Heading("foo", level=2)
         s = repr(head)
-        self.assertEqual(s, "Heading('foo', level=2)")
+        self.assertEqual(s, "Heading(text='foo', level=2)")
 
 
 class TestHeadingEq(unittest.TestCase):
@@ -472,7 +472,7 @@ class TestParagraphRepr(unittest.TestCase):
     def test(self) -> None:
         para = sw_compdocs.document.Paragraph("foo")
         s = repr(para)
-        self.assertEqual(s, "Paragraph('foo')")
+        self.assertEqual(s, "Paragraph(text='foo')")
 
 
 class TestParagraphEq(unittest.TestCase):
@@ -536,7 +536,7 @@ class TestTableRepr(unittest.TestCase):
         s = repr(tbl)
         self.assertEqual(
             s,
-            "Table(TableData(TableDataRow(['A1', 'A2', 'A3']), [TableDataRow(['B1', 'B2', 'B3']), TableDataRow(['C1', 'C2', 'C3']), TableDataRow(['D1', 'D2', 'D3'])]))",
+            "Table(data=TableData(TableDataRow(['A1', 'A2', 'A3']), [TableDataRow(['B1', 'B2', 'B3']), TableDataRow(['C1', 'C2', 'C3']), TableDataRow(['D1', 'D2', 'D3'])]))",
         )
 
 
@@ -1324,19 +1324,13 @@ class TestCalloutInit(unittest.TestCase):
             "tt",
             [
                 ("input_text", str),
-                ("input_kind", sw_compdocs.document.CalloutKind | None),
+                ("input_kind", sw_compdocs.document.CalloutKind),
                 ("want_text", str),
                 ("want_kind", sw_compdocs.document.CalloutKind),
             ],
         )
 
         for tc in [
-            tt(
-                input_text="callout",
-                input_kind=None,
-                want_text="callout",
-                want_kind=sw_compdocs.document.CalloutKind.NOTE,
-            ),
             tt(
                 input_text="callout",
                 input_kind=sw_compdocs.document.CalloutKind.NOTE,
@@ -1365,7 +1359,7 @@ class TestCalloutRepr(unittest.TestCase):
         )
         self.assertEqual(
             repr(callout),
-            f"Callout('callout', kind={sw_compdocs.document.CalloutKind.WARNING!r})",
+            f"Callout(text='callout', kind={sw_compdocs.document.CalloutKind.WARNING!r})",
         )
 
 
