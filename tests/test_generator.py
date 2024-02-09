@@ -631,7 +631,11 @@ class TestDocumentGeneratorGenerateProperty(unittest.TestCase):
             tt(
                 input_label=None,
                 input_lang=sw_compdocs.language.Language(
-                    [sw_compdocs.language.Translation("", "", "PROPERTIES", "プロパティ")]
+                    [
+                        sw_compdocs.language.Translation(
+                            "", "", "PROPERTIES", "プロパティ"
+                        )
+                    ]
                 ),
                 input_comp=sw_compdocs.component.Definition(),
                 want_doc=sw_compdocs.document.Document(
@@ -782,7 +786,11 @@ class TestDocumentGeneratorGenerateLogicTable(unittest.TestCase):
                         sw_compdocs.document.TableDataRow(["種別", "ラベル", "説明"]),
                         [
                             sw_compdocs.document.TableDataRow(
-                                ["オン/オフ", "ラベル 0 label_0_fmt", "説明 0 desc_0_fmt"]
+                                [
+                                    "オン/オフ",
+                                    "ラベル 0 label_0_fmt",
+                                    "説明 0 desc_0_fmt",
+                                ]
                             ),
                             sw_compdocs.document.TableDataRow(
                                 ["数値", "ラベル 1 label_1_fmt", "説明 1 desc_1_fmt"]
@@ -869,7 +877,11 @@ class TestDocumentGeneratorGenerateLogicTable(unittest.TestCase):
                         ),
                         [
                             sw_compdocs.document.TableDataRow(
-                                ["オン/オフ", "ラベル 0 label_0_fmt", "説明 0 desc_0_fmt"]
+                                [
+                                    "オン/オフ",
+                                    "ラベル 0 label_0_fmt",
+                                    "説明 0 desc_0_fmt",
+                                ]
                             ),
                             sw_compdocs.document.TableDataRow(
                                 ["数値", "ラベル 1 label_1_fmt", "説明 1 desc_1_fmt"]
@@ -1084,7 +1096,11 @@ class TestDocumentGeneratorGenerateLogicTable(unittest.TestCase):
                         sw_compdocs.document.TableDataRow(["種別", "ラベル", "説明"]),
                         [
                             sw_compdocs.document.TableDataRow(
-                                ["オン/オフ", "ラベル 0 label_0_fmt", "説明 0 desc_0_fmt"]
+                                [
+                                    "オン/オフ",
+                                    "ラベル 0 label_0_fmt",
+                                    "説明 0 desc_0_fmt",
+                                ]
                             ),
                             sw_compdocs.document.TableDataRow(
                                 ["数値", "ラベル 1 label_1_fmt", "説明 1 desc_1_fmt"]
@@ -2346,7 +2362,9 @@ class TestDocumentGeneratorGenerateComponent(unittest.TestCase):
                         sw_compdocs.document.Paragraph(
                             "ゲーム内の時刻に対応した数値信号を出力するアナログ時計です."
                         ),
-                        sw_compdocs.document.Paragraph("時計に表示されている青い矢印が12時の方向です."),
+                        sw_compdocs.document.Paragraph(
+                            "時計に表示されている青い矢印が12時の方向です."
+                        ),
                         sw_compdocs.document.Heading("プロパティ", level=2),
                         sw_compdocs.document.Table(
                             sw_compdocs.document.TableData(
@@ -2357,14 +2375,18 @@ class TestDocumentGeneratorGenerateComponent(unittest.TestCase):
                                         ["サイズ(WxDxH)", "1x1x2"]
                                     ),
                                     sw_compdocs.document.TableDataRow(["値段", "100"]),
-                                    sw_compdocs.document.TableDataRow(["タグ", "basic"]),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["タグ", "basic"]
+                                    ),
                                 ],
                             )
                         ),
                         sw_compdocs.document.Heading("ロジック入力", level=2),
                         sw_compdocs.document.Table(
                             sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(["型", "ラベル", "説明"]),
+                                sw_compdocs.document.TableDataRow(
+                                    ["型", "ラベル", "説明"]
+                                ),
                                 [
                                     sw_compdocs.document.TableDataRow(
                                         [
@@ -2379,7 +2401,9 @@ class TestDocumentGeneratorGenerateComponent(unittest.TestCase):
                         sw_compdocs.document.Heading("ロジック出力", level=2),
                         sw_compdocs.document.Table(
                             sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(["型", "ラベル", "説明"]),
+                                sw_compdocs.document.TableDataRow(
+                                    ["型", "ラベル", "説明"]
+                                ),
                                 [
                                     sw_compdocs.document.TableDataRow(
                                         [
@@ -2394,7 +2418,9 @@ class TestDocumentGeneratorGenerateComponent(unittest.TestCase):
                         sw_compdocs.document.Heading("接続", level=2),
                         sw_compdocs.document.Table(
                             sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(["型", "ラベル", "説明"]),
+                                sw_compdocs.document.TableDataRow(
+                                    ["型", "ラベル", "説明"]
+                                ),
                                 [
                                     sw_compdocs.document.TableDataRow(
                                         [
@@ -2579,14 +2605,18 @@ class TestDocumentGeneratorGenerateComponent(unittest.TestCase):
                                         ["サイズ(WxDxH)", "1x1x2"]
                                     ),
                                     sw_compdocs.document.TableDataRow(["値段", "10"]),
-                                    sw_compdocs.document.TableDataRow(["タグ", "basic"]),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["タグ", "basic"]
+                                    ),
                                 ],
                             )
                         ),
                         sw_compdocs.document.Heading("ロジック入力", level=2),
                         sw_compdocs.document.Table(
                             sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(["型", "ラベル", "説明"]),
+                                sw_compdocs.document.TableDataRow(
+                                    ["型", "ラベル", "説明"]
+                                ),
                                 [
                                     sw_compdocs.document.TableDataRow(
                                         [
@@ -2601,7 +2631,9 @@ class TestDocumentGeneratorGenerateComponent(unittest.TestCase):
                         sw_compdocs.document.Heading("ロジック出力", level=2),
                         sw_compdocs.document.Table(
                             sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(["型", "ラベル", "説明"]),
+                                sw_compdocs.document.TableDataRow(
+                                    ["型", "ラベル", "説明"]
+                                ),
                                 [
                                     sw_compdocs.document.TableDataRow(
                                         [
@@ -2616,7 +2648,9 @@ class TestDocumentGeneratorGenerateComponent(unittest.TestCase):
                         sw_compdocs.document.Heading("接続", level=2),
                         sw_compdocs.document.Table(
                             sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(["型", "ラベル", "説明"]),
+                                sw_compdocs.document.TableDataRow(
+                                    ["型", "ラベル", "説明"]
+                                ),
                                 [
                                     sw_compdocs.document.TableDataRow(
                                         [
@@ -2695,7 +2729,9 @@ class TestDocumentGeneratorGenerateComponent(unittest.TestCase):
                 want_doc=sw_compdocs.document.Document(
                     [
                         sw_compdocs.document.Heading("取っ手"),
-                        sw_compdocs.document.Paragraph("[q] や [e] を押して掴むことができる取っ手です."),
+                        sw_compdocs.document.Paragraph(
+                            "[q] や [e] を押して掴むことができる取っ手です."
+                        ),
                         sw_compdocs.document.Paragraph(
                             "取っ手を掴んでいる時に [q]/[e] を押すと離すことができます. 軽い乗り物は取っ手を掴んでそのまま動かすことができます. プレイヤーが取っ手の範囲外まで移動した場合は自動的に手を離します."
                         ),
@@ -2709,7 +2745,9 @@ class TestDocumentGeneratorGenerateComponent(unittest.TestCase):
                                         ["サイズ(WxDxH)", "1x1x2"]
                                     ),
                                     sw_compdocs.document.TableDataRow(["値段", "5"]),
-                                    sw_compdocs.document.TableDataRow(["タグ", "basic"]),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["タグ", "basic"]
+                                    ),
                                 ],
                             )
                         ),

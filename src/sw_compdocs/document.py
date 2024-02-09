@@ -33,12 +33,12 @@ class TableDataRow(container.Sequence[str]):
             raise ValueError
 
     @typing.overload
-    def __setitem__(self, index: int, value: str) -> None:
-        ...
+    def __setitem__(self, index: int, value: str) -> None: ...
 
     @typing.overload
-    def __setitem__(self, index: slice, value: collections.abc.Iterable[str]) -> None:
-        ...
+    def __setitem__(
+        self, index: slice, value: collections.abc.Iterable[str]
+    ) -> None: ...
 
     def __setitem__(
         self, index: int | slice, value: str | collections.abc.Iterable[str]

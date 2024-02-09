@@ -11,12 +11,10 @@ class Sequence(collections.abc.Sequence[_T_co]):
         self._l = list(iterable)
 
     @typing.overload
-    def __getitem__(self, index: int) -> _T_co:
-        ...
+    def __getitem__(self, index: int) -> _T_co: ...
 
     @typing.overload
-    def __getitem__(self, index: slice) -> typing.Self:
-        ...
+    def __getitem__(self, index: slice) -> typing.Self: ...
 
     def __getitem__(self, index: int | slice) -> _T_co | typing.Self:
         if isinstance(index, int):
@@ -46,12 +44,10 @@ class MutableSequence(collections.abc.MutableSequence[_T]):
         self[:] = iterable
 
     @typing.overload
-    def __getitem__(self, index: int) -> _T:
-        ...
+    def __getitem__(self, index: int) -> _T: ...
 
     @typing.overload
-    def __getitem__(self, index: slice) -> typing.Self:
-        ...
+    def __getitem__(self, index: slice) -> typing.Self: ...
 
     def __getitem__(self, index: int | slice) -> _T | typing.Self:
         if isinstance(index, int):
@@ -61,12 +57,12 @@ class MutableSequence(collections.abc.MutableSequence[_T]):
         typing.assert_never(index)
 
     @typing.overload
-    def __setitem__(self, index: int, value: _T) -> None:
-        ...
+    def __setitem__(self, index: int, value: _T) -> None: ...
 
     @typing.overload
-    def __setitem__(self, index: slice, value: collections.abc.Iterable[_T]) -> None:
-        ...
+    def __setitem__(
+        self, index: slice, value: collections.abc.Iterable[_T]
+    ) -> None: ...
 
     def __setitem__(
         self, index: int | slice, value: _T | collections.abc.Iterable[_T]
@@ -88,12 +84,10 @@ class MutableSequence(collections.abc.MutableSequence[_T]):
         typing.assert_never(index)
 
     @typing.overload
-    def __delitem__(self, index: int) -> None:
-        ...
+    def __delitem__(self, index: int) -> None: ...
 
     @typing.overload
-    def __delitem__(self, index: slice) -> None:
-        ...
+    def __delitem__(self, index: slice) -> None: ...
 
     def __delitem__(self, index: int | slice) -> None:
         del self._l[index]

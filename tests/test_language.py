@@ -256,7 +256,9 @@ class TestLanguageFromFile(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp_dir:
             temp_file = pathlib.Path(temp_dir, "language.tsv")
             with open(temp_file, mode="wt", encoding="utf-8", newline="") as f:
-                f.write("id\tdescription\ten\tlocal\nid\tdescription\tEnglish\t日本語\n")
+                f.write(
+                    "id\tdescription\ten\tlocal\nid\tdescription\tEnglish\t日本語\n"
+                )
 
             lang = sw_compdocs.language.Language.from_file(
                 temp_file, encoding="ascii", errors="replace"
