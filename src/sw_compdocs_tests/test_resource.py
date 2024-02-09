@@ -3,8 +3,89 @@ import tomllib
 import unittest
 
 
+class TestFormatTOMLString(unittest.TestCase):
+    def test_pass(self) -> None:
+        for input_s in [
+            "",
+            "\x00",
+            "\x00 \x08 \x0c A \x7f \x80 ÿ \ud7ff \ue000 \uffff 𐀀 \U0010ffff",
+            ' ""two quotes"" ',
+            ' "one quote" ',
+            " ''two quotes'' ",
+            " 'one quote' ",
+            '""two quotes""',
+            '"one quote"',
+            '"one"',
+            "' there's one already\n'' two more\n''",
+            "''two quotes''",
+            "'one quote'",
+            "But there are # some comments here.",
+            'Closing with five quotes\n""',
+            'Closing with four quotes\n"',
+            "First line\n\t Followed by a tab",
+            'String does not end here" but ends here\\',
+            "String ends here\\",
+            "The quick brown fox jumps over the lazy dog.",
+            "There is no escape\\",
+            "This string\nhas ' a quote character\nand more than\none newline\nin it.",
+            "This string has a ' quote character.",
+            "This string has a \\/ slash character.",
+            "This string has a \\\\ backslash character.",
+            "This string has a \\b backspace character.",
+            "This string has a \\f form feed character.",
+            "This string has a \\n new line character.",
+            "This string has a \\r carriage return character.",
+            "This string has a \\t tab character.",
+            "This string has an \t unescaped tab character.",
+            "We see no # comments here.",
+            'When will it end? """...""" should be here"',
+            "You are not drinking enough whisky.",
+            "\\u0000 \\u0008 \\u000c \\U00000041 \\u007f \\u0080 \\u00ff \\ud7ff \\ue000 \\uffff \\U00010000 \\U0010ffff",
+            "\\u0041",
+            "\\u007f",
+            "\\x64",
+            "a",
+            "a   \tb",
+            "a \\\nb",
+            "a \\\\\n  b",
+            "a \\b",
+            'aaa"""bbb',
+            "aaa'''bbb",
+            "ab",
+            "b",
+            "c",
+            "heeee\ngeeee",
+            'lol"""',
+            "val\nue",
+            "val\\nue",
+            "val\\ue",
+            "value\n",
+            "value\\n",
+            "|\x08.",
+            "|\t.",
+            "|\n.",
+            "|\x0c.",
+            "|\r.",
+            "|\x1f.",
+            '|".',
+            "|\\.",
+            "|\\u.",
+            "|\\u0075.",
+            "|\x7f.",
+            "~ \x80 ÿ \ud7ff \ue000 \uffff 𐀀 \U0010ffff",
+            "\xa0",
+            "δ",
+        ]:
+            with self.subTest(input_s=input_s):
+                enc_s = sw_compdocs.resource.format_toml_string(input_s)
+                enc_toml = f"s = {enc_s}"
+                dec_toml: dict[str, object] = tomllib.loads(enc_toml)
+                dec_s = dec_toml["s"]
+                self.assertEqual(dec_s, input_s)
+
+
 class TestFormatTOMLKey(unittest.TestCase):
-    def test_pass(self):
+    def test_pass(self) -> None:
         for input_key in [
             "",
             "\x00",
@@ -97,92 +178,7 @@ class TestFormatTOMLKey(unittest.TestCase):
         ]:
             with self.subTest(input_key=input_key):
                 enc_key = sw_compdocs.resource.format_toml_key(input_key)
-                dec_key = next(iter(tomllib.loads(f"{enc_key} = 0").keys()))
+                enc_toml = f"{enc_key} = 0"
+                dec_toml: dict[str, object] = tomllib.loads(enc_toml)
+                dec_key = next(iter(dec_toml.keys()))
                 self.assertEqual(dec_key, input_key)
-
-    def test_exc_type(self):
-        with self.assertRaises(TypeError):
-            sw_compdocs.resource.format_toml_key(None)
-
-
-class TestFormatTOMLString(unittest.TestCase):
-    def test_pass(self):
-        for input_s in [
-            "",
-            "\x00",
-            "\x00 \x08 \x0c A \x7f \x80 ÿ \ud7ff \ue000 \uffff 𐀀 \U0010ffff",
-            ' ""two quotes"" ',
-            ' "one quote" ',
-            " ''two quotes'' ",
-            " 'one quote' ",
-            '""two quotes""',
-            '"one quote"',
-            '"one"',
-            "' there's one already\n'' two more\n''",
-            "''two quotes''",
-            "'one quote'",
-            "But there are # some comments here.",
-            'Closing with five quotes\n""',
-            'Closing with four quotes\n"',
-            "First line\n\t Followed by a tab",
-            'String does not end here" but ends here\\',
-            "String ends here\\",
-            "The quick brown fox jumps over the lazy dog.",
-            "There is no escape\\",
-            "This string\nhas ' a quote character\nand more than\none newline\nin it.",
-            "This string has a ' quote character.",
-            "This string has a \\/ slash character.",
-            "This string has a \\\\ backslash character.",
-            "This string has a \\b backspace character.",
-            "This string has a \\f form feed character.",
-            "This string has a \\n new line character.",
-            "This string has a \\r carriage return character.",
-            "This string has a \\t tab character.",
-            "This string has an \t unescaped tab character.",
-            "We see no # comments here.",
-            'When will it end? """...""" should be here"',
-            "You are not drinking enough whisky.",
-            "\\u0000 \\u0008 \\u000c \\U00000041 \\u007f \\u0080 \\u00ff \\ud7ff \\ue000 \\uffff \\U00010000 \\U0010ffff",
-            "\\u0041",
-            "\\u007f",
-            "\\x64",
-            "a",
-            "a   \tb",
-            "a \\\nb",
-            "a \\\\\n  b",
-            "a \\b",
-            'aaa"""bbb',
-            "aaa'''bbb",
-            "ab",
-            "b",
-            "c",
-            "heeee\ngeeee",
-            'lol"""',
-            "val\nue",
-            "val\\nue",
-            "val\\ue",
-            "value\n",
-            "value\\n",
-            "|\x08.",
-            "|\t.",
-            "|\n.",
-            "|\x0c.",
-            "|\r.",
-            "|\x1f.",
-            '|".',
-            "|\\.",
-            "|\\u.",
-            "|\\u0075.",
-            "|\x7f.",
-            "~ \x80 ÿ \ud7ff \ue000 \uffff 𐀀 \U0010ffff",
-            "\xa0",
-            "δ",
-        ]:
-            with self.subTest(input_s=input_s):
-                enc_s = sw_compdocs.resource.format_toml_string(input_s)
-                dec_s = tomllib.loads(f"s = {enc_s}")["s"]
-                self.assertEqual(dec_s, input_s)
-
-    def test_exc_type(self):
-        with self.assertRaises(TypeError):
-            sw_compdocs.resource.format_toml_string(None)

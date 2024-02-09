@@ -1,35 +1,70 @@
+import collections.abc
 import csv
+import dataclasses
 import io
 import os
+import typing
 
+from . import _types
 from . import container
-from . import validator
 
 
-class Language(container.Sequence):
-    def __init__(self, iterable=()):
-        super().__init__(iterable)
+@dataclasses.dataclass
+class Translation:
+    id: str
+    description: str
+    en: str
+    local: str
 
-        for trans in self:
-            if type(trans) is not Translation:
-                raise TypeError
 
+class LanguageTSVDialect(csv.Dialect):
+    delimiter = "\t"
+    doublequote = False
+    escapechar = None
+    lineterminator = "\n"
+    quoting = csv.QUOTE_NONE
+    skipinitialspace = False
+    strict = True
+
+
+class LanguageTSVError(Exception):
+    def __init__(self, msg: str) -> None:
+        super().__init__(msg)
+        self.msg: typing.Final[str] = msg
+        self.file: _types.StrOrBytesPath | None = None
+        self.line: int | None = None
+
+    def __str__(self) -> str:
+        file = os.fsdecode(self.file) if self.file is not None else "<language.tsv>"
+        line = str(self.line) if self.line is not None else "?"
+        return f"{file}: line {line}: {self.msg}"
+
+
+class LanguageFindError(Exception):
+    pass
+
+
+class LanguageFindIDError(LanguageFindError):
+    def __init__(self, id: str) -> None:
+        super().__init__(id)
+        self.id: typing.Final[str] = id
+
+    def __str__(self) -> str:
+        return f"missing translation for id {self.id!r}"
+
+
+class LanguageFindEnError(LanguageFindError):
+    def __init__(self, en: str) -> None:
+        super().__init__(en)
+        self.en: typing.Final[str] = en
+
+    def __str__(self) -> str:
+        return f"missing translation for text {self.en!r}"
+
+
+class Language(container.Sequence[Translation]):
     @classmethod
-    def from_file(cls, file, *, encoding="utf-8", errors=None):
-        with open(file, mode="rt", encoding=encoding, errors=errors, newline="") as f:
-            try:
-                return cls._from_io(f)
-            except LanguageTSVError as exc:
-                exc.file = file
-                raise
-
-    @classmethod
-    def from_str(cls, s):
-        f = io.StringIO(initial_value=s, newline="")
-        return cls._from_io(f)
-
-    @classmethod
-    def _from_io(cls, f):
+    def _from_io(cls, f: collections.abc.Iterable[str]) -> typing.Self:
         reader = csv.reader(f, dialect=LanguageTSVDialect)
         try:
             try:
@@ -50,177 +85,40 @@ class Language(container.Sequence):
             raise
         return cls(trans_list)
 
-    def find_id(self, id):
+    @classmethod
+    def from_file(
+        cls,
+        file: _types.StrOrBytesPath,
+        *,
+        encoding: str | None = "utf-8",
+        errors: str | None = None,
+    ) -> typing.Self:
+        with open(file, mode="rt", encoding=encoding, errors=errors, newline="") as f:
+            try:
+                return cls._from_io(f)
+            except LanguageTSVError as exc:
+                exc.file = file
+                raise
+
+    @classmethod
+    def from_str(cls, s: str) -> typing.Self:
+        f = io.StringIO(initial_value=s, newline="")
+        return cls._from_io(f)
+
+    def find_id_all(self, id: str) -> list[Translation]:
+        return [trans for trans in self if trans.id == id]
+
+    def find_id(self, id: str) -> Translation:
         trans_list = self.find_id_all(id)
         if len(trans_list) <= 0:
             raise LanguageFindIDError(id)
         return trans_list[0]
 
-    def find_id_all(self, id):
-        if type(id) is not str:
-            raise TypeError
-        return [trans for trans in self if trans.id == id]
+    def find_en_all(self, en: str) -> list[Translation]:
+        return [trans for trans in self if trans.en == en]
 
-    def find_en(self, en):
+    def find_en(self, en: str) -> Translation:
         trans_list = self.find_en_all(en)
         if len(trans_list) <= 0:
             raise LanguageFindEnError(en)
         return trans_list[0]
-
-    def find_en_all(self, en):
-        if type(en) is not str:
-            raise TypeError
-        return [trans for trans in self if trans.en == en]
-
-
-class Translation:
-    @property
-    def id(self):
-        return self._id
-
-    @id.setter
-    def id(self, value):
-        if type(value) is not str:
-            raise TypeError
-        self._id = value
-
-    @property
-    def description(self):
-        return self._description
-
-    @description.setter
-    def description(self, value):
-        if type(value) is not str:
-            raise TypeError
-        self._description = value
-
-    @property
-    def en(self):
-        return self._en
-
-    @en.setter
-    def en(self, value):
-        if type(value) is not str:
-            raise TypeError
-        self._en = value
-
-    @property
-    def local(self):
-        return self._local
-
-    @local.setter
-    def local(self, value):
-        if type(value) is not str:
-            raise TypeError
-        self._local = value
-
-    def __init__(self, id, description, en, local):
-        self.id = id
-        self.description = description
-        self.en = en
-        self.local = local
-
-    def __repr__(self):
-        return f"{type(self).__name__}({self.id!r}, {self.description!r}, {self.en!r}, {self.local!r})"
-
-    def __eq__(self, other):
-        if type(self) is type(other):
-            return (
-                self.id == other.id
-                and self.description == other.description
-                and self.en == other.en
-                and self.local == other.local
-            )
-        return super().__eq__(other)
-
-
-class LanguageTSVDialect(csv.Dialect):
-    delimiter = "\t"
-    doublequote = False
-    escapechar = None
-    lineterminator = "\n"
-    quoting = csv.QUOTE_NONE
-    skipinitialspace = False
-    strict = True
-
-
-class LanguageTSVError(Exception):
-    @property
-    def msg(self):
-        return self._msg
-
-    @property
-    def file(self):
-        return self._file
-
-    @file.setter
-    def file(self, value):
-        if value is not None and not validator.is_pathlike(value):
-            raise TypeError
-        self._file = value
-
-    @property
-    def line(self):
-        return self._line
-
-    @line.setter
-    def line(self, value):
-        if value is not None and type(value) is not int:
-            raise TypeError
-        self._line = value
-
-    def __init__(self, msg):
-        if type(msg) is not str:
-            raise TypeError
-
-        super().__init__(msg)
-        self._msg = msg
-        self._file = None
-        self._line = None
-
-    def __str__(self):
-        file = os.fsdecode(self.file) if self.file is not None else "<language.tsv>"
-        line = str(self.line) if self.line is not None else "?"
-        return f"{file}: line {line}: {self.msg}"
-
-
-class LanguageFindError(Exception):
-    pass
-
-
-class LanguageFindIDError(LanguageFindError):
-    @property
-    def id(self):
-        return self._id
-
-    @id.setter
-    def id(self, value):
-        if type(value) is not str:
-            raise TypeError
-        self._id = value
-
-    def __init__(self, id):
-        super().__init__(id)
-        self.id = id
-
-    def __str__(self):
-        return f"missing translation for id {self.id!r}"
-
-
-class LanguageFindEnError(LanguageFindError):
-    @property
-    def en(self):
-        return self._en
-
-    @en.setter
-    def en(self, value):
-        if type(value) is not str:
-            raise TypeError
-        self._en = value
-
-    def __init__(self, en):
-        super().__init__(en)
-        self.en = en
-
-    def __str__(self):
-        return f"missing translation for text {self.en!r}"

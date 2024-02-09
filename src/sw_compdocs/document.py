@@ -1,197 +1,112 @@
+import collections.abc
+import dataclasses
 import enum
+import typing
 
 
 from . import container
 
 
-class Document(container.MutableSequence):
-    def _check_value(self, value):
-        if not isinstance(value, Block):
-            raise TypeError
-
-    def shift(self, level=1):
-        if type(level) is not int:
-            raise TypeError
-
-        for blk in self:
-            if isinstance(blk, Heading):
-                blk.level += level
-
-
 class Block:
-    def __init__(self):
+    def __init__(self) -> None:
         if type(self) is Block:
             raise NotImplementedError
 
 
+@dataclasses.dataclass
 class Heading(Block):
-    @property
-    def text(self):
-        return self._text
-
-    @text.setter
-    def text(self, value):
-        if type(value) is not str:
-            raise TypeError
-        self._text = value
-
-    @property
-    def level(self):
-        return self._level
-
-    @level.setter
-    def level(self, value):
-        if type(value) is not int:
-            raise TypeError
-        if value < 1 or 6 < value:
-            raise ValueError
-        self._level = value
-
-    def __init__(self, text, *, level=1):
-        self.text = text
-        self.level = level
-
-    def __repr__(self):
-        return f"{type(self).__name__}({repr(self.text)}, level={repr(self.level)})"
-
-    def __eq__(self, other):
-        if type(self) is type(other):
-            return self.text == other.text and self.level == other.level
-        return super().__eq__(other)
+    text: str
+    _: dataclasses.KW_ONLY
+    level: int = 1
 
 
+@dataclasses.dataclass
 class Paragraph(Block):
-    @property
-    def text(self):
-        return self._text
-
-    @text.setter
-    def text(self, value):
-        if type(value) is not str:
-            raise TypeError
-        self._text = value
-
-    def __init__(self, text):
-        self.text = text
-
-    def __repr__(self):
-        return f"{type(self).__name__}({repr(self.text)})"
-
-    def __eq__(self, other):
-        if type(self) is type(other):
-            return self.text == other.text
-        return super().__eq__(other)
+    text: str
 
 
-class Table(Block):
-    @property
-    def data(self):
-        return self._data
-
-    @data.setter
-    def data(self, value):
-        if type(value) is not TableData:
-            raise TypeError
-        self._data = value
-
-    def __init__(self, data):
-        self.data = data
-
-    def __repr__(self):
-        return f"{type(self).__name__}({repr(self.data)})"
-
-    def __eq__(self, other):
-        if type(self) is type(other):
-            return self.data == other.data
-        return super().__eq__(other)
-
-
-class TableData(container.MutableSequence):
-    head = property(lambda self: self._head)
-
-    def __init__(self, head, iterable=()):
-        if type(head) is not TableDataRow:
-            raise TypeError
-        self._head = head
-
-        super().__init__(iterable)
-
-    def __repr__(self):
-        return f"{type(self).__name__}({repr(self.head)}, {repr(self._l)})"
-
-    def __eq__(self, other):
-        if type(self) is type(other) and self.head != other.head:
-            return False
-        return super().__eq__(other)
-
-    def _check_value(self, value):
-        if type(value) is not TableDataRow:
-            raise TypeError
-        if len(value) != len(self.head):
-            raise ValueError
-
-
-class TableDataRow(container.Sequence):
-    def __init__(self, iterable=()):
+class TableDataRow(container.Sequence[str]):
+    def __init__(self, iterable: collections.abc.Iterable[str] = ()) -> None:
         super().__init__(iterable)
 
         if len(self) <= 0:
             raise ValueError
-        for v in self:
-            self._check_type(v)
 
-    def __setitem__(self, key, value):
-        if type(key) is slice:
+    @typing.overload
+    def __setitem__(self, index: int, value: str) -> None:
+        ...
+
+    @typing.overload
+    def __setitem__(self, index: slice, value: collections.abc.Iterable[str]) -> None:
+        ...
+
+    def __setitem__(
+        self, index: int | slice, value: str | collections.abc.Iterable[str]
+    ) -> None:
+        if isinstance(index, slice):  # type: ignore[misc]  # suppress warning for Any types in slice type
+            # type cast is safe because of overloads
+            value = typing.cast(collections.abc.Iterable[str], value)
+
             value = list(value)
-            if len(self[key]) != len(value):
+            if len(self[index]) != len(value):
                 raise ValueError
-            for v in value:
-                self._check_type(v)
-        else:
-            self._check_type(value)
-        self._l[key] = value
+            self._l[index] = value
+            return
 
-    @classmethod
-    def _check_type(cls, v):
-        if type(v) is not str:
-            raise TypeError
+        if isinstance(index, int):
+            # type cast is safe because of overloads
+            value = typing.cast(str, value)
+
+            self._l[index] = value
+            return
+
+        typing.assert_never(index)
 
 
-class Callout(Block):
-    @property
-    def text(self):
-        return self._text
+class TableData(container.MutableSequence[TableDataRow]):
+    def __init__(
+        self, head: TableDataRow, iterable: collections.abc.Iterable[TableDataRow] = ()
+    ) -> None:
+        self.head: typing.Final[TableDataRow] = head
+        super().__init__(iterable)
 
-    @text.setter
-    def text(self, value):
-        if type(value) is not str:
-            raise TypeError
-        self._text = value
+    def __repr__(self) -> str:
+        return f"{type(self).__name__}({repr(self.head)}, {repr(self._l)})"
 
-    @property
-    def kind(self):
-        return self._kind
-
-    @kind.setter
-    def kind(self, value):
-        if type(value) is not CalloutKind:
-            raise TypeError
-        self._kind = value
-
-    def __init__(self, text, *, kind=None):
-        self.text = text
-        self.kind = kind if kind is not None else CalloutKind.NOTE
-
-    def __repr__(self):
-        return f"{type(self).__name__}({repr(self.text)}, kind={repr(self.kind)})"
-
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         if type(self) is type(other):
-            return self.text == other.text and self.kind == other.kind
+            # type narrowing assertion for mypy 1.8.0
+            assert isinstance(other, type(self))
+
+            if self.head != other.head:
+                return False
         return super().__eq__(other)
+
+    def _check_value(self, value: TableDataRow) -> None:
+        if len(value) != len(self.head):
+            raise ValueError
+
+
+@dataclasses.dataclass
+class Table(Block):
+    data: TableData
 
 
 @enum.unique
 class CalloutKind(enum.Enum):
     NOTE = enum.auto()
     WARNING = enum.auto()
+
+
+@dataclasses.dataclass
+class Callout(Block):
+    text: str
+    _: dataclasses.KW_ONLY
+    kind: CalloutKind = CalloutKind.NOTE
+
+
+class Document(container.MutableSequence[Block]):
+    def shift(self, level: int = 1) -> None:
+        for blk in self:
+            if isinstance(blk, Heading):
+                blk.level += level

@@ -1,132 +1,103 @@
-import collections
+import collections.abc
 import pathlib
+import sw_compdocs._types
 import sw_compdocs.language
 import tempfile
+import typing
 import unittest
 
 
-class TestLanguageInit(unittest.TestCase):
-    def test_pass(self):
-        trans_list = [
-            sw_compdocs.language.Translation(
-                "id_0", "description_0", "en_0", "local_0"
-            ),
-            sw_compdocs.language.Translation(
-                "id_1", "description_1", "en_1", "local_1"
-            ),
-        ]
-        lang = sw_compdocs.language.Language(trans_list)
-        self.assertEqual(list(lang), trans_list)
+class TestLanguageTSVErrorInit(unittest.TestCase):
+    def test_pass(self) -> None:
+        exc = sw_compdocs.language.LanguageTSVError("msg")
+        self.assertEqual(exc.msg, "msg")
+        self.assertEqual(exc.file, None)
+        self.assertEqual(exc.line, None)
 
-    def test_exc_type(self):
-        for trans_list in [
+
+class TestLanguageTSVErrorStr(unittest.TestCase):
+    def test(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
             [
-                None,
-                sw_compdocs.language.Translation(
-                    "id_1", "description_1", "en_1", "local_1"
-                ),
+                ("input_exc_msg", str),
+                ("input_exc_file", sw_compdocs._types.StrOrBytesPath | None),
+                ("input_exc_line", int | None),
+                ("want_s", str),
             ],
-            [
-                sw_compdocs.language.Translation(
-                    "id_0", "description_0", "en_0", "local_0"
-                ),
-                None,
-            ],
+        )
+
+        for tc in [
+            tt(
+                input_exc_msg="msg",
+                input_exc_file=None,
+                input_exc_line=None,
+                want_s="<language.tsv>: line ?: msg",
+            ),
+            tt(
+                input_exc_msg="msg",
+                input_exc_file="file",
+                input_exc_line=None,
+                want_s="file: line ?: msg",
+            ),
+            tt(
+                input_exc_msg="msg",
+                input_exc_file=None,
+                input_exc_line=52149,
+                want_s="<language.tsv>: line 52149: msg",
+            ),
+            tt(
+                input_exc_msg="msg",
+                input_exc_file="file",
+                input_exc_line=52149,
+                want_s="file: line 52149: msg",
+            ),
         ]:
-            with self.subTest(trans_list=trans_list):
-                with self.assertRaises(TypeError):
-                    sw_compdocs.language.Language(trans_list)
+            with self.subTest(tc=tc):
+                input_exc = sw_compdocs.language.LanguageTSVError(tc.input_exc_msg)
+                input_exc.file = tc.input_exc_file
+                input_exc.line = tc.input_exc_line
+                got_s = str(input_exc)
+                self.assertEqual(got_s, tc.want_s)
 
 
-class TestLanguageFromFile(unittest.TestCase):
-    def test_pass(self):
-        for encoding in ["utf-8", "cp932"]:
-            with self.subTest(encoding=encoding):
-                with tempfile.TemporaryDirectory() as temp_dir:
-                    temp_file = pathlib.Path(temp_dir, "language.tsv")
-                    with open(temp_file, mode="wt", encoding=encoding, newline="") as f:
-                        f.write(
-                            "id\tdescription\ten\tlocal\n"
-                            + "id_0\tdescription_0\ten_0\tlocal_0\n"
-                            + "id_1\tdescription_1\ten_1\tlocal_1\n"
-                        )
-
-                    lang = sw_compdocs.language.Language.from_file(
-                        temp_file, encoding=encoding
-                    )
-                    self.assertEqual(
-                        list(lang),
-                        [
-                            sw_compdocs.language.Translation(
-                                "id_0", "description_0", "en_0", "local_0"
-                            ),
-                            sw_compdocs.language.Translation(
-                                "id_1", "description_1", "en_1", "local_1"
-                            ),
-                        ],
-                    )
-
-    def test_error(self):
-        with tempfile.TemporaryDirectory() as temp_dir:
-            temp_file = pathlib.Path(temp_dir, "language.tsv")
-            with open(temp_file, mode="wt", encoding="utf-8", newline="") as f:
-                f.write("")
-
-            with self.assertRaises(sw_compdocs.language.LanguageTSVError) as cm:
-                sw_compdocs.language.Language.from_file(temp_file)
-            self.assertEqual(cm.exception.msg, "invalid header")
-            self.assertEqual(cm.exception.file, temp_file)
-            self.assertEqual(cm.exception.line, 0)
-
-    def test_encode(self):
-        with tempfile.TemporaryDirectory() as temp_dir:
-            temp_file = pathlib.Path(temp_dir, "language.tsv")
-            with open(temp_file, mode="wt", encoding="utf-8", newline="") as f:
-                f.write("id\tdescription\ten\tlocal\nid\tdescription\tEnglish\t日本語\n")
-
-            lang = sw_compdocs.language.Language.from_file(
-                temp_file, encoding="ascii", errors="replace"
-            )
-            self.assertEqual(
-                list(lang),
-                [
-                    sw_compdocs.language.Translation(
-                        "id", "description", "English", "\uFFFD" * 9
-                    )
-                ],
-            )
+class TestLanguageFindIDErrorInit(unittest.TestCase):
+    def test_pass(self) -> None:
+        exc = sw_compdocs.language.LanguageFindIDError("id")
+        exc_args: tuple[object, ...] = exc.args
+        self.assertEqual(exc_args, ("id",))
+        self.assertEqual(exc.id, "id")
 
 
-class TestLanguageFromStr(unittest.TestCase):
-    def test_pass(self):
-        lang = sw_compdocs.language.Language.from_str(
-            "id\tdescription\ten\tlocal\n"
-            + "id_0\tdescription_0\ten_0\tlocal_0\n"
-            + "id_1\tdescription_1\ten_1\tlocal_1\n"
-        )
-        self.assertEqual(
-            list(lang),
-            [
-                sw_compdocs.language.Translation(
-                    "id_0", "description_0", "en_0", "local_0"
-                ),
-                sw_compdocs.language.Translation(
-                    "id_1", "description_1", "en_1", "local_1"
-                ),
-            ],
-        )
+class TestLanguageFindIDErrorStr(unittest.TestCase):
+    def test(self) -> None:
+        exc = sw_compdocs.language.LanguageFindIDError("id")
+        self.assertEqual(str(exc), "missing translation for id 'id'")
 
-    def test_error(self):
-        with self.assertRaises(sw_compdocs.language.LanguageTSVError) as cm:
-            sw_compdocs.language.Language.from_str("")
-        self.assertEqual(cm.exception.msg, "invalid header")
-        self.assertIs(cm.exception.file, None)
-        self.assertEqual(cm.exception.line, 0)
+
+class TestLanguageFindEnErrorInit(unittest.TestCase):
+    def test_pass(self) -> None:
+        exc = sw_compdocs.language.LanguageFindEnError("en")
+        exc_args: tuple[object, ...] = exc.args
+        self.assertEqual(exc_args, ("en",))
+        self.assertEqual(exc.en, "en")
+
+
+class TestLanguageFindEnErrorStr(unittest.TestCase):
+    def test(self) -> None:
+        exc = sw_compdocs.language.LanguageFindEnError("en")
+        self.assertEqual(str(exc), "missing translation for text 'en'")
 
 
 class TestLanguageFromIO(unittest.TestCase):
-    def test_pass(self):
-        tt = collections.namedtuple("tt", ("input_f", "want_lang_l"))
+    def test_pass(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_f", collections.abc.Iterable[str]),
+                ("want_lang_l", list[sw_compdocs.language.Translation]),
+            ],
+        )
 
         for tc in [
             tt(input_f=["id\tdescription\ten\tlocal\n"], want_lang_l=[]),
@@ -177,10 +148,19 @@ class TestLanguageFromIO(unittest.TestCase):
             with self.subTest(tc=tc):
                 got_lang = sw_compdocs.language.Language._from_io(tc.input_f)
                 self.assertIs(type(got_lang), sw_compdocs.language.Language)
-                self.assertEqual(list(got_lang), tc.want_lang_l)
+                self.assertEqual(
+                    list[sw_compdocs.language.Translation](got_lang), tc.want_lang_l
+                )
 
-    def test_error(self):
-        tt = collections.namedtuple("tt", ("input_f", "want_exc_msg", "want_exc_line"))
+    def test_error(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_f", collections.abc.Iterable[str]),
+                ("want_exc_msg", str),
+                ("want_exc_line", int),
+            ],
+        )
 
         for tc in [
             tt(
@@ -230,81 +210,108 @@ class TestLanguageFromIO(unittest.TestCase):
                 self.assertEqual(cm.exception.line, tc.want_exc_line)
 
 
-class TestLanguageFindID(unittest.TestCase):
-    def test_pass(self):
-        tt = collections.namedtuple("tt", ("input_lang", "input_id", "want_trans"))
+class TestLanguageFromFile(unittest.TestCase):
+    def test_pass(self) -> None:
+        for encoding in ["utf-8", "cp932"]:
+            with self.subTest(encoding=encoding):
+                with tempfile.TemporaryDirectory() as temp_dir:
+                    temp_file = pathlib.Path(temp_dir, "language.tsv")
+                    with open(temp_file, mode="wt", encoding=encoding, newline="") as f:
+                        f.write(
+                            "id\tdescription\ten\tlocal\n"
+                            + "id_0\tdescription_0\ten_0\tlocal_0\n"
+                            + "id_1\tdescription_1\ten_1\tlocal_1\n"
+                        )
 
-        for tc in [
-            tt(
-                input_lang=sw_compdocs.language.Language(
+                    lang = sw_compdocs.language.Language.from_file(
+                        temp_file, encoding=encoding
+                    )
+                    self.assertEqual(
+                        list[sw_compdocs.language.Translation](lang),
+                        list[sw_compdocs.language.Translation](
+                            [
+                                sw_compdocs.language.Translation(
+                                    "id_0", "description_0", "en_0", "local_0"
+                                ),
+                                sw_compdocs.language.Translation(
+                                    "id_1", "description_1", "en_1", "local_1"
+                                ),
+                            ]
+                        ),
+                    )
+
+    def test_error(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_file = pathlib.Path(temp_dir, "language.tsv")
+            with open(temp_file, mode="wt", encoding="utf-8", newline="") as f:
+                f.write("")
+
+            with self.assertRaises(sw_compdocs.language.LanguageTSVError) as cm:
+                sw_compdocs.language.Language.from_file(temp_file)
+            self.assertEqual(cm.exception.msg, "invalid header")
+            self.assertEqual(cm.exception.file, temp_file)
+            self.assertEqual(cm.exception.line, 0)
+
+    def test_encode(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_file = pathlib.Path(temp_dir, "language.tsv")
+            with open(temp_file, mode="wt", encoding="utf-8", newline="") as f:
+                f.write("id\tdescription\ten\tlocal\nid\tdescription\tEnglish\t日本語\n")
+
+            lang = sw_compdocs.language.Language.from_file(
+                temp_file, encoding="ascii", errors="replace"
+            )
+            self.assertEqual(
+                list[sw_compdocs.language.Translation](lang),
+                list[sw_compdocs.language.Translation](
                     [
                         sw_compdocs.language.Translation(
-                            "id_0", "description_0", "en_0", "local_0"
-                        ),
-                        sw_compdocs.language.Translation(
-                            "id_1", "description_1", "en_1", "local_1"
-                        ),
-                        sw_compdocs.language.Translation(
-                            "id_1", "description_2", "en_2", "local_2"
-                        ),
+                            "id", "description", "English", "\uFFFD" * 9
+                        )
                     ]
                 ),
-                input_id="id_0",
-                want_trans=sw_compdocs.language.Translation(
-                    "id_0", "description_0", "en_0", "local_0"
-                ),
-            ),
-            tt(
-                input_lang=sw_compdocs.language.Language(
-                    [
-                        sw_compdocs.language.Translation(
-                            "id_0", "description_0", "en_0", "local_0"
-                        ),
-                        sw_compdocs.language.Translation(
-                            "id_1", "description_1", "en_1", "local_1"
-                        ),
-                        sw_compdocs.language.Translation(
-                            "id_1", "description_2", "en_2", "local_2"
-                        ),
-                    ]
-                ),
-                input_id="id_1",
-                want_trans=sw_compdocs.language.Translation(
-                    "id_1", "description_1", "en_1", "local_1"
-                ),
-            ),
-        ]:
-            with self.subTest(tc=tc):
-                got_trans = tc.input_lang.find_id(tc.input_id)
-                self.assertEqual(got_trans, tc.want_trans)
+            )
 
-    def test_exc_type(self):
-        lang = sw_compdocs.language.Language()
-        with self.assertRaises(TypeError):
-            lang.find_id(None)
 
-    def test_exc_find(self):
-        lang = sw_compdocs.language.Language(
-            [
-                sw_compdocs.language.Translation(
-                    "id_0", "description_0", "en_0", "local_0"
-                ),
-                sw_compdocs.language.Translation(
-                    "id_1", "description_1", "en_1", "local_1"
-                ),
-                sw_compdocs.language.Translation(
-                    "id_1", "description_2", "en_2", "local_2"
-                ),
-            ]
+class TestLanguageFromStr(unittest.TestCase):
+    def test_pass(self) -> None:
+        lang = sw_compdocs.language.Language.from_str(
+            "id\tdescription\ten\tlocal\n"
+            + "id_0\tdescription_0\ten_0\tlocal_0\n"
+            + "id_1\tdescription_1\ten_1\tlocal_1\n"
         )
-        with self.assertRaises(sw_compdocs.language.LanguageFindIDError) as ctx:
-            lang.find_id("id_2")
-        self.assertEqual(ctx.exception.id, "id_2")
+        self.assertEqual(
+            list[sw_compdocs.language.Translation](lang),
+            list[sw_compdocs.language.Translation](
+                [
+                    sw_compdocs.language.Translation(
+                        "id_0", "description_0", "en_0", "local_0"
+                    ),
+                    sw_compdocs.language.Translation(
+                        "id_1", "description_1", "en_1", "local_1"
+                    ),
+                ]
+            ),
+        )
+
+    def test_error(self) -> None:
+        with self.assertRaises(sw_compdocs.language.LanguageTSVError) as cm:
+            sw_compdocs.language.Language.from_str("")
+        self.assertEqual(cm.exception.msg, "invalid header")
+        self.assertIs(cm.exception.file, None)
+        self.assertEqual(cm.exception.line, 0)
 
 
 class TestLanguageFindIDAll(unittest.TestCase):
-    def test_pass(self):
-        tt = collections.namedtuple("tt", ("input_lang", "input_id", "want_trans_list"))
+    def test_pass(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_lang", sw_compdocs.language.Language),
+                ("input_id", str),
+                ("want_trans_list", list[sw_compdocs.language.Translation]),
+            ],
+        )
 
         for tc in [
             tt(
@@ -374,15 +381,17 @@ class TestLanguageFindIDAll(unittest.TestCase):
                 got_trans_list = tc.input_lang.find_id_all(tc.input_id)
                 self.assertEqual(got_trans_list, tc.want_trans_list)
 
-    def test_exc_type(self):
-        lang = sw_compdocs.language.Language()
-        with self.assertRaises(TypeError):
-            lang.find_id_all(None)
 
-
-class TestLanguageFindEn(unittest.TestCase):
-    def test_pass(self):
-        tt = collections.namedtuple("tt", ("input_lang", "input_en", "want_trans"))
+class TestLanguageFindID(unittest.TestCase):
+    def test_pass(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_lang", sw_compdocs.language.Language),
+                ("input_id", str),
+                ("want_trans", sw_compdocs.language.Translation),
+            ],
+        )
 
         for tc in [
             tt(
@@ -395,11 +404,11 @@ class TestLanguageFindEn(unittest.TestCase):
                             "id_1", "description_1", "en_1", "local_1"
                         ),
                         sw_compdocs.language.Translation(
-                            "id_2", "description_2", "en_1", "local_2"
+                            "id_1", "description_2", "en_2", "local_2"
                         ),
                     ]
                 ),
-                input_en="en_0",
+                input_id="id_0",
                 want_trans=sw_compdocs.language.Translation(
                     "id_0", "description_0", "en_0", "local_0"
                 ),
@@ -414,26 +423,21 @@ class TestLanguageFindEn(unittest.TestCase):
                             "id_1", "description_1", "en_1", "local_1"
                         ),
                         sw_compdocs.language.Translation(
-                            "id_2", "description_2", "en_1", "local_2"
+                            "id_1", "description_2", "en_2", "local_2"
                         ),
                     ]
                 ),
-                input_en="en_1",
+                input_id="id_1",
                 want_trans=sw_compdocs.language.Translation(
                     "id_1", "description_1", "en_1", "local_1"
                 ),
             ),
         ]:
             with self.subTest(tc=tc):
-                got_trans = tc.input_lang.find_en(tc.input_en)
+                got_trans = tc.input_lang.find_id(tc.input_id)
                 self.assertEqual(got_trans, tc.want_trans)
 
-    def test_exc_type(self):
-        lang = sw_compdocs.language.Language()
-        with self.assertRaises(TypeError):
-            lang.find_en(None)
-
-    def test_exc_find(self):
+    def test_exc_find(self) -> None:
         lang = sw_compdocs.language.Language(
             [
                 sw_compdocs.language.Translation(
@@ -443,18 +447,25 @@ class TestLanguageFindEn(unittest.TestCase):
                     "id_1", "description_1", "en_1", "local_1"
                 ),
                 sw_compdocs.language.Translation(
-                    "id_2", "description_2", "en_1", "local_2"
+                    "id_1", "description_2", "en_2", "local_2"
                 ),
             ]
         )
-        with self.assertRaises(sw_compdocs.language.LanguageFindEnError) as ctx:
-            lang.find_en("en_2")
-        self.assertEqual(ctx.exception.en, "en_2")
+        with self.assertRaises(sw_compdocs.language.LanguageFindIDError) as ctx:
+            lang.find_id("id_2")
+        self.assertEqual(ctx.exception.id, "id_2")
 
 
 class TestLanguageFindEnAll(unittest.TestCase):
-    def test_pass(self):
-        tt = collections.namedtuple("tt", ("input_lang", "input_en", "want_trans_list"))
+    def test_pass(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_lang", sw_compdocs.language.Language),
+                ("input_en", str),
+                ("want_trans_list", list[sw_compdocs.language.Translation]),
+            ],
+        )
 
         for tc in [
             tt(
@@ -524,323 +535,76 @@ class TestLanguageFindEnAll(unittest.TestCase):
                 got_trans_list = tc.input_lang.find_en_all(tc.input_en)
                 self.assertEqual(got_trans_list, tc.want_trans_list)
 
-    def test_exc_type(self):
-        lang = sw_compdocs.language.Language()
-        with self.assertRaises(TypeError):
-            lang.find_id_all(None)
 
-
-class TestTranslationInit(unittest.TestCase):
-    def test_pass(self):
-        input_id = "id"
-        input_description = "description"
-        input_en = "en"
-        input_local = "local"
-        trans = sw_compdocs.language.Translation(
-            input_id, input_description, input_en, input_local
-        )
-        self.assertIs(trans.id, input_id)
-        self.assertIs(trans.description, input_description)
-        self.assertIs(trans.en, input_en)
-        self.assertIs(trans.local, input_local)
-
-    def test_exc_type(self):
-        tt = collections.namedtuple(
-            "tt", ("input_id", "input_description", "input_en", "input_local")
+class TestLanguageFindEn(unittest.TestCase):
+    def test_pass(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_lang", sw_compdocs.language.Language),
+                ("input_en", str),
+                ("want_trans", sw_compdocs.language.Translation),
+            ],
         )
 
         for tc in [
             tt(
-                input_id=b"id",
-                input_description="description",
-                input_en="en",
-                input_local="local",
+                input_lang=sw_compdocs.language.Language(
+                    [
+                        sw_compdocs.language.Translation(
+                            "id_0", "description_0", "en_0", "local_0"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "id_1", "description_1", "en_1", "local_1"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "id_2", "description_2", "en_1", "local_2"
+                        ),
+                    ]
+                ),
+                input_en="en_0",
+                want_trans=sw_compdocs.language.Translation(
+                    "id_0", "description_0", "en_0", "local_0"
+                ),
             ),
             tt(
-                input_id="id",
-                input_description=b"description",
-                input_en="en",
-                input_local="local",
-            ),
-            tt(
-                input_id="id",
-                input_description="description",
-                input_en=b"en",
-                input_local="local",
-            ),
-            tt(
-                input_id="id",
-                input_description="description",
-                input_en="en",
-                input_local=b"local",
+                input_lang=sw_compdocs.language.Language(
+                    [
+                        sw_compdocs.language.Translation(
+                            "id_0", "description_0", "en_0", "local_0"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "id_1", "description_1", "en_1", "local_1"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "id_2", "description_2", "en_1", "local_2"
+                        ),
+                    ]
+                ),
+                input_en="en_1",
+                want_trans=sw_compdocs.language.Translation(
+                    "id_1", "description_1", "en_1", "local_1"
+                ),
             ),
         ]:
             with self.subTest(tc=tc):
-                with self.assertRaises(TypeError):
-                    sw_compdocs.language.Translation(
-                        tc.input_id, tc.input_description, tc.input_en, tc.input_local
-                    )
+                got_trans = tc.input_lang.find_en(tc.input_en)
+                self.assertEqual(got_trans, tc.want_trans)
 
-
-class TestTranslationIDSetter(unittest.TestCase):
-    def test_pass(self):
-        trans = sw_compdocs.language.Translation("id", "description", "en", "local")
-        trans.id = "set"
-        self.assertEqual(trans.id, "set")
-
-    def test_exc_type(self):
-        trans = sw_compdocs.language.Translation("id", "description", "en", "local")
-        with self.assertRaises(TypeError):
-            trans.id = b"set"
-
-
-class TestTranslationDescriptionSetter(unittest.TestCase):
-    def test_pass(self):
-        trans = sw_compdocs.language.Translation("id", "description", "en", "local")
-        trans.description = "set"
-        self.assertEqual(trans.description, "set")
-
-    def test_exc_type(self):
-        trans = sw_compdocs.language.Translation("id", "description", "en", "local")
-        with self.assertRaises(TypeError):
-            trans.description = b"set"
-
-
-class TestTranslationEnSetter(unittest.TestCase):
-    def test_pass(self):
-        trans = sw_compdocs.language.Translation("id", "description", "en", "local")
-        trans.en = "set"
-        self.assertEqual(trans.en, "set")
-
-    def test_exc_type(self):
-        trans = sw_compdocs.language.Translation("id", "description", "en", "local")
-        with self.assertRaises(TypeError):
-            trans.en = b"set"
-
-
-class TestTranslationLocalSetter(unittest.TestCase):
-    def test_pass(self):
-        trans = sw_compdocs.language.Translation("id", "description", "en", "local")
-        trans.local = "set"
-        self.assertEqual(trans.local, "set")
-
-    def test_exc_type(self):
-        trans = sw_compdocs.language.Translation("id", "description", "en", "local")
-        with self.assertRaises(TypeError):
-            trans.local = b"set"
-
-
-class TestTranslationRepr(unittest.TestCase):
-    def test(self):
-        trans = sw_compdocs.language.Translation("id", "description", "en", "local")
-        self.assertEqual(repr(trans), "Translation('id', 'description', 'en', 'local')")
-
-
-class TestTranslationEq(unittest.TestCase):
-    def test(self):
-        tt = collections.namedtuple("tt", ("input_self", "input_other", "want_eq"))
-
-        for tc in [
-            tt(
-                input_self=sw_compdocs.language.Translation(
-                    "id", "description", "en", "local"
+    def test_exc_find(self) -> None:
+        lang = sw_compdocs.language.Language(
+            [
+                sw_compdocs.language.Translation(
+                    "id_0", "description_0", "en_0", "local_0"
                 ),
-                input_other=sw_compdocs.language.Translation(
-                    "id", "description", "en", "local"
+                sw_compdocs.language.Translation(
+                    "id_1", "description_1", "en_1", "local_1"
                 ),
-                want_eq=True,
-            ),
-            tt(
-                input_self=sw_compdocs.language.Translation(
-                    "id", "description", "en", "local"
+                sw_compdocs.language.Translation(
+                    "id_2", "description_2", "en_1", "local_2"
                 ),
-                input_other=sw_compdocs.language.Translation(
-                    "diff", "description", "en", "local"
-                ),
-                want_eq=False,
-            ),
-            tt(
-                input_self=sw_compdocs.language.Translation(
-                    "id", "description", "en", "local"
-                ),
-                input_other=sw_compdocs.language.Translation(
-                    "id", "diff", "en", "local"
-                ),
-                want_eq=False,
-            ),
-            tt(
-                input_self=sw_compdocs.language.Translation(
-                    "id", "description", "en", "local"
-                ),
-                input_other=sw_compdocs.language.Translation(
-                    "id", "description", "diff", "local"
-                ),
-                want_eq=False,
-            ),
-            tt(
-                input_self=sw_compdocs.language.Translation(
-                    "id", "description", "en", "local"
-                ),
-                input_other=sw_compdocs.language.Translation(
-                    "id", "description", "en", "diff"
-                ),
-                want_eq=False,
-            ),
-            tt(
-                input_self=sw_compdocs.language.Translation(
-                    "id", "description", "en", "local"
-                ),
-                input_other=None,
-                want_eq=False,
-            ),
-        ]:
-            with self.subTest(tc=tc):
-                got_eq = tc.input_self == tc.input_other
-                self.assertEqual(got_eq, tc.want_eq)
-
-
-class TestLanguageTSVErrorInit(unittest.TestCase):
-    def test_pass(self):
-        exc = sw_compdocs.language.LanguageTSVError("msg")
-        self.assertEqual(exc.msg, "msg")
-        self.assertEqual(exc.file, None)
-        self.assertEqual(exc.line, None)
-
-    def test_exc_type(self):
-        with self.assertRaises(TypeError):
-            sw_compdocs.language.LanguageTSVError(None)
-
-
-class TestLanguageTSVErrorFileSetter(unittest.TestCase):
-    def test_pass(self):
-        for file in [
-            None,
-            "file",
-            b"file",
-            pathlib.PurePath("file"),
-        ]:
-            with self.subTest(file=file):
-                exc = sw_compdocs.language.LanguageTSVError("msg")
-                exc.file = file
-                self.assertIs(exc.file, file)
-
-    def test_exc_type(self):
-        exc = sw_compdocs.language.LanguageTSVError("msg")
-        exc.file = None
-        with self.assertRaises(TypeError):
-            exc.file = 0
-        self.assertIs(exc.file, None)
-
-
-class TestLanguageTSVErrorLineSetter(unittest.TestCase):
-    def test_pass(self):
-        for line in [None, 52149]:
-            with self.subTest(line=line):
-                exc = sw_compdocs.language.LanguageTSVError("msg")
-                exc.line = line
-                self.assertIs(exc.line, line)
-
-    def test_exc_type(self):
-        exc = sw_compdocs.language.LanguageTSVError("msg")
-        exc.line = None
-        with self.assertRaises(TypeError):
-            exc.line = "52149"
-        self.assertIs(exc.line, None)
-
-
-class TestLanguageTSVErrorStr(unittest.TestCase):
-    def test(self):
-        tt = collections.namedtuple(
-            "tt", ("input_exc_msg", "input_exc_file", "input_exc_line", "want_s")
+            ]
         )
-
-        for tc in [
-            tt(
-                input_exc_msg="msg",
-                input_exc_file=None,
-                input_exc_line=None,
-                want_s="<language.tsv>: line ?: msg",
-            ),
-            tt(
-                input_exc_msg="msg",
-                input_exc_file="file",
-                input_exc_line=None,
-                want_s="file: line ?: msg",
-            ),
-            tt(
-                input_exc_msg="msg",
-                input_exc_file=None,
-                input_exc_line=52149,
-                want_s="<language.tsv>: line 52149: msg",
-            ),
-            tt(
-                input_exc_msg="msg",
-                input_exc_file="file",
-                input_exc_line=52149,
-                want_s="file: line 52149: msg",
-            ),
-        ]:
-            with self.subTest(tc=tc):
-                input_exc = sw_compdocs.language.LanguageTSVError(tc.input_exc_msg)
-                input_exc.file = tc.input_exc_file
-                input_exc.line = tc.input_exc_line
-                got_s = str(input_exc)
-                self.assertEqual(got_s, tc.want_s)
-
-
-class TestLanguageFindIDErrorInit(unittest.TestCase):
-    def test_pass(self):
-        exc = sw_compdocs.language.LanguageFindIDError("id")
-        self.assertEqual(exc.args, ("id",))
-        self.assertEqual(exc.id, "id")
-
-    def test_exc_type(self):
-        with self.assertRaises(TypeError):
-            sw_compdocs.language.LanguageFindIDError(None)
-
-
-class TestLanguageFindIDErrorIDSetter(unittest.TestCase):
-    def test_pass(self):
-        exc = sw_compdocs.language.LanguageFindIDError("id")
-        exc.id = "set"
-        self.assertEqual(exc.id, "set")
-
-    def test_exc_type(self):
-        exc = sw_compdocs.language.LanguageFindIDError("id")
-        with self.assertRaises(TypeError):
-            exc.id = None
-
-
-class TestLanguageFindIDErrorStr(unittest.TestCase):
-    def test(self):
-        exc = sw_compdocs.language.LanguageFindIDError("id")
-        self.assertEqual(str(exc), "missing translation for id 'id'")
-
-
-class TestLanguageFindEnErrorInit(unittest.TestCase):
-    def test_pass(self):
-        exc = sw_compdocs.language.LanguageFindEnError("en")
-        self.assertEqual(exc.args, ("en",))
-        self.assertEqual(exc.en, "en")
-
-    def test_exc_type(self):
-        with self.assertRaises(TypeError):
-            sw_compdocs.language.LanguageFindEnError(None)
-
-
-class TestLanguageFindIDErrorEnSetter(unittest.TestCase):
-    def test_pass(self):
-        exc = sw_compdocs.language.LanguageFindEnError("en")
-        exc.en = "set"
-        self.assertEqual(exc.en, "set")
-
-    def test_exc_type(self):
-        exc = sw_compdocs.language.LanguageFindEnError("en")
-        with self.assertRaises(TypeError):
-            exc.en = None
-
-
-class TestLanguageFindEnErrorStr(unittest.TestCase):
-    def test(self):
-        exc = sw_compdocs.language.LanguageFindEnError("en")
-        self.assertEqual(str(exc), "missing translation for text 'en'")
+        with self.assertRaises(sw_compdocs.language.LanguageFindEnError) as ctx:
+            lang.find_en("en_2")
+        self.assertEqual(ctx.exception.en, "en_2")

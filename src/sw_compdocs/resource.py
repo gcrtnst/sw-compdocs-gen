@@ -1,19 +1,7 @@
 import re
 
 
-def format_toml_key(key):
-    if type(key) is not str:
-        raise TypeError
-
-    if re.search(r"\A[A-Za-z0-9_\-]+\Z", key) is not None:
-        return key
-    return format_toml_string(key)
-
-
-def format_toml_string(s):
-    if type(s) is not str:
-        raise TypeError
-
+def format_toml_string(s: str) -> str:
     esc_set = frozenset(chr(i) for i in range(0x00, 0x20)) | {'"', "\\", "\x7F"}
     esc_dict = {
         "\b": r"\b",
@@ -40,3 +28,9 @@ def format_toml_string(s):
             continue
         l.append(f"\\U{u:08X}")
     return '"' + "".join(l) + '"'
+
+
+def format_toml_key(key: str) -> str:
+    if re.search(r"\A[A-Za-z0-9_\-]+\Z", key) is not None:
+        return key
+    return format_toml_string(key)
