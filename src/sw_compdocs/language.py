@@ -63,9 +63,6 @@ class LanguageFindEnError(LanguageFindError):
 
 
 class Language(container.Sequence[Translation]):
-    def __init__(self, iterable: collections.abc.Iterable[Translation] = ()) -> None:
-        super().__init__(iterable)
-
     @classmethod
     def _from_io(cls, f: collections.abc.Iterable[str]) -> typing.Self:
         reader = csv.reader(f, dialect=LanguageTSVDialect)

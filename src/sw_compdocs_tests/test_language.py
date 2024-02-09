@@ -89,20 +89,6 @@ class TestLanguageFindEnErrorStr(unittest.TestCase):
         self.assertEqual(str(exc), "missing translation for text 'en'")
 
 
-class TestLanguageInit(unittest.TestCase):
-    def test_pass(self) -> None:
-        trans_list = [
-            sw_compdocs.language.Translation(
-                "id_0", "description_0", "en_0", "local_0"
-            ),
-            sw_compdocs.language.Translation(
-                "id_1", "description_1", "en_1", "local_1"
-            ),
-        ]
-        lang = sw_compdocs.language.Language(trans_list)
-        self.assertEqual(list[sw_compdocs.language.Translation](lang), trans_list)
-
-
 class TestLanguageFromIO(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(
