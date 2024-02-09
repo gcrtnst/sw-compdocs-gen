@@ -309,7 +309,7 @@ class TestDocumentGeneratorInit(unittest.TestCase):
                 self.assertIs(gen.fmt, tc.input_fmt)
 
 
-class TestDocumentGenerateLabelGet(unittest.TestCase):
+class TestDocumentGeneratorLabelGet(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(
             "tt",
