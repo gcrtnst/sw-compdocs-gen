@@ -11,6 +11,262 @@ import typing
 import unittest
 
 
+class TestLabelFileErrorInit(unittest.TestCase):
+    def test_pass(self) -> None:
+        exc = sw_compdocs.generator.LabelFileError("msg")
+        exc_args: tuple[object] = exc.args
+        self.assertEqual(exc_args, ("msg",))
+        self.assertEqual(exc.msg, "msg")
+        self.assertEqual(exc.file, None)
+
+
+class TestLabelFileErrorStr(unittest.TestCase):
+    def test(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_msg", str),
+                ("input_file", sw_compdocs._types.StrOrBytesPath | None),
+                ("want_s", str),
+            ],
+        )
+
+        for tc in [
+            tt(
+                input_msg="msg",
+                input_file=None,
+                want_s="<label.toml>: msg",
+            ),
+            tt(
+                input_msg="msg",
+                input_file="pathlike",
+                want_s="pathlike: msg",
+            ),
+            tt(
+                input_msg="msg",
+                input_file=b"pathlike",
+                want_s="pathlike: msg",
+            ),
+            tt(
+                input_msg="msg",
+                input_file=pathlib.PurePath("pathlike"),
+                want_s="pathlike: msg",
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                input_exc = sw_compdocs.generator.LabelFileError(tc.input_msg)
+                input_exc.file = tc.input_file
+                got_s = str(input_exc)
+                self.assertEqual(got_s, tc.want_s)
+
+
+class TestLabelKeyErrorInit(unittest.TestCase):
+    def test(self) -> None:
+        exc = sw_compdocs.generator.LabelKeyError("key")
+        exc_args: tuple[object] = exc.args
+        self.assertEqual(exc_args, ("key",))
+        self.assertEqual(exc.key, "key")
+
+
+class TestLabelKeyErrorStr(unittest.TestCase):
+    def test(self) -> None:
+        exc = sw_compdocs.generator.LabelKeyError("key")
+        self.assertEqual(str(exc), "missing label text for key 'key'")
+
+
+class TestLabelDictInit(unittest.TestCase):
+    def test_pass(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_mapping", collections.abc.Mapping[str, str]),
+                ("want_label_d", dict[str, str]),
+            ],
+        )
+
+        for tc in [
+            tt(
+                input_mapping={},
+                want_label_d={},
+            ),
+            tt(
+                input_mapping={"key_1": "value_1", "key_2": "value_2"},
+                want_label_d={"key_1": "value_1", "key_2": "value_2"},
+            ),
+            tt(
+                input_mapping=sw_compdocs.generator.LabelDict(
+                    {"key_1": "value_1", "key_2": "value_2"}
+                ),
+                want_label_d={"key_1": "value_1", "key_2": "value_2"},
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                got_label = sw_compdocs.generator.LabelDict(tc.input_mapping)
+                self.assertEqual(got_label._d, tc.want_label_d)
+                self.assertIsNot(got_label._d, tc.input_mapping)
+
+
+class TestLabelDictFromTOMLFile(unittest.TestCase):
+    def test_pass(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_file = pathlib.Path(tmp_dir, "label.toml")
+            with open(tmp_file, mode="xt", encoding="utf-8", newline="\n") as fd:
+                fd.write(
+                    """\
+[label]
+key_1 = "value_1"
+key_2 = "value_2"
+"""
+                )
+
+            file_list: list[sw_compdocs._types.StrOrBytesPath] = [
+                os.fsdecode(tmp_file),
+                os.fsencode(tmp_file),
+                tmp_file,
+            ]
+            for file in file_list:
+                label = sw_compdocs.generator.LabelDict.from_toml_file(file)
+                want_d = {"key_1": "value_1", "key_2": "value_2"}
+                self.assertEqual(label._d, want_d)
+
+    def test_exc_label(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_s", str),
+                ("want_exc_msg", str),
+            ],
+        )
+
+        for tc in [
+            tt(
+                input_s="""\
+[label_]
+key_1 = "value_1"
+key_2 = "value_2"
+""",
+                want_exc_msg="missing label table",
+            ),
+            tt(
+                input_s="""\
+label = 0
+""",
+                want_exc_msg="invalid label table type: int",
+            ),
+            tt(
+                input_s="""\
+[label]
+key_1 = "value_1"
+key_2 = 2
+""",
+                want_exc_msg="expected string for label text: 2",
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                with tempfile.TemporaryDirectory() as tmp_dir:
+                    tmp_file = pathlib.Path(tmp_dir, "label.toml")
+                    with open(
+                        tmp_file, mode="xt", encoding="utf-8", newline="\n"
+                    ) as fp:
+                        fp.write(tc.input_s)
+
+                    file_list: list[sw_compdocs._types.StrOrBytesPath] = [
+                        os.fsdecode(tmp_file),
+                        os.fsencode(tmp_file),
+                        tmp_file,
+                    ]
+                    for file in file_list:
+                        with self.assertRaises(
+                            sw_compdocs.generator.LabelFileError
+                        ) as ctx:
+                            sw_compdocs.generator.LabelDict.from_toml_file(file)
+                        self.assertEqual(ctx.exception.msg, tc.want_exc_msg)
+                        self.assertEqual(ctx.exception.file, file)
+
+
+class TestLabelDictFromTOMLStr(unittest.TestCase):
+    def test_pass(self) -> None:
+        label = sw_compdocs.generator.LabelDict.from_toml_str(
+            """\
+[label]
+key_1 = "value_1"
+key_2 = "value_2"
+"""
+        )
+        want_d = {"key_1": "value_1", "key_2": "value_2"}
+        self.assertEqual(label._d, want_d)
+
+    def test_exc_label(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_s", str),
+                ("want_exc_msg", str),
+            ],
+        )
+
+        for tc in [
+            tt(
+                input_s="""\
+[label_]
+key_1 = "value_1"
+key_2 = "value_2"
+""",
+                want_exc_msg="missing label table",
+            ),
+            tt(
+                input_s="""\
+label = 0
+""",
+                want_exc_msg="invalid label table type: int",
+            ),
+            tt(
+                input_s="""\
+[label]
+key_1 = "value_1"
+key_2 = 2
+""",
+                want_exc_msg="expected string for label text: 2",
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                with self.assertRaises(sw_compdocs.generator.LabelFileError) as ctx:
+                    sw_compdocs.generator.LabelDict.from_toml_str(tc.input_s)
+                self.assertEqual(ctx.exception.msg, tc.want_exc_msg)
+                self.assertEqual(ctx.exception.file, None)
+
+
+class TestLabelDictGetItem(unittest.TestCase):
+    def test_pass(self) -> None:
+        label = sw_compdocs.generator.LabelDict(
+            {"key_1": "value_1", "key_2": "value_2"}
+        )
+        self.assertEqual(label["key_1"], "value_1")
+        self.assertEqual(label["key_2"], "value_2")
+
+    def test_exc_key(self) -> None:
+        label = sw_compdocs.generator.LabelDict({"key_1": "value_1"})
+        with self.assertRaises(sw_compdocs.generator.LabelKeyError) as ctx:
+            label["key_2"]
+        self.assertEqual(ctx.exception.key, "key_2")
+
+
+class TestLabelDictIter(unittest.TestCase):
+    def test(self) -> None:
+        label = sw_compdocs.generator.LabelDict(
+            {"key_1": "value_1", "key_2": "value_2"}
+        )
+        self.assertEqual(list[str](label), list[str](["key_1", "key_2"]))
+
+
+class TestLabelDictLen(unittest.TestCase):
+    def test(self) -> None:
+        label = sw_compdocs.generator.LabelDict(
+            {"key_1": "value_1", "key_2": "value_2"}
+        )
+        self.assertEqual(len(label), 2)
+
+
 class TestDocumentGeneratorInit(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(
@@ -53,740 +309,301 @@ class TestDocumentGeneratorInit(unittest.TestCase):
                 self.assertIs(gen.fmt, tc.input_fmt)
 
 
-class TestDocumentGeneratorGenerate(unittest.TestCase):
+class TestDocumentGenerateLabelGet(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(
             "tt",
             [
-                ("input_comp_list", list[sw_compdocs.component.Definition]),
-                ("want_doc", sw_compdocs.document.Document),
+                ("input_label", sw_compdocs.generator.LabelDict | None),
+                ("input_s", str),
+                ("want_s", str),
             ],
         )
 
         for tc in [
-            # empty
             tt(
-                input_comp_list=[],
-                want_doc=sw_compdocs.document.Document(),
+                input_label=None,
+                input_s="LABEL",
+                want_s="LABEL",
             ),
-            # single
             tt(
-                input_comp_list=[
-                    sw_compdocs.component.Definition(
-                        name="Blocks_1", category=sw_compdocs.component.Category.BLOCKS
-                    ),
-                ],
-                want_doc=sw_compdocs.document.Document(
+                input_label=sw_compdocs.generator.LabelDict({"LABEL": "text"}),
+                input_s="LABEL",
+                want_s="text",
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                gen = sw_compdocs.generator.DocumentGenerator(label=tc.input_label)
+                got_s = gen._label_get(tc.input_s)
+                self.assertEqual(got_s, tc.want_s)
+
+
+class TestDocumentGeneratorLangFindID(unittest.TestCase):
+    def test_pass(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_lang", sw_compdocs.language.Language | None),
+                ("input_lang_id", str),
+                ("input_lang_en", str),
+                ("want_s", str),
+            ],
+        )
+
+        for tc in [
+            tt(
+                input_lang=None,
+                input_lang_id="id",
+                input_lang_en="en",
+                want_s="en",
+            ),
+            tt(
+                input_lang=sw_compdocs.language.Language(
                     [
-                        sw_compdocs.document.Heading("Blocks", level=1),
-                        sw_compdocs.document.Heading("Blocks_1", level=2),
-                        sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_MASS_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_COST_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_TAGS_LABEL", ""]
-                                    ),
-                                ],
-                            )
+                        sw_compdocs.language.Translation(
+                            "id", "description", "en", "local"
+                        )
+                    ]
+                ),
+                input_lang_id="id",
+                input_lang_en="en",
+                want_s="local",
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                gen = sw_compdocs.generator.DocumentGenerator(lang=tc.input_lang)
+                got_s = gen._lang_find_id(tc.input_lang_id, tc.input_lang_en)
+                self.assertEqual(got_s, tc.want_s)
+
+
+class TestDocumentGeneratorLangFindEn(unittest.TestCase):
+    def test_pass(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_lang", sw_compdocs.language.Language | None),
+                ("input_lang_en", str),
+                ("want_s", str),
+            ],
+        )
+
+        for tc in [
+            tt(
+                input_lang=None,
+                input_lang_en="en",
+                want_s="en",
+            ),
+            tt(
+                input_lang=sw_compdocs.language.Language(
+                    [
+                        sw_compdocs.language.Translation(
+                            "id", "description", "en", "local"
+                        )
+                    ]
+                ),
+                input_lang_en="en",
+                want_s="local",
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                gen = sw_compdocs.generator.DocumentGenerator(lang=tc.input_lang)
+                got_s = gen._lang_find_en(tc.input_lang_en)
+                self.assertEqual(got_s, tc.want_s)
+
+
+class TestDocumentGeneratorFmtFormat(unittest.TestCase):
+    def test_pass(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_fmt", sw_compdocs.template.TemplateFormatter | None),
+                ("input_s", str),
+                ("want_s", str),
+            ],
+        )
+
+        for tc in [
+            tt(
+                input_fmt=None,
+                input_s="$[var]",
+                want_s="$[var]",
+            ),
+            tt(
+                input_fmt=sw_compdocs.template.TemplateFormatter({"var": "text"}),
+                input_s="$[var]",
+                want_s="text",
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                gen = sw_compdocs.generator.DocumentGenerator(fmt=tc.input_fmt)
+                got_s = gen._fmt_format(tc.input_s)
+                self.assertEqual(got_s, tc.want_s)
+
+
+class TestDocumentGeneratorGeneratePropertyTable(unittest.TestCase):
+    def test_pass(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_label", sw_compdocs.generator.LabelDict | None),
+                ("input_comp", sw_compdocs.component.Definition),
+                ("want_tbl", sw_compdocs.document.Table),
+            ],
+        )
+
+        for tc in [
+            tt(
+                input_label=None,
+                input_comp=sw_compdocs.component.Definition(
+                    mass=10.0,
+                    value=100,
+                    tags="tags",
+                    voxel_min=sw_compdocs.component.VoxelPos(x=0, y=-1, z=-2),
+                    voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=2),
+                ),
+                want_tbl=sw_compdocs.document.Table(
+                    sw_compdocs.document.TableData(
+                        sw_compdocs.document.TableDataRow(
+                            ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
                         ),
-                    ],
+                        [
+                            sw_compdocs.document.TableDataRow(
+                                ["PROP_TABLE_MASS_LABEL", "10"]
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                ["PROP_TABLE_DIMS_LABEL", "1x5x3"]
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                ["PROP_TABLE_COST_LABEL", "100"]
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                ["PROP_TABLE_TAGS_LABEL", "tags"]
+                            ),
+                        ],
+                    )
                 ),
             ),
-            # sort comp_list name
+            # mass format
             tt(
-                input_comp_list=[
-                    sw_compdocs.component.Definition(
-                        cid="blocks_1",
-                        name="Blocks_3",
-                        value=1,
-                        category=sw_compdocs.component.Category.BLOCKS,
-                    ),
-                    sw_compdocs.component.Definition(
-                        cid="blocks_2",
-                        name="Blocks_2",
-                        value=2,
-                        category=sw_compdocs.component.Category.BLOCKS,
-                    ),
-                    sw_compdocs.component.Definition(
-                        cid="blocks_3",
-                        name="Blocks_1",
-                        value=3,
-                        category=sw_compdocs.component.Category.BLOCKS,
-                    ),
-                ],
-                want_doc=sw_compdocs.document.Document(
-                    [
-                        sw_compdocs.document.Heading("Blocks", level=1),
-                        sw_compdocs.document.Heading("Blocks_1", level=2),
-                        sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_MASS_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_COST_LABEL", "3"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_TAGS_LABEL", ""]
-                                    ),
-                                ],
-                            )
+                input_label=None,
+                input_comp=sw_compdocs.component.Definition(
+                    mass=0.5,
+                    value=100,
+                    tags="tags",
+                    voxel_min=sw_compdocs.component.VoxelPos(x=0, y=-1, z=-2),
+                    voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=2),
+                ),
+                want_tbl=sw_compdocs.document.Table(
+                    sw_compdocs.document.TableData(
+                        sw_compdocs.document.TableDataRow(
+                            ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
                         ),
-                        sw_compdocs.document.Heading("Blocks_2", level=2),
-                        sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_MASS_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_COST_LABEL", "2"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_TAGS_LABEL", ""]
-                                    ),
-                                ],
-                            )
-                        ),
-                        sw_compdocs.document.Heading("Blocks_3", level=2),
-                        sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_MASS_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_COST_LABEL", "1"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_TAGS_LABEL", ""]
-                                    ),
-                                ],
-                            )
-                        ),
-                    ],
+                        [
+                            sw_compdocs.document.TableDataRow(
+                                ["PROP_TABLE_MASS_LABEL", "0.5"]
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                ["PROP_TABLE_DIMS_LABEL", "1x5x3"]
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                ["PROP_TABLE_COST_LABEL", "100"]
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                ["PROP_TABLE_TAGS_LABEL", "tags"]
+                            ),
+                        ],
+                    )
                 ),
             ),
-            # sort comp_list cid
             tt(
-                input_comp_list=[
-                    sw_compdocs.component.Definition(
-                        cid="blocks_3",
-                        name="Blocks_1",
-                        value=3,
-                        category=sw_compdocs.component.Category.BLOCKS,
-                    ),
-                    sw_compdocs.component.Definition(
-                        cid="blocks_2",
-                        name="Blocks_1",
-                        value=2,
-                        category=sw_compdocs.component.Category.BLOCKS,
-                    ),
-                    sw_compdocs.component.Definition(
-                        cid="blocks_1",
-                        name="Blocks_1",
-                        value=1,
-                        category=sw_compdocs.component.Category.BLOCKS,
-                    ),
-                ],
-                want_doc=sw_compdocs.document.Document(
-                    [
-                        sw_compdocs.document.Heading("Blocks", level=1),
-                        sw_compdocs.document.Heading("Blocks_1", level=2),
-                        sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_MASS_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_COST_LABEL", "1"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_TAGS_LABEL", ""]
-                                    ),
-                                ],
-                            )
+                input_label=None,
+                input_comp=sw_compdocs.component.Definition(
+                    mass=0.25,
+                    value=100,
+                    tags="tags",
+                    voxel_min=sw_compdocs.component.VoxelPos(x=0, y=-1, z=-2),
+                    voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=2),
+                ),
+                want_tbl=sw_compdocs.document.Table(
+                    sw_compdocs.document.TableData(
+                        sw_compdocs.document.TableDataRow(
+                            ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
                         ),
-                        sw_compdocs.document.Heading("Blocks_1", level=2),
-                        sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_MASS_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_COST_LABEL", "2"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_TAGS_LABEL", ""]
-                                    ),
-                                ],
-                            )
-                        ),
-                        sw_compdocs.document.Heading("Blocks_1", level=2),
-                        sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_MASS_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_COST_LABEL", "3"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_TAGS_LABEL", ""]
-                                    ),
-                                ],
-                            )
-                        ),
-                    ],
+                        [
+                            sw_compdocs.document.TableDataRow(
+                                ["PROP_TABLE_MASS_LABEL", "0.25"]
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                ["PROP_TABLE_DIMS_LABEL", "1x5x3"]
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                ["PROP_TABLE_COST_LABEL", "100"]
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                ["PROP_TABLE_TAGS_LABEL", "tags"]
+                            ),
+                        ],
+                    )
                 ),
             ),
-            # sort category
+            # label
             tt(
-                input_comp_list=[
-                    sw_compdocs.component.Definition(
-                        name="WINDOWS_0",
-                        category=sw_compdocs.component.Category.WINDOWS,
-                    ),
-                    sw_compdocs.component.Definition(
-                        name="INDUSTRY_0",
-                        category=sw_compdocs.component.Category.INDUSTRY,
-                    ),
-                    sw_compdocs.component.Definition(
-                        name="MODULAR_ENGINES_0",
-                        category=sw_compdocs.component.Category.MODULAR_ENGINES,
-                    ),
-                    sw_compdocs.component.Definition(
-                        name="WEAPONS_0",
-                        category=sw_compdocs.component.Category.WEAPONS,
-                    ),
-                    sw_compdocs.component.Definition(
-                        name="JET_ENGINES_0",
-                        category=sw_compdocs.component.Category.JET_ENGINES,
-                    ),
-                    sw_compdocs.component.Definition(
-                        name="ELECTRIC_0",
-                        category=sw_compdocs.component.Category.ELECTRIC,
-                    ),
-                    sw_compdocs.component.Definition(
-                        name="FLUID_0",
-                        category=sw_compdocs.component.Category.FLUID,
-                    ),
-                    sw_compdocs.component.Definition(
-                        name="DECORATIVE_0",
-                        category=sw_compdocs.component.Category.DECORATIVE,
-                    ),
-                    sw_compdocs.component.Definition(
-                        name="SENSORS_0",
-                        category=sw_compdocs.component.Category.SENSORS,
-                    ),
-                    sw_compdocs.component.Definition(
-                        name="DISPLAYS_0",
-                        category=sw_compdocs.component.Category.DISPLAYS,
-                    ),
-                    sw_compdocs.component.Definition(
-                        name="LOGIC_0",
-                        category=sw_compdocs.component.Category.LOGIC,
-                    ),
-                    sw_compdocs.component.Definition(
-                        name="SPECIALIST_EQUIPMENT_0",
-                        category=sw_compdocs.component.Category.SPECIALIST_EQUIPMENT,
-                    ),
-                    sw_compdocs.component.Definition(
-                        name="PROPULSION_0",
-                        category=sw_compdocs.component.Category.PROPULSION,
-                    ),
-                    sw_compdocs.component.Definition(
-                        name="MECHANICS_0",
-                        category=sw_compdocs.component.Category.MECHANICS,
-                    ),
-                    sw_compdocs.component.Definition(
-                        name="VEHICLE_CONTROL_0",
-                        category=sw_compdocs.component.Category.VEHICLE_CONTROL,
-                    ),
-                    sw_compdocs.component.Definition(
-                        name="BLOCKS_0",
-                        category=sw_compdocs.component.Category.BLOCKS,
-                    ),
-                ],
-                want_doc=sw_compdocs.document.Document(
-                    [
-                        sw_compdocs.document.Heading("Blocks", level=1),
-                        sw_compdocs.document.Heading("BLOCKS_0", level=2),
-                        sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_MASS_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_COST_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_TAGS_LABEL", ""]
-                                    ),
-                                ],
-                            )
-                        ),
-                        sw_compdocs.document.Heading("Vehicle Control", level=1),
-                        sw_compdocs.document.Heading("VEHICLE_CONTROL_0", level=2),
-                        sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_MASS_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_COST_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_TAGS_LABEL", ""]
-                                    ),
-                                ],
-                            )
-                        ),
-                        sw_compdocs.document.Heading("Mechanics", level=1),
-                        sw_compdocs.document.Heading("MECHANICS_0", level=2),
-                        sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_MASS_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_COST_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_TAGS_LABEL", ""]
-                                    ),
-                                ],
-                            )
-                        ),
-                        sw_compdocs.document.Heading("Propulsion", level=1),
-                        sw_compdocs.document.Heading("PROPULSION_0", level=2),
-                        sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_MASS_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_COST_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_TAGS_LABEL", ""]
-                                    ),
-                                ],
-                            )
-                        ),
-                        sw_compdocs.document.Heading("Specialist Equipment", level=1),
-                        sw_compdocs.document.Heading("SPECIALIST_EQUIPMENT_0", level=2),
-                        sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_MASS_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_COST_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_TAGS_LABEL", ""]
-                                    ),
-                                ],
-                            )
-                        ),
-                        sw_compdocs.document.Heading("Logic", level=1),
-                        sw_compdocs.document.Heading("LOGIC_0", level=2),
-                        sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_MASS_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_COST_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_TAGS_LABEL", ""]
-                                    ),
-                                ],
-                            )
-                        ),
-                        sw_compdocs.document.Heading("Displays", level=1),
-                        sw_compdocs.document.Heading("DISPLAYS_0", level=2),
-                        sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_MASS_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_COST_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_TAGS_LABEL", ""]
-                                    ),
-                                ],
-                            )
-                        ),
-                        sw_compdocs.document.Heading("Sensors", level=1),
-                        sw_compdocs.document.Heading("SENSORS_0", level=2),
-                        sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_MASS_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_COST_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_TAGS_LABEL", ""]
-                                    ),
-                                ],
-                            )
-                        ),
-                        sw_compdocs.document.Heading("Decorative", level=1),
-                        sw_compdocs.document.Heading("DECORATIVE_0", level=2),
-                        sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_MASS_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_COST_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_TAGS_LABEL", ""]
-                                    ),
-                                ],
-                            )
-                        ),
-                        sw_compdocs.document.Heading("Fluid", level=1),
-                        sw_compdocs.document.Heading("FLUID_0", level=2),
-                        sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_MASS_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_COST_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_TAGS_LABEL", ""]
-                                    ),
-                                ],
-                            )
-                        ),
-                        sw_compdocs.document.Heading("Electric", level=1),
-                        sw_compdocs.document.Heading("ELECTRIC_0", level=2),
-                        sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_MASS_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_COST_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_TAGS_LABEL", ""]
-                                    ),
-                                ],
-                            )
-                        ),
-                        sw_compdocs.document.Heading("Jet Engines", level=1),
-                        sw_compdocs.document.Heading("JET_ENGINES_0", level=2),
-                        sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_MASS_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_COST_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_TAGS_LABEL", ""]
-                                    ),
-                                ],
-                            )
-                        ),
-                        sw_compdocs.document.Heading("Weapons", level=1),
-                        sw_compdocs.document.Heading("WEAPONS_0", level=2),
-                        sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_MASS_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_COST_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_TAGS_LABEL", ""]
-                                    ),
-                                ],
-                            )
-                        ),
-                        sw_compdocs.document.Heading("Modular Engines", level=1),
-                        sw_compdocs.document.Heading("MODULAR_ENGINES_0", level=2),
-                        sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_MASS_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_COST_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_TAGS_LABEL", ""]
-                                    ),
-                                ],
-                            )
-                        ),
-                        sw_compdocs.document.Heading("Industry", level=1),
-                        sw_compdocs.document.Heading("INDUSTRY_0", level=2),
-                        sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_MASS_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_COST_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_TAGS_LABEL", ""]
-                                    ),
-                                ],
-                            )
-                        ),
-                        sw_compdocs.document.Heading("Windows", level=1),
-                        sw_compdocs.document.Heading("WINDOWS_0", level=2),
-                        sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_MASS_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_COST_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_TAGS_LABEL", ""]
-                                    ),
-                                ],
-                            )
-                        ),
-                    ],
+                input_label=sw_compdocs.generator.LabelDict(
+                    {
+                        "PROP_TABLE_HEAD_LABEL": "Label",
+                        "PROP_TABLE_HEAD_VALUE": "Value",
+                        "PROP_TABLE_MASS_LABEL": "Mass",
+                        "PROP_TABLE_DIMS_LABEL": "Dimensions",
+                        "PROP_TABLE_COST_LABEL": "Cost",
+                        "PROP_TABLE_TAGS_LABEL": "Tags",
+                    }
+                ),
+                input_comp=sw_compdocs.component.Definition(
+                    mass=10.0,
+                    value=100,
+                    tags="tags",
+                    voxel_min=sw_compdocs.component.VoxelPos(x=0, y=-1, z=-2),
+                    voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=2),
+                ),
+                want_tbl=sw_compdocs.document.Table(
+                    sw_compdocs.document.TableData(
+                        sw_compdocs.document.TableDataRow(["Label", "Value"]),
+                        [
+                            sw_compdocs.document.TableDataRow(["Mass", "10"]),
+                            sw_compdocs.document.TableDataRow(["Dimensions", "1x5x3"]),
+                            sw_compdocs.document.TableDataRow(["Cost", "100"]),
+                            sw_compdocs.document.TableDataRow(["Tags", "tags"]),
+                        ],
+                    )
                 ),
             ),
         ]:
             with self.subTest(tc=tc):
-                gen = sw_compdocs.generator.DocumentGenerator()
-                got_doc = gen.generate(tc.input_comp_list)
-                self.assertEqual(got_doc, tc.want_doc)
+                gen = sw_compdocs.generator.DocumentGenerator(label=tc.input_label)
+                got_tbl = gen.generate_property_table(tc.input_comp)
+                self.assertEqual(got_tbl, tc.want_tbl)
 
 
-class TestDocumentGeneratorGenerateComponentList(unittest.TestCase):
+class TestDocumentGeneratorGenerateProperty(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(
             "tt",
             [
-                ("input_comp_list", list[sw_compdocs.component.Definition]),
+                ("input_label", sw_compdocs.generator.LabelDict | None),
+                ("input_lang", sw_compdocs.language.Language | None),
+                ("input_comp", sw_compdocs.component.Definition),
                 ("want_doc", sw_compdocs.document.Document),
             ],
         )
 
         for tc in [
             tt(
-                input_comp_list=[],
-                want_doc=sw_compdocs.document.Document(),
-            ),
-            tt(
-                input_comp_list=[
-                    sw_compdocs.component.Definition(name="A"),
-                    sw_compdocs.component.Definition(name="B"),
-                ],
+                input_label=None,
+                input_lang=None,
+                input_comp=sw_compdocs.component.Definition(),
                 want_doc=sw_compdocs.document.Document(
                     [
-                        sw_compdocs.document.Heading("A", level=1),
-                        sw_compdocs.document.Heading("PROPERTIES", level=2),
+                        sw_compdocs.document.Heading("PROPERTIES"),
                         sw_compdocs.document.Table(
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
@@ -808,8 +625,18 @@ class TestDocumentGeneratorGenerateComponentList(unittest.TestCase):
                                 ],
                             )
                         ),
-                        sw_compdocs.document.Heading("B", level=1),
-                        sw_compdocs.document.Heading("PROPERTIES", level=2),
+                    ]
+                ),
+            ),
+            tt(
+                input_label=None,
+                input_lang=sw_compdocs.language.Language(
+                    [sw_compdocs.language.Translation("", "", "PROPERTIES", "プロパティ")]
+                ),
+                input_comp=sw_compdocs.component.Definition(),
+                want_doc=sw_compdocs.document.Document(
+                    [
+                        sw_compdocs.document.Heading("プロパティ"),
                         sw_compdocs.document.Table(
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
@@ -836,8 +663,1220 @@ class TestDocumentGeneratorGenerateComponentList(unittest.TestCase):
             ),
         ]:
             with self.subTest(tc=tc):
-                gen = sw_compdocs.generator.DocumentGenerator()
-                got_doc = gen.generate_component_list(tc.input_comp_list)
+                gen = sw_compdocs.generator.DocumentGenerator(
+                    label=tc.input_label, lang=tc.input_lang
+                )
+                got_doc = gen.generate_property(tc.input_comp)
+                self.assertEqual(got_doc, tc.want_doc)
+
+
+class TestDocumentGeneratorGenerateLogicTable(unittest.TestCase):
+    def test_pass(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_label", sw_compdocs.generator.LabelDict | None),
+                ("input_lang", sw_compdocs.language.Language | None),
+                ("input_fmt", sw_compdocs.template.TemplateFormatter | None),
+                ("input_cid", str),
+                ("input_lns", sw_compdocs.component.LogicNodeList),
+                ("want_tbl", sw_compdocs.document.Table),
+            ],
+        )
+
+        for tc in [
+            tt(
+                input_label=sw_compdocs.generator.LabelDict(
+                    {
+                        "LOGIC_TABLE_HEAD_TYPE": "種別",
+                        "LOGIC_TABLE_HEAD_LABEL": "ラベル",
+                        "LOGIC_TABLE_HEAD_DESC": "説明",
+                    }
+                ),
+                input_lang=None,
+                input_fmt=None,
+                input_cid="test",
+                input_lns=sw_compdocs.component.LogicNodeList([]),
+                want_tbl=sw_compdocs.document.Table(
+                    sw_compdocs.document.TableData(
+                        sw_compdocs.document.TableDataRow(["種別", "ラベル", "説明"]),
+                        [],
+                    )
+                ),
+            ),
+            tt(
+                input_label=sw_compdocs.generator.LabelDict(
+                    {
+                        "LOGIC_TABLE_HEAD_TYPE": "種別",
+                        "LOGIC_TABLE_HEAD_LABEL": "ラベル",
+                        "LOGIC_TABLE_HEAD_DESC": "説明",
+                    }
+                ),
+                input_lang=sw_compdocs.language.Language(
+                    [
+                        sw_compdocs.language.Translation(
+                            "",
+                            "",
+                            "on/off",
+                            "オン/オフ",
+                        ),
+                        sw_compdocs.language.Translation(
+                            "",
+                            "",
+                            "number",
+                            "数値",
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_0_label",
+                            "",
+                            "label 0 $[label_0]",
+                            "ラベル 0 $[label_0]",
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_0_desc",
+                            "",
+                            "desc 0 $[desc_0]",
+                            "説明 0 $[desc_0]",
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_1_label",
+                            "",
+                            "label 1 $[label_1]",
+                            "ラベル 1 $[label_1]",
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_1_desc",
+                            "",
+                            "desc 1 $[desc_1]",
+                            "説明 1 $[desc_1]",
+                        ),
+                    ]
+                ),
+                input_fmt=sw_compdocs.template.TemplateFormatter(
+                    {
+                        "label_0": "label_0_fmt",
+                        "desc_0": "desc_0_fmt",
+                        "label_1": "label_1_fmt",
+                        "desc_1": "desc_1_fmt",
+                    }
+                ),
+                input_cid="test",
+                input_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(
+                            idx=0,
+                            label="label 0 $[label_0]",
+                            type=sw_compdocs.component.LogicNodeType.BOOL,
+                            description="desc 0 $[desc_0]",
+                        ),
+                        sw_compdocs.component.LogicNode(
+                            idx=1,
+                            label="label 1 $[label_1]",
+                            type=sw_compdocs.component.LogicNodeType.FLOAT,
+                            description="desc 1 $[desc_1]",
+                        ),
+                    ]
+                ),
+                want_tbl=sw_compdocs.document.Table(
+                    sw_compdocs.document.TableData(
+                        sw_compdocs.document.TableDataRow(["種別", "ラベル", "説明"]),
+                        [
+                            sw_compdocs.document.TableDataRow(
+                                ["オン/オフ", "ラベル 0 label_0_fmt", "説明 0 desc_0_fmt"]
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                ["数値", "ラベル 1 label_1_fmt", "説明 1 desc_1_fmt"]
+                            ),
+                        ],
+                    )
+                ),
+            ),
+            tt(
+                input_label=None,
+                input_lang=sw_compdocs.language.Language(
+                    [
+                        sw_compdocs.language.Translation(
+                            "",
+                            "",
+                            "on/off",
+                            "オン/オフ",
+                        ),
+                        sw_compdocs.language.Translation(
+                            "",
+                            "",
+                            "number",
+                            "数値",
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_0_label",
+                            "",
+                            "label 0 $[label_0]",
+                            "ラベル 0 $[label_0]",
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_0_desc",
+                            "",
+                            "desc 0 $[desc_0]",
+                            "説明 0 $[desc_0]",
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_1_label",
+                            "",
+                            "label 1 $[label_1]",
+                            "ラベル 1 $[label_1]",
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_1_desc",
+                            "",
+                            "desc 1 $[desc_1]",
+                            "説明 1 $[desc_1]",
+                        ),
+                    ]
+                ),
+                input_fmt=sw_compdocs.template.TemplateFormatter(
+                    {
+                        "label_0": "label_0_fmt",
+                        "desc_0": "desc_0_fmt",
+                        "label_1": "label_1_fmt",
+                        "desc_1": "desc_1_fmt",
+                    }
+                ),
+                input_cid="test",
+                input_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(
+                            idx=0,
+                            label="label 0 $[label_0]",
+                            type=sw_compdocs.component.LogicNodeType.BOOL,
+                            description="desc 0 $[desc_0]",
+                        ),
+                        sw_compdocs.component.LogicNode(
+                            idx=1,
+                            label="label 1 $[label_1]",
+                            type=sw_compdocs.component.LogicNodeType.FLOAT,
+                            description="desc 1 $[desc_1]",
+                        ),
+                    ]
+                ),
+                want_tbl=sw_compdocs.document.Table(
+                    sw_compdocs.document.TableData(
+                        sw_compdocs.document.TableDataRow(
+                            [
+                                "LOGIC_TABLE_HEAD_TYPE",
+                                "LOGIC_TABLE_HEAD_LABEL",
+                                "LOGIC_TABLE_HEAD_DESC",
+                            ]
+                        ),
+                        [
+                            sw_compdocs.document.TableDataRow(
+                                ["オン/オフ", "ラベル 0 label_0_fmt", "説明 0 desc_0_fmt"]
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                ["数値", "ラベル 1 label_1_fmt", "説明 1 desc_1_fmt"]
+                            ),
+                        ],
+                    )
+                ),
+            ),
+            tt(
+                input_label=sw_compdocs.generator.LabelDict(
+                    {
+                        "LOGIC_TABLE_HEAD_TYPE": "種別",
+                        "LOGIC_TABLE_HEAD_LABEL": "ラベル",
+                        "LOGIC_TABLE_HEAD_DESC": "説明",
+                    }
+                ),
+                input_lang=None,
+                input_fmt=sw_compdocs.template.TemplateFormatter(
+                    {
+                        "label_0": "label_0_fmt",
+                        "desc_0": "desc_0_fmt",
+                        "label_1": "label_1_fmt",
+                        "desc_1": "desc_1_fmt",
+                    }
+                ),
+                input_cid="test",
+                input_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(
+                            idx=0,
+                            label="label 0 $[label_0]",
+                            type=sw_compdocs.component.LogicNodeType.BOOL,
+                            description="desc 0 $[desc_0]",
+                        ),
+                        sw_compdocs.component.LogicNode(
+                            idx=1,
+                            label="label 1 $[label_1]",
+                            type=sw_compdocs.component.LogicNodeType.FLOAT,
+                            description="desc 1 $[desc_1]",
+                        ),
+                    ]
+                ),
+                want_tbl=sw_compdocs.document.Table(
+                    sw_compdocs.document.TableData(
+                        sw_compdocs.document.TableDataRow(["種別", "ラベル", "説明"]),
+                        [
+                            sw_compdocs.document.TableDataRow(
+                                ["on/off", "label 0 label_0_fmt", "desc 0 desc_0_fmt"]
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                ["number", "label 1 label_1_fmt", "desc 1 desc_1_fmt"]
+                            ),
+                        ],
+                    )
+                ),
+            ),
+            tt(
+                input_label=sw_compdocs.generator.LabelDict(
+                    {
+                        "LOGIC_TABLE_HEAD_TYPE": "種別",
+                        "LOGIC_TABLE_HEAD_LABEL": "ラベル",
+                        "LOGIC_TABLE_HEAD_DESC": "説明",
+                    }
+                ),
+                input_lang=sw_compdocs.language.Language(
+                    [
+                        sw_compdocs.language.Translation(
+                            "",
+                            "",
+                            "on/off",
+                            "オン/オフ",
+                        ),
+                        sw_compdocs.language.Translation(
+                            "",
+                            "",
+                            "number",
+                            "数値",
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_0_label",
+                            "",
+                            "label 0 $[label_0]",
+                            "ラベル 0 $[label_0]",
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_0_desc",
+                            "",
+                            "desc 0 $[desc_0]",
+                            "説明 0 $[desc_0]",
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_1_label",
+                            "",
+                            "label 1 $[label_1]",
+                            "ラベル 1 $[label_1]",
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_1_desc",
+                            "",
+                            "desc 1 $[desc_1]",
+                            "説明 1 $[desc_1]",
+                        ),
+                    ]
+                ),
+                input_fmt=None,
+                input_cid="test",
+                input_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(
+                            idx=0,
+                            label="label 0 $[label_0]",
+                            type=sw_compdocs.component.LogicNodeType.BOOL,
+                            description="desc 0 $[desc_0]",
+                        ),
+                        sw_compdocs.component.LogicNode(
+                            idx=1,
+                            label="label 1 $[label_1]",
+                            type=sw_compdocs.component.LogicNodeType.FLOAT,
+                            description="desc 1 $[desc_1]",
+                        ),
+                    ]
+                ),
+                want_tbl=sw_compdocs.document.Table(
+                    sw_compdocs.document.TableData(
+                        sw_compdocs.document.TableDataRow(["種別", "ラベル", "説明"]),
+                        [
+                            sw_compdocs.document.TableDataRow(
+                                ["オン/オフ", "ラベル 0 $[label_0]", "説明 0 $[desc_0]"]
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                ["数値", "ラベル 1 $[label_1]", "説明 1 $[desc_1]"]
+                            ),
+                        ],
+                    )
+                ),
+            ),
+            tt(
+                input_label=sw_compdocs.generator.LabelDict(
+                    {
+                        "LOGIC_TABLE_HEAD_TYPE": "種別",
+                        "LOGIC_TABLE_HEAD_LABEL": "ラベル",
+                        "LOGIC_TABLE_HEAD_DESC": "説明",
+                    }
+                ),
+                input_lang=sw_compdocs.language.Language(
+                    [
+                        sw_compdocs.language.Translation(
+                            "",
+                            "",
+                            "on/off",
+                            "オン/オフ",
+                        ),
+                        sw_compdocs.language.Translation(
+                            "",
+                            "",
+                            "number",
+                            "数値",
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_3_label",
+                            "",
+                            "label 0 $[label_0]",
+                            "ラベル 0 $[label_0]",
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_3_desc",
+                            "",
+                            "desc 0 $[desc_0]",
+                            "説明 0 $[desc_0]",
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_5_label",
+                            "",
+                            "label 1 $[label_1]",
+                            "ラベル 1 $[label_1]",
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_5_desc",
+                            "",
+                            "desc 1 $[desc_1]",
+                            "説明 1 $[desc_1]",
+                        ),
+                    ]
+                ),
+                input_fmt=sw_compdocs.template.TemplateFormatter(
+                    {
+                        "label_0": "label_0_fmt",
+                        "desc_0": "desc_0_fmt",
+                        "label_1": "label_1_fmt",
+                        "desc_1": "desc_1_fmt",
+                    }
+                ),
+                input_cid="test",
+                input_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(
+                            idx=3,
+                            label="label 0 $[label_0]",
+                            type=sw_compdocs.component.LogicNodeType.BOOL,
+                            description="desc 0 $[desc_0]",
+                        ),
+                        sw_compdocs.component.LogicNode(
+                            idx=5,
+                            label="label 1 $[label_1]",
+                            type=sw_compdocs.component.LogicNodeType.FLOAT,
+                            description="desc 1 $[desc_1]",
+                        ),
+                    ]
+                ),
+                want_tbl=sw_compdocs.document.Table(
+                    sw_compdocs.document.TableData(
+                        sw_compdocs.document.TableDataRow(["種別", "ラベル", "説明"]),
+                        [
+                            sw_compdocs.document.TableDataRow(
+                                ["オン/オフ", "ラベル 0 label_0_fmt", "説明 0 desc_0_fmt"]
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                ["数値", "ラベル 1 label_1_fmt", "説明 1 desc_1_fmt"]
+                            ),
+                        ],
+                    )
+                ),
+            ),
+            tt(
+                input_label=None,
+                input_lang=sw_compdocs.language.Language(
+                    [
+                        sw_compdocs.language.Translation(
+                            "",
+                            "",
+                            "on/off",
+                            "オン/オフ",
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_-1_label",
+                            "",
+                            "label -1",
+                            "ラベル -1",
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_-1_desc",
+                            "",
+                            "desc -1",
+                            "説明 -1",
+                        ),
+                    ]
+                ),
+                input_fmt=None,
+                input_cid="test",
+                input_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(
+                            idx=-1,
+                            label="",
+                            type=sw_compdocs.component.LogicNodeType.BOOL,
+                            description="",
+                        )
+                    ]
+                ),
+                want_tbl=sw_compdocs.document.Table(
+                    sw_compdocs.document.TableData(
+                        sw_compdocs.document.TableDataRow(
+                            [
+                                "LOGIC_TABLE_HEAD_TYPE",
+                                "LOGIC_TABLE_HEAD_LABEL",
+                                "LOGIC_TABLE_HEAD_DESC",
+                            ]
+                        ),
+                        [
+                            sw_compdocs.document.TableDataRow(
+                                [
+                                    "オン/オフ",
+                                    "ラベル -1",
+                                    "説明 -1",
+                                ]
+                            )
+                        ],
+                    )
+                ),
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                gen = sw_compdocs.generator.DocumentGenerator(
+                    label=tc.input_label, lang=tc.input_lang, fmt=tc.input_fmt
+                )
+                got_tbl = gen.generate_logic_table(tc.input_cid, tc.input_lns)
+                self.assertEqual(got_tbl, tc.want_tbl)
+
+
+class TestDocumentGeneratorGenerateLogic(unittest.TestCase):
+    def test_pass(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_label", sw_compdocs.generator.LabelDict | None),
+                ("input_lang", sw_compdocs.language.Language | None),
+                ("input_fmt", sw_compdocs.template.TemplateFormatter | None),
+                ("input_cid", str),
+                ("input_lns", sw_compdocs.component.LogicNodeList),
+                ("want_doc", sw_compdocs.document.Document),
+            ],
+        )
+
+        for tc in [
+            # empty
+            tt(
+                input_label=None,
+                input_lang=None,
+                input_fmt=None,
+                input_cid="test",
+                input_lns=sw_compdocs.component.LogicNodeList(),
+                want_doc=sw_compdocs.document.Document(),
+            ),
+            # logic node type
+            tt(
+                input_label=None,
+                input_lang=None,
+                input_fmt=None,
+                input_cid="test",
+                input_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(
+                            label="label",
+                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                            type=sw_compdocs.component.LogicNodeType.BOOL,
+                            description="desc",
+                        ),
+                    ]
+                ),
+                want_doc=sw_compdocs.document.Document(
+                    [
+                        sw_compdocs.document.Heading("logic inputs"),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    [
+                                        "LOGIC_TABLE_HEAD_TYPE",
+                                        "LOGIC_TABLE_HEAD_LABEL",
+                                        "LOGIC_TABLE_HEAD_DESC",
+                                    ]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["on/off", "label", "desc"]
+                                    )
+                                ],
+                            )
+                        ),
+                    ]
+                ),
+            ),
+            tt(
+                input_label=None,
+                input_lang=None,
+                input_fmt=None,
+                input_cid="test",
+                input_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(
+                            label="label",
+                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                            type=sw_compdocs.component.LogicNodeType.FLOAT,
+                            description="desc",
+                        ),
+                    ]
+                ),
+                want_doc=sw_compdocs.document.Document(
+                    [
+                        sw_compdocs.document.Heading("logic inputs"),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    [
+                                        "LOGIC_TABLE_HEAD_TYPE",
+                                        "LOGIC_TABLE_HEAD_LABEL",
+                                        "LOGIC_TABLE_HEAD_DESC",
+                                    ]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["number", "label", "desc"]
+                                    )
+                                ],
+                            )
+                        ),
+                    ]
+                ),
+            ),
+            tt(
+                input_label=None,
+                input_lang=None,
+                input_fmt=None,
+                input_cid="test",
+                input_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(
+                            label="label",
+                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                            type=sw_compdocs.component.LogicNodeType.TORQUE,
+                            description="desc",
+                        ),
+                    ]
+                ),
+                want_doc=sw_compdocs.document.Document(
+                    [
+                        sw_compdocs.document.Heading("connections"),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    [
+                                        "LOGIC_TABLE_HEAD_TYPE",
+                                        "LOGIC_TABLE_HEAD_LABEL",
+                                        "LOGIC_TABLE_HEAD_DESC",
+                                    ]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["power", "label", "desc"]
+                                    )
+                                ],
+                            )
+                        ),
+                    ]
+                ),
+            ),
+            tt(
+                input_label=None,
+                input_lang=None,
+                input_fmt=None,
+                input_cid="test",
+                input_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(
+                            label="label",
+                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                            type=sw_compdocs.component.LogicNodeType.WATER,
+                            description="desc",
+                        ),
+                    ]
+                ),
+                want_doc=sw_compdocs.document.Document(
+                    [
+                        sw_compdocs.document.Heading("connections"),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    [
+                                        "LOGIC_TABLE_HEAD_TYPE",
+                                        "LOGIC_TABLE_HEAD_LABEL",
+                                        "LOGIC_TABLE_HEAD_DESC",
+                                    ]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["fluid", "label", "desc"]
+                                    )
+                                ],
+                            )
+                        ),
+                    ]
+                ),
+            ),
+            tt(
+                input_label=None,
+                input_lang=None,
+                input_fmt=None,
+                input_cid="test",
+                input_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(
+                            label="label",
+                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                            type=sw_compdocs.component.LogicNodeType.ELECTRIC,
+                            description="desc",
+                        ),
+                    ]
+                ),
+                want_doc=sw_compdocs.document.Document(
+                    [
+                        sw_compdocs.document.Heading("connections"),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    [
+                                        "LOGIC_TABLE_HEAD_TYPE",
+                                        "LOGIC_TABLE_HEAD_LABEL",
+                                        "LOGIC_TABLE_HEAD_DESC",
+                                    ]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["electric", "label", "desc"]
+                                    )
+                                ],
+                            )
+                        ),
+                    ]
+                ),
+            ),
+            tt(
+                input_label=None,
+                input_lang=None,
+                input_fmt=None,
+                input_cid="test",
+                input_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(
+                            label="label",
+                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                            type=sw_compdocs.component.LogicNodeType.COMPOSITE,
+                            description="desc",
+                        ),
+                    ]
+                ),
+                want_doc=sw_compdocs.document.Document(
+                    [
+                        sw_compdocs.document.Heading("logic inputs"),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    [
+                                        "LOGIC_TABLE_HEAD_TYPE",
+                                        "LOGIC_TABLE_HEAD_LABEL",
+                                        "LOGIC_TABLE_HEAD_DESC",
+                                    ]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["composite", "label", "desc"]
+                                    )
+                                ],
+                            )
+                        ),
+                    ]
+                ),
+            ),
+            tt(
+                input_label=None,
+                input_lang=None,
+                input_fmt=None,
+                input_cid="test",
+                input_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(
+                            label="label",
+                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                            type=sw_compdocs.component.LogicNodeType.VIDEO,
+                            description="desc",
+                        ),
+                    ]
+                ),
+                want_doc=sw_compdocs.document.Document(
+                    [
+                        sw_compdocs.document.Heading("logic inputs"),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    [
+                                        "LOGIC_TABLE_HEAD_TYPE",
+                                        "LOGIC_TABLE_HEAD_LABEL",
+                                        "LOGIC_TABLE_HEAD_DESC",
+                                    ]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["video", "label", "desc"]
+                                    )
+                                ],
+                            )
+                        ),
+                    ]
+                ),
+            ),
+            tt(
+                input_label=None,
+                input_lang=None,
+                input_fmt=None,
+                input_cid="test",
+                input_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(
+                            label="label",
+                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                            type=sw_compdocs.component.LogicNodeType.AUDIO,
+                            description="desc",
+                        ),
+                    ]
+                ),
+                want_doc=sw_compdocs.document.Document(
+                    [
+                        sw_compdocs.document.Heading("logic inputs"),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    [
+                                        "LOGIC_TABLE_HEAD_TYPE",
+                                        "LOGIC_TABLE_HEAD_LABEL",
+                                        "LOGIC_TABLE_HEAD_DESC",
+                                    ]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["audio", "label", "desc"]
+                                    )
+                                ],
+                            )
+                        ),
+                    ]
+                ),
+            ),
+            tt(
+                input_label=None,
+                input_lang=None,
+                input_fmt=None,
+                input_cid="test",
+                input_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(
+                            label="label",
+                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                            type=sw_compdocs.component.LogicNodeType.ROPE,
+                            description="desc",
+                        ),
+                    ]
+                ),
+                want_doc=sw_compdocs.document.Document(
+                    [
+                        sw_compdocs.document.Heading("connections"),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    [
+                                        "LOGIC_TABLE_HEAD_TYPE",
+                                        "LOGIC_TABLE_HEAD_LABEL",
+                                        "LOGIC_TABLE_HEAD_DESC",
+                                    ]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["rope", "label", "desc"]
+                                    )
+                                ],
+                            )
+                        ),
+                    ]
+                ),
+            ),
+            # logic node mode
+            tt(
+                input_label=None,
+                input_lang=None,
+                input_fmt=None,
+                input_cid="test",
+                input_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(
+                            label="label",
+                            mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
+                            type=sw_compdocs.component.LogicNodeType.BOOL,
+                            description="desc",
+                        ),
+                    ]
+                ),
+                want_doc=sw_compdocs.document.Document(
+                    [
+                        sw_compdocs.document.Heading("logic outputs"),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    [
+                                        "LOGIC_TABLE_HEAD_TYPE",
+                                        "LOGIC_TABLE_HEAD_LABEL",
+                                        "LOGIC_TABLE_HEAD_DESC",
+                                    ]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["on/off", "label", "desc"]
+                                    )
+                                ],
+                            )
+                        ),
+                    ]
+                ),
+            ),
+            # lang
+            tt(
+                input_label=None,
+                input_lang=sw_compdocs.language.Language(
+                    [
+                        sw_compdocs.language.Translation(
+                            "", "", "logic inputs", "ロジック入力"
+                        ),
+                        sw_compdocs.language.Translation("", "", "on/off", "オン/オフ"),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_0_label", "", "", "ラベル"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_0_desc", "", "", "説明"
+                        ),
+                    ]
+                ),
+                input_fmt=None,
+                input_cid="test",
+                input_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(
+                            label="label",
+                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                            type=sw_compdocs.component.LogicNodeType.BOOL,
+                            description="desc",
+                        ),
+                    ]
+                ),
+                want_doc=sw_compdocs.document.Document(
+                    [
+                        sw_compdocs.document.Heading("ロジック入力"),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    [
+                                        "LOGIC_TABLE_HEAD_TYPE",
+                                        "LOGIC_TABLE_HEAD_LABEL",
+                                        "LOGIC_TABLE_HEAD_DESC",
+                                    ]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["オン/オフ", "ラベル", "説明"]
+                                    )
+                                ],
+                            )
+                        ),
+                    ]
+                ),
+            ),
+            tt(
+                input_label=None,
+                input_lang=sw_compdocs.language.Language(
+                    [
+                        sw_compdocs.language.Translation(
+                            "", "", "logic outputs", "ロジック出力"
+                        ),
+                        sw_compdocs.language.Translation("", "", "on/off", "オン/オフ"),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_0_label", "", "", "ラベル"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_0_desc", "", "", "説明"
+                        ),
+                    ]
+                ),
+                input_fmt=None,
+                input_cid="test",
+                input_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(
+                            label="label",
+                            mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
+                            type=sw_compdocs.component.LogicNodeType.BOOL,
+                            description="desc",
+                        ),
+                    ]
+                ),
+                want_doc=sw_compdocs.document.Document(
+                    [
+                        sw_compdocs.document.Heading("ロジック出力"),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    [
+                                        "LOGIC_TABLE_HEAD_TYPE",
+                                        "LOGIC_TABLE_HEAD_LABEL",
+                                        "LOGIC_TABLE_HEAD_DESC",
+                                    ]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["オン/オフ", "ラベル", "説明"]
+                                    )
+                                ],
+                            )
+                        ),
+                    ]
+                ),
+            ),
+            tt(
+                input_label=None,
+                input_lang=sw_compdocs.language.Language(
+                    [
+                        sw_compdocs.language.Translation("", "", "connections", "接続"),
+                        sw_compdocs.language.Translation("", "", "power", "動力"),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_0_label", "", "", "ラベル"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_0_desc", "", "", "説明"
+                        ),
+                    ]
+                ),
+                input_fmt=None,
+                input_cid="test",
+                input_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(
+                            label="label",
+                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                            type=sw_compdocs.component.LogicNodeType.TORQUE,
+                            description="desc",
+                        ),
+                    ]
+                ),
+                want_doc=sw_compdocs.document.Document(
+                    [
+                        sw_compdocs.document.Heading("接続"),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    [
+                                        "LOGIC_TABLE_HEAD_TYPE",
+                                        "LOGIC_TABLE_HEAD_LABEL",
+                                        "LOGIC_TABLE_HEAD_DESC",
+                                    ]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["動力", "ラベル", "説明"]
+                                    )
+                                ],
+                            )
+                        ),
+                    ]
+                ),
+            ),
+            # logic idx
+            tt(
+                input_label=None,
+                input_lang=sw_compdocs.language.Language(
+                    [
+                        sw_compdocs.language.Translation(
+                            "", "", "logic inputs", "logic inputs"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "", "", "logic outputs", "logic outputs"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "", "", "connections", "connections"
+                        ),
+                        sw_compdocs.language.Translation("", "", "on/off", "on/off"),
+                        sw_compdocs.language.Translation("", "", "power", "power"),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_0_label", "", "", "label 0"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_0_desc", "", "", "desc 0"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_1_label", "", "", "label 1"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_1_desc", "", "", "desc 1"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_2_label", "", "", "label 2"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_2_desc", "", "", "desc 2"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_3_label", "", "", "label 3"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_3_desc", "", "", "desc 3"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_4_label", "", "", "label 4"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_4_desc", "", "", "desc 4"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_5_label", "", "", "label 5"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_5_desc", "", "", "desc 5"
+                        ),
+                    ]
+                ),
+                input_fmt=None,
+                input_cid="test",
+                input_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(
+                            idx=0,
+                            label="label",
+                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                            type=sw_compdocs.component.LogicNodeType.BOOL,
+                            description="desc",
+                        ),
+                        sw_compdocs.component.LogicNode(
+                            idx=1,
+                            label="label",
+                            mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
+                            type=sw_compdocs.component.LogicNodeType.BOOL,
+                            description="desc",
+                        ),
+                        sw_compdocs.component.LogicNode(
+                            idx=2,
+                            label="label",
+                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                            type=sw_compdocs.component.LogicNodeType.TORQUE,
+                            description="desc",
+                        ),
+                        sw_compdocs.component.LogicNode(
+                            idx=3,
+                            label="label",
+                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                            type=sw_compdocs.component.LogicNodeType.BOOL,
+                            description="desc",
+                        ),
+                        sw_compdocs.component.LogicNode(
+                            idx=4,
+                            label="label",
+                            mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
+                            type=sw_compdocs.component.LogicNodeType.BOOL,
+                            description="desc",
+                        ),
+                        sw_compdocs.component.LogicNode(
+                            idx=5,
+                            label="label",
+                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                            type=sw_compdocs.component.LogicNodeType.TORQUE,
+                            description="desc",
+                        ),
+                    ]
+                ),
+                want_doc=sw_compdocs.document.Document(
+                    [
+                        sw_compdocs.document.Heading("logic inputs"),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    [
+                                        "LOGIC_TABLE_HEAD_TYPE",
+                                        "LOGIC_TABLE_HEAD_LABEL",
+                                        "LOGIC_TABLE_HEAD_DESC",
+                                    ]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["on/off", "label 0", "desc 0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["on/off", "label 3", "desc 3"]
+                                    ),
+                                ],
+                            )
+                        ),
+                        sw_compdocs.document.Heading("logic outputs"),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    [
+                                        "LOGIC_TABLE_HEAD_TYPE",
+                                        "LOGIC_TABLE_HEAD_LABEL",
+                                        "LOGIC_TABLE_HEAD_DESC",
+                                    ]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["on/off", "label 1", "desc 1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["on/off", "label 4", "desc 4"]
+                                    ),
+                                ],
+                            )
+                        ),
+                        sw_compdocs.document.Heading("connections"),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    [
+                                        "LOGIC_TABLE_HEAD_TYPE",
+                                        "LOGIC_TABLE_HEAD_LABEL",
+                                        "LOGIC_TABLE_HEAD_DESC",
+                                    ]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["power", "label 2", "desc 2"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["power", "label 5", "desc 5"]
+                                    ),
+                                ],
+                            )
+                        ),
+                    ]
+                ),
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                gen = sw_compdocs.generator.DocumentGenerator(
+                    label=tc.input_label, lang=tc.input_lang, fmt=tc.input_fmt
+                )
+                got_doc = gen.generate_logic(tc.input_cid, tc.input_lns)
                 self.assertEqual(got_doc, tc.want_doc)
 
 
@@ -1962,26 +3001,30 @@ class TestDocumentGeneratorGenerateComponent(unittest.TestCase):
                 self.assertEqual(got_doc, tc.want_doc)
 
 
-class TestDocumentGeneratorGenerateProperty(unittest.TestCase):
+class TestDocumentGeneratorGenerateComponentList(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(
             "tt",
             [
-                ("input_label", sw_compdocs.generator.LabelDict | None),
-                ("input_lang", sw_compdocs.language.Language | None),
-                ("input_comp", sw_compdocs.component.Definition),
+                ("input_comp_list", list[sw_compdocs.component.Definition]),
                 ("want_doc", sw_compdocs.document.Document),
             ],
         )
 
         for tc in [
             tt(
-                input_label=None,
-                input_lang=None,
-                input_comp=sw_compdocs.component.Definition(),
+                input_comp_list=[],
+                want_doc=sw_compdocs.document.Document(),
+            ),
+            tt(
+                input_comp_list=[
+                    sw_compdocs.component.Definition(name="A"),
+                    sw_compdocs.component.Definition(name="B"),
+                ],
                 want_doc=sw_compdocs.document.Document(
                     [
-                        sw_compdocs.document.Heading("PROPERTIES"),
+                        sw_compdocs.document.Heading("A", level=1),
+                        sw_compdocs.document.Heading("PROPERTIES", level=2),
                         sw_compdocs.document.Table(
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
@@ -2003,18 +3046,8 @@ class TestDocumentGeneratorGenerateProperty(unittest.TestCase):
                                 ],
                             )
                         ),
-                    ]
-                ),
-            ),
-            tt(
-                input_label=None,
-                input_lang=sw_compdocs.language.Language(
-                    [sw_compdocs.language.Translation("", "", "PROPERTIES", "プロパティ")]
-                ),
-                input_comp=sw_compdocs.component.Definition(),
-                want_doc=sw_compdocs.document.Document(
-                    [
-                        sw_compdocs.document.Heading("プロパティ"),
+                        sw_compdocs.document.Heading("B", level=1),
+                        sw_compdocs.document.Heading("PROPERTIES", level=2),
                         sw_compdocs.document.Table(
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
@@ -2041,167 +3074,17 @@ class TestDocumentGeneratorGenerateProperty(unittest.TestCase):
             ),
         ]:
             with self.subTest(tc=tc):
-                gen = sw_compdocs.generator.DocumentGenerator(
-                    label=tc.input_label, lang=tc.input_lang
-                )
-                got_doc = gen.generate_property(tc.input_comp)
+                gen = sw_compdocs.generator.DocumentGenerator()
+                got_doc = gen.generate_component_list(tc.input_comp_list)
                 self.assertEqual(got_doc, tc.want_doc)
 
 
-class TestDocumentGeneratorGeneratePropertyTable(unittest.TestCase):
+class TestDocumentGeneratorGenerate(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(
             "tt",
             [
-                ("input_label", sw_compdocs.generator.LabelDict | None),
-                ("input_comp", sw_compdocs.component.Definition),
-                ("want_tbl", sw_compdocs.document.Table),
-            ],
-        )
-
-        for tc in [
-            tt(
-                input_label=None,
-                input_comp=sw_compdocs.component.Definition(
-                    mass=10.0,
-                    value=100,
-                    tags="tags",
-                    voxel_min=sw_compdocs.component.VoxelPos(x=0, y=-1, z=-2),
-                    voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=2),
-                ),
-                want_tbl=sw_compdocs.document.Table(
-                    sw_compdocs.document.TableData(
-                        sw_compdocs.document.TableDataRow(
-                            ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
-                        ),
-                        [
-                            sw_compdocs.document.TableDataRow(
-                                ["PROP_TABLE_MASS_LABEL", "10"]
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                ["PROP_TABLE_DIMS_LABEL", "1x5x3"]
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                ["PROP_TABLE_COST_LABEL", "100"]
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                ["PROP_TABLE_TAGS_LABEL", "tags"]
-                            ),
-                        ],
-                    )
-                ),
-            ),
-            # mass format
-            tt(
-                input_label=None,
-                input_comp=sw_compdocs.component.Definition(
-                    mass=0.5,
-                    value=100,
-                    tags="tags",
-                    voxel_min=sw_compdocs.component.VoxelPos(x=0, y=-1, z=-2),
-                    voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=2),
-                ),
-                want_tbl=sw_compdocs.document.Table(
-                    sw_compdocs.document.TableData(
-                        sw_compdocs.document.TableDataRow(
-                            ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
-                        ),
-                        [
-                            sw_compdocs.document.TableDataRow(
-                                ["PROP_TABLE_MASS_LABEL", "0.5"]
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                ["PROP_TABLE_DIMS_LABEL", "1x5x3"]
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                ["PROP_TABLE_COST_LABEL", "100"]
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                ["PROP_TABLE_TAGS_LABEL", "tags"]
-                            ),
-                        ],
-                    )
-                ),
-            ),
-            tt(
-                input_label=None,
-                input_comp=sw_compdocs.component.Definition(
-                    mass=0.25,
-                    value=100,
-                    tags="tags",
-                    voxel_min=sw_compdocs.component.VoxelPos(x=0, y=-1, z=-2),
-                    voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=2),
-                ),
-                want_tbl=sw_compdocs.document.Table(
-                    sw_compdocs.document.TableData(
-                        sw_compdocs.document.TableDataRow(
-                            ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
-                        ),
-                        [
-                            sw_compdocs.document.TableDataRow(
-                                ["PROP_TABLE_MASS_LABEL", "0.25"]
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                ["PROP_TABLE_DIMS_LABEL", "1x5x3"]
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                ["PROP_TABLE_COST_LABEL", "100"]
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                ["PROP_TABLE_TAGS_LABEL", "tags"]
-                            ),
-                        ],
-                    )
-                ),
-            ),
-            # label
-            tt(
-                input_label=sw_compdocs.generator.LabelDict(
-                    {
-                        "PROP_TABLE_HEAD_LABEL": "Label",
-                        "PROP_TABLE_HEAD_VALUE": "Value",
-                        "PROP_TABLE_MASS_LABEL": "Mass",
-                        "PROP_TABLE_DIMS_LABEL": "Dimensions",
-                        "PROP_TABLE_COST_LABEL": "Cost",
-                        "PROP_TABLE_TAGS_LABEL": "Tags",
-                    }
-                ),
-                input_comp=sw_compdocs.component.Definition(
-                    mass=10.0,
-                    value=100,
-                    tags="tags",
-                    voxel_min=sw_compdocs.component.VoxelPos(x=0, y=-1, z=-2),
-                    voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=2),
-                ),
-                want_tbl=sw_compdocs.document.Table(
-                    sw_compdocs.document.TableData(
-                        sw_compdocs.document.TableDataRow(["Label", "Value"]),
-                        [
-                            sw_compdocs.document.TableDataRow(["Mass", "10"]),
-                            sw_compdocs.document.TableDataRow(["Dimensions", "1x5x3"]),
-                            sw_compdocs.document.TableDataRow(["Cost", "100"]),
-                            sw_compdocs.document.TableDataRow(["Tags", "tags"]),
-                        ],
-                    )
-                ),
-            ),
-        ]:
-            with self.subTest(tc=tc):
-                gen = sw_compdocs.generator.DocumentGenerator(label=tc.input_label)
-                got_tbl = gen.generate_property_table(tc.input_comp)
-                self.assertEqual(got_tbl, tc.want_tbl)
-
-
-class TestDocumentGeneratorGenerateLogic(unittest.TestCase):
-    def test_pass(self) -> None:
-        tt = typing.NamedTuple(
-            "tt",
-            [
-                ("input_label", sw_compdocs.generator.LabelDict | None),
-                ("input_lang", sw_compdocs.language.Language | None),
-                ("input_fmt", sw_compdocs.template.TemplateFormatter | None),
-                ("input_cid", str),
-                ("input_lns", sw_compdocs.component.LogicNodeList),
+                ("input_comp_list", list[sw_compdocs.component.Definition]),
                 ("want_doc", sw_compdocs.document.Document),
             ],
         )
@@ -2209,1581 +3092,698 @@ class TestDocumentGeneratorGenerateLogic(unittest.TestCase):
         for tc in [
             # empty
             tt(
-                input_label=None,
-                input_lang=None,
-                input_fmt=None,
-                input_cid="test",
-                input_lns=sw_compdocs.component.LogicNodeList(),
+                input_comp_list=[],
                 want_doc=sw_compdocs.document.Document(),
             ),
-            # logic node type
+            # single
             tt(
-                input_label=None,
-                input_lang=None,
-                input_fmt=None,
-                input_cid="test",
-                input_lns=sw_compdocs.component.LogicNodeList(
-                    [
-                        sw_compdocs.component.LogicNode(
-                            label="label",
-                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                            type=sw_compdocs.component.LogicNodeType.BOOL,
-                            description="desc",
-                        ),
-                    ]
-                ),
+                input_comp_list=[
+                    sw_compdocs.component.Definition(
+                        name="Blocks_1", category=sw_compdocs.component.Category.BLOCKS
+                    ),
+                ],
                 want_doc=sw_compdocs.document.Document(
                     [
-                        sw_compdocs.document.Heading("logic inputs"),
+                        sw_compdocs.document.Heading("Blocks", level=1),
+                        sw_compdocs.document.Heading("Blocks_1", level=2),
+                        sw_compdocs.document.Heading("PROPERTIES", level=3),
                         sw_compdocs.document.Table(
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
-                                    [
-                                        "LOGIC_TABLE_HEAD_TYPE",
-                                        "LOGIC_TABLE_HEAD_LABEL",
-                                        "LOGIC_TABLE_HEAD_DESC",
-                                    ]
+                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["on/off", "label", "desc"]
-                                    )
-                                ],
-                            )
-                        ),
-                    ]
-                ),
-            ),
-            tt(
-                input_label=None,
-                input_lang=None,
-                input_fmt=None,
-                input_cid="test",
-                input_lns=sw_compdocs.component.LogicNodeList(
-                    [
-                        sw_compdocs.component.LogicNode(
-                            label="label",
-                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                            type=sw_compdocs.component.LogicNodeType.FLOAT,
-                            description="desc",
-                        ),
-                    ]
-                ),
-                want_doc=sw_compdocs.document.Document(
-                    [
-                        sw_compdocs.document.Heading("logic inputs"),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "LOGIC_TABLE_HEAD_TYPE",
-                                        "LOGIC_TABLE_HEAD_LABEL",
-                                        "LOGIC_TABLE_HEAD_DESC",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["number", "label", "desc"]
-                                    )
-                                ],
-                            )
-                        ),
-                    ]
-                ),
-            ),
-            tt(
-                input_label=None,
-                input_lang=None,
-                input_fmt=None,
-                input_cid="test",
-                input_lns=sw_compdocs.component.LogicNodeList(
-                    [
-                        sw_compdocs.component.LogicNode(
-                            label="label",
-                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                            type=sw_compdocs.component.LogicNodeType.TORQUE,
-                            description="desc",
-                        ),
-                    ]
-                ),
-                want_doc=sw_compdocs.document.Document(
-                    [
-                        sw_compdocs.document.Heading("connections"),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "LOGIC_TABLE_HEAD_TYPE",
-                                        "LOGIC_TABLE_HEAD_LABEL",
-                                        "LOGIC_TABLE_HEAD_DESC",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["power", "label", "desc"]
-                                    )
-                                ],
-                            )
-                        ),
-                    ]
-                ),
-            ),
-            tt(
-                input_label=None,
-                input_lang=None,
-                input_fmt=None,
-                input_cid="test",
-                input_lns=sw_compdocs.component.LogicNodeList(
-                    [
-                        sw_compdocs.component.LogicNode(
-                            label="label",
-                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                            type=sw_compdocs.component.LogicNodeType.WATER,
-                            description="desc",
-                        ),
-                    ]
-                ),
-                want_doc=sw_compdocs.document.Document(
-                    [
-                        sw_compdocs.document.Heading("connections"),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "LOGIC_TABLE_HEAD_TYPE",
-                                        "LOGIC_TABLE_HEAD_LABEL",
-                                        "LOGIC_TABLE_HEAD_DESC",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["fluid", "label", "desc"]
-                                    )
-                                ],
-                            )
-                        ),
-                    ]
-                ),
-            ),
-            tt(
-                input_label=None,
-                input_lang=None,
-                input_fmt=None,
-                input_cid="test",
-                input_lns=sw_compdocs.component.LogicNodeList(
-                    [
-                        sw_compdocs.component.LogicNode(
-                            label="label",
-                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                            type=sw_compdocs.component.LogicNodeType.ELECTRIC,
-                            description="desc",
-                        ),
-                    ]
-                ),
-                want_doc=sw_compdocs.document.Document(
-                    [
-                        sw_compdocs.document.Heading("connections"),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "LOGIC_TABLE_HEAD_TYPE",
-                                        "LOGIC_TABLE_HEAD_LABEL",
-                                        "LOGIC_TABLE_HEAD_DESC",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["electric", "label", "desc"]
-                                    )
-                                ],
-                            )
-                        ),
-                    ]
-                ),
-            ),
-            tt(
-                input_label=None,
-                input_lang=None,
-                input_fmt=None,
-                input_cid="test",
-                input_lns=sw_compdocs.component.LogicNodeList(
-                    [
-                        sw_compdocs.component.LogicNode(
-                            label="label",
-                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                            type=sw_compdocs.component.LogicNodeType.COMPOSITE,
-                            description="desc",
-                        ),
-                    ]
-                ),
-                want_doc=sw_compdocs.document.Document(
-                    [
-                        sw_compdocs.document.Heading("logic inputs"),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "LOGIC_TABLE_HEAD_TYPE",
-                                        "LOGIC_TABLE_HEAD_LABEL",
-                                        "LOGIC_TABLE_HEAD_DESC",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["composite", "label", "desc"]
-                                    )
-                                ],
-                            )
-                        ),
-                    ]
-                ),
-            ),
-            tt(
-                input_label=None,
-                input_lang=None,
-                input_fmt=None,
-                input_cid="test",
-                input_lns=sw_compdocs.component.LogicNodeList(
-                    [
-                        sw_compdocs.component.LogicNode(
-                            label="label",
-                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                            type=sw_compdocs.component.LogicNodeType.VIDEO,
-                            description="desc",
-                        ),
-                    ]
-                ),
-                want_doc=sw_compdocs.document.Document(
-                    [
-                        sw_compdocs.document.Heading("logic inputs"),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "LOGIC_TABLE_HEAD_TYPE",
-                                        "LOGIC_TABLE_HEAD_LABEL",
-                                        "LOGIC_TABLE_HEAD_DESC",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["video", "label", "desc"]
-                                    )
-                                ],
-                            )
-                        ),
-                    ]
-                ),
-            ),
-            tt(
-                input_label=None,
-                input_lang=None,
-                input_fmt=None,
-                input_cid="test",
-                input_lns=sw_compdocs.component.LogicNodeList(
-                    [
-                        sw_compdocs.component.LogicNode(
-                            label="label",
-                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                            type=sw_compdocs.component.LogicNodeType.AUDIO,
-                            description="desc",
-                        ),
-                    ]
-                ),
-                want_doc=sw_compdocs.document.Document(
-                    [
-                        sw_compdocs.document.Heading("logic inputs"),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "LOGIC_TABLE_HEAD_TYPE",
-                                        "LOGIC_TABLE_HEAD_LABEL",
-                                        "LOGIC_TABLE_HEAD_DESC",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["audio", "label", "desc"]
-                                    )
-                                ],
-                            )
-                        ),
-                    ]
-                ),
-            ),
-            tt(
-                input_label=None,
-                input_lang=None,
-                input_fmt=None,
-                input_cid="test",
-                input_lns=sw_compdocs.component.LogicNodeList(
-                    [
-                        sw_compdocs.component.LogicNode(
-                            label="label",
-                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                            type=sw_compdocs.component.LogicNodeType.ROPE,
-                            description="desc",
-                        ),
-                    ]
-                ),
-                want_doc=sw_compdocs.document.Document(
-                    [
-                        sw_compdocs.document.Heading("connections"),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "LOGIC_TABLE_HEAD_TYPE",
-                                        "LOGIC_TABLE_HEAD_LABEL",
-                                        "LOGIC_TABLE_HEAD_DESC",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["rope", "label", "desc"]
-                                    )
-                                ],
-                            )
-                        ),
-                    ]
-                ),
-            ),
-            # logic node mode
-            tt(
-                input_label=None,
-                input_lang=None,
-                input_fmt=None,
-                input_cid="test",
-                input_lns=sw_compdocs.component.LogicNodeList(
-                    [
-                        sw_compdocs.component.LogicNode(
-                            label="label",
-                            mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
-                            type=sw_compdocs.component.LogicNodeType.BOOL,
-                            description="desc",
-                        ),
-                    ]
-                ),
-                want_doc=sw_compdocs.document.Document(
-                    [
-                        sw_compdocs.document.Heading("logic outputs"),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "LOGIC_TABLE_HEAD_TYPE",
-                                        "LOGIC_TABLE_HEAD_LABEL",
-                                        "LOGIC_TABLE_HEAD_DESC",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["on/off", "label", "desc"]
-                                    )
-                                ],
-                            )
-                        ),
-                    ]
-                ),
-            ),
-            # lang
-            tt(
-                input_label=None,
-                input_lang=sw_compdocs.language.Language(
-                    [
-                        sw_compdocs.language.Translation(
-                            "", "", "logic inputs", "ロジック入力"
-                        ),
-                        sw_compdocs.language.Translation("", "", "on/off", "オン/オフ"),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_0_label", "", "", "ラベル"
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_0_desc", "", "", "説明"
-                        ),
-                    ]
-                ),
-                input_fmt=None,
-                input_cid="test",
-                input_lns=sw_compdocs.component.LogicNodeList(
-                    [
-                        sw_compdocs.component.LogicNode(
-                            label="label",
-                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                            type=sw_compdocs.component.LogicNodeType.BOOL,
-                            description="desc",
-                        ),
-                    ]
-                ),
-                want_doc=sw_compdocs.document.Document(
-                    [
-                        sw_compdocs.document.Heading("ロジック入力"),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "LOGIC_TABLE_HEAD_TYPE",
-                                        "LOGIC_TABLE_HEAD_LABEL",
-                                        "LOGIC_TABLE_HEAD_DESC",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["オン/オフ", "ラベル", "説明"]
-                                    )
-                                ],
-                            )
-                        ),
-                    ]
-                ),
-            ),
-            tt(
-                input_label=None,
-                input_lang=sw_compdocs.language.Language(
-                    [
-                        sw_compdocs.language.Translation(
-                            "", "", "logic outputs", "ロジック出力"
-                        ),
-                        sw_compdocs.language.Translation("", "", "on/off", "オン/オフ"),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_0_label", "", "", "ラベル"
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_0_desc", "", "", "説明"
-                        ),
-                    ]
-                ),
-                input_fmt=None,
-                input_cid="test",
-                input_lns=sw_compdocs.component.LogicNodeList(
-                    [
-                        sw_compdocs.component.LogicNode(
-                            label="label",
-                            mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
-                            type=sw_compdocs.component.LogicNodeType.BOOL,
-                            description="desc",
-                        ),
-                    ]
-                ),
-                want_doc=sw_compdocs.document.Document(
-                    [
-                        sw_compdocs.document.Heading("ロジック出力"),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "LOGIC_TABLE_HEAD_TYPE",
-                                        "LOGIC_TABLE_HEAD_LABEL",
-                                        "LOGIC_TABLE_HEAD_DESC",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["オン/オフ", "ラベル", "説明"]
-                                    )
-                                ],
-                            )
-                        ),
-                    ]
-                ),
-            ),
-            tt(
-                input_label=None,
-                input_lang=sw_compdocs.language.Language(
-                    [
-                        sw_compdocs.language.Translation("", "", "connections", "接続"),
-                        sw_compdocs.language.Translation("", "", "power", "動力"),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_0_label", "", "", "ラベル"
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_0_desc", "", "", "説明"
-                        ),
-                    ]
-                ),
-                input_fmt=None,
-                input_cid="test",
-                input_lns=sw_compdocs.component.LogicNodeList(
-                    [
-                        sw_compdocs.component.LogicNode(
-                            label="label",
-                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                            type=sw_compdocs.component.LogicNodeType.TORQUE,
-                            description="desc",
-                        ),
-                    ]
-                ),
-                want_doc=sw_compdocs.document.Document(
-                    [
-                        sw_compdocs.document.Heading("接続"),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "LOGIC_TABLE_HEAD_TYPE",
-                                        "LOGIC_TABLE_HEAD_LABEL",
-                                        "LOGIC_TABLE_HEAD_DESC",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["動力", "ラベル", "説明"]
-                                    )
-                                ],
-                            )
-                        ),
-                    ]
-                ),
-            ),
-            # logic idx
-            tt(
-                input_label=None,
-                input_lang=sw_compdocs.language.Language(
-                    [
-                        sw_compdocs.language.Translation(
-                            "", "", "logic inputs", "logic inputs"
-                        ),
-                        sw_compdocs.language.Translation(
-                            "", "", "logic outputs", "logic outputs"
-                        ),
-                        sw_compdocs.language.Translation(
-                            "", "", "connections", "connections"
-                        ),
-                        sw_compdocs.language.Translation("", "", "on/off", "on/off"),
-                        sw_compdocs.language.Translation("", "", "power", "power"),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_0_label", "", "", "label 0"
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_0_desc", "", "", "desc 0"
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_1_label", "", "", "label 1"
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_1_desc", "", "", "desc 1"
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_2_label", "", "", "label 2"
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_2_desc", "", "", "desc 2"
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_3_label", "", "", "label 3"
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_3_desc", "", "", "desc 3"
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_4_label", "", "", "label 4"
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_4_desc", "", "", "desc 4"
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_5_label", "", "", "label 5"
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_5_desc", "", "", "desc 5"
-                        ),
-                    ]
-                ),
-                input_fmt=None,
-                input_cid="test",
-                input_lns=sw_compdocs.component.LogicNodeList(
-                    [
-                        sw_compdocs.component.LogicNode(
-                            idx=0,
-                            label="label",
-                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                            type=sw_compdocs.component.LogicNodeType.BOOL,
-                            description="desc",
-                        ),
-                        sw_compdocs.component.LogicNode(
-                            idx=1,
-                            label="label",
-                            mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
-                            type=sw_compdocs.component.LogicNodeType.BOOL,
-                            description="desc",
-                        ),
-                        sw_compdocs.component.LogicNode(
-                            idx=2,
-                            label="label",
-                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                            type=sw_compdocs.component.LogicNodeType.TORQUE,
-                            description="desc",
-                        ),
-                        sw_compdocs.component.LogicNode(
-                            idx=3,
-                            label="label",
-                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                            type=sw_compdocs.component.LogicNodeType.BOOL,
-                            description="desc",
-                        ),
-                        sw_compdocs.component.LogicNode(
-                            idx=4,
-                            label="label",
-                            mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
-                            type=sw_compdocs.component.LogicNodeType.BOOL,
-                            description="desc",
-                        ),
-                        sw_compdocs.component.LogicNode(
-                            idx=5,
-                            label="label",
-                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                            type=sw_compdocs.component.LogicNodeType.TORQUE,
-                            description="desc",
-                        ),
-                    ]
-                ),
-                want_doc=sw_compdocs.document.Document(
-                    [
-                        sw_compdocs.document.Heading("logic inputs"),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "LOGIC_TABLE_HEAD_TYPE",
-                                        "LOGIC_TABLE_HEAD_LABEL",
-                                        "LOGIC_TABLE_HEAD_DESC",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["on/off", "label 0", "desc 0"]
+                                        ["PROP_TABLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["on/off", "label 3", "desc 3"]
+                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_COST_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_TAGS_LABEL", ""]
                                     ),
                                 ],
                             )
                         ),
-                        sw_compdocs.document.Heading("logic outputs"),
+                    ],
+                ),
+            ),
+            # sort comp_list name
+            tt(
+                input_comp_list=[
+                    sw_compdocs.component.Definition(
+                        cid="blocks_1",
+                        name="Blocks_3",
+                        value=1,
+                        category=sw_compdocs.component.Category.BLOCKS,
+                    ),
+                    sw_compdocs.component.Definition(
+                        cid="blocks_2",
+                        name="Blocks_2",
+                        value=2,
+                        category=sw_compdocs.component.Category.BLOCKS,
+                    ),
+                    sw_compdocs.component.Definition(
+                        cid="blocks_3",
+                        name="Blocks_1",
+                        value=3,
+                        category=sw_compdocs.component.Category.BLOCKS,
+                    ),
+                ],
+                want_doc=sw_compdocs.document.Document(
+                    [
+                        sw_compdocs.document.Heading("Blocks", level=1),
+                        sw_compdocs.document.Heading("Blocks_1", level=2),
+                        sw_compdocs.document.Heading("PROPERTIES", level=3),
                         sw_compdocs.document.Table(
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
-                                    [
-                                        "LOGIC_TABLE_HEAD_TYPE",
-                                        "LOGIC_TABLE_HEAD_LABEL",
-                                        "LOGIC_TABLE_HEAD_DESC",
-                                    ]
+                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["on/off", "label 1", "desc 1"]
+                                        ["PROP_TABLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["on/off", "label 4", "desc 4"]
+                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_COST_LABEL", "3"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_TAGS_LABEL", ""]
                                     ),
                                 ],
                             )
                         ),
-                        sw_compdocs.document.Heading("connections"),
+                        sw_compdocs.document.Heading("Blocks_2", level=2),
+                        sw_compdocs.document.Heading("PROPERTIES", level=3),
                         sw_compdocs.document.Table(
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
-                                    [
-                                        "LOGIC_TABLE_HEAD_TYPE",
-                                        "LOGIC_TABLE_HEAD_LABEL",
-                                        "LOGIC_TABLE_HEAD_DESC",
-                                    ]
+                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["power", "label 2", "desc 2"]
+                                        ["PROP_TABLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["power", "label 5", "desc 5"]
+                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_COST_LABEL", "2"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_TAGS_LABEL", ""]
                                     ),
                                 ],
                             )
                         ),
-                    ]
+                        sw_compdocs.document.Heading("Blocks_3", level=2),
+                        sw_compdocs.document.Heading("PROPERTIES", level=3),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_COST_LABEL", "1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                ],
+                            )
+                        ),
+                    ],
+                ),
+            ),
+            # sort comp_list cid
+            tt(
+                input_comp_list=[
+                    sw_compdocs.component.Definition(
+                        cid="blocks_3",
+                        name="Blocks_1",
+                        value=3,
+                        category=sw_compdocs.component.Category.BLOCKS,
+                    ),
+                    sw_compdocs.component.Definition(
+                        cid="blocks_2",
+                        name="Blocks_1",
+                        value=2,
+                        category=sw_compdocs.component.Category.BLOCKS,
+                    ),
+                    sw_compdocs.component.Definition(
+                        cid="blocks_1",
+                        name="Blocks_1",
+                        value=1,
+                        category=sw_compdocs.component.Category.BLOCKS,
+                    ),
+                ],
+                want_doc=sw_compdocs.document.Document(
+                    [
+                        sw_compdocs.document.Heading("Blocks", level=1),
+                        sw_compdocs.document.Heading("Blocks_1", level=2),
+                        sw_compdocs.document.Heading("PROPERTIES", level=3),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_COST_LABEL", "1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                ],
+                            )
+                        ),
+                        sw_compdocs.document.Heading("Blocks_1", level=2),
+                        sw_compdocs.document.Heading("PROPERTIES", level=3),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_COST_LABEL", "2"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                ],
+                            )
+                        ),
+                        sw_compdocs.document.Heading("Blocks_1", level=2),
+                        sw_compdocs.document.Heading("PROPERTIES", level=3),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_COST_LABEL", "3"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                ],
+                            )
+                        ),
+                    ],
+                ),
+            ),
+            # sort category
+            tt(
+                input_comp_list=[
+                    sw_compdocs.component.Definition(
+                        name="WINDOWS_0",
+                        category=sw_compdocs.component.Category.WINDOWS,
+                    ),
+                    sw_compdocs.component.Definition(
+                        name="INDUSTRY_0",
+                        category=sw_compdocs.component.Category.INDUSTRY,
+                    ),
+                    sw_compdocs.component.Definition(
+                        name="MODULAR_ENGINES_0",
+                        category=sw_compdocs.component.Category.MODULAR_ENGINES,
+                    ),
+                    sw_compdocs.component.Definition(
+                        name="WEAPONS_0",
+                        category=sw_compdocs.component.Category.WEAPONS,
+                    ),
+                    sw_compdocs.component.Definition(
+                        name="JET_ENGINES_0",
+                        category=sw_compdocs.component.Category.JET_ENGINES,
+                    ),
+                    sw_compdocs.component.Definition(
+                        name="ELECTRIC_0",
+                        category=sw_compdocs.component.Category.ELECTRIC,
+                    ),
+                    sw_compdocs.component.Definition(
+                        name="FLUID_0",
+                        category=sw_compdocs.component.Category.FLUID,
+                    ),
+                    sw_compdocs.component.Definition(
+                        name="DECORATIVE_0",
+                        category=sw_compdocs.component.Category.DECORATIVE,
+                    ),
+                    sw_compdocs.component.Definition(
+                        name="SENSORS_0",
+                        category=sw_compdocs.component.Category.SENSORS,
+                    ),
+                    sw_compdocs.component.Definition(
+                        name="DISPLAYS_0",
+                        category=sw_compdocs.component.Category.DISPLAYS,
+                    ),
+                    sw_compdocs.component.Definition(
+                        name="LOGIC_0",
+                        category=sw_compdocs.component.Category.LOGIC,
+                    ),
+                    sw_compdocs.component.Definition(
+                        name="SPECIALIST_EQUIPMENT_0",
+                        category=sw_compdocs.component.Category.SPECIALIST_EQUIPMENT,
+                    ),
+                    sw_compdocs.component.Definition(
+                        name="PROPULSION_0",
+                        category=sw_compdocs.component.Category.PROPULSION,
+                    ),
+                    sw_compdocs.component.Definition(
+                        name="MECHANICS_0",
+                        category=sw_compdocs.component.Category.MECHANICS,
+                    ),
+                    sw_compdocs.component.Definition(
+                        name="VEHICLE_CONTROL_0",
+                        category=sw_compdocs.component.Category.VEHICLE_CONTROL,
+                    ),
+                    sw_compdocs.component.Definition(
+                        name="BLOCKS_0",
+                        category=sw_compdocs.component.Category.BLOCKS,
+                    ),
+                ],
+                want_doc=sw_compdocs.document.Document(
+                    [
+                        sw_compdocs.document.Heading("Blocks", level=1),
+                        sw_compdocs.document.Heading("BLOCKS_0", level=2),
+                        sw_compdocs.document.Heading("PROPERTIES", level=3),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_COST_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                ],
+                            )
+                        ),
+                        sw_compdocs.document.Heading("Vehicle Control", level=1),
+                        sw_compdocs.document.Heading("VEHICLE_CONTROL_0", level=2),
+                        sw_compdocs.document.Heading("PROPERTIES", level=3),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_COST_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                ],
+                            )
+                        ),
+                        sw_compdocs.document.Heading("Mechanics", level=1),
+                        sw_compdocs.document.Heading("MECHANICS_0", level=2),
+                        sw_compdocs.document.Heading("PROPERTIES", level=3),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_COST_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                ],
+                            )
+                        ),
+                        sw_compdocs.document.Heading("Propulsion", level=1),
+                        sw_compdocs.document.Heading("PROPULSION_0", level=2),
+                        sw_compdocs.document.Heading("PROPERTIES", level=3),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_COST_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                ],
+                            )
+                        ),
+                        sw_compdocs.document.Heading("Specialist Equipment", level=1),
+                        sw_compdocs.document.Heading("SPECIALIST_EQUIPMENT_0", level=2),
+                        sw_compdocs.document.Heading("PROPERTIES", level=3),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_COST_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                ],
+                            )
+                        ),
+                        sw_compdocs.document.Heading("Logic", level=1),
+                        sw_compdocs.document.Heading("LOGIC_0", level=2),
+                        sw_compdocs.document.Heading("PROPERTIES", level=3),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_COST_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                ],
+                            )
+                        ),
+                        sw_compdocs.document.Heading("Displays", level=1),
+                        sw_compdocs.document.Heading("DISPLAYS_0", level=2),
+                        sw_compdocs.document.Heading("PROPERTIES", level=3),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_COST_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                ],
+                            )
+                        ),
+                        sw_compdocs.document.Heading("Sensors", level=1),
+                        sw_compdocs.document.Heading("SENSORS_0", level=2),
+                        sw_compdocs.document.Heading("PROPERTIES", level=3),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_COST_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                ],
+                            )
+                        ),
+                        sw_compdocs.document.Heading("Decorative", level=1),
+                        sw_compdocs.document.Heading("DECORATIVE_0", level=2),
+                        sw_compdocs.document.Heading("PROPERTIES", level=3),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_COST_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                ],
+                            )
+                        ),
+                        sw_compdocs.document.Heading("Fluid", level=1),
+                        sw_compdocs.document.Heading("FLUID_0", level=2),
+                        sw_compdocs.document.Heading("PROPERTIES", level=3),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_COST_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                ],
+                            )
+                        ),
+                        sw_compdocs.document.Heading("Electric", level=1),
+                        sw_compdocs.document.Heading("ELECTRIC_0", level=2),
+                        sw_compdocs.document.Heading("PROPERTIES", level=3),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_COST_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                ],
+                            )
+                        ),
+                        sw_compdocs.document.Heading("Jet Engines", level=1),
+                        sw_compdocs.document.Heading("JET_ENGINES_0", level=2),
+                        sw_compdocs.document.Heading("PROPERTIES", level=3),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_COST_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                ],
+                            )
+                        ),
+                        sw_compdocs.document.Heading("Weapons", level=1),
+                        sw_compdocs.document.Heading("WEAPONS_0", level=2),
+                        sw_compdocs.document.Heading("PROPERTIES", level=3),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_COST_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                ],
+                            )
+                        ),
+                        sw_compdocs.document.Heading("Modular Engines", level=1),
+                        sw_compdocs.document.Heading("MODULAR_ENGINES_0", level=2),
+                        sw_compdocs.document.Heading("PROPERTIES", level=3),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_COST_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                ],
+                            )
+                        ),
+                        sw_compdocs.document.Heading("Industry", level=1),
+                        sw_compdocs.document.Heading("INDUSTRY_0", level=2),
+                        sw_compdocs.document.Heading("PROPERTIES", level=3),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_COST_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                ],
+                            )
+                        ),
+                        sw_compdocs.document.Heading("Windows", level=1),
+                        sw_compdocs.document.Heading("WINDOWS_0", level=2),
+                        sw_compdocs.document.Heading("PROPERTIES", level=3),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_COST_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                ],
+                            )
+                        ),
+                    ],
                 ),
             ),
         ]:
             with self.subTest(tc=tc):
-                gen = sw_compdocs.generator.DocumentGenerator(
-                    label=tc.input_label, lang=tc.input_lang, fmt=tc.input_fmt
-                )
-                got_doc = gen.generate_logic(tc.input_cid, tc.input_lns)
+                gen = sw_compdocs.generator.DocumentGenerator()
+                got_doc = gen.generate(tc.input_comp_list)
                 self.assertEqual(got_doc, tc.want_doc)
-
-
-class TestDocumentGeneratorGenerateLogicTable(unittest.TestCase):
-    def test_pass(self) -> None:
-        tt = typing.NamedTuple(
-            "tt",
-            [
-                ("input_label", sw_compdocs.generator.LabelDict | None),
-                ("input_lang", sw_compdocs.language.Language | None),
-                ("input_fmt", sw_compdocs.template.TemplateFormatter | None),
-                ("input_cid", str),
-                ("input_lns", sw_compdocs.component.LogicNodeList),
-                ("want_tbl", sw_compdocs.document.Table),
-            ],
-        )
-
-        for tc in [
-            tt(
-                input_label=sw_compdocs.generator.LabelDict(
-                    {
-                        "LOGIC_TABLE_HEAD_TYPE": "種別",
-                        "LOGIC_TABLE_HEAD_LABEL": "ラベル",
-                        "LOGIC_TABLE_HEAD_DESC": "説明",
-                    }
-                ),
-                input_lang=None,
-                input_fmt=None,
-                input_cid="test",
-                input_lns=sw_compdocs.component.LogicNodeList([]),
-                want_tbl=sw_compdocs.document.Table(
-                    sw_compdocs.document.TableData(
-                        sw_compdocs.document.TableDataRow(["種別", "ラベル", "説明"]),
-                        [],
-                    )
-                ),
-            ),
-            tt(
-                input_label=sw_compdocs.generator.LabelDict(
-                    {
-                        "LOGIC_TABLE_HEAD_TYPE": "種別",
-                        "LOGIC_TABLE_HEAD_LABEL": "ラベル",
-                        "LOGIC_TABLE_HEAD_DESC": "説明",
-                    }
-                ),
-                input_lang=sw_compdocs.language.Language(
-                    [
-                        sw_compdocs.language.Translation(
-                            "",
-                            "",
-                            "on/off",
-                            "オン/オフ",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "",
-                            "",
-                            "number",
-                            "数値",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_0_label",
-                            "",
-                            "label 0 $[label_0]",
-                            "ラベル 0 $[label_0]",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_0_desc",
-                            "",
-                            "desc 0 $[desc_0]",
-                            "説明 0 $[desc_0]",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_1_label",
-                            "",
-                            "label 1 $[label_1]",
-                            "ラベル 1 $[label_1]",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_1_desc",
-                            "",
-                            "desc 1 $[desc_1]",
-                            "説明 1 $[desc_1]",
-                        ),
-                    ]
-                ),
-                input_fmt=sw_compdocs.template.TemplateFormatter(
-                    {
-                        "label_0": "label_0_fmt",
-                        "desc_0": "desc_0_fmt",
-                        "label_1": "label_1_fmt",
-                        "desc_1": "desc_1_fmt",
-                    }
-                ),
-                input_cid="test",
-                input_lns=sw_compdocs.component.LogicNodeList(
-                    [
-                        sw_compdocs.component.LogicNode(
-                            idx=0,
-                            label="label 0 $[label_0]",
-                            type=sw_compdocs.component.LogicNodeType.BOOL,
-                            description="desc 0 $[desc_0]",
-                        ),
-                        sw_compdocs.component.LogicNode(
-                            idx=1,
-                            label="label 1 $[label_1]",
-                            type=sw_compdocs.component.LogicNodeType.FLOAT,
-                            description="desc 1 $[desc_1]",
-                        ),
-                    ]
-                ),
-                want_tbl=sw_compdocs.document.Table(
-                    sw_compdocs.document.TableData(
-                        sw_compdocs.document.TableDataRow(["種別", "ラベル", "説明"]),
-                        [
-                            sw_compdocs.document.TableDataRow(
-                                ["オン/オフ", "ラベル 0 label_0_fmt", "説明 0 desc_0_fmt"]
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                ["数値", "ラベル 1 label_1_fmt", "説明 1 desc_1_fmt"]
-                            ),
-                        ],
-                    )
-                ),
-            ),
-            tt(
-                input_label=None,
-                input_lang=sw_compdocs.language.Language(
-                    [
-                        sw_compdocs.language.Translation(
-                            "",
-                            "",
-                            "on/off",
-                            "オン/オフ",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "",
-                            "",
-                            "number",
-                            "数値",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_0_label",
-                            "",
-                            "label 0 $[label_0]",
-                            "ラベル 0 $[label_0]",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_0_desc",
-                            "",
-                            "desc 0 $[desc_0]",
-                            "説明 0 $[desc_0]",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_1_label",
-                            "",
-                            "label 1 $[label_1]",
-                            "ラベル 1 $[label_1]",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_1_desc",
-                            "",
-                            "desc 1 $[desc_1]",
-                            "説明 1 $[desc_1]",
-                        ),
-                    ]
-                ),
-                input_fmt=sw_compdocs.template.TemplateFormatter(
-                    {
-                        "label_0": "label_0_fmt",
-                        "desc_0": "desc_0_fmt",
-                        "label_1": "label_1_fmt",
-                        "desc_1": "desc_1_fmt",
-                    }
-                ),
-                input_cid="test",
-                input_lns=sw_compdocs.component.LogicNodeList(
-                    [
-                        sw_compdocs.component.LogicNode(
-                            idx=0,
-                            label="label 0 $[label_0]",
-                            type=sw_compdocs.component.LogicNodeType.BOOL,
-                            description="desc 0 $[desc_0]",
-                        ),
-                        sw_compdocs.component.LogicNode(
-                            idx=1,
-                            label="label 1 $[label_1]",
-                            type=sw_compdocs.component.LogicNodeType.FLOAT,
-                            description="desc 1 $[desc_1]",
-                        ),
-                    ]
-                ),
-                want_tbl=sw_compdocs.document.Table(
-                    sw_compdocs.document.TableData(
-                        sw_compdocs.document.TableDataRow(
-                            [
-                                "LOGIC_TABLE_HEAD_TYPE",
-                                "LOGIC_TABLE_HEAD_LABEL",
-                                "LOGIC_TABLE_HEAD_DESC",
-                            ]
-                        ),
-                        [
-                            sw_compdocs.document.TableDataRow(
-                                ["オン/オフ", "ラベル 0 label_0_fmt", "説明 0 desc_0_fmt"]
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                ["数値", "ラベル 1 label_1_fmt", "説明 1 desc_1_fmt"]
-                            ),
-                        ],
-                    )
-                ),
-            ),
-            tt(
-                input_label=sw_compdocs.generator.LabelDict(
-                    {
-                        "LOGIC_TABLE_HEAD_TYPE": "種別",
-                        "LOGIC_TABLE_HEAD_LABEL": "ラベル",
-                        "LOGIC_TABLE_HEAD_DESC": "説明",
-                    }
-                ),
-                input_lang=None,
-                input_fmt=sw_compdocs.template.TemplateFormatter(
-                    {
-                        "label_0": "label_0_fmt",
-                        "desc_0": "desc_0_fmt",
-                        "label_1": "label_1_fmt",
-                        "desc_1": "desc_1_fmt",
-                    }
-                ),
-                input_cid="test",
-                input_lns=sw_compdocs.component.LogicNodeList(
-                    [
-                        sw_compdocs.component.LogicNode(
-                            idx=0,
-                            label="label 0 $[label_0]",
-                            type=sw_compdocs.component.LogicNodeType.BOOL,
-                            description="desc 0 $[desc_0]",
-                        ),
-                        sw_compdocs.component.LogicNode(
-                            idx=1,
-                            label="label 1 $[label_1]",
-                            type=sw_compdocs.component.LogicNodeType.FLOAT,
-                            description="desc 1 $[desc_1]",
-                        ),
-                    ]
-                ),
-                want_tbl=sw_compdocs.document.Table(
-                    sw_compdocs.document.TableData(
-                        sw_compdocs.document.TableDataRow(["種別", "ラベル", "説明"]),
-                        [
-                            sw_compdocs.document.TableDataRow(
-                                ["on/off", "label 0 label_0_fmt", "desc 0 desc_0_fmt"]
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                ["number", "label 1 label_1_fmt", "desc 1 desc_1_fmt"]
-                            ),
-                        ],
-                    )
-                ),
-            ),
-            tt(
-                input_label=sw_compdocs.generator.LabelDict(
-                    {
-                        "LOGIC_TABLE_HEAD_TYPE": "種別",
-                        "LOGIC_TABLE_HEAD_LABEL": "ラベル",
-                        "LOGIC_TABLE_HEAD_DESC": "説明",
-                    }
-                ),
-                input_lang=sw_compdocs.language.Language(
-                    [
-                        sw_compdocs.language.Translation(
-                            "",
-                            "",
-                            "on/off",
-                            "オン/オフ",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "",
-                            "",
-                            "number",
-                            "数値",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_0_label",
-                            "",
-                            "label 0 $[label_0]",
-                            "ラベル 0 $[label_0]",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_0_desc",
-                            "",
-                            "desc 0 $[desc_0]",
-                            "説明 0 $[desc_0]",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_1_label",
-                            "",
-                            "label 1 $[label_1]",
-                            "ラベル 1 $[label_1]",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_1_desc",
-                            "",
-                            "desc 1 $[desc_1]",
-                            "説明 1 $[desc_1]",
-                        ),
-                    ]
-                ),
-                input_fmt=None,
-                input_cid="test",
-                input_lns=sw_compdocs.component.LogicNodeList(
-                    [
-                        sw_compdocs.component.LogicNode(
-                            idx=0,
-                            label="label 0 $[label_0]",
-                            type=sw_compdocs.component.LogicNodeType.BOOL,
-                            description="desc 0 $[desc_0]",
-                        ),
-                        sw_compdocs.component.LogicNode(
-                            idx=1,
-                            label="label 1 $[label_1]",
-                            type=sw_compdocs.component.LogicNodeType.FLOAT,
-                            description="desc 1 $[desc_1]",
-                        ),
-                    ]
-                ),
-                want_tbl=sw_compdocs.document.Table(
-                    sw_compdocs.document.TableData(
-                        sw_compdocs.document.TableDataRow(["種別", "ラベル", "説明"]),
-                        [
-                            sw_compdocs.document.TableDataRow(
-                                ["オン/オフ", "ラベル 0 $[label_0]", "説明 0 $[desc_0]"]
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                ["数値", "ラベル 1 $[label_1]", "説明 1 $[desc_1]"]
-                            ),
-                        ],
-                    )
-                ),
-            ),
-            tt(
-                input_label=sw_compdocs.generator.LabelDict(
-                    {
-                        "LOGIC_TABLE_HEAD_TYPE": "種別",
-                        "LOGIC_TABLE_HEAD_LABEL": "ラベル",
-                        "LOGIC_TABLE_HEAD_DESC": "説明",
-                    }
-                ),
-                input_lang=sw_compdocs.language.Language(
-                    [
-                        sw_compdocs.language.Translation(
-                            "",
-                            "",
-                            "on/off",
-                            "オン/オフ",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "",
-                            "",
-                            "number",
-                            "数値",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_3_label",
-                            "",
-                            "label 0 $[label_0]",
-                            "ラベル 0 $[label_0]",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_3_desc",
-                            "",
-                            "desc 0 $[desc_0]",
-                            "説明 0 $[desc_0]",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_5_label",
-                            "",
-                            "label 1 $[label_1]",
-                            "ラベル 1 $[label_1]",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_5_desc",
-                            "",
-                            "desc 1 $[desc_1]",
-                            "説明 1 $[desc_1]",
-                        ),
-                    ]
-                ),
-                input_fmt=sw_compdocs.template.TemplateFormatter(
-                    {
-                        "label_0": "label_0_fmt",
-                        "desc_0": "desc_0_fmt",
-                        "label_1": "label_1_fmt",
-                        "desc_1": "desc_1_fmt",
-                    }
-                ),
-                input_cid="test",
-                input_lns=sw_compdocs.component.LogicNodeList(
-                    [
-                        sw_compdocs.component.LogicNode(
-                            idx=3,
-                            label="label 0 $[label_0]",
-                            type=sw_compdocs.component.LogicNodeType.BOOL,
-                            description="desc 0 $[desc_0]",
-                        ),
-                        sw_compdocs.component.LogicNode(
-                            idx=5,
-                            label="label 1 $[label_1]",
-                            type=sw_compdocs.component.LogicNodeType.FLOAT,
-                            description="desc 1 $[desc_1]",
-                        ),
-                    ]
-                ),
-                want_tbl=sw_compdocs.document.Table(
-                    sw_compdocs.document.TableData(
-                        sw_compdocs.document.TableDataRow(["種別", "ラベル", "説明"]),
-                        [
-                            sw_compdocs.document.TableDataRow(
-                                ["オン/オフ", "ラベル 0 label_0_fmt", "説明 0 desc_0_fmt"]
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                ["数値", "ラベル 1 label_1_fmt", "説明 1 desc_1_fmt"]
-                            ),
-                        ],
-                    )
-                ),
-            ),
-            tt(
-                input_label=None,
-                input_lang=sw_compdocs.language.Language(
-                    [
-                        sw_compdocs.language.Translation(
-                            "",
-                            "",
-                            "on/off",
-                            "オン/オフ",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_-1_label",
-                            "",
-                            "label -1",
-                            "ラベル -1",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_-1_desc",
-                            "",
-                            "desc -1",
-                            "説明 -1",
-                        ),
-                    ]
-                ),
-                input_fmt=None,
-                input_cid="test",
-                input_lns=sw_compdocs.component.LogicNodeList(
-                    [
-                        sw_compdocs.component.LogicNode(
-                            idx=-1,
-                            label="",
-                            type=sw_compdocs.component.LogicNodeType.BOOL,
-                            description="",
-                        )
-                    ]
-                ),
-                want_tbl=sw_compdocs.document.Table(
-                    sw_compdocs.document.TableData(
-                        sw_compdocs.document.TableDataRow(
-                            [
-                                "LOGIC_TABLE_HEAD_TYPE",
-                                "LOGIC_TABLE_HEAD_LABEL",
-                                "LOGIC_TABLE_HEAD_DESC",
-                            ]
-                        ),
-                        [
-                            sw_compdocs.document.TableDataRow(
-                                [
-                                    "オン/オフ",
-                                    "ラベル -1",
-                                    "説明 -1",
-                                ]
-                            )
-                        ],
-                    )
-                ),
-            ),
-        ]:
-            with self.subTest(tc=tc):
-                gen = sw_compdocs.generator.DocumentGenerator(
-                    label=tc.input_label, lang=tc.input_lang, fmt=tc.input_fmt
-                )
-                got_tbl = gen.generate_logic_table(tc.input_cid, tc.input_lns)
-                self.assertEqual(got_tbl, tc.want_tbl)
-
-
-class TestDocumentGenerateLabelGet(unittest.TestCase):
-    def test_pass(self) -> None:
-        tt = typing.NamedTuple(
-            "tt",
-            [
-                ("input_label", sw_compdocs.generator.LabelDict | None),
-                ("input_s", str),
-                ("want_s", str),
-            ],
-        )
-
-        for tc in [
-            tt(
-                input_label=None,
-                input_s="LABEL",
-                want_s="LABEL",
-            ),
-            tt(
-                input_label=sw_compdocs.generator.LabelDict({"LABEL": "text"}),
-                input_s="LABEL",
-                want_s="text",
-            ),
-        ]:
-            with self.subTest(tc=tc):
-                gen = sw_compdocs.generator.DocumentGenerator(label=tc.input_label)
-                got_s = gen._label_get(tc.input_s)
-                self.assertEqual(got_s, tc.want_s)
-
-
-class TestDocumentGeneratorLangFindID(unittest.TestCase):
-    def test_pass(self) -> None:
-        tt = typing.NamedTuple(
-            "tt",
-            [
-                ("input_lang", sw_compdocs.language.Language | None),
-                ("input_lang_id", str),
-                ("input_lang_en", str),
-                ("want_s", str),
-            ],
-        )
-
-        for tc in [
-            tt(
-                input_lang=None,
-                input_lang_id="id",
-                input_lang_en="en",
-                want_s="en",
-            ),
-            tt(
-                input_lang=sw_compdocs.language.Language(
-                    [
-                        sw_compdocs.language.Translation(
-                            "id", "description", "en", "local"
-                        )
-                    ]
-                ),
-                input_lang_id="id",
-                input_lang_en="en",
-                want_s="local",
-            ),
-        ]:
-            with self.subTest(tc=tc):
-                gen = sw_compdocs.generator.DocumentGenerator(lang=tc.input_lang)
-                got_s = gen._lang_find_id(tc.input_lang_id, tc.input_lang_en)
-                self.assertEqual(got_s, tc.want_s)
-
-
-class TestDocumentGeneratorLangFindEn(unittest.TestCase):
-    def test_pass(self) -> None:
-        tt = typing.NamedTuple(
-            "tt",
-            [
-                ("input_lang", sw_compdocs.language.Language | None),
-                ("input_lang_en", str),
-                ("want_s", str),
-            ],
-        )
-
-        for tc in [
-            tt(
-                input_lang=None,
-                input_lang_en="en",
-                want_s="en",
-            ),
-            tt(
-                input_lang=sw_compdocs.language.Language(
-                    [
-                        sw_compdocs.language.Translation(
-                            "id", "description", "en", "local"
-                        )
-                    ]
-                ),
-                input_lang_en="en",
-                want_s="local",
-            ),
-        ]:
-            with self.subTest(tc=tc):
-                gen = sw_compdocs.generator.DocumentGenerator(lang=tc.input_lang)
-                got_s = gen._lang_find_en(tc.input_lang_en)
-                self.assertEqual(got_s, tc.want_s)
-
-
-class TestDocumentGeneratorFmtFormat(unittest.TestCase):
-    def test_pass(self) -> None:
-        tt = typing.NamedTuple(
-            "tt",
-            [
-                ("input_fmt", sw_compdocs.template.TemplateFormatter | None),
-                ("input_s", str),
-                ("want_s", str),
-            ],
-        )
-
-        for tc in [
-            tt(
-                input_fmt=None,
-                input_s="$[var]",
-                want_s="$[var]",
-            ),
-            tt(
-                input_fmt=sw_compdocs.template.TemplateFormatter({"var": "text"}),
-                input_s="$[var]",
-                want_s="text",
-            ),
-        ]:
-            with self.subTest(tc=tc):
-                gen = sw_compdocs.generator.DocumentGenerator(fmt=tc.input_fmt)
-                got_s = gen._fmt_format(tc.input_s)
-                self.assertEqual(got_s, tc.want_s)
-
-
-class TestLabelDictInit(unittest.TestCase):
-    def test_pass(self) -> None:
-        tt = typing.NamedTuple(
-            "tt",
-            [
-                ("input_mapping", collections.abc.Mapping[str, str]),
-                ("want_label_d", dict[str, str]),
-            ],
-        )
-
-        for tc in [
-            tt(
-                input_mapping={},
-                want_label_d={},
-            ),
-            tt(
-                input_mapping={"key_1": "value_1", "key_2": "value_2"},
-                want_label_d={"key_1": "value_1", "key_2": "value_2"},
-            ),
-            tt(
-                input_mapping=sw_compdocs.generator.LabelDict(
-                    {"key_1": "value_1", "key_2": "value_2"}
-                ),
-                want_label_d={"key_1": "value_1", "key_2": "value_2"},
-            ),
-        ]:
-            with self.subTest(tc=tc):
-                got_label = sw_compdocs.generator.LabelDict(tc.input_mapping)
-                self.assertEqual(got_label._d, tc.want_label_d)
-                self.assertIsNot(got_label._d, tc.input_mapping)
-
-
-class TestLabelDictFromTOMLFile(unittest.TestCase):
-    def test_pass(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp_dir:
-            tmp_file = pathlib.Path(tmp_dir, "label.toml")
-            with open(tmp_file, mode="xt", encoding="utf-8", newline="\n") as fd:
-                fd.write(
-                    """\
-[label]
-key_1 = "value_1"
-key_2 = "value_2"
-"""
-                )
-
-            file_list: list[sw_compdocs._types.StrOrBytesPath] = [
-                os.fsdecode(tmp_file),
-                os.fsencode(tmp_file),
-                tmp_file,
-            ]
-            for file in file_list:
-                label = sw_compdocs.generator.LabelDict.from_toml_file(file)
-                want_d = {"key_1": "value_1", "key_2": "value_2"}
-                self.assertEqual(label._d, want_d)
-
-    def test_exc_label(self) -> None:
-        tt = typing.NamedTuple(
-            "tt",
-            [
-                ("input_s", str),
-                ("want_exc_msg", str),
-            ],
-        )
-
-        for tc in [
-            tt(
-                input_s="""\
-[label_]
-key_1 = "value_1"
-key_2 = "value_2"
-""",
-                want_exc_msg="missing label table",
-            ),
-            tt(
-                input_s="""\
-label = 0
-""",
-                want_exc_msg="invalid label table type: int",
-            ),
-            tt(
-                input_s="""\
-[label]
-key_1 = "value_1"
-key_2 = 2
-""",
-                want_exc_msg="expected string for label text: 2",
-            ),
-        ]:
-            with self.subTest(tc=tc):
-                with tempfile.TemporaryDirectory() as tmp_dir:
-                    tmp_file = pathlib.Path(tmp_dir, "label.toml")
-                    with open(
-                        tmp_file, mode="xt", encoding="utf-8", newline="\n"
-                    ) as fp:
-                        fp.write(tc.input_s)
-
-                    file_list: list[sw_compdocs._types.StrOrBytesPath] = [
-                        os.fsdecode(tmp_file),
-                        os.fsencode(tmp_file),
-                        tmp_file,
-                    ]
-                    for file in file_list:
-                        with self.assertRaises(
-                            sw_compdocs.generator.LabelFileError
-                        ) as ctx:
-                            sw_compdocs.generator.LabelDict.from_toml_file(file)
-                        self.assertEqual(ctx.exception.msg, tc.want_exc_msg)
-                        self.assertEqual(ctx.exception.file, file)
-
-
-class TestLabelDictFromTOMLStr(unittest.TestCase):
-    def test_pass(self) -> None:
-        label = sw_compdocs.generator.LabelDict.from_toml_str(
-            """\
-[label]
-key_1 = "value_1"
-key_2 = "value_2"
-"""
-        )
-        want_d = {"key_1": "value_1", "key_2": "value_2"}
-        self.assertEqual(label._d, want_d)
-
-    def test_exc_label(self) -> None:
-        tt = typing.NamedTuple(
-            "tt",
-            [
-                ("input_s", str),
-                ("want_exc_msg", str),
-            ],
-        )
-
-        for tc in [
-            tt(
-                input_s="""\
-[label_]
-key_1 = "value_1"
-key_2 = "value_2"
-""",
-                want_exc_msg="missing label table",
-            ),
-            tt(
-                input_s="""\
-label = 0
-""",
-                want_exc_msg="invalid label table type: int",
-            ),
-            tt(
-                input_s="""\
-[label]
-key_1 = "value_1"
-key_2 = 2
-""",
-                want_exc_msg="expected string for label text: 2",
-            ),
-        ]:
-            with self.subTest(tc=tc):
-                with self.assertRaises(sw_compdocs.generator.LabelFileError) as ctx:
-                    sw_compdocs.generator.LabelDict.from_toml_str(tc.input_s)
-                self.assertEqual(ctx.exception.msg, tc.want_exc_msg)
-                self.assertEqual(ctx.exception.file, None)
-
-
-class TestLabelDictGetItem(unittest.TestCase):
-    def test_pass(self) -> None:
-        label = sw_compdocs.generator.LabelDict(
-            {"key_1": "value_1", "key_2": "value_2"}
-        )
-        self.assertEqual(label["key_1"], "value_1")
-        self.assertEqual(label["key_2"], "value_2")
-
-    def test_exc_key(self) -> None:
-        label = sw_compdocs.generator.LabelDict({"key_1": "value_1"})
-        with self.assertRaises(sw_compdocs.generator.LabelKeyError) as ctx:
-            label["key_2"]
-        self.assertEqual(ctx.exception.key, "key_2")
-
-
-class TestLabelDictIter(unittest.TestCase):
-    def test(self) -> None:
-        label = sw_compdocs.generator.LabelDict(
-            {"key_1": "value_1", "key_2": "value_2"}
-        )
-        self.assertEqual(list[str](label), list[str](["key_1", "key_2"]))
-
-
-class TestLabelDictLen(unittest.TestCase):
-    def test(self) -> None:
-        label = sw_compdocs.generator.LabelDict(
-            {"key_1": "value_1", "key_2": "value_2"}
-        )
-        self.assertEqual(len(label), 2)
-
-
-class TestLabelFileErrorInit(unittest.TestCase):
-    def test_pass(self) -> None:
-        exc = sw_compdocs.generator.LabelFileError("msg")
-        exc_args: tuple[object] = exc.args
-        self.assertEqual(exc_args, ("msg",))
-        self.assertEqual(exc.msg, "msg")
-        self.assertEqual(exc.file, None)
-
-
-class TestLabelFileErrorStr(unittest.TestCase):
-    def test(self) -> None:
-        tt = typing.NamedTuple(
-            "tt",
-            [
-                ("input_msg", str),
-                ("input_file", sw_compdocs._types.StrOrBytesPath | None),
-                ("want_s", str),
-            ],
-        )
-
-        for tc in [
-            tt(
-                input_msg="msg",
-                input_file=None,
-                want_s="<label.toml>: msg",
-            ),
-            tt(
-                input_msg="msg",
-                input_file="pathlike",
-                want_s="pathlike: msg",
-            ),
-            tt(
-                input_msg="msg",
-                input_file=b"pathlike",
-                want_s="pathlike: msg",
-            ),
-            tt(
-                input_msg="msg",
-                input_file=pathlib.PurePath("pathlike"),
-                want_s="pathlike: msg",
-            ),
-        ]:
-            with self.subTest(tc=tc):
-                input_exc = sw_compdocs.generator.LabelFileError(tc.input_msg)
-                input_exc.file = tc.input_file
-                got_s = str(input_exc)
-                self.assertEqual(got_s, tc.want_s)
-
-
-class TestLabelKeyErrorInit(unittest.TestCase):
-    def test(self) -> None:
-        exc = sw_compdocs.generator.LabelKeyError("key")
-        exc_args: tuple[object] = exc.args
-        self.assertEqual(exc_args, ("key",))
-        self.assertEqual(exc.key, "key")
-
-
-class TestLabelKeyErrorStr(unittest.TestCase):
-    def test(self) -> None:
-        exc = sw_compdocs.generator.LabelKeyError("key")
-        self.assertEqual(str(exc), "missing label text for key 'key'")

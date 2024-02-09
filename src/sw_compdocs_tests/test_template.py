@@ -4,6 +4,19 @@ import typing
 import unittest
 
 
+class TestTemplateKeyErrorInit(unittest.TestCase):
+    def test(self) -> None:
+        exc = sw_compdocs.template.TemplateKeyError("key")
+        self.assertEqual(exc.key, "key")
+
+
+class TestTemplateKeyErrorStr(unittest.TestCase):
+    def test(self) -> None:
+        exc = sw_compdocs.template.TemplateKeyError("key")
+        s = str(exc)
+        self.assertEqual(s, "missing key 'key' in template mapping")
+
+
 class TestTemplateFormatterInit(unittest.TestCase):
     def test_validate_pass(self) -> None:
         for mapping in [
@@ -72,16 +85,3 @@ class TestTemplateFormatterFormat(unittest.TestCase):
                 ren = sw_compdocs.template.TemplateFormatter(tc.input_mapping)
                 got_s = ren.format(tc.input_s)
                 self.assertEqual(got_s, tc.want_s)
-
-
-class TestTemplateKeyErrorInit(unittest.TestCase):
-    def test(self) -> None:
-        exc = sw_compdocs.template.TemplateKeyError("key")
-        self.assertEqual(exc.key, "key")
-
-
-class TestTemplateKeyErrorStr(unittest.TestCase):
-    def test(self) -> None:
-        exc = sw_compdocs.template.TemplateKeyError("key")
-        s = str(exc)
-        self.assertEqual(s, "missing key 'key' in template mapping")
