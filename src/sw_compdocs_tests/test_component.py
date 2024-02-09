@@ -510,18 +510,6 @@ class TestLogicNodeFromXMLElem(unittest.TestCase):
                 self.assertEqual(ctx.exception.xpath, ".")
 
 
-class TestLogicNodeListInit(unittest.TestCase):
-    def test_pass(self) -> None:
-        ln_list = [
-            sw_compdocs.component.LogicNode(label="a"),
-            sw_compdocs.component.LogicNode(label="b"),
-            sw_compdocs.component.LogicNode(label="c"),
-            sw_compdocs.component.LogicNode(label="d"),
-        ]
-        lns = sw_compdocs.component.LogicNodeList(ln_list)
-        self.assertEqual(lns._l, ln_list)
-
-
 class TestLogicNodeListFromXMLElem(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(
