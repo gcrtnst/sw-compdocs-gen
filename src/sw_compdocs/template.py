@@ -3,6 +3,15 @@ import re
 import typing
 
 
+class TemplateKeyError(Exception):
+    def __init__(self, key: str) -> None:
+        super().__init__(key)
+        self.key: typing.Final[str] = key
+
+    def __str__(self) -> str:
+        return f"missing key {repr(self.key)} in template mapping"
+
+
 class TemplateFormatter:
     def __init__(self, mapping: collections.abc.Mapping[str, str]) -> None:
         self._d: dict[str, str] = dict(mapping)
@@ -17,12 +26,3 @@ class TemplateFormatter:
             return val
 
         return re.sub(r"(?s:\$\[(?P<key>.*?)\])", repl, s)
-
-
-class TemplateKeyError(Exception):
-    def __init__(self, key: str) -> None:
-        super().__init__(key)
-        self.key: typing.Final[str] = key
-
-    def __str__(self) -> str:
-        return f"missing key {repr(self.key)} in template mapping"

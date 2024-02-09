@@ -67,26 +67,6 @@ class Language(container.Sequence[Translation]):
         super().__init__(iterable)
 
     @classmethod
-    def from_file(
-        cls,
-        file: _types.StrOrBytesPath,
-        *,
-        encoding: str | None = "utf-8",
-        errors: str | None = None,
-    ) -> typing.Self:
-        with open(file, mode="rt", encoding=encoding, errors=errors, newline="") as f:
-            try:
-                return cls._from_io(f)
-            except LanguageTSVError as exc:
-                exc.file = file
-                raise
-
-    @classmethod
-    def from_str(cls, s: str) -> typing.Self:
-        f = io.StringIO(initial_value=s, newline="")
-        return cls._from_io(f)
-
-    @classmethod
     def _from_io(cls, f: collections.abc.Iterable[str]) -> typing.Self:
         reader = csv.reader(f, dialect=LanguageTSVDialect)
         try:
@@ -108,20 +88,40 @@ class Language(container.Sequence[Translation]):
             raise
         return cls(trans_list)
 
+    @classmethod
+    def from_file(
+        cls,
+        file: _types.StrOrBytesPath,
+        *,
+        encoding: str | None = "utf-8",
+        errors: str | None = None,
+    ) -> typing.Self:
+        with open(file, mode="rt", encoding=encoding, errors=errors, newline="") as f:
+            try:
+                return cls._from_io(f)
+            except LanguageTSVError as exc:
+                exc.file = file
+                raise
+
+    @classmethod
+    def from_str(cls, s: str) -> typing.Self:
+        f = io.StringIO(initial_value=s, newline="")
+        return cls._from_io(f)
+
+    def find_id_all(self, id: str) -> list[Translation]:
+        return [trans for trans in self if trans.id == id]
+
     def find_id(self, id: str) -> Translation:
         trans_list = self.find_id_all(id)
         if len(trans_list) <= 0:
             raise LanguageFindIDError(id)
         return trans_list[0]
 
-    def find_id_all(self, id: str) -> list[Translation]:
-        return [trans for trans in self if trans.id == id]
+    def find_en_all(self, en: str) -> list[Translation]:
+        return [trans for trans in self if trans.en == en]
 
     def find_en(self, en: str) -> Translation:
         trans_list = self.find_en_all(en)
         if len(trans_list) <= 0:
             raise LanguageFindEnError(en)
         return trans_list[0]
-
-    def find_en_all(self, en: str) -> list[Translation]:
-        return [trans for trans in self if trans.en == en]
