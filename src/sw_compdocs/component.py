@@ -24,8 +24,16 @@ class ComponentXMLError(Exception):
         return self._xpath
 
     def __str__(self) -> str:
-        file = os.fsdecode(self.file) if self.file is not None else "<component.xml>"
-        return f"{file}: {self.xpath}: {self.msg}"
+        file = os.fsdecode(self.file) if self.file is not None else None
+
+        msg = self.msg
+        if file is None and self.xpath != ".":
+            msg = f"{self.msg} (at xpath {self.xpath!r})"
+        if file is not None and self.xpath == ".":
+            msg = f"{self.msg} (in file {file!r})"
+        if file is not None and self.xpath != ".":
+            msg = f"{self.msg} (in file {file!r} at xpath {self.xpath!r})"
+        return msg
 
     def prepend_xpath(self, s: str) -> None:
         if len(self._xpath_list) >= 1 and self._xpath_list[0] == "/":

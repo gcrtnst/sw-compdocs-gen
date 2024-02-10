@@ -27,27 +27,64 @@ class TestComponentXMLErrorStr(unittest.TestCase):
         exc.prepend_xpath("definition")
         self.assertEqual(
             str(exc),
-            "01_block.xml: ./definition/logic_nodes/logic_node[52149]: any useful message",
+            "any useful message (in file '01_block.xml' at xpath './definition/logic_nodes/logic_node[52149]')",
         )
 
     def test_table(self) -> None:
         tt = typing.NamedTuple(
             "tt",
             [
+                ("input_msg", str),
                 ("input_file", sw_compdocs._types.StrOrBytesPath | None),
+                ("input_xpath_list", list[str]),
                 ("want_s", str),
             ],
         )
 
-        exc = sw_compdocs.component.ComponentXMLError("msg")
         for tc in [
-            tt(input_file=None, want_s="<component.xml>: .: msg"),
-            tt(input_file="str", want_s="str: .: msg"),
-            tt(input_file=b"bytes", want_s="bytes: .: msg"),
-            tt(input_file=pathlib.PurePath("pathlike"), want_s="pathlike: .: msg"),
+            tt(
+                input_msg="msg",
+                input_file=None,
+                input_xpath_list=[],
+                want_s="msg",
+            ),
+            tt(
+                input_msg="msg",
+                input_file="str",
+                input_xpath_list=[],
+                want_s="msg (in file 'str')",
+            ),
+            tt(
+                input_msg="msg",
+                input_file=b"bytes",
+                input_xpath_list=[],
+                want_s="msg (in file 'bytes')",
+            ),
+            tt(
+                input_msg="msg",
+                input_file=pathlib.PurePath("pathlike"),
+                input_xpath_list=[],
+                want_s="msg (in file 'pathlike')",
+            ),
+            tt(
+                input_msg="msg",
+                input_file=None,
+                input_xpath_list=["foo"],
+                want_s="msg (at xpath './foo')",
+            ),
+            tt(
+                input_msg="msg",
+                input_file="str",
+                input_xpath_list=["foo"],
+                want_s="msg (in file 'str' at xpath './foo')",
+            ),
         ]:
             with self.subTest(tc=tc):
+                exc = sw_compdocs.component.ComponentXMLError(tc.input_msg)
                 exc.file = tc.input_file
+                for input_xpath_seg in tc.input_xpath_list:
+                    exc.prepend_xpath(input_xpath_seg)
+
                 got_s = str(exc)
                 self.assertEqual(got_s, tc.want_s)
 
