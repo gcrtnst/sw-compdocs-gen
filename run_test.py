@@ -21,27 +21,17 @@ def main() -> None:
     warn = warn or result.returncode != 0
 
     print("==> Running black")
-    result = subprocess.run(["black", "--check", "--quiet", "--"] + src_list)
+    result = subprocess.run(["black", "--check", "--"] + src_list)
     warn = warn or result.returncode != 0
 
     print("==> Running mypy")
     # Run mypy with the --no-incremental flag to ensure all errors are reported.
-    result = subprocess.run(
-        ["mypy", "--no-incremental", "--no-error-summary", "--"] + src_list
-    )
+    result = subprocess.run(["mypy", "--no-incremental", "--"] + src_list)
     warn = warn or result.returncode != 0
 
     print("==> Running unittest")
     result = subprocess.run(
-        [
-            "python",
-            "-m",
-            "unittest",
-            "discover",
-            "--quiet",
-            "--start-directory",
-            str(repo_dir),
-        ]
+        ["python", "-m", "unittest", "discover", "--start-directory", str(repo_dir)]
     )
     warn = warn or result.returncode != 0
 
