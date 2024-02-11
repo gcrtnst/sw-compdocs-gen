@@ -35,9 +35,16 @@ class LanguageTSVError(Exception):
         self.line: int | None = None
 
     def __str__(self) -> str:
-        file = os.fsdecode(self.file) if self.file is not None else "<language.tsv>"
-        line = str(self.line) if self.line is not None else "?"
-        return f"{file}: line {line}: {self.msg}"
+        file = os.fsdecode(self.file) if self.file is not None else None
+
+        msg = self.msg
+        if file is None and self.line is not None:
+            msg = f"{self.msg} (at line {self.line!r})"
+        if file is not None and self.line is None:
+            msg = f"{self.msg} (in file {file!r})"
+        if file is not None and self.line is not None:
+            msg = f"{self.msg} (in file {file!r} at line {self.line!r})"
+        return msg
 
 
 class LanguageFindError(Exception):

@@ -32,25 +32,49 @@ class TestLanguageTSVErrorStr(unittest.TestCase):
                 input_exc_msg="msg",
                 input_exc_file=None,
                 input_exc_line=None,
-                want_s="<language.tsv>: line ?: msg",
+                want_s="msg",
             ),
             tt(
                 input_exc_msg="msg",
                 input_exc_file="file",
                 input_exc_line=None,
-                want_s="file: line ?: msg",
+                want_s="msg (in file 'file')",
             ),
             tt(
                 input_exc_msg="msg",
                 input_exc_file=None,
                 input_exc_line=52149,
-                want_s="<language.tsv>: line 52149: msg",
+                want_s="msg (at line 52149)",
             ),
             tt(
                 input_exc_msg="msg",
                 input_exc_file="file",
                 input_exc_line=52149,
-                want_s="file: line 52149: msg",
+                want_s="msg (in file 'file' at line 52149)",
+            ),
+            tt(
+                input_exc_msg="msg",
+                input_exc_file=b"file",
+                input_exc_line=None,
+                want_s="msg (in file 'file')",
+            ),
+            tt(
+                input_exc_msg="msg",
+                input_exc_file=pathlib.PurePath("file"),
+                input_exc_line=None,
+                want_s="msg (in file 'file')",
+            ),
+            tt(
+                input_exc_msg="msg",
+                input_exc_file=b"file",
+                input_exc_line=52149,
+                want_s="msg (in file 'file' at line 52149)",
+            ),
+            tt(
+                input_exc_msg="msg",
+                input_exc_file=pathlib.PurePath("file"),
+                input_exc_line=52149,
+                want_s="msg (in file 'file' at line 52149)",
             ),
         ]:
             with self.subTest(tc=tc):
