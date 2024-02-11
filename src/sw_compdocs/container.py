@@ -39,7 +39,7 @@ class Sequence(collections.abc.Sequence[_T_co]):
 
 
 class MutableSequence(collections.abc.MutableSequence[_T]):
-    def __init__(self, iterable: collections.abc.Iterable[_T] = ()):
+    def __init__(self, iterable: collections.abc.Iterable[_T] = ()) -> None:
         self._l: typing.List[_T] = []
         self[:] = iterable
 

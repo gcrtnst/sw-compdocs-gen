@@ -31,7 +31,7 @@ class LabelKeyError(KeyError):
 
 
 class LabelDict(collections.abc.Mapping[str, str]):
-    def __init__(self, mapping: collections.abc.Mapping[str, str] = {}):
+    def __init__(self, mapping: collections.abc.Mapping[str, str] = {}) -> None:
         self._d: dict[str, str] = dict(mapping)
 
     @classmethod
@@ -89,7 +89,7 @@ class DocumentGenerator:
         label: LabelDict | None = None,
         lang: language.Language | None = None,
         fmt: template.TemplateFormatter | None = None,
-    ):
+    ) -> None:
         self.label: LabelDict | None = label
         self.lang: language.Language | None = lang
         self.fmt: template.TemplateFormatter | None = fmt
