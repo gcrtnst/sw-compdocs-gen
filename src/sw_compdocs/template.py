@@ -9,7 +9,7 @@ class TemplateKeyError(Exception):
         self.key: typing.Final[str] = key
 
     def __str__(self) -> str:
-        return f"missing key {repr(self.key)} in template mapping"
+        return f"missing replacement string for placeholder $[{self.key}]"
 
 
 class TemplateFormatter:

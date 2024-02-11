@@ -14,7 +14,7 @@ class TestTemplateKeyErrorStr(unittest.TestCase):
     def test(self) -> None:
         exc = sw_compdocs.template.TemplateKeyError("key")
         s = str(exc)
-        self.assertEqual(s, "missing key 'key' in template mapping")
+        self.assertEqual(s, "missing replacement string for placeholder $[key]")
 
 
 class TestTemplateFormatterInit(unittest.TestCase):
