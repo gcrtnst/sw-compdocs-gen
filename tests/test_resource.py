@@ -1,6 +1,119 @@
+import pathlib
+import sw_compdocs._types
 import sw_compdocs.resource
+import tempfile
 import tomllib
+import typing
 import unittest
+
+
+class TestResourceFileErrorInit(unittest.TestCase):
+    def test(self) -> None:
+        exc = sw_compdocs.resource.ResourceFileError("msg", file="file")
+        exc_args: tuple[object, ...] = exc.args
+        self.assertEqual(exc_args, ("msg",))
+        self.assertEqual(exc.msg, "msg")
+        self.assertEqual(exc.file, "file")
+
+
+class TestResourceFileErrorStr(unittest.TestCase):
+    def test(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_msg", str),
+                ("input_file", sw_compdocs._types.StrOrBytesPath | None),
+                ("want_s", str),
+            ],
+        )
+
+        for tc in [
+            tt(
+                input_msg="msg",
+                input_file=None,
+                want_s="msg",
+            ),
+            tt(
+                input_msg="msg",
+                input_file="file",
+                want_s="msg (in file 'file')",
+            ),
+            tt(
+                input_msg="msg",
+                input_file=b"file",
+                want_s="msg (in file 'file')",
+            ),
+            tt(
+                input_msg="msg",
+                input_file=pathlib.PurePath("file"),
+                want_s="msg (in file 'file')",
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                exc = sw_compdocs.resource.ResourceFileError(
+                    tc.input_msg, file=tc.input_file
+                )
+                got_s = str(exc)
+                self.assertEqual(got_s, tc.want_s)
+
+
+class TestTOMLFileDecodeErrorInit(unittest.TestCase):
+    def test(self) -> None:
+        exc = sw_compdocs.resource.TOMLFileDecodeError(1, 2, file="file")
+        exc_args: tuple[object, ...] = exc.args
+        self.assertEqual(exc_args, (1, 2))
+        self.assertEqual(exc.file, "file")
+
+
+class TestTOMLFileDecodeErrorStr(unittest.TestCase):
+    def test(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_args", list[object]),
+                ("input_file", sw_compdocs._types.StrOrBytesPath | None),
+                ("want_s", str),
+            ],
+        )
+
+        for tc in [
+            tt(
+                input_args=[],
+                input_file=None,
+                want_s="",
+            ),
+            tt(
+                input_args=["msg"],
+                input_file=None,
+                want_s="msg",
+            ),
+            tt(
+                input_args=[],
+                input_file="file",
+                want_s="(in file 'file')",
+            ),
+            tt(
+                input_args=["msg"],
+                input_file="file",
+                want_s="msg (in file 'file')",
+            ),
+            tt(
+                input_args=[],
+                input_file=b"file",
+                want_s="(in file 'file')",
+            ),
+            tt(
+                input_args=[],
+                input_file=pathlib.PurePath("file"),
+                want_s="(in file 'file')",
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                exc = sw_compdocs.resource.TOMLFileDecodeError(
+                    *tc.input_args, file=tc.input_file
+                )
+                got_s = str(exc)
+                self.assertEqual(got_s, tc.want_s)
 
 
 class TestFormatTOMLString(unittest.TestCase):
@@ -182,3 +295,104 @@ class TestFormatTOMLKey(unittest.TestCase):
                 dec_toml: dict[str, object] = tomllib.loads(enc_toml)
                 dec_key = next(iter(dec_toml.keys()))
                 self.assertEqual(dec_key, input_key)
+
+
+class TestLoadTOMLTable(unittest.TestCase):
+    def test_pass(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_file = pathlib.Path(temp_dir, "resource.toml")
+            with open(temp_file, mode="w", encoding="utf-8", newline="\n") as fp:
+                fp.write(
+                    """\
+[resource]
+key_1 = "val_1"
+key_2 = "val_2"
+"""
+                )
+
+            want_tbl = {"key_1": "val_1", "key_2": "val_2"}
+            got_tbl = sw_compdocs.resource.load_toml_table(temp_file, "resource")
+            self.assertEqual(got_tbl, want_tbl)
+
+    def test_exc_decode(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_file = pathlib.Path(temp_dir, "resource.toml")
+            with open(temp_file, mode="w", encoding="utf-8", newline="\n") as fp:
+                fp.write(
+                    """\
+[resource]
+key_1 = "val_1"
+key_2 = "val_2
+"""
+                )
+
+            with self.assertRaises(sw_compdocs.resource.TOMLFileDecodeError) as ctx:
+                sw_compdocs.resource.load_toml_table(temp_file, "resource")
+            self.assertEqual(ctx.exception.file, temp_file)
+
+            want_args = ("Illegal character '\\n' (at line 3, column 15)",)
+            got_args: tuple[object, ...] = ctx.exception.args
+            self.assertEqual(got_args, want_args)
+
+    def test_exc_resource(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_s", str),
+                ("input_table_key", str),
+                ("want_exc_msg", str),
+            ],
+        )
+
+        for tc in [
+            tt(
+                input_s="""\
+[resource]
+key_1 = "val_1"
+key_2 = "val_2"
+""",
+                input_table_key="nonexistent",
+                want_exc_msg="table 'nonexistent' does not exist",
+            ),
+            tt(
+                input_s="""\
+resource = []
+""",
+                input_table_key="resource",
+                want_exc_msg="expected table for 'resource', but found list",
+            ),
+            tt(
+                input_s="""\
+[resource]
+key_1 = 1
+key_2 = "val_2"
+""",
+                input_table_key="resource",
+                want_exc_msg="expected string value for 'resource.key_1', but found int",
+            ),
+            tt(
+                input_s="""\
+[resource]
+key_1 = "val_1"
+key_2 = 2
+""",
+                input_table_key="resource",
+                want_exc_msg="expected string value for 'resource.key_2', but found int",
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                with tempfile.TemporaryDirectory() as temp_dir:
+                    temp_file = pathlib.Path(temp_dir, "resource.toml")
+                    with open(
+                        temp_file, mode="w", encoding="utf-8", newline="\n"
+                    ) as fp:
+                        fp.write(tc.input_s)
+
+                    with self.assertRaises(
+                        sw_compdocs.resource.ResourceFileError
+                    ) as ctx:
+                        sw_compdocs.resource.load_toml_table(
+                            temp_file, tc.input_table_key
+                        )
+                    self.assertEqual(ctx.exception.msg, tc.want_exc_msg)
+                    self.assertEqual(ctx.exception.file, temp_file)
