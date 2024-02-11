@@ -1,24 +1,10 @@
 import collections.abc
-import os
-import tomllib
 import typing
 
-from . import _types
 from . import component
 from . import document
 from . import language
 from . import template
-
-
-class LabelFileError(Exception):
-    def __init__(self, msg: str) -> None:
-        super().__init__(msg)
-        self.msg: typing.Final[str] = msg
-        self.file: _types.StrOrBytesPath | None = None
-
-    def __str__(self) -> str:
-        file = os.fsdecode(self.file) if self.file is not None else "<label.toml>"
-        return f"{file}: {self.msg}"
 
 
 class LabelKeyError(KeyError):
@@ -33,41 +19,6 @@ class LabelKeyError(KeyError):
 class LabelDict(collections.abc.Mapping[str, str]):
     def __init__(self, mapping: collections.abc.Mapping[str, str] = {}) -> None:
         self._d: dict[str, str] = dict(mapping)
-
-    @classmethod
-    def _from_toml(cls, toml: dict[str, object]) -> typing.Self:
-        obj = toml.get("label")
-        if obj is None:
-            raise LabelFileError("missing label table")
-        if not isinstance(obj, collections.abc.Mapping):
-            raise LabelFileError(f"invalid label table type: {type(obj).__name__}")
-
-        mapping: dict[str, str] = {}
-        for k, v in obj.items():
-            if not isinstance(k, str):
-                # In TOML, keys are always strings.
-                # If a non-string key is given, it is a bug in tomllib.
-                raise Exception
-            if not isinstance(v, str):
-                raise LabelFileError(f"expected string for label text: {v!r}")
-            mapping[k] = v
-        return cls(mapping)
-
-    @classmethod
-    def from_toml_file(cls, file: _types.StrOrBytesPath) -> typing.Self:
-        with open(file, mode="rb") as fp:
-            toml: dict[str, object] = tomllib.load(fp)
-
-        try:
-            return cls._from_toml(toml)
-        except LabelFileError as exc:
-            exc.file = file
-            raise
-
-    @classmethod
-    def from_toml_str(cls, s: str) -> typing.Self:
-        toml: dict[str, object] = tomllib.loads(s)
-        return cls._from_toml(toml)
 
     def __getitem__(self, key: str) -> str:
         try:
