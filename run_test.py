@@ -17,22 +17,31 @@ def main() -> None:
     src_list.sort()
 
     print("==> Running pyflakes")
-    result = subprocess.run(["pyflakes", "--"] + src_list)
+    args = [sys.executable, "-m", "pyflakes", "--"] + src_list
+    result = subprocess.run(args)
     warn = warn or result.returncode != 0
 
     print("==> Running black")
-    result = subprocess.run(["black", "--check", "--"] + src_list)
+    args = [sys.executable, "-m", "black", "--check", "--"] + src_list
+    result = subprocess.run(args)
     warn = warn or result.returncode != 0
 
     print("==> Running mypy")
     # Run mypy with the --no-incremental flag to ensure all errors are reported.
-    result = subprocess.run(["mypy", "--no-incremental", "--"] + src_list)
+    args = [sys.executable, "-m", "mypy", "--no-incremental", "--"] + src_list
+    result = subprocess.run(args)
     warn = warn or result.returncode != 0
 
     print("==> Running unittest")
-    result = subprocess.run(
-        ["python", "-m", "unittest", "discover", "--start-directory", str(repo_dir)]
-    )
+    args = [
+        sys.executable,
+        "-m",
+        "unittest",
+        "discover",
+        "--start-directory",
+        str(repo_dir),
+    ]
+    result = subprocess.run(args)
     warn = warn or result.returncode != 0
 
     print("==> " + ("FAIL" if warn else "PASS"))
