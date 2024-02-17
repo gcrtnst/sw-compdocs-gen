@@ -181,7 +181,6 @@ class TestLanguageFromIO(unittest.TestCase):
             "tt",
             [
                 ("input_f", collections.abc.Iterable[str]),
-                ("want_exc_msg", str),
                 ("want_exc_line", int),
             ],
         )
@@ -189,14 +188,30 @@ class TestLanguageFromIO(unittest.TestCase):
         for tc in [
             tt(
                 input_f=["\na"],
-                want_exc_msg="new-line character seen in unquoted field - do you need to open the file in universal-newline mode?",
                 want_exc_line=1,
             ),
             tt(
                 input_f=["id\tdescription\ten\tlocal\n", "\na"],
-                want_exc_msg="new-line character seen in unquoted field - do you need to open the file in universal-newline mode?",
                 want_exc_line=2,
             ),
+        ]:
+            with self.subTest(tc=tc):
+                with self.assertRaises(sw_compdocs.language.LanguageTSVError) as cm:
+                    sw_compdocs.language.Language._from_io(tc.input_f)
+                self.assertIs(cm.exception.file, None)
+                self.assertEqual(cm.exception.line, tc.want_exc_line)
+
+    def test_error_msg(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_f", collections.abc.Iterable[str]),
+                ("want_exc_msg", str),
+                ("want_exc_line", int),
+            ],
+        )
+
+        for tc in [
             tt(
                 input_f=[],
                 want_exc_msg="invalid header",
