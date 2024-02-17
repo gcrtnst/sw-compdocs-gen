@@ -1,11 +1,11 @@
-import os
 import sw_compdocs.steamfind
+import sys
 import unittest
 
 
 class TestFindSteam(unittest.TestCase):
     def test_windows(self) -> None:
-        if os.name != "nt":
+        if sys.platform != "win32":
             self.skipTest("Not Windows")
 
         # Test only that no exception is thrown,
@@ -13,7 +13,7 @@ class TestFindSteam(unittest.TestCase):
         sw_compdocs.steamfind.find_steam()
 
     def test_nonwindows(self) -> None:
-        if os.name == "nt":
+        if sys.platform == "win32":
             self.skipTest("Windows")
 
         steam_dir = sw_compdocs.steamfind.find_steam()

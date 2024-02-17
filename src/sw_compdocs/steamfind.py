@@ -1,11 +1,12 @@
 import pathlib
+import sys
 
 
 def find_steam() -> pathlib.Path | None:
-    try:
-        import winreg
-    except ModuleNotFoundError:
+    if sys.platform != "win32":
         return None
+
+    import winreg
 
     try:
         with winreg.OpenKeyEx(
