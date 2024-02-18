@@ -4,6 +4,7 @@ import tomllib
 import typing
 
 from . import _types
+from . import wraperr
 
 
 class ResourceFileError(Exception):
@@ -79,8 +80,9 @@ def format_toml_key(key: str) -> str:
 
 def load_toml_table(file: _types.StrOrBytesPath, table_key: str) -> dict[str, str]:
     try:
-        with open(file, mode="rb") as fp:
-            toml: dict[str, object] = tomllib.load(fp)
+        with wraperr.wrap_unicode_error(filename=file):
+            with open(file, mode="rb") as fp:
+                toml: dict[str, object] = tomllib.load(fp)
     except tomllib.TOMLDecodeError as exc:
         exc_args: tuple[object, ...] = exc.args
         raise TOMLFileDecodeError(*exc_args, file=file) from exc

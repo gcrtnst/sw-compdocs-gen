@@ -1,6 +1,7 @@
 import pathlib
 import sw_compdocs._types
 import sw_compdocs.resource
+import sw_compdocs.wraperr
 import tempfile
 import tomllib
 import typing
@@ -313,6 +314,22 @@ key_2 = "val_2"
             want_tbl = {"key_1": "val_1", "key_2": "val_2"}
             got_tbl = sw_compdocs.resource.load_toml_table(temp_file, "resource")
             self.assertEqual(got_tbl, want_tbl)
+
+    def test_exc_unicode(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_file = pathlib.Path(temp_dir, "resource.toml")
+            with open(temp_file, mode="w", encoding="shift-jis", newline="\n") as fp:
+                fp.write(
+                    """\
+[resource]
+key_1 = "値1"
+key_2 = "値2"
+"""
+                )
+
+            with self.assertRaises(sw_compdocs.wraperr.UnicodeDecodeFileError) as ctx:
+                sw_compdocs.resource.load_toml_table(temp_file, "resource")
+            self.assertEqual(ctx.exception.filename, temp_file)
 
     def test_exc_decode(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
