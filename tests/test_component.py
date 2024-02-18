@@ -997,6 +997,27 @@ class TestParseXMLFile(unittest.TestCase):
                     self.assertEqual(ctx.exception.file, path)
                     self.assertEqual(ctx.exception.xpath, "/definition/voxel_min")
 
+    def test_exc_parse(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_file = pathlib.Path(temp_dir, "test.xml")
+            with open(temp_file, mode="xt", encoding="utf-8", newline="\r\n") as f:
+                f.write(" ")
+
+            path_list: list[sw_compdocs._types.StrOrBytesPath] = [
+                os.fsdecode(temp_file),
+                os.fsencode(temp_file),
+                temp_file,
+            ]
+            for path in path_list:
+                with self.subTest(path=path):
+                    with self.assertRaises(
+                        sw_compdocs.component.ComponentXMLError
+                    ) as ctx:
+                        sw_compdocs.component.parse_xml_file(path)
+                    self.assertEqual(ctx.exception.msg, "invalid xml")
+                    self.assertEqual(ctx.exception.file, path)
+                    self.assertEqual(ctx.exception.xpath, "/")
+
 
 class TestParseXMLStr(unittest.TestCase):
     def test_pass(self) -> None:
@@ -1061,3 +1082,10 @@ class TestParseXMLStr(unittest.TestCase):
         self.assertEqual(ctx.exception.msg, "invalid voxel x 'invalid'")
         self.assertEqual(ctx.exception.file, None)
         self.assertEqual(ctx.exception.xpath, "/definition/voxel_min")
+
+    def test_exc_parse(self) -> None:
+        with self.assertRaises(sw_compdocs.component.ComponentXMLError) as ctx:
+            sw_compdocs.component.parse_xml_str(" ")
+        self.assertEqual(ctx.exception.msg, "invalid xml")
+        self.assertEqual(ctx.exception.file, None)
+        self.assertEqual(ctx.exception.xpath, "/")

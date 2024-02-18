@@ -405,7 +405,15 @@ def _new_xml_parser() -> "lxml.etree.XMLParser[lxml.etree._Element]":
     return lxml.etree.XMLParser(recover=True)
 
 
-def _parse_xml_root(elem: lxml.etree._Element, *, cid: str | None = None) -> Definition:
+def _parse_xml_root(
+    elem: lxml.etree._Element | None, *, cid: str | None = None
+) -> Definition:
+    # elem may be None if the XML is invalid.
+    if elem is None:
+        exc = ComponentXMLError("invalid xml")
+        exc.prepend_xpath("/")
+        raise exc
+
     if elem.tag != "definition":
         exc = ComponentXMLError(f"invalid xml root tag {elem.tag!r}")
         exc.prepend_xpath(elem.tag)
@@ -423,7 +431,7 @@ def _parse_xml_root(elem: lxml.etree._Element, *, cid: str | None = None) -> Def
 def parse_xml_file(file: _types.StrOrBytesPath) -> Definition:
     cid = generate_cid(file)
     tree = lxml.etree.parse(file, parser=_new_xml_parser())
-    elem = tree.getroot()
+    elem: lxml.etree._Element | None = tree.getroot()
 
     try:
         return _parse_xml_root(elem, cid=cid)
@@ -433,5 +441,6 @@ def parse_xml_file(file: _types.StrOrBytesPath) -> Definition:
 
 
 def parse_xml_str(s: str, *, cid: str | None = None) -> Definition:
+    elem: lxml.etree._Element | None
     elem = lxml.etree.fromstring(s, parser=_new_xml_parser())
     return _parse_xml_root(elem, cid=cid)
