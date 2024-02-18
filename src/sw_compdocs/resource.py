@@ -80,7 +80,7 @@ def format_toml_key(key: str) -> str:
 
 def load_toml_table(file: _types.StrOrBytesPath, table_key: str) -> dict[str, str]:
     try:
-        with wraperr.wrap_unicode_error(filename=file):
+        with wraperr.wrap_unicode_error(file):
             with open(file, mode="rb") as fp:
                 toml: dict[str, object] = tomllib.load(fp)
     except tomllib.TOMLDecodeError as exc:

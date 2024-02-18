@@ -101,7 +101,7 @@ class Language(container.Sequence[Translation]):
         encoding: str | None = "utf-8",
         errors: str | None = None,
     ) -> typing.Self:
-        with wraperr.wrap_unicode_error(filename=file):
+        with wraperr.wrap_unicode_error(file):
             with open(
                 file, mode="rt", encoding=encoding, errors=errors, newline=""
             ) as f:
