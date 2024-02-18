@@ -7,6 +7,7 @@ import typing
 
 from . import _types
 from . import container
+from . import wraperr
 
 
 @dataclasses.dataclass
@@ -100,12 +101,15 @@ class Language(container.Sequence[Translation]):
         encoding: str | None = "utf-8",
         errors: str | None = None,
     ) -> typing.Self:
-        with open(file, mode="rt", encoding=encoding, errors=errors, newline="") as f:
-            try:
-                return cls._from_io(f)
-            except LanguageTSVError as exc:
-                exc.file = file
-                raise
+        with wraperr.wrap_unicode_error(filename=file):
+            with open(
+                file, mode="rt", encoding=encoding, errors=errors, newline=""
+            ) as f:
+                try:
+                    return cls._from_io(f)
+                except LanguageTSVError as exc:
+                    exc.file = file
+                    raise
 
     @classmethod
     def from_str(cls, s: str) -> typing.Self:

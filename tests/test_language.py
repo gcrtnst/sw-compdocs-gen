@@ -2,6 +2,7 @@ import collections.abc
 import pathlib
 import sw_compdocs._types
 import sw_compdocs.language
+import sw_compdocs.wraperr
 import tempfile
 import typing
 import unittest
@@ -312,6 +313,20 @@ class TestLanguageFromFile(unittest.TestCase):
                     ]
                 ),
             )
+
+    def test_wraperr(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_file = pathlib.Path(temp_dir, "language.tsv")
+            with open(temp_file, mode="wt", encoding="utf-8", newline="") as f:
+                f.write(
+                    "id\tdescription\ten\tlocal\nid\tdescription\tEnglish\t日本語\n"
+                )
+
+            with self.assertRaises(sw_compdocs.wraperr.UnicodeDecodeFileError) as ctx:
+                sw_compdocs.language.Language.from_file(
+                    temp_file, encoding="ascii", errors="strict"
+                )
+            self.assertEqual(ctx.exception.filename, temp_file)
 
 
 class TestLanguageFromStr(unittest.TestCase):
