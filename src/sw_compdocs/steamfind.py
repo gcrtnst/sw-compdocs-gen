@@ -38,7 +38,7 @@ def find_stormworks() -> pathlib.Path | None:
     # However, that method requires parsing Valve Data Format, which can be cumbersome.
     # Therefore, this time we will skip parsing and assume the game's installation
     # folder is as follows:
-    stormworks_dir = pathlib.Path(steam_dir, r"steamapps\common\Stormworks")
+    stormworks_dir = pathlib.Path(steam_dir, "steamapps/common/Stormworks")
 
     return stormworks_dir if stormworks_dir.is_dir() else None
 
@@ -48,5 +48,5 @@ def find_definitions() -> pathlib.Path | None:
     if stormworks_dir is None:
         return None
 
-    definitions_dir = pathlib.Path(stormworks_dir, r"rom\data\definitions")
+    definitions_dir = pathlib.Path(stormworks_dir, "rom/data/definitions")
     return definitions_dir if definitions_dir.is_dir() else None
