@@ -4,6 +4,7 @@ import lxml.etree
 import os
 import pathlib
 import sys
+import typing
 
 from . import _types
 from . import component
@@ -193,6 +194,10 @@ def main(
     if not isinstance(argv_output, str):
         raise Exception
 
+    def error(msg: object) -> typing.NoReturn:
+        print(f"{argp.prog}: error: {msg}", file=sys.stderr)
+        sys.exit(1)
+
     try:
         run(
             doc_file=argv_output,
@@ -204,40 +209,28 @@ def main(
             doc_newline=argv_newline,
         )
     except component.ComponentXMLError as exc:
-        print(f"error: {exc}", file=sys.stderr)
-        sys.exit(1)
+        error(exc)
     except generator.LabelKeyError as exc:
-        print(f"error: {exc}", file=sys.stderr)
-        sys.exit(1)
+        error(exc)
     except language.LanguageTSVError as exc:
-        print(f"error: {exc}", file=sys.stderr)
-        sys.exit(1)
+        error(exc)
     except language.LanguageFindError as exc:
-        print(f"error: {exc}", file=sys.stderr)
-        sys.exit(1)
+        error(exc)
     except resource.ResourceFileError as exc:
-        print(f"error: {exc}", file=sys.stderr)
-        sys.exit(1)
+        error(exc)
     except resource.TOMLFileDecodeError as exc:
-        print(f"error: {exc}", file=sys.stderr)
-        sys.exit(1)
+        error(exc)
     except template.TemplateKeyError as exc:
-        print(f"error: {exc}", file=sys.stderr)
-        sys.exit(1)
+        error(exc)
     except wraperr.UnicodeEncodeFileError as exc:
-        print(f"error: {exc}", file=sys.stderr)
-        sys.exit(1)
+        error(exc)
     except wraperr.UnicodeDecodeFileError as exc:
-        print(f"error: {exc}", file=sys.stderr)
-        sys.exit(1)
+        error(exc)
     except wraperr.UnicodeTranslateFileError as exc:
-        print(f"error: {exc}", file=sys.stderr)
-        sys.exit(1)
+        error(exc)
     except lxml.etree.ParseError as exc:
         exc_msg = format_syntax_error(exc)
-        print(f"error: {exc_msg}", file=sys.stderr)
-        sys.exit(1)
+        error(exc_msg)
     except OSError as exc:
         exc_msg = format_os_error(exc)
-        print(f"error: {exc_msg}", file=sys.stderr)
-        sys.exit(1)
+        error(exc_msg)

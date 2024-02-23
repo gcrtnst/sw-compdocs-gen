@@ -446,67 +446,67 @@ class TestMain(unittest.TestCase):
         for tc in [
             tt(
                 input_exc=sw_compdocs.component.ComponentXMLError("message"),
-                want_stderr="error: message\n",
+                want_stderr="sw_compdocs: error: message\n",
             ),
             tt(
                 input_exc=sw_compdocs.generator.LabelKeyError("key"),
-                want_stderr="error: missing label text for key 'key'\n",
+                want_stderr="sw_compdocs: error: missing label text for key 'key'\n",
             ),
             tt(
                 input_exc=sw_compdocs.language.LanguageTSVError("message"),
-                want_stderr="error: message\n",
+                want_stderr="sw_compdocs: error: message\n",
             ),
             tt(
                 input_exc=sw_compdocs.language.LanguageFindIDError("id"),
-                want_stderr="error: missing translation for id 'id'\n",
+                want_stderr="sw_compdocs: error: missing translation for id 'id'\n",
             ),
             tt(
                 input_exc=sw_compdocs.language.LanguageFindEnError("english text"),
-                want_stderr="error: missing translation for text 'english text'\n",
+                want_stderr="sw_compdocs: error: missing translation for text 'english text'\n",
             ),
             tt(
                 input_exc=sw_compdocs.resource.ResourceFileError(
                     "message", file="path/to/resource.toml"
                 ),
-                want_stderr="error: message (in file 'path/to/resource.toml')\n",
+                want_stderr="sw_compdocs: error: message (in file 'path/to/resource.toml')\n",
             ),
             tt(
                 input_exc=sw_compdocs.resource.TOMLFileDecodeError(
                     "message", file="path/to/resource.toml"
                 ),
-                want_stderr="error: message (in file 'path/to/resource.toml')\n",
+                want_stderr="sw_compdocs: error: message (in file 'path/to/resource.toml')\n",
             ),
             tt(
                 input_exc=sw_compdocs.template.TemplateKeyError("key"),
-                want_stderr="error: missing replacement string for placeholder $[key]\n",
+                want_stderr="sw_compdocs: error: missing replacement string for placeholder $[key]\n",
             ),
             tt(
                 input_exc=sw_compdocs.wraperr.UnicodeEncodeFileError(
                     "encoding", "object", 0, 1, "reason", filename="path/to/file"
                 ),
-                want_stderr="error: 'encoding' codec can't encode character '\\x6f' in file 'path/to/file': reason\n",
+                want_stderr="sw_compdocs: error: 'encoding' codec can't encode character '\\x6f' in file 'path/to/file': reason\n",
             ),
             tt(
                 input_exc=sw_compdocs.wraperr.UnicodeDecodeFileError(
                     "encoding", b"object", 0, 1, "reason", filename="path/to/file"
                 ),
-                want_stderr="error: 'encoding' codec can't decode byte 0x6f in file 'path/to/file': reason\n",
+                want_stderr="sw_compdocs: error: 'encoding' codec can't decode byte 0x6f in file 'path/to/file': reason\n",
             ),
             tt(
                 input_exc=sw_compdocs.wraperr.UnicodeTranslateFileError(
                     "object", 0, 1, "reason", filename="path/to/file"
                 ),
-                want_stderr="error: can't translate character '\\x6f' in file 'path/to/file': reason\n",
+                want_stderr="sw_compdocs: error: can't translate character '\\x6f' in file 'path/to/file': reason\n",
             ),
             tt(
                 input_exc=lxml.etree.XMLSyntaxError(
                     "message", 0, 1, 3, filename="path/to/xml"
                 ),
-                want_stderr="error: message (file 'path/to/xml', line 1, column 2)\n",
+                want_stderr="sw_compdocs: error: message (file 'path/to/xml', line 1, column 2)\n",
             ),
             tt(
                 input_exc=OSError(errno.ENOENT, "strerror", "filename", 2, "filename2"),
-                want_stderr="error: strerror (file: 'filename', 'filename2')\n",
+                want_stderr="sw_compdocs: error: strerror (file: 'filename', 'filename2')\n",
             ),
         ]:
             with self.subTest(tc=tc):
@@ -519,11 +519,12 @@ class TestMain(unittest.TestCase):
                 ):
                     mock.side_effect = tc.input_exc
                     sw_compdocs.main.main(
+                        prog="sw_compdocs",
                         args=[
                             "--definitions",
                             "path/to/definitions",
                             "path/to/output",
-                        ]
+                        ],
                     )
                 self.assertEqual(ctx.exception.code, 1)
                 self.assertEqual(stderr.getvalue(), tc.want_stderr)
