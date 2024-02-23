@@ -102,7 +102,9 @@ def run(
 
 
 def main(
-    *, prog: str | None = "sw_compdocs", args: collections.abc.Sequence[str]
+    *,
+    prog: str | None = "sw_compdocs",
+    args: collections.abc.Sequence[str] | None = None,
 ) -> None:
     argp_definitions_default = None
     argp_definitions_required = True
