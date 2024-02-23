@@ -1,0 +1,11 @@
+[label]
+PROP_TABLE_HEAD_LABEL = "Label"
+PROP_TABLE_HEAD_VALUE = "Value"
+PROP_TABLE_MASS_LABEL = "Mass"
+PROP_TABLE_DIMS_LABEL = "Dimensions (WxDxH)"
+PROP_TABLE_COST_LABEL = "Cost"
+PROP_TABLE_TAGS_LABEL = "Tags"
+LOGIC_TABLE_HEAD_TYPE = "Type"
+LOGIC_TABLE_HEAD_LABEL = "Label"
+LOGIC_TABLE_HEAD_DESC = "Description"
+DEPRECATED_TEXT = "This component is deprecated."
