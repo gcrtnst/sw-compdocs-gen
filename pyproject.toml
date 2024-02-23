@@ -16,6 +16,9 @@ dev = [
     "mypy",
 ]
 
+[project.scripts]
+sw_compdocs = "sw_compdocs.main:main"
+
 [tool.mypy]
 mypy_path = "$MYPY_CONFIG_FILE_DIR/src"
 
