@@ -47,7 +47,8 @@ def format_os_error(exc: OSError) -> str:
 def format_syntax_error(exc: SyntaxError) -> str:
     detail_list = []
     if exc.filename is not None:
-        detail_list.append(f"file '{exc.filename}'")
+        exc_filename = os.fsdecode(exc.filename)
+        detail_list.append(f"file {exc_filename!r}")
     if exc.lineno is not None:
         detail_list.append(f"line {exc.lineno}")
     if exc.offset is not None:
@@ -113,7 +114,7 @@ def main(
     if argp_definitions_default_path is not None:
         argp_definitions_default = os.fsdecode(argp_definitions_default_path)
         argp_definitions_required = False
-        argp_definitions_help += f" (default: '{argp_definitions_default}')"
+        argp_definitions_help += f" (default: {argp_definitions_default!r})"
 
     argp = argparse.ArgumentParser(prog=prog)
     argp.add_argument(
