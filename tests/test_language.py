@@ -437,6 +437,22 @@ class TestLanguageFindIDAll(unittest.TestCase):
                 got_trans_list = tc.input_lang.find_id_all(tc.input_id)
                 self.assertEqual(got_trans_list, tc.want_trans_list)
 
+    def test_copy_empty(self) -> None:
+        lang = sw_compdocs.language.Language()
+        trans_list_1 = lang.find_id_all("id")
+        trans_list_2 = lang.find_id_all("id")
+        self.assertIsNot(trans_list_1, trans_list_2)
+
+    def test_copy_exists(self) -> None:
+        lang = sw_compdocs.language.Language(
+            [
+                sw_compdocs.language.Translation("id", "description", "en", "local"),
+            ]
+        )
+        trans_list_1 = lang.find_id_all("id")
+        trans_list_2 = lang.find_id_all("id")
+        self.assertIsNot(trans_list_1, trans_list_2)
+
 
 class TestLanguageFindID(unittest.TestCase):
     def test_pass(self) -> None:
@@ -590,6 +606,22 @@ class TestLanguageFindEnAll(unittest.TestCase):
             with self.subTest(tc=tc):
                 got_trans_list = tc.input_lang.find_en_all(tc.input_en)
                 self.assertEqual(got_trans_list, tc.want_trans_list)
+
+    def test_copy_empty(self) -> None:
+        lang = sw_compdocs.language.Language()
+        trans_list_1 = lang.find_en_all("en")
+        trans_list_2 = lang.find_en_all("en")
+        self.assertIsNot(trans_list_1, trans_list_2)
+
+    def test_copy_exists(self) -> None:
+        lang = sw_compdocs.language.Language(
+            [
+                sw_compdocs.language.Translation("id", "description", "en", "local"),
+            ]
+        )
+        trans_list_1 = lang.find_en_all("en")
+        trans_list_2 = lang.find_en_all("en")
+        self.assertIsNot(trans_list_1, trans_list_2)
 
 
 class TestLanguageFindEn(unittest.TestCase):

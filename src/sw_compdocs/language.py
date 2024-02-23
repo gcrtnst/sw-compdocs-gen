@@ -71,6 +71,15 @@ class LanguageFindEnError(LanguageFindError):
 
 
 class Language(container.Sequence[Translation]):
+    def __init__(self, iterable: collections.abc.Iterable[Translation] = ()) -> None:
+        super().__init__(iterable=iterable)
+
+        self._d_id: dict[str, list[Translation]] = {}
+        self._d_en: dict[str, list[Translation]] = {}
+        for trans in self:
+            self._d_id.setdefault(trans.id, []).append(trans)
+            self._d_en.setdefault(trans.en, []).append(trans)
+
     @classmethod
     def _from_io(cls, f: collections.abc.Iterable[str]) -> typing.Self:
         reader = csv.reader(f, dialect=LanguageTSVDialect)
@@ -117,7 +126,7 @@ class Language(container.Sequence[Translation]):
         return cls._from_io(f)
 
     def find_id_all(self, id: str) -> list[Translation]:
-        return [trans for trans in self if trans.id == id]
+        return self._d_id.get(id, [])[:]
 
     def find_id(self, id: str) -> Translation:
         trans_list = self.find_id_all(id)
@@ -126,7 +135,7 @@ class Language(container.Sequence[Translation]):
         return trans_list[0]
 
     def find_en_all(self, en: str) -> list[Translation]:
-        return [trans for trans in self if trans.en == en]
+        return self._d_en.get(en, [])[:]
 
     def find_en(self, en: str) -> Translation:
         trans_list = self.find_en_all(en)
