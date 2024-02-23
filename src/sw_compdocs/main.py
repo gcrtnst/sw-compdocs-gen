@@ -113,7 +113,7 @@ def main(
     if argp_definitions_default_path is not None:
         argp_definitions_default = os.fsdecode(argp_definitions_default_path)
         argp_definitions_required = False
-        argp_definitions_help += f" (default: {argp_definitions_default})"
+        argp_definitions_help += f" (default: '{argp_definitions_default}')"
 
     argp = argparse.ArgumentParser(prog=prog)
     argp.add_argument(
