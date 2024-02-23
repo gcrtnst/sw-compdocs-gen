@@ -388,7 +388,7 @@ class TestMain(unittest.TestCase):
             mock_call_args,
             unittest.mock.call(
                 doc_file="path/to/output",
-                comp_dir=definitions,
+                comp_dir=str(definitions),
                 label_file=None,
                 lang_file=None,
                 template_file=None,
