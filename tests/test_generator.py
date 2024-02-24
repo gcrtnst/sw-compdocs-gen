@@ -86,7 +86,7 @@ class TestLabelDictLen(unittest.TestCase):
         self.assertEqual(len(label), 2)
 
 
-class TestDocumentGeneratorInit(unittest.TestCase):
+class TestGeneratorInit(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(
             "tt",
@@ -120,7 +120,7 @@ class TestDocumentGeneratorInit(unittest.TestCase):
             ),
         ]:
             with self.subTest(tc=tc):
-                gen = sw_compdocs.generator.DocumentGenerator(
+                gen = sw_compdocs.generator.Generator(
                     label=tc.input_label, lang=tc.input_lang, fmt=tc.input_fmt
                 )
                 self.assertIs(gen.label, tc.input_label)
@@ -128,7 +128,7 @@ class TestDocumentGeneratorInit(unittest.TestCase):
                 self.assertIs(gen.fmt, tc.input_fmt)
 
 
-class TestDocumentGeneratorLabelGet(unittest.TestCase):
+class TestGeneratorLabelGet(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(
             "tt",
@@ -152,12 +152,12 @@ class TestDocumentGeneratorLabelGet(unittest.TestCase):
             ),
         ]:
             with self.subTest(tc=tc):
-                gen = sw_compdocs.generator.DocumentGenerator(label=tc.input_label)
+                gen = sw_compdocs.generator.Generator(label=tc.input_label)
                 got_s = gen._label_get(tc.input_s)
                 self.assertEqual(got_s, tc.want_s)
 
 
-class TestDocumentGeneratorLangFindID(unittest.TestCase):
+class TestGeneratorLangFindID(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(
             "tt",
@@ -190,12 +190,12 @@ class TestDocumentGeneratorLangFindID(unittest.TestCase):
             ),
         ]:
             with self.subTest(tc=tc):
-                gen = sw_compdocs.generator.DocumentGenerator(lang=tc.input_lang)
+                gen = sw_compdocs.generator.Generator(lang=tc.input_lang)
                 got_s = gen._lang_find_id(tc.input_lang_id, tc.input_lang_en)
                 self.assertEqual(got_s, tc.want_s)
 
 
-class TestDocumentGeneratorLangFindEn(unittest.TestCase):
+class TestGeneratorLangFindEn(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(
             "tt",
@@ -225,12 +225,12 @@ class TestDocumentGeneratorLangFindEn(unittest.TestCase):
             ),
         ]:
             with self.subTest(tc=tc):
-                gen = sw_compdocs.generator.DocumentGenerator(lang=tc.input_lang)
+                gen = sw_compdocs.generator.Generator(lang=tc.input_lang)
                 got_s = gen._lang_find_en(tc.input_lang_en)
                 self.assertEqual(got_s, tc.want_s)
 
 
-class TestDocumentGeneratorFmtFormat(unittest.TestCase):
+class TestGeneratorFmtFormat(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(
             "tt",
@@ -254,7 +254,7 @@ class TestDocumentGeneratorFmtFormat(unittest.TestCase):
             ),
         ]:
             with self.subTest(tc=tc):
-                gen = sw_compdocs.generator.DocumentGenerator(fmt=tc.input_fmt)
+                gen = sw_compdocs.generator.Generator(fmt=tc.input_fmt)
                 got_s = gen._fmt_format(tc.input_s)
                 self.assertEqual(got_s, tc.want_s)
 
@@ -3644,3 +3644,455 @@ class TestDocumentGeneratorGenerate(unittest.TestCase):
                 gen = sw_compdocs.generator.DocumentGenerator()
                 got_doc = gen.generate(tc.input_comp_list)
                 self.assertEqual(got_doc, tc.want_doc)
+
+
+class TestSheetGeneratorGenerateComponent(unittest.TestCase):
+    def test(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_lang", sw_compdocs.language.Language | None),
+                ("input_fmt", sw_compdocs.template.TemplateFormatter | None),
+                ("input_comp", sw_compdocs.component.Definition),
+                ("want_record", list[str]),
+            ],
+        )
+
+        for tc in [
+            tt(  # normal
+                input_lang=None,
+                input_fmt=None,
+                input_comp=sw_compdocs.component.Definition(
+                    name="Name",
+                    category=sw_compdocs.component.Category.BLOCKS,
+                    mass=1.0,
+                    value=2,
+                    tags="tags",
+                    tooltip_properties=sw_compdocs.component.TooltipProperties(
+                        short_description="short_description",
+                        description="description",
+                    ),
+                    voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
+                    voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
+                ),
+                want_record=[
+                    "Name",
+                    "Blocks",
+                    "tags",
+                    "FALSE",
+                    "1",
+                    "2",
+                    "3",
+                    "7",
+                    "5",
+                    "short_description",
+                    "description",
+                ],
+            ),
+            tt(  # deprecated
+                input_lang=None,
+                input_fmt=None,
+                input_comp=sw_compdocs.component.Definition(
+                    name="Name",
+                    category=sw_compdocs.component.Category.BLOCKS,
+                    mass=1.0,
+                    value=2,
+                    flags=sw_compdocs.component.Flags.IS_DEPRECATED,
+                    tags="tags",
+                    tooltip_properties=sw_compdocs.component.TooltipProperties(
+                        short_description="short_description",
+                        description="description",
+                    ),
+                    voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
+                    voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
+                ),
+                want_record=[
+                    "Name",
+                    "Blocks",
+                    "tags",
+                    "TRUE",
+                    "1",
+                    "2",
+                    "3",
+                    "7",
+                    "5",
+                    "short_description",
+                    "description",
+                ],
+            ),
+            tt(  # mass
+                input_lang=None,
+                input_fmt=None,
+                input_comp=sw_compdocs.component.Definition(
+                    name="Name",
+                    category=sw_compdocs.component.Category.BLOCKS,
+                    mass=0.25,
+                    value=2,
+                    tags="tags",
+                    tooltip_properties=sw_compdocs.component.TooltipProperties(
+                        short_description="short_description",
+                        description="description",
+                    ),
+                    voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
+                    voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
+                ),
+                want_record=[
+                    "Name",
+                    "Blocks",
+                    "tags",
+                    "FALSE",
+                    "0.25",
+                    "2",
+                    "3",
+                    "7",
+                    "5",
+                    "short_description",
+                    "description",
+                ],
+            ),
+            tt(  # lang
+                input_lang=sw_compdocs.language.Language(
+                    [
+                        sw_compdocs.language.Translation(
+                            "def_test_name", "", "", "名前"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_s_desc", "", "", "短い説明"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_desc", "", "", "説明"
+                        ),
+                    ]
+                ),
+                input_fmt=None,
+                input_comp=sw_compdocs.component.Definition(
+                    cid="test",
+                    name="Name",
+                    category=sw_compdocs.component.Category.BLOCKS,
+                    mass=1.0,
+                    value=2,
+                    tags="tags",
+                    tooltip_properties=sw_compdocs.component.TooltipProperties(
+                        short_description="short_description",
+                        description="description",
+                    ),
+                    voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
+                    voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
+                ),
+                want_record=[
+                    "名前",
+                    "Blocks",
+                    "tags",
+                    "FALSE",
+                    "1",
+                    "2",
+                    "3",
+                    "7",
+                    "5",
+                    "短い説明",
+                    "説明",
+                ],
+            ),
+            tt(  # template
+                input_lang=None,
+                input_fmt=sw_compdocs.template.TemplateFormatter(
+                    {
+                        "name": "Name",
+                        "s_desc": "short_description",
+                        "desc": "description",
+                    }
+                ),
+                input_comp=sw_compdocs.component.Definition(
+                    name="$[name]",
+                    category=sw_compdocs.component.Category.BLOCKS,
+                    mass=1.0,
+                    value=2,
+                    tags="tags",
+                    tooltip_properties=sw_compdocs.component.TooltipProperties(
+                        short_description="$[s_desc]",
+                        description="$[desc]",
+                    ),
+                    voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
+                    voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
+                ),
+                want_record=[
+                    "$[name]",
+                    "Blocks",
+                    "tags",
+                    "FALSE",
+                    "1",
+                    "2",
+                    "3",
+                    "7",
+                    "5",
+                    "short_description",
+                    "description",
+                ],
+            ),
+            tt(  # lang, template
+                input_lang=sw_compdocs.language.Language(
+                    [
+                        sw_compdocs.language.Translation(
+                            "def_test_name", "", "", "$[name]"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_s_desc", "", "", "$[s_desc]"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_desc", "", "", "$[desc]"
+                        ),
+                    ]
+                ),
+                input_fmt=sw_compdocs.template.TemplateFormatter(
+                    {
+                        "name": "Name",
+                        "s_desc": "short_description",
+                        "desc": "description",
+                    }
+                ),
+                input_comp=sw_compdocs.component.Definition(
+                    cid="test",
+                    name="",
+                    category=sw_compdocs.component.Category.BLOCKS,
+                    mass=1.0,
+                    value=2,
+                    tags="tags",
+                    tooltip_properties=sw_compdocs.component.TooltipProperties(
+                        short_description="",
+                        description="",
+                    ),
+                    voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
+                    voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
+                ),
+                want_record=[
+                    "$[name]",
+                    "Blocks",
+                    "tags",
+                    "FALSE",
+                    "1",
+                    "2",
+                    "3",
+                    "7",
+                    "5",
+                    "short_description",
+                    "description",
+                ],
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                gen = sw_compdocs.generator.SheetGenerator(
+                    lang=tc.input_lang, fmt=tc.input_fmt
+                )
+                got_record = gen.generate_component(tc.input_comp)
+                self.assertEqual(got_record, tc.want_record)
+
+
+class TestSheetGeneratorGenerateComponentList(unittest.TestCase):
+    def test(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_comp_list", list[sw_compdocs.component.Definition]),
+                ("want_record_list", list[list[str]]),
+            ],
+        )
+
+        for tc in [
+            tt(
+                input_comp_list=[
+                    sw_compdocs.component.Definition(name="Test 1"),
+                    sw_compdocs.component.Definition(name="Test 2"),
+                    sw_compdocs.component.Definition(name="Test 3"),
+                ],
+                want_record_list=[
+                    ["Test 1", "Blocks", "", "FALSE", "0", "0", "1", "1", "1", "", ""],
+                    ["Test 2", "Blocks", "", "FALSE", "0", "0", "1", "1", "1", "", ""],
+                    ["Test 3", "Blocks", "", "FALSE", "0", "0", "1", "1", "1", "", ""],
+                ],
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                gen = sw_compdocs.generator.SheetGenerator()
+                got_record_list = gen.generate_component_list(tc.input_comp_list)
+                self.assertEqual(got_record_list, tc.want_record_list)
+
+
+class TestSheetGeneratorGenerate(unittest.TestCase):
+    def test(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_label", sw_compdocs.generator.LabelDict | None),
+                ("input_comp_list", list[sw_compdocs.component.Definition]),
+                ("want_record_list", list[list[str]]),
+            ],
+        )
+
+        for tc in [
+            tt(  # normal
+                input_label=None,
+                input_comp_list=[
+                    sw_compdocs.component.Definition(name="Test 1"),
+                    sw_compdocs.component.Definition(name="Test 2"),
+                    sw_compdocs.component.Definition(name="Test 3"),
+                ],
+                want_record_list=[
+                    [
+                        "SHEET_HEAD_NAME",
+                        "SHEET_HEAD_CATEGORY",
+                        "SHEET_HEAD_TAGS",
+                        "SHEET_HEAD_DEPRECATED",
+                        "SHEET_HEAD_MASS",
+                        "SHEET_HEAD_COST",
+                        "SHEET_HEAD_WIDTH",
+                        "SHEET_HEAD_DEPTH",
+                        "SHEET_HEAD_HEIGHT",
+                        "SHEET_HEAD_SDESC",
+                        "SHEET_HEAD_DESC",
+                    ],
+                    ["Test 1", "Blocks", "", "FALSE", "0", "0", "1", "1", "1", "", ""],
+                    ["Test 2", "Blocks", "", "FALSE", "0", "0", "1", "1", "1", "", ""],
+                    ["Test 3", "Blocks", "", "FALSE", "0", "0", "1", "1", "1", "", ""],
+                ],
+            ),
+            tt(  # sort
+                input_label=None,
+                input_comp_list=[
+                    sw_compdocs.component.Definition(
+                        cid="a",
+                        name="Z",
+                        category=sw_compdocs.component.Category.VEHICLE_CONTROL,
+                        value=1,
+                    ),
+                    sw_compdocs.component.Definition(
+                        cid="z",
+                        name="A",
+                        category=sw_compdocs.component.Category.VEHICLE_CONTROL,
+                        value=2,
+                    ),
+                    sw_compdocs.component.Definition(
+                        cid="a",
+                        name="A",
+                        category=sw_compdocs.component.Category.VEHICLE_CONTROL,
+                        value=3,
+                    ),
+                    sw_compdocs.component.Definition(
+                        cid="z",
+                        name="Z",
+                        category=sw_compdocs.component.Category.BLOCKS,
+                        value=4,
+                    ),
+                ],
+                want_record_list=[
+                    [
+                        "SHEET_HEAD_NAME",
+                        "SHEET_HEAD_CATEGORY",
+                        "SHEET_HEAD_TAGS",
+                        "SHEET_HEAD_DEPRECATED",
+                        "SHEET_HEAD_MASS",
+                        "SHEET_HEAD_COST",
+                        "SHEET_HEAD_WIDTH",
+                        "SHEET_HEAD_DEPTH",
+                        "SHEET_HEAD_HEIGHT",
+                        "SHEET_HEAD_SDESC",
+                        "SHEET_HEAD_DESC",
+                    ],
+                    [
+                        "Z",
+                        "Blocks",
+                        "",
+                        "FALSE",
+                        "0",
+                        "4",
+                        "1",
+                        "1",
+                        "1",
+                        "",
+                        "",
+                    ],
+                    [
+                        "A",
+                        "Vehicle Control",
+                        "",
+                        "FALSE",
+                        "0",
+                        "3",
+                        "1",
+                        "1",
+                        "1",
+                        "",
+                        "",
+                    ],
+                    [
+                        "A",
+                        "Vehicle Control",
+                        "",
+                        "FALSE",
+                        "0",
+                        "2",
+                        "1",
+                        "1",
+                        "1",
+                        "",
+                        "",
+                    ],
+                    [
+                        "Z",
+                        "Vehicle Control",
+                        "",
+                        "FALSE",
+                        "0",
+                        "1",
+                        "1",
+                        "1",
+                        "1",
+                        "",
+                        "",
+                    ],
+                ],
+            ),
+            tt(  # label
+                input_label=sw_compdocs.generator.LabelDict(
+                    {
+                        "SHEET_HEAD_NAME": "Name",
+                        "SHEET_HEAD_CATEGORY": "Category",
+                        "SHEET_HEAD_TAGS": "Tags",
+                        "SHEET_HEAD_DEPRECATED": "Deprecated",
+                        "SHEET_HEAD_MASS": "Mass",
+                        "SHEET_HEAD_COST": "Cost",
+                        "SHEET_HEAD_WIDTH": "Width",
+                        "SHEET_HEAD_DEPTH": "Depth",
+                        "SHEET_HEAD_HEIGHT": "Height",
+                        "SHEET_HEAD_SDESC": "Short Description",
+                        "SHEET_HEAD_DESC": "Description",
+                    }
+                ),
+                input_comp_list=[
+                    sw_compdocs.component.Definition(name="Test 1"),
+                    sw_compdocs.component.Definition(name="Test 2"),
+                    sw_compdocs.component.Definition(name="Test 3"),
+                ],
+                want_record_list=[
+                    [
+                        "Name",
+                        "Category",
+                        "Tags",
+                        "Deprecated",
+                        "Mass",
+                        "Cost",
+                        "Width",
+                        "Depth",
+                        "Height",
+                        "Short Description",
+                        "Description",
+                    ],
+                    ["Test 1", "Blocks", "", "FALSE", "0", "0", "1", "1", "1", "", ""],
+                    ["Test 2", "Blocks", "", "FALSE", "0", "0", "1", "1", "1", "", ""],
+                    ["Test 3", "Blocks", "", "FALSE", "0", "0", "1", "1", "1", "", ""],
+                ],
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                gen = sw_compdocs.generator.SheetGenerator(label=tc.input_label)
+                got_record_list = gen.generate(tc.input_comp_list)
+                self.assertEqual(got_record_list, tc.want_record_list)

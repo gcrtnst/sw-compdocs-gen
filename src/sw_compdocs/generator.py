@@ -33,7 +33,7 @@ class LabelDict(collections.abc.Mapping[str, str]):
         return len(self._d)
 
 
-class DocumentGenerator:
+class Generator:
     def __init__(
         self,
         *,
@@ -65,6 +65,8 @@ class DocumentGenerator:
             s = self.fmt.format(s)
         return s
 
+
+class DocumentGenerator(Generator):
     def generate_property_table(self, comp: component.Definition) -> document.Table:
         head = document.TableDataRow(
             [
@@ -246,3 +248,72 @@ class DocumentGenerator:
             doc.append(document.Heading(str(category)))
             doc.extend(category_comp_list_doc)
         return doc
+
+
+class SheetGenerator(Generator):
+    def generate_component(self, comp: component.Definition) -> list[str]:
+        dims_w = comp.voxel_max.x - comp.voxel_min.x + 1
+        dims_h = comp.voxel_max.y - comp.voxel_min.y + 1
+        dims_d = comp.voxel_max.z - comp.voxel_min.z + 1
+
+        comp_name_id = f"def_{comp.cid}_name"
+        comp_name = self._lang_find_id(comp_name_id, comp.name)
+
+        comp_s_desc_id = f"def_{comp.cid}_s_desc"
+        comp_s_desc = comp.tooltip_properties.short_description
+        comp_s_desc = self._lang_find_id(comp_s_desc_id, comp_s_desc)
+        comp_s_desc = self._fmt_format(comp_s_desc)
+
+        comp_desc_id = f"def_{comp.cid}_desc"
+        comp_desc = comp.tooltip_properties.description
+        comp_desc = self._lang_find_id(comp_desc_id, comp_desc)
+        comp_desc = self._fmt_format(comp_desc)
+
+        return [
+            comp_name,
+            str(comp.category),
+            comp.tags,
+            "TRUE" if component.Flags.IS_DEPRECATED in comp.flags else "FALSE",
+            f"{comp.mass:g}",
+            f"{comp.value:d}",
+            f"{dims_w:d}",
+            f"{dims_d:d}",
+            f"{dims_h:d}",
+            comp_s_desc,
+            comp_desc,
+        ]
+
+    def generate_component_list(
+        self, comp_list: collections.abc.Iterable[component.Definition]
+    ) -> list[list[str]]:
+        record_list = []
+        for comp in comp_list:
+            record = self.generate_component(comp)
+            record_list.append(record)
+        return record_list
+
+    def generate(
+        self, comp_list: collections.abc.Iterable[component.Definition]
+    ) -> list[list[str]]:
+        def sort_key(comp: component.Definition) -> tuple[int, str, str]:
+            return comp.category.value, comp.name, comp.cid
+
+        comp_list = list(comp_list)
+        comp_list.sort(key=sort_key)
+
+        header = [
+            self._label_get("SHEET_HEAD_NAME"),
+            self._label_get("SHEET_HEAD_CATEGORY"),
+            self._label_get("SHEET_HEAD_TAGS"),
+            self._label_get("SHEET_HEAD_DEPRECATED"),
+            self._label_get("SHEET_HEAD_MASS"),
+            self._label_get("SHEET_HEAD_COST"),
+            self._label_get("SHEET_HEAD_WIDTH"),
+            self._label_get("SHEET_HEAD_DEPTH"),
+            self._label_get("SHEET_HEAD_HEIGHT"),
+            self._label_get("SHEET_HEAD_SDESC"),
+            self._label_get("SHEET_HEAD_DESC"),
+        ]
+        record_list = [header]
+        record_list.extend(self.generate_component_list(comp_list))
+        return record_list
