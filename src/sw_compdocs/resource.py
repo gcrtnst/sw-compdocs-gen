@@ -17,7 +17,7 @@ class ResourceFileError(Exception):
         msg = self.msg
         if self.file is not None:
             file = os.fsdecode(self.file)
-            msg = f"{self.msg} (in file {file!r})"
+            msg = f"{self.msg} (in file '{file}')"
         return msg
 
 
@@ -37,7 +37,7 @@ class TOMLFileDecodeError(tomllib.TOMLDecodeError):
 
         if self.file is not None:
             file = os.fsdecode(self.file)
-            msg_list.append(f"(in file {file!r})")
+            msg_list.append(f"(in file '{file}')")
 
         msg_full = " ".join(msg_list)
         return msg_full

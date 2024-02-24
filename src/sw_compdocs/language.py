@@ -42,9 +42,9 @@ class LanguageTSVError(Exception):
         if file is None and self.line is not None:
             msg = f"{self.msg} (at line {self.line!r})"
         if file is not None and self.line is None:
-            msg = f"{self.msg} (in file {file!r})"
+            msg = f"{self.msg} (in file '{file}')"
         if file is not None and self.line is not None:
-            msg = f"{self.msg} (in file {file!r} at line {self.line!r})"
+            msg = f"{self.msg} (in file '{file}' at line {self.line!r})"
         return msg
 
 

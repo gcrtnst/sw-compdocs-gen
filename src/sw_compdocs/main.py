@@ -41,8 +41,8 @@ def format_os_error(exc: OSError) -> str:
     if exc_filename is None:
         return exc.strerror
     if exc_filename2 is None:
-        return f"{exc.strerror} (file: {exc_filename!r})"
-    return f"{exc.strerror} (file: {exc_filename!r}, {exc_filename2!r})"
+        return f"{exc.strerror} (file: '{exc_filename}')"
+    return f"{exc.strerror} (file: '{exc_filename}', '{exc_filename2}')"
 
 
 def format_parse_error(exc: lxml.etree.ParseError) -> str:
@@ -105,7 +105,7 @@ def main(
     if argp_definitions_default_path is not None:
         argp_definitions_default = os.fsdecode(argp_definitions_default_path)
         argp_definitions_required = False
-        argp_definitions_help += f" (default: {argp_definitions_default!r})"
+        argp_definitions_help += f" (default: '{argp_definitions_default}')"
 
     argp = argparse.ArgumentParser(prog=prog)
     argp.add_argument(

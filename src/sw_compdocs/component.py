@@ -28,11 +28,11 @@ class ComponentXMLError(Exception):
 
         msg = self.msg
         if file is None and self.xpath != ".":
-            msg = f"{self.msg} (at xpath {self.xpath!r})"
+            msg = f"{self.msg} (at xpath '{self.xpath}')"
         if file is not None and self.xpath == ".":
-            msg = f"{self.msg} (in file {file!r})"
+            msg = f"{self.msg} (in file '{file}')"
         if file is not None and self.xpath != ".":
-            msg = f"{self.msg} (in file {file!r} at xpath {self.xpath!r})"
+            msg = f"{self.msg} (in file '{file}' at xpath '{self.xpath}')"
         return msg
 
     def prepend_xpath(self, s: str) -> None:
