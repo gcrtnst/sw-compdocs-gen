@@ -56,46 +56,30 @@ class TestFormatOSError(unittest.TestCase):
                 self.assertEqual(got_s, tc.want_s)
 
 
-class TestFromatSyntaxError(unittest.TestCase):
+class TestParseError(unittest.TestCase):
     def test(self) -> None:
-        tt = typing.NamedTuple("tt", [("input_exc", SyntaxError), ("want_s", str)])
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_exc", lxml.etree.ParseError),
+                ("want_s", str),
+            ],
+        )
 
         for tc in [
             tt(
-                input_exc=SyntaxError("message"),
+                input_exc=lxml.etree.ParseError("message", 0, 1, 1),
                 want_s="message",
             ),
             tt(
-                input_exc=SyntaxError("message", ("filename", None, None, None)),
-                want_s="message (file 'filename')",
-            ),
-            tt(
-                input_exc=SyntaxError("message", (None, 1, None, None)),
-                want_s="message (line 1)",
-            ),
-            tt(
-                input_exc=SyntaxError("message", (None, None, 2, None)),
-                want_s="message (column 2)",
-            ),
-            tt(
-                input_exc=SyntaxError("message", ("filename", 1, None, None)),
-                want_s="message (file 'filename', line 1)",
-            ),
-            tt(
-                input_exc=SyntaxError("message", ("filename", None, 2, None)),
-                want_s="message (file 'filename', column 2)",
-            ),
-            tt(
-                input_exc=SyntaxError("message", (None, 1, 2, None)),
-                want_s="message (line 1, column 2)",
-            ),
-            tt(
-                input_exc=SyntaxError("message", ("filename", 1, 2, None)),
-                want_s="message (file 'filename', line 1, column 2)",
+                input_exc=lxml.etree.ParseError(
+                    "message", 0, 1, 1, filename="filename"
+                ),
+                want_s="message (in file 'filename')",
             ),
         ]:
             with self.subTest(tc=tc):
-                got_s = sw_compdocs.main.format_syntax_error(tc.input_exc)
+                got_s = sw_compdocs.main.format_parse_error(tc.input_exc)
                 self.assertEqual(got_s, tc.want_s)
 
 
@@ -502,7 +486,7 @@ class TestMain(unittest.TestCase):
                 input_exc=lxml.etree.XMLSyntaxError(
                     "message", 0, 1, 3, filename="path/to/xml"
                 ),
-                want_stderr="sw_compdocs: error: message (file 'path/to/xml', line 1, column 2)\n",
+                want_stderr="sw_compdocs: error: message (in file 'path/to/xml')\n",
             ),
             tt(
                 input_exc=OSError(errno.ENOENT, "strerror", "filename", 2, "filename2"),

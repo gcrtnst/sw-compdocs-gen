@@ -45,21 +45,11 @@ def format_os_error(exc: OSError) -> str:
     return f"{exc.strerror} (file: {exc_filename!r}, {exc_filename2!r})"
 
 
-def format_syntax_error(exc: SyntaxError) -> str:
-    detail_list = []
+def format_parse_error(exc: lxml.etree.ParseError) -> str:
     if exc.filename is not None:
         exc_filename = os.fsdecode(exc.filename)
-        detail_list.append(f"file {exc_filename!r}")
-    if exc.lineno is not None:
-        detail_list.append(f"line {exc.lineno}")
-    if exc.offset is not None:
-        detail_list.append(f"column {exc.offset}")
-    detail = ", ".join(detail_list)
-
-    msg = str(exc.msg)
-    if detail != "":
-        msg += " (" + detail + ")"
-    return msg
+        return f"{exc.msg} (in file '{exc_filename}')"
+    return str(exc.msg)
 
 
 def run(
@@ -229,7 +219,7 @@ def main(
     except wraperr.UnicodeTranslateFileError as exc:
         error(exc)
     except lxml.etree.ParseError as exc:
-        exc_msg = format_syntax_error(exc)
+        exc_msg = format_parse_error(exc)
         error(exc_msg)
     except OSError as exc:
         exc_msg = format_os_error(exc)
