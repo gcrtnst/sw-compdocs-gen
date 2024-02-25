@@ -19,70 +19,6 @@ import unittest
 import unittest.mock
 
 
-class TestFormatOSError(unittest.TestCase):
-    def test(self) -> None:
-        tt = typing.NamedTuple("tt", [("input_exc", OSError), ("want_s", str)])
-
-        for tc in [
-            tt(
-                input_exc=OSError("message"),
-                want_s="message",
-            ),
-            tt(
-                input_exc=OSError(errno.ENOENT, "strerror"),
-                want_s="strerror",
-            ),
-            tt(
-                input_exc=OSError(errno.ENOENT, "strerror", "filename"),
-                want_s="strerror (file: 'filename')",
-            ),
-            tt(
-                input_exc=OSError(errno.ENOENT, "strerror", "filename", 2),
-                want_s="strerror (file: 'filename')",
-            ),
-            tt(
-                input_exc=OSError(errno.ENOENT, "strerror", "filename", 2, "filename2"),
-                want_s="strerror (file: 'filename', 'filename2')",
-            ),
-            tt(
-                input_exc=OSError(
-                    errno.ENOENT, "strerror", b"filename", 2, b"filename2"
-                ),
-                want_s="strerror (file: 'filename', 'filename2')",
-            ),
-        ]:
-            with self.subTest(tc=tc):
-                got_s = sw_compdocs.main.format_os_error(tc.input_exc)
-                self.assertEqual(got_s, tc.want_s)
-
-
-class TestParseError(unittest.TestCase):
-    def test(self) -> None:
-        tt = typing.NamedTuple(
-            "tt",
-            [
-                ("input_exc", lxml.etree.ParseError),
-                ("want_s", str),
-            ],
-        )
-
-        for tc in [
-            tt(
-                input_exc=lxml.etree.ParseError("message", 0, 1, 1),
-                want_s="message",
-            ),
-            tt(
-                input_exc=lxml.etree.ParseError(
-                    "message", 0, 1, 1, filename="filename"
-                ),
-                want_s="message (in file 'filename')",
-            ),
-        ]:
-            with self.subTest(tc=tc):
-                got_s = sw_compdocs.main.format_parse_error(tc.input_exc)
-                self.assertEqual(got_s, tc.want_s)
-
-
 class TestRun(unittest.TestCase):
     def test_empty(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -206,6 +142,70 @@ template_02 = "テンプレート 02"
 | タグ |  |
 """
             self.assertEqual(got_md, want_md)
+
+
+class TestFormatOSError(unittest.TestCase):
+    def test(self) -> None:
+        tt = typing.NamedTuple("tt", [("input_exc", OSError), ("want_s", str)])
+
+        for tc in [
+            tt(
+                input_exc=OSError("message"),
+                want_s="message",
+            ),
+            tt(
+                input_exc=OSError(errno.ENOENT, "strerror"),
+                want_s="strerror",
+            ),
+            tt(
+                input_exc=OSError(errno.ENOENT, "strerror", "filename"),
+                want_s="strerror (file: 'filename')",
+            ),
+            tt(
+                input_exc=OSError(errno.ENOENT, "strerror", "filename", 2),
+                want_s="strerror (file: 'filename')",
+            ),
+            tt(
+                input_exc=OSError(errno.ENOENT, "strerror", "filename", 2, "filename2"),
+                want_s="strerror (file: 'filename', 'filename2')",
+            ),
+            tt(
+                input_exc=OSError(
+                    errno.ENOENT, "strerror", b"filename", 2, b"filename2"
+                ),
+                want_s="strerror (file: 'filename', 'filename2')",
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                got_s = sw_compdocs.main.format_os_error(tc.input_exc)
+                self.assertEqual(got_s, tc.want_s)
+
+
+class TestParseError(unittest.TestCase):
+    def test(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_exc", lxml.etree.ParseError),
+                ("want_s", str),
+            ],
+        )
+
+        for tc in [
+            tt(
+                input_exc=lxml.etree.ParseError("message", 0, 1, 1),
+                want_s="message",
+            ),
+            tt(
+                input_exc=lxml.etree.ParseError(
+                    "message", 0, 1, 1, filename="filename"
+                ),
+                want_s="message (in file 'filename')",
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                got_s = sw_compdocs.main.format_parse_error(tc.input_exc)
+                self.assertEqual(got_s, tc.want_s)
 
 
 class TestMain(unittest.TestCase):

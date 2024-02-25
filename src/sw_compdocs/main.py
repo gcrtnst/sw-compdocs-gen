@@ -17,41 +17,6 @@ from . import template
 from . import wraperr
 
 
-def format_os_error(exc: OSError) -> str:
-    exc_filename: object = exc.filename
-    exc_filename2: object = exc.filename2
-    if exc_filename is None and exc_filename2 is not None:
-        exc_filename, exc_filename2 = exc_filename2, exc_filename
-
-    if (
-        isinstance(exc_filename, str)
-        or isinstance(exc_filename, bytes)
-        or isinstance(exc_filename, os.PathLike)
-    ):
-        exc_filename = os.fsdecode(exc_filename)
-    if (
-        isinstance(exc_filename2, str)
-        or isinstance(exc_filename2, bytes)
-        or isinstance(exc_filename2, os.PathLike)
-    ):
-        exc_filename2 = os.fsdecode(exc_filename2)
-
-    if exc.strerror is None:
-        return str(exc)
-    if exc_filename is None:
-        return exc.strerror
-    if exc_filename2 is None:
-        return f"{exc.strerror} (file: '{exc_filename}')"
-    return f"{exc.strerror} (file: '{exc_filename}', '{exc_filename2}')"
-
-
-def format_parse_error(exc: lxml.etree.ParseError) -> str:
-    if exc.filename is not None:
-        exc_filename = os.fsdecode(exc.filename)
-        return f"{exc.msg} (in file '{exc_filename}')"
-    return str(exc.msg)
-
-
 def run(
     *,
     doc_file: _types.StrOrBytesPath,
@@ -91,6 +56,41 @@ def run(
         doc_file, mode="w", encoding=doc_encoding, errors="replace", newline=doc_newline
     ) as fp:
         fp.write(md)
+
+
+def format_os_error(exc: OSError) -> str:
+    exc_filename: object = exc.filename
+    exc_filename2: object = exc.filename2
+    if exc_filename is None and exc_filename2 is not None:
+        exc_filename, exc_filename2 = exc_filename2, exc_filename
+
+    if (
+        isinstance(exc_filename, str)
+        or isinstance(exc_filename, bytes)
+        or isinstance(exc_filename, os.PathLike)
+    ):
+        exc_filename = os.fsdecode(exc_filename)
+    if (
+        isinstance(exc_filename2, str)
+        or isinstance(exc_filename2, bytes)
+        or isinstance(exc_filename2, os.PathLike)
+    ):
+        exc_filename2 = os.fsdecode(exc_filename2)
+
+    if exc.strerror is None:
+        return str(exc)
+    if exc_filename is None:
+        return exc.strerror
+    if exc_filename2 is None:
+        return f"{exc.strerror} (file: '{exc_filename}')"
+    return f"{exc.strerror} (file: '{exc_filename}', '{exc_filename2}')"
+
+
+def format_parse_error(exc: lxml.etree.ParseError) -> str:
+    if exc.filename is not None:
+        exc_filename = os.fsdecode(exc.filename)
+        return f"{exc.msg} (in file '{exc_filename}')"
+    return str(exc.msg)
 
 
 def main(
