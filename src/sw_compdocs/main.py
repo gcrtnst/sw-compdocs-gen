@@ -1,5 +1,6 @@
 import argparse
 import collections.abc
+import csv
 import lxml.etree
 import os
 import pathlib
@@ -17,15 +18,58 @@ from . import template
 from . import wraperr
 
 
+def generate_document(
+    *,
+    out_file: _types.StrOrBytesPath,
+    comp_list: collections.abc.Iterable[component.Definition],
+    label: generator.LabelDict | None,
+    lang: language.Language | None,
+    fmt: template.TemplateFormatter | None,
+    out_encoding: str | None = None,
+    out_newline: str | None = None,
+) -> None:
+    gen = generator.DocumentGenerator(label=label, lang=lang, fmt=fmt)
+    doc = gen.generate(comp_list)
+    md = renderer.render_markdown(doc)
+    with open(
+        out_file, mode="w", encoding=out_encoding, errors="replace", newline=out_newline
+    ) as fp:
+        fp.write(md)
+
+
+def generate_sheet(
+    *,
+    out_file: _types.StrOrBytesPath,
+    comp_list: collections.abc.Iterable[component.Definition],
+    label: generator.LabelDict | None,
+    lang: language.Language | None,
+    fmt: template.TemplateFormatter | None,
+    out_encoding: str | None = None,
+    out_newline: str | None = None,
+) -> None:
+    if out_newline is None:
+        out_newline = os.linesep
+
+    gen = generator.SheetGenerator(label=label, lang=lang, fmt=fmt)
+    record_list = gen.generate(comp_list)
+
+    with open(
+        out_file, mode="w", encoding=out_encoding, errors="replace", newline=""
+    ) as fp:
+        writer = csv.writer(fp, dialect="excel", lineterminator=out_newline)
+        writer.writerows(record_list)
+
+
 def run(
     *,
-    doc_file: _types.StrOrBytesPath,
+    out_file: _types.StrOrBytesPath,
     comp_dir: _types.StrOrBytesPath,
     label_file: _types.StrOrBytesPath | None = None,
     lang_file: _types.StrOrBytesPath | None = None,
     template_file: _types.StrOrBytesPath | None = None,
-    doc_encoding: str = "utf-8",
-    doc_newline: str = "\n",
+    out_mode: typing.Literal["document", "sheet"] = "document",
+    out_encoding: str | None = None,
+    out_newline: str | None = None,
 ) -> None:
     label = None
     if label_file is not None:
@@ -49,13 +93,29 @@ def run(
         comp = component.parse_xml_file(comp_file)
         comp_list.append(comp)
 
-    gen = generator.DocumentGenerator(label=label, lang=lang, fmt=fmt)
-    doc = gen.generate(comp_list)
-    md = renderer.render_markdown(doc)
-    with open(
-        doc_file, mode="w", encoding=doc_encoding, errors="replace", newline=doc_newline
-    ) as fp:
-        fp.write(md)
+    if out_mode == "document":
+        generate_document(
+            out_file=out_file,
+            comp_list=comp_list,
+            label=label,
+            lang=lang,
+            fmt=fmt,
+            out_encoding=out_encoding,
+            out_newline=out_newline,
+        )
+        return
+    if out_mode == "sheet":
+        generate_sheet(
+            out_file=out_file,
+            comp_list=comp_list,
+            label=label,
+            lang=lang,
+            fmt=fmt,
+            out_encoding=out_encoding,
+            out_newline=out_newline,
+        )
+        return
+    typing.assert_never(out_mode)
 
 
 def format_os_error(exc: OSError) -> str:
@@ -131,6 +191,13 @@ def main(
         help="toml file containing template table",
     )
     argp.add_argument(
+        "-m",
+        "--mode",
+        default="document",
+        choices=("document", "sheet"),
+        help="output mode (default: %(default)s)",
+    )
+    argp.add_argument(
         "-e",
         "--encoding",
         default="utf-8",
@@ -139,9 +206,8 @@ def main(
     argp.add_argument(
         "-n",
         "--newline",
-        default="LF",
         choices=("CR", "LF", "CRLF"),
-        help="output newline (default: %(default)s)",
+        help="output newline (default: LF in document mode, CRLF in sheet mode)",
     )
     argp.add_argument(
         "output",
@@ -165,6 +231,10 @@ def main(
     if argv_template is not None and not isinstance(argv_template, str):
         raise Exception
 
+    argv_mode: typing.Literal["document", "sheet"] = argv.mode
+    if argv_mode != "document" and argv_mode != "sheet":
+        raise Exception
+
     argv_encoding: object = argv.encoding
     if not isinstance(argv_encoding, str):
         raise Exception
@@ -177,6 +247,14 @@ def main(
             argv_newline = "\n"
         case "CRLF":
             argv_newline = "\r\n"
+        case None:
+            match argv_mode:
+                case "document":
+                    argv_newline = "\n"
+                case "sheet":
+                    argv_newline = "\r\n"
+                case _:
+                    typing.assert_never(argv_mode)
         case _:
             raise Exception
 
@@ -190,13 +268,14 @@ def main(
 
     try:
         run(
-            doc_file=argv_output,
+            out_file=argv_output,
             comp_dir=argv_definitions,
             label_file=argv_label,
             lang_file=argv_language,
             template_file=argv_template,
-            doc_encoding=argv_encoding,
-            doc_newline=argv_newline,
+            out_mode=argv_mode,
+            out_encoding=argv_encoding,
+            out_newline=argv_newline,
         )
     except component.ComponentXMLError as exc:
         error(exc)

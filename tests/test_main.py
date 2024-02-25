@@ -3,6 +3,7 @@ import csv
 import errno
 import io
 import lxml.etree
+import os
 import pathlib
 import sw_compdocs.component
 import sw_compdocs.generator
@@ -20,20 +21,26 @@ import unittest.mock
 
 
 class TestRun(unittest.TestCase):
-    def test_empty(self) -> None:
+    def test_document_empty(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
-            doc_file = pathlib.Path(temp_dir, "out.md")
+            out_file = pathlib.Path(temp_dir, "out.md")
             comp_dir = pathlib.Path(temp_dir, "definitions")
             comp_dir.mkdir()
-            sw_compdocs.main.run(doc_file=doc_file, comp_dir=comp_dir)
+            sw_compdocs.main.run(
+                out_file=out_file,
+                comp_dir=comp_dir,
+                out_mode="document",
+                out_encoding="utf-8",
+                out_newline="\n",
+            )
 
-            with open(doc_file, mode="r", encoding="utf-8", newline="\n") as fp:
+            with open(out_file, mode="r", encoding="utf-8", newline="\n") as fp:
                 got_md = fp.read()
             self.assertEqual(got_md, "")
 
-    def test_all(self) -> None:
+    def test_document_all(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
-            doc_file = pathlib.Path(temp_dir, "out.md")
+            out_file = pathlib.Path(temp_dir, "out.md")
 
             comp_dir = pathlib.Path(temp_dir, "definitions")
             comp_dir.mkdir()
@@ -99,18 +106,18 @@ template_02 = "テンプレート 02"
                 )
 
             sw_compdocs.main.run(
-                doc_file=doc_file,
+                out_file=out_file,
                 comp_dir=comp_dir,
                 label_file=label_file,
                 lang_file=lang_file,
                 template_file=template_file,
-                doc_encoding="shift-jis",
-                doc_newline="\r\n",
+                out_mode="document",
+                out_encoding="shift-jis",
+                out_newline="\r\n",
             )
 
-            with open(doc_file, mode="r", encoding="shift-jis", newline="\r\n") as fp:
+            with open(out_file, mode="r", encoding="shift-jis", newline="\r\n") as fp:
                 got_md = fp.read()
-            got_md = got_md.replace("\r\n", "\n")
 
             want_md = """\
 # Blocks
@@ -141,6 +148,138 @@ template_02 = "テンプレート 02"
 | 価格 | 0 |
 | タグ |  |
 """
+            want_md = want_md.replace("\n", "\r\n")
+            self.assertEqual(got_md, want_md)
+
+    def test_sheet_empty(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            out_file = pathlib.Path(temp_dir, "out.csv")
+            comp_dir = pathlib.Path(temp_dir, "definitions")
+            comp_dir.mkdir()
+            sw_compdocs.main.run(
+                out_file=out_file,
+                comp_dir=comp_dir,
+                out_mode="sheet",
+                out_encoding="utf-8",
+                out_newline="\n",
+            )
+
+            with open(out_file, mode="r", encoding="utf-8", newline="\n") as fp:
+                got_md = fp.read()
+
+            want_md = "SHEET_HEAD_NAME,SHEET_HEAD_CATEGORY,SHEET_HEAD_TAGS,SHEET_HEAD_DEPRECATED,SHEET_HEAD_MASS,SHEET_HEAD_COST,SHEET_HEAD_WIDTH,SHEET_HEAD_DEPTH,SHEET_HEAD_HEIGHT,SHEET_HEAD_SDESC,SHEET_HEAD_DESC\n"
+            self.assertEqual(got_md, want_md)
+
+    def test_sheet_newline_default(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            out_file = pathlib.Path(temp_dir, "out.csv")
+            comp_dir = pathlib.Path(temp_dir, "definitions")
+            comp_dir.mkdir()
+            sw_compdocs.main.run(
+                out_file=out_file,
+                comp_dir=comp_dir,
+                out_mode="sheet",
+                out_encoding="utf-8",
+            )
+
+            with open(out_file, mode="r", encoding="utf-8", newline="") as fp:
+                got_md = fp.read()
+
+            want_md = "SHEET_HEAD_NAME,SHEET_HEAD_CATEGORY,SHEET_HEAD_TAGS,SHEET_HEAD_DEPRECATED,SHEET_HEAD_MASS,SHEET_HEAD_COST,SHEET_HEAD_WIDTH,SHEET_HEAD_DEPTH,SHEET_HEAD_HEIGHT,SHEET_HEAD_SDESC,SHEET_HEAD_DESC\n"
+            want_md = want_md.replace("\n", os.linesep)
+            self.assertEqual(got_md, want_md)
+
+    def test_sheet_all(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            out_file = pathlib.Path(temp_dir, "out.csv")
+
+            comp_dir = pathlib.Path(temp_dir, "definitions")
+            comp_dir.mkdir()
+
+            comp_file = pathlib.Path(comp_dir, "test_01.xml")
+            with open(comp_file, mode="x", encoding="utf-8", newline="\r\n") as fp:
+                fp.write(
+                    """\
+<?xml version="1.0" encoding="UTF-8"?>
+<definition mass="1"/>
+"""
+                )
+
+            comp_file = pathlib.Path(comp_dir, "test_02.xml")
+            with open(comp_file, mode="x", encoding="utf-8", newline="\r\n") as fp:
+                fp.write(
+                    """\
+<?xml version="1.0" encoding="UTF-8"?>
+<definition mass="2"/>
+"""
+                )
+
+            comp_file = pathlib.Path(comp_dir, "dummy")
+            comp_file.mkdir()
+
+            label_file = pathlib.Path(temp_dir, "label.toml")
+            with open(label_file, mode="x", encoding="utf-8", newline="\n") as fp:
+                fp.write(
+                    """\
+[label]
+SHEET_HEAD_NAME = "Name"
+SHEET_HEAD_CATEGORY = "Category"
+SHEET_HEAD_TAGS = "Tags"
+SHEET_HEAD_DEPRECATED = "Deprecated"
+SHEET_HEAD_MASS = "Mass"
+SHEET_HEAD_COST = "Cost"
+SHEET_HEAD_WIDTH = "Width"
+SHEET_HEAD_DEPTH = "Depth"
+SHEET_HEAD_HEIGHT = "Height"
+SHEET_HEAD_SDESC = "Short Description"
+SHEET_HEAD_DESC = "Description"
+"""
+                )
+
+            lang_file = pathlib.Path(temp_dir, "japanese.tsv")
+            lang_list = [
+                ["id", "description", "en", "local"],
+                ["def_test_01_name", "", "", "テスト 01"],
+                ["def_test_01_s_desc", "", "", "$[template_01]"],
+                ["def_test_01_desc", "", "", ""],
+                ["def_test_02_name", "", "", "テスト 02"],
+                ["def_test_02_s_desc", "", "", "$[template_02]"],
+                ["def_test_02_desc", "", "", ""],
+            ]
+            with open(lang_file, mode="x", encoding="utf-8", newline="\n") as fp:
+                w = csv.writer(fp, dialect=sw_compdocs.language.LanguageTSVDialect)
+                w.writerows(lang_list)
+
+            template_file = pathlib.Path(temp_dir, "template.toml")
+            with open(template_file, mode="x", encoding="utf-8", newline="\n") as fp:
+                fp.write(
+                    """\
+[template]
+template_01 = "テンプレート 01"
+template_02 = "テンプレート 02"
+"""
+                )
+
+            sw_compdocs.main.run(
+                out_file=out_file,
+                comp_dir=comp_dir,
+                label_file=label_file,
+                lang_file=lang_file,
+                template_file=template_file,
+                out_mode="sheet",
+                out_encoding="shift-jis",
+                out_newline="\r\n",
+            )
+
+            with open(out_file, mode="r", encoding="shift-jis", newline="\r\n") as fp:
+                got_md = fp.read()
+
+            want_md = """\
+Name,Category,Tags,Deprecated,Mass,Cost,Width,Depth,Height,Short Description,Description
+テスト 01,Blocks,,FALSE,1,0,1,1,1,テンプレート 01,
+テスト 02,Blocks,,FALSE,2,0,1,1,1,テンプレート 02,
+"""
+            want_md = want_md.replace("\n", "\r\n")
             self.assertEqual(got_md, want_md)
 
 
@@ -226,13 +365,14 @@ class TestMain(unittest.TestCase):
                     "path/to/output",
                 ],
                 want_call_args=unittest.mock.call(
-                    doc_file="path/to/output",
+                    out_file="path/to/output",
                     comp_dir="path/to/definitions",
                     label_file=None,
                     lang_file=None,
                     template_file=None,
-                    doc_encoding="utf-8",
-                    doc_newline="\n",
+                    out_mode="document",
+                    out_encoding="utf-8",
+                    out_newline="\n",
                 ),
             ),
             tt(
@@ -244,13 +384,14 @@ class TestMain(unittest.TestCase):
                     "path/to/output",
                 ],
                 want_call_args=unittest.mock.call(
-                    doc_file="path/to/output",
+                    out_file="path/to/output",
                     comp_dir="path/to/definitions",
                     label_file="path/to/label",
                     lang_file=None,
                     template_file=None,
-                    doc_encoding="utf-8",
-                    doc_newline="\n",
+                    out_mode="document",
+                    out_encoding="utf-8",
+                    out_newline="\n",
                 ),
             ),
             tt(
@@ -262,13 +403,14 @@ class TestMain(unittest.TestCase):
                     "path/to/output",
                 ],
                 want_call_args=unittest.mock.call(
-                    doc_file="path/to/output",
+                    out_file="path/to/output",
                     comp_dir="path/to/definitions",
                     label_file=None,
                     lang_file="path/to/language",
                     template_file=None,
-                    doc_encoding="utf-8",
-                    doc_newline="\n",
+                    out_mode="document",
+                    out_encoding="utf-8",
+                    out_newline="\n",
                 ),
             ),
             tt(
@@ -280,13 +422,33 @@ class TestMain(unittest.TestCase):
                     "path/to/output",
                 ],
                 want_call_args=unittest.mock.call(
-                    doc_file="path/to/output",
+                    out_file="path/to/output",
                     comp_dir="path/to/definitions",
                     label_file=None,
                     lang_file=None,
                     template_file="path/to/template",
-                    doc_encoding="utf-8",
-                    doc_newline="\n",
+                    out_mode="document",
+                    out_encoding="utf-8",
+                    out_newline="\n",
+                ),
+            ),
+            tt(
+                input_args=[
+                    "--definitions",
+                    "path/to/definitions",
+                    "--mode",
+                    "sheet",
+                    "path/to/output",
+                ],
+                want_call_args=unittest.mock.call(
+                    out_file="path/to/output",
+                    comp_dir="path/to/definitions",
+                    label_file=None,
+                    lang_file=None,
+                    template_file=None,
+                    out_mode="sheet",
+                    out_encoding="utf-8",
+                    out_newline="\r\n",
                 ),
             ),
             tt(
@@ -298,13 +460,14 @@ class TestMain(unittest.TestCase):
                     "path/to/output",
                 ],
                 want_call_args=unittest.mock.call(
-                    doc_file="path/to/output",
+                    out_file="path/to/output",
                     comp_dir="path/to/definitions",
                     label_file=None,
                     lang_file=None,
                     template_file=None,
-                    doc_encoding="shift-jis",
-                    doc_newline="\n",
+                    out_mode="document",
+                    out_encoding="shift-jis",
+                    out_newline="\n",
                 ),
             ),
             tt(
@@ -316,13 +479,14 @@ class TestMain(unittest.TestCase):
                     "path/to/output",
                 ],
                 want_call_args=unittest.mock.call(
-                    doc_file="path/to/output",
+                    out_file="path/to/output",
                     comp_dir="path/to/definitions",
                     label_file=None,
                     lang_file=None,
                     template_file=None,
-                    doc_encoding="utf-8",
-                    doc_newline="\r",
+                    out_mode="document",
+                    out_encoding="utf-8",
+                    out_newline="\r",
                 ),
             ),
             tt(
@@ -334,13 +498,35 @@ class TestMain(unittest.TestCase):
                     "path/to/output",
                 ],
                 want_call_args=unittest.mock.call(
-                    doc_file="path/to/output",
+                    out_file="path/to/output",
                     comp_dir="path/to/definitions",
                     label_file=None,
                     lang_file=None,
                     template_file=None,
-                    doc_encoding="utf-8",
-                    doc_newline="\r\n",
+                    out_mode="document",
+                    out_encoding="utf-8",
+                    out_newline="\r\n",
+                ),
+            ),
+            tt(
+                input_args=[
+                    "--definitions",
+                    "path/to/definitions",
+                    "--mode",
+                    "sheet",
+                    "--newline",
+                    "LF",
+                    "path/to/output",
+                ],
+                want_call_args=unittest.mock.call(
+                    out_file="path/to/output",
+                    comp_dir="path/to/definitions",
+                    label_file=None,
+                    lang_file=None,
+                    template_file=None,
+                    out_mode="sheet",
+                    out_encoding="utf-8",
+                    out_newline="\n",
                 ),
             ),
         ]:
@@ -371,13 +557,14 @@ class TestMain(unittest.TestCase):
         self.assertEqual(
             mock_call_args,
             unittest.mock.call(
-                doc_file="path/to/output",
+                out_file="path/to/output",
                 comp_dir=str(definitions),
                 label_file=None,
                 lang_file=None,
                 template_file=None,
-                doc_encoding="utf-8",
-                doc_newline="\n",
+                out_mode="document",
+                out_encoding="utf-8",
+                out_newline="\n",
             ),
         )
 
@@ -397,26 +584,34 @@ class TestMain(unittest.TestCase):
         mock_call_args: object = mock.call_args
         self.assertIsNone(mock_call_args)
 
-    def test_argp_newline_invalid(self) -> None:
-        with (
-            self.assertRaises(SystemExit) as ctx,
-            unittest.mock.patch.object(sw_compdocs.main, "run") as mock,
-            unittest.mock.patch.object(sys, "stdout", new=io.StringIO()),
-            unittest.mock.patch.object(sys, "stderr", new=io.StringIO()),
-        ):
-            sw_compdocs.main.main(
-                args=[
-                    "--definitions",
-                    "path/to/definitions",
-                    "--newline",
-                    "LFCR",
-                    "path/to/output",
-                ]
-            )
-        self.assertEqual(ctx.exception.code, 2)
+    def test_argp_invalid(self) -> None:
+        for input_args in [
+            [
+                "--definitions",
+                "path/to/definitions",
+                "--mode",
+                "invalid",
+                "path/to/output",
+            ],
+            [
+                "--definitions",
+                "path/to/definitions",
+                "--newline",
+                "LFCR",
+                "path/to/output",
+            ],
+        ]:
+            with (
+                self.assertRaises(SystemExit) as ctx,
+                unittest.mock.patch.object(sw_compdocs.main, "run") as mock,
+                unittest.mock.patch.object(sys, "stdout", new=io.StringIO()),
+                unittest.mock.patch.object(sys, "stderr", new=io.StringIO()),
+            ):
+                sw_compdocs.main.main(args=input_args)
+            self.assertEqual(ctx.exception.code, 2)
 
-        mock_call_args: object = mock.call_args
-        self.assertIsNone(mock_call_args)
+            mock_call_args: object = mock.call_args
+            self.assertIsNone(mock_call_args)
 
     def test_except(self) -> None:
         tt = typing.NamedTuple(
@@ -533,7 +728,7 @@ class TestMain(unittest.TestCase):
 
     def test_run(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
-            doc_file = pathlib.Path(temp_dir, "out.md")
+            out_file = pathlib.Path(temp_dir, "out.md")
 
             comp_dir = pathlib.Path(temp_dir, "definitions")
             comp_dir.mkdir()
@@ -615,13 +810,13 @@ template_02 = "テンプレート 02"
                         "shift-jis",
                         "--newline",
                         "CRLF",
-                        str(doc_file),
+                        str(out_file),
                     ]
                 )
             self.assertEqual(stdout.getvalue(), "")
             self.assertEqual(stderr.getvalue(), "")
 
-            with open(doc_file, mode="r", encoding="shift-jis", newline="\r\n") as fp:
+            with open(out_file, mode="r", encoding="shift-jis", newline="\r\n") as fp:
                 got_md = fp.read()
             got_md = got_md.replace("\r\n", "\n")
 
