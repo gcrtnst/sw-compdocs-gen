@@ -151,6 +151,86 @@ template_02 = "テンプレート 02"
             want_md = want_md.replace("\n", "\r\n")
             self.assertEqual(got_md, want_md)
 
+    def test_document_exc_unicode(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            out_file = pathlib.Path(temp_dir, "out.md")
+
+            comp_dir = pathlib.Path(temp_dir, "definitions")
+            comp_dir.mkdir()
+
+            comp_file = pathlib.Path(comp_dir, "test_01.xml")
+            with open(comp_file, mode="x", encoding="utf-8", newline="\r\n") as fp:
+                fp.write(
+                    """\
+<?xml version="1.0" encoding="UTF-8"?>
+<definition mass="1"/>
+"""
+                )
+
+            comp_file = pathlib.Path(comp_dir, "test_02.xml")
+            with open(comp_file, mode="x", encoding="utf-8", newline="\r\n") as fp:
+                fp.write(
+                    """\
+<?xml version="1.0" encoding="UTF-8"?>
+<definition mass="2"/>
+"""
+                )
+
+            comp_file = pathlib.Path(comp_dir, "dummy")
+            comp_file.mkdir()
+
+            label_file = pathlib.Path(temp_dir, "label.toml")
+            with open(label_file, mode="x", encoding="utf-8", newline="\n") as fp:
+                fp.write(
+                    """\
+[label]
+PROP_TABLE_HEAD_LABEL = "ラベル"
+PROP_TABLE_HEAD_VALUE = "値"
+PROP_TABLE_MASS_LABEL = "重量"
+PROP_TABLE_DIMS_LABEL = "サイズ（WxDxH）"
+PROP_TABLE_COST_LABEL = "価格"
+PROP_TABLE_TAGS_LABEL = "タグ"
+"""
+                )
+
+            lang_file = pathlib.Path(temp_dir, "japanese.tsv")
+            lang_list = [
+                ["id", "description", "en", "local"],
+                ["", "", "PROPERTIES", "プロパティ"],
+                ["def_test_01_name", "", "", "テスト 01"],
+                ["def_test_01_s_desc", "", "", "$[template_01]"],
+                ["def_test_01_desc", "", "", ""],
+                ["def_test_02_name", "", "", "テスト 02"],
+                ["def_test_02_s_desc", "", "", "$[template_02]"],
+                ["def_test_02_desc", "", "", ""],
+            ]
+            with open(lang_file, mode="x", encoding="utf-8", newline="\n") as fp:
+                w = csv.writer(fp, dialect=sw_compdocs.language.LanguageTSVDialect)
+                w.writerows(lang_list)
+
+            template_file = pathlib.Path(temp_dir, "template.toml")
+            with open(template_file, mode="x", encoding="utf-8", newline="\n") as fp:
+                fp.write(
+                    """\
+[template]
+template_01 = "テンプレート 01"
+template_02 = "テンプレート 02"
+"""
+                )
+
+            with self.assertRaises(sw_compdocs.wraperr.UnicodeEncodeFileError) as ctx:
+                sw_compdocs.main.run(
+                    out_file=out_file,
+                    comp_dir=comp_dir,
+                    label_file=label_file,
+                    lang_file=lang_file,
+                    template_file=template_file,
+                    out_mode="document",
+                    out_encoding="ascii",
+                    out_newline="\r\n",
+                )
+            self.assertEqual(ctx.exception.filename, out_file)
+
     def test_sheet_empty(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             out_file = pathlib.Path(temp_dir, "out.csv")
@@ -318,6 +398,90 @@ class TestFormatOSError(unittest.TestCase):
             with self.subTest(tc=tc):
                 got_s = sw_compdocs.main.format_os_error(tc.input_exc)
                 self.assertEqual(got_s, tc.want_s)
+
+    def test_sheet_exc_unicode(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            out_file = pathlib.Path(temp_dir, "out.csv")
+
+            comp_dir = pathlib.Path(temp_dir, "definitions")
+            comp_dir.mkdir()
+
+            comp_file = pathlib.Path(comp_dir, "test_01.xml")
+            with open(comp_file, mode="x", encoding="utf-8", newline="\r\n") as fp:
+                fp.write(
+                    """\
+<?xml version="1.0" encoding="UTF-8"?>
+<definition mass="1"/>
+"""
+                )
+
+            comp_file = pathlib.Path(comp_dir, "test_02.xml")
+            with open(comp_file, mode="x", encoding="utf-8", newline="\r\n") as fp:
+                fp.write(
+                    """\
+<?xml version="1.0" encoding="UTF-8"?>
+<definition mass="2"/>
+"""
+                )
+
+            comp_file = pathlib.Path(comp_dir, "dummy")
+            comp_file.mkdir()
+
+            label_file = pathlib.Path(temp_dir, "label.toml")
+            with open(label_file, mode="x", encoding="utf-8", newline="\n") as fp:
+                fp.write(
+                    """\
+[label]
+SHEET_HEAD_NAME = "Name"
+SHEET_HEAD_CATEGORY = "Category"
+SHEET_HEAD_TAGS = "Tags"
+SHEET_HEAD_DEPRECATED = "Deprecated"
+SHEET_HEAD_MASS = "Mass"
+SHEET_HEAD_COST = "Cost"
+SHEET_HEAD_WIDTH = "Width"
+SHEET_HEAD_DEPTH = "Depth"
+SHEET_HEAD_HEIGHT = "Height"
+SHEET_HEAD_SDESC = "Short Description"
+SHEET_HEAD_DESC = "Description"
+"""
+                )
+
+            lang_file = pathlib.Path(temp_dir, "japanese.tsv")
+            lang_list = [
+                ["id", "description", "en", "local"],
+                ["def_test_01_name", "", "", "テスト 01"],
+                ["def_test_01_s_desc", "", "", "$[template_01]"],
+                ["def_test_01_desc", "", "", ""],
+                ["def_test_02_name", "", "", "テスト 02"],
+                ["def_test_02_s_desc", "", "", "$[template_02]"],
+                ["def_test_02_desc", "", "", ""],
+            ]
+            with open(lang_file, mode="x", encoding="utf-8", newline="\n") as fp:
+                w = csv.writer(fp, dialect=sw_compdocs.language.LanguageTSVDialect)
+                w.writerows(lang_list)
+
+            template_file = pathlib.Path(temp_dir, "template.toml")
+            with open(template_file, mode="x", encoding="utf-8", newline="\n") as fp:
+                fp.write(
+                    """\
+[template]
+template_01 = "テンプレート 01"
+template_02 = "テンプレート 02"
+"""
+                )
+
+            with self.assertRaises(sw_compdocs.wraperr.UnicodeEncodeFileError) as ctx:
+                sw_compdocs.main.run(
+                    out_file=out_file,
+                    comp_dir=comp_dir,
+                    label_file=label_file,
+                    lang_file=lang_file,
+                    template_file=template_file,
+                    out_mode="sheet",
+                    out_encoding="ascii",
+                    out_newline="\r\n",
+                )
+            self.assertEqual(ctx.exception.filename, out_file)
 
 
 class TestParseError(unittest.TestCase):

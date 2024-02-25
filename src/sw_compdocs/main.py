@@ -31,10 +31,16 @@ def generate_document(
     gen = generator.DocumentGenerator(label=label, lang=lang, fmt=fmt)
     doc = gen.generate(comp_list)
     md = renderer.render_markdown(doc)
-    with open(
-        out_file, mode="w", encoding=out_encoding, errors="replace", newline=out_newline
-    ) as fp:
-        fp.write(md)
+
+    with wraperr.wrap_unicode_error(out_file):
+        with open(
+            out_file,
+            mode="w",
+            encoding=out_encoding,
+            errors="strict",
+            newline=out_newline,
+        ) as fp:
+            fp.write(md)
 
 
 def generate_sheet(
@@ -53,11 +59,12 @@ def generate_sheet(
     gen = generator.SheetGenerator(label=label, lang=lang, fmt=fmt)
     record_list = gen.generate(comp_list)
 
-    with open(
-        out_file, mode="w", encoding=out_encoding, errors="replace", newline=""
-    ) as fp:
-        writer = csv.writer(fp, dialect="excel", lineterminator=out_newline)
-        writer.writerows(record_list)
+    with wraperr.wrap_unicode_error(out_file):
+        with open(
+            out_file, mode="w", encoding=out_encoding, errors="strict", newline=""
+        ) as fp:
+            writer = csv.writer(fp, dialect="excel", lineterminator=out_newline)
+            writer.writerows(record_list)
 
 
 def run(
@@ -78,7 +85,7 @@ def run(
 
     lang = None
     if lang_file is not None:
-        lang = language.Language.from_file(lang_file)
+        lang = language.Language.from_file(lang_file, errors="strict")
 
     fmt = None
     if template_file is not None:
