@@ -282,6 +282,7 @@ class VoxelPos:
 @dataclasses.dataclass
 class Definition:
     _: dataclasses.KW_ONLY
+    file: _types.StrOrBytesPath | None = None
     cid: str = ""
     name: str = ""
     category: Category = Category.BLOCKS
@@ -298,47 +299,51 @@ class Definition:
 
     @classmethod
     def from_xml_elem(
-        cls, elem: lxml.etree._Element, *, cid: str | None = None
+        cls,
+        elem: lxml.etree._Element,
+        *,
+        file: _types.StrOrBytesPath | None = None,
+        cid: str | None = None,
     ) -> typing.Self:
         category = cls.category
         category_attr = elem.get("category")
         if category_attr is not None:
             try:
                 category = Category(int(category_attr, base=10))
-            except ValueError as exc:
-                raise ComponentXMLError(
-                    f"invalid component category {category_attr!r}"
-                ) from exc
+            except ValueError as base_exc:
+                exc = ComponentXMLError(f"invalid component category {category_attr!r}")
+                exc.file = file
+                raise exc from base_exc
 
         mass = cls.mass
         mass_attr = elem.get("mass")
         if mass_attr is not None:
             try:
                 mass = float(mass_attr)
-            except ValueError as exc:
-                raise ComponentXMLError(
-                    f"invalid component mass {mass_attr!r}"
-                ) from exc
+            except ValueError as base_exc:
+                exc = ComponentXMLError(f"invalid component mass {mass_attr!r}")
+                exc.file = file
+                raise exc from base_exc
 
         value = cls.value
         value_attr = elem.get("value")
         if value_attr is not None:
             try:
                 value = int(value_attr, base=10)
-            except ValueError as exc:
-                raise ComponentXMLError(
-                    f"invalid component value {value_attr!r}"
-                ) from exc
+            except ValueError as base_exc:
+                exc = ComponentXMLError(f"invalid component value {value_attr!r}")
+                exc.file = file
+                raise exc from base_exc
 
         flags = cls.flags
         flags_attr = elem.get("flags")
         if flags_attr is not None:
             try:
                 flags = Flags(int(flags_attr, base=10))
-            except ValueError as exc:
-                raise ComponentXMLError(
-                    f"invalid component flags {flags_attr!r}"
-                ) from exc
+            except ValueError as base_exc:
+                exc = ComponentXMLError(f"invalid component flags {flags_attr!r}")
+                exc.file = file
+                raise exc from base_exc
 
         tooltip_properties = TooltipProperties()
         tooltip_properties_elem = elem.find("tooltip_properties")
@@ -348,6 +353,7 @@ class Definition:
                     tooltip_properties_elem
                 )
             except ComponentXMLError as exc:
+                exc.file = file
                 exc.prepend_xpath("tooltip_properties")
                 raise
 
@@ -357,6 +363,7 @@ class Definition:
             try:
                 logic_nodes = LogicNodeList.from_xml_elem(logic_nodes_elem)
             except ComponentXMLError as exc:
+                exc.file = file
                 exc.prepend_xpath("logic_nodes")
                 raise
 
@@ -366,6 +373,7 @@ class Definition:
             try:
                 voxel_min = VoxelPos.from_xml_elem(voxel_min_elem)
             except ComponentXMLError as exc:
+                exc.file = file
                 exc.prepend_xpath("voxel_min")
                 raise
 
@@ -375,6 +383,7 @@ class Definition:
             try:
                 voxel_max = VoxelPos.from_xml_elem(voxel_max_elem)
             except ComponentXMLError as exc:
+                exc.file = file
                 exc.prepend_xpath("voxel_max")
                 raise
 
@@ -382,6 +391,7 @@ class Definition:
         name = elem.get("name", cls.name)
         tags = elem.get("tags", cls.tags)
         return cls(
+            file=file,
             cid=cid,
             name=name,
             category=category,
@@ -406,22 +416,27 @@ def _new_xml_parser() -> "lxml.etree.XMLParser[lxml.etree._Element]":
 
 
 def _parse_xml_root(
-    elem: lxml.etree._Element | None, *, cid: str | None = None
+    elem: lxml.etree._Element | None,
+    *,
+    file: _types.StrOrBytesPath | None = None,
+    cid: str | None = None,
 ) -> Definition:
     # elem may be None if the XML is invalid.
     if elem is None:
         exc = ComponentXMLError("invalid xml")
+        exc.file = file
         exc.prepend_xpath("/")
         raise exc
 
     if elem.tag != "definition":
         exc = ComponentXMLError(f"invalid xml root tag {elem.tag!r}")
+        exc.file = file
         exc.prepend_xpath(elem.tag)
         exc.prepend_xpath("/")
         raise exc
 
     try:
-        return Definition.from_xml_elem(elem, cid=cid)
+        return Definition.from_xml_elem(elem, file=file, cid=cid)
     except ComponentXMLError as exc:
         exc.prepend_xpath(elem.tag)
         exc.prepend_xpath("/")
@@ -432,12 +447,7 @@ def parse_xml_file(file: _types.StrOrBytesPath) -> Definition:
     cid = generate_cid(file)
     tree = lxml.etree.parse(file, parser=_new_xml_parser())
     elem: lxml.etree._Element | None = tree.getroot()
-
-    try:
-        return _parse_xml_root(elem, cid=cid)
-    except ComponentXMLError as exc:
-        exc.file = file
-        raise
+    return _parse_xml_root(elem, file=file, cid=cid)
 
 
 def parse_xml_str(s: str, *, cid: str | None = None) -> Definition:

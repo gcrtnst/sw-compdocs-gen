@@ -274,6 +274,7 @@ class TestDocumentGeneratorGeneratePropertyTable(unittest.TestCase):
             tt(
                 input_label=None,
                 input_comp=sw_compdocs.component.Definition(
+                    file="file",
                     mass=10.0,
                     value=100,
                     tags="tags",
@@ -298,6 +299,9 @@ class TestDocumentGeneratorGeneratePropertyTable(unittest.TestCase):
                             sw_compdocs.document.TableDataRow(
                                 ["PROP_TABLE_TAGS_LABEL", "tags"]
                             ),
+                            sw_compdocs.document.TableDataRow(
+                                ["PROP_TABLE_FILE_LABEL", "file"]
+                            ),
                         ],
                     )
                 ),
@@ -306,6 +310,7 @@ class TestDocumentGeneratorGeneratePropertyTable(unittest.TestCase):
             tt(
                 input_label=None,
                 input_comp=sw_compdocs.component.Definition(
+                    file="file",
                     mass=0.5,
                     value=100,
                     tags="tags",
@@ -330,6 +335,9 @@ class TestDocumentGeneratorGeneratePropertyTable(unittest.TestCase):
                             sw_compdocs.document.TableDataRow(
                                 ["PROP_TABLE_TAGS_LABEL", "tags"]
                             ),
+                            sw_compdocs.document.TableDataRow(
+                                ["PROP_TABLE_FILE_LABEL", "file"]
+                            ),
                         ],
                     )
                 ),
@@ -337,6 +345,7 @@ class TestDocumentGeneratorGeneratePropertyTable(unittest.TestCase):
             tt(
                 input_label=None,
                 input_comp=sw_compdocs.component.Definition(
+                    file="file",
                     mass=0.25,
                     value=100,
                     tags="tags",
@@ -361,6 +370,80 @@ class TestDocumentGeneratorGeneratePropertyTable(unittest.TestCase):
                             sw_compdocs.document.TableDataRow(
                                 ["PROP_TABLE_TAGS_LABEL", "tags"]
                             ),
+                            sw_compdocs.document.TableDataRow(
+                                ["PROP_TABLE_FILE_LABEL", "file"]
+                            ),
+                        ],
+                    )
+                ),
+            ),
+            # file format
+            tt(
+                input_label=None,
+                input_comp=sw_compdocs.component.Definition(
+                    file=None,
+                    mass=10.0,
+                    value=100,
+                    tags="tags",
+                    voxel_min=sw_compdocs.component.VoxelPos(x=0, y=-1, z=-2),
+                    voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=2),
+                ),
+                want_tbl=sw_compdocs.document.Table(
+                    sw_compdocs.document.TableData(
+                        sw_compdocs.document.TableDataRow(
+                            ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                        ),
+                        [
+                            sw_compdocs.document.TableDataRow(
+                                ["PROP_TABLE_MASS_LABEL", "10"]
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                ["PROP_TABLE_DIMS_LABEL", "1x5x3"]
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                ["PROP_TABLE_COST_LABEL", "100"]
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                ["PROP_TABLE_TAGS_LABEL", "tags"]
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                ["PROP_TABLE_FILE_LABEL", ""]
+                            ),
+                        ],
+                    )
+                ),
+            ),
+            tt(
+                input_label=None,
+                input_comp=sw_compdocs.component.Definition(
+                    file=b"path/to/definition.xml",
+                    mass=10.0,
+                    value=100,
+                    tags="tags",
+                    voxel_min=sw_compdocs.component.VoxelPos(x=0, y=-1, z=-2),
+                    voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=2),
+                ),
+                want_tbl=sw_compdocs.document.Table(
+                    sw_compdocs.document.TableData(
+                        sw_compdocs.document.TableDataRow(
+                            ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                        ),
+                        [
+                            sw_compdocs.document.TableDataRow(
+                                ["PROP_TABLE_MASS_LABEL", "10"]
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                ["PROP_TABLE_DIMS_LABEL", "1x5x3"]
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                ["PROP_TABLE_COST_LABEL", "100"]
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                ["PROP_TABLE_TAGS_LABEL", "tags"]
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                ["PROP_TABLE_FILE_LABEL", "definition.xml"]
+                            ),
                         ],
                     )
                 ),
@@ -375,9 +458,11 @@ class TestDocumentGeneratorGeneratePropertyTable(unittest.TestCase):
                         "PROP_TABLE_DIMS_LABEL": "Dimensions",
                         "PROP_TABLE_COST_LABEL": "Cost",
                         "PROP_TABLE_TAGS_LABEL": "Tags",
+                        "PROP_TABLE_FILE_LABEL": "File",
                     }
                 ),
                 input_comp=sw_compdocs.component.Definition(
+                    file="file",
                     mass=10.0,
                     value=100,
                     tags="tags",
@@ -392,6 +477,7 @@ class TestDocumentGeneratorGeneratePropertyTable(unittest.TestCase):
                             sw_compdocs.document.TableDataRow(["Dimensions", "1x5x3"]),
                             sw_compdocs.document.TableDataRow(["Cost", "100"]),
                             sw_compdocs.document.TableDataRow(["Tags", "tags"]),
+                            sw_compdocs.document.TableDataRow(["File", "file"]),
                         ],
                     )
                 ),
@@ -441,6 +527,9 @@ class TestDocumentGeneratorGenerateProperty(unittest.TestCase):
                                     sw_compdocs.document.TableDataRow(
                                         ["PROP_TABLE_TAGS_LABEL", ""]
                                     ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                    ),
                                 ],
                             )
                         ),
@@ -477,6 +566,9 @@ class TestDocumentGeneratorGenerateProperty(unittest.TestCase):
                                     ),
                                     sw_compdocs.document.TableDataRow(
                                         ["PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -1734,6 +1826,7 @@ class TestDocumentGeneratorGenerateComponent(unittest.TestCase):
                 input_lang=None,
                 input_fmt=None,
                 input_comp=sw_compdocs.component.Definition(
+                    file="clock.xml",
                     cid="clock",
                     name="Clock",
                     category=sw_compdocs.component.Category.DISPLAYS,
@@ -1800,6 +1893,9 @@ class TestDocumentGeneratorGenerateComponent(unittest.TestCase):
                                     ),
                                     sw_compdocs.document.TableDataRow(
                                         ["PROP_TABLE_TAGS_LABEL", "basic"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_FILE_LABEL", "clock.xml"]
                                     ),
                                 ],
                             )
@@ -1875,6 +1971,7 @@ class TestDocumentGeneratorGenerateComponent(unittest.TestCase):
                 input_lang=None,
                 input_fmt=None,
                 input_comp=sw_compdocs.component.Definition(
+                    file="clock.xml",
                     cid="clock",
                     name="Clock",
                     category=sw_compdocs.component.Category.DISPLAYS,
@@ -1945,6 +2042,9 @@ class TestDocumentGeneratorGenerateComponent(unittest.TestCase):
                                     ),
                                     sw_compdocs.document.TableDataRow(
                                         ["PROP_TABLE_TAGS_LABEL", "basic"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_FILE_LABEL", "clock.xml"]
                                     ),
                                 ],
                             )
@@ -2025,6 +2125,7 @@ class TestDocumentGeneratorGenerateComponent(unittest.TestCase):
                         "PROP_TABLE_DIMS_LABEL": "サイズ(WxDxH)",
                         "PROP_TABLE_COST_LABEL": "値段",
                         "PROP_TABLE_TAGS_LABEL": "タグ",
+                        "PROP_TABLE_FILE_LABEL": "ファイル",
                         "LOGIC_TABLE_HEAD_TYPE": "型",
                         "LOGIC_TABLE_HEAD_LABEL": "ラベル",
                         "LOGIC_TABLE_HEAD_DESC": "説明",
@@ -2132,6 +2233,7 @@ class TestDocumentGeneratorGenerateComponent(unittest.TestCase):
                 ),
                 input_fmt=sw_compdocs.template.TemplateFormatter({}),
                 input_comp=sw_compdocs.component.Definition(
+                    file="clock.xml",
                     cid="clock",
                     name="Clock",
                     category=sw_compdocs.component.Category.DISPLAYS,
@@ -2196,6 +2298,9 @@ class TestDocumentGeneratorGenerateComponent(unittest.TestCase):
                                     sw_compdocs.document.TableDataRow(["値段", "100"]),
                                     sw_compdocs.document.TableDataRow(
                                         ["タグ", "basic"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["ファイル", "clock.xml"]
                                     ),
                                 ],
                             )
@@ -2263,6 +2368,7 @@ class TestDocumentGeneratorGenerateComponent(unittest.TestCase):
                         "PROP_TABLE_DIMS_LABEL": "サイズ(WxDxH)",
                         "PROP_TABLE_COST_LABEL": "値段",
                         "PROP_TABLE_TAGS_LABEL": "タグ",
+                        "PROP_TABLE_FILE_LABEL": "ファイル",
                         "LOGIC_TABLE_HEAD_TYPE": "型",
                         "LOGIC_TABLE_HEAD_LABEL": "ラベル",
                         "LOGIC_TABLE_HEAD_DESC": "説明",
@@ -2366,6 +2472,7 @@ class TestDocumentGeneratorGenerateComponent(unittest.TestCase):
                     {"action_interact_left": "q", "action_interact_right": "e"}
                 ),
                 input_comp=sw_compdocs.component.Definition(
+                    file="button_push.xml",
                     cid="button_push",
                     name="Push Button",
                     category=sw_compdocs.component.Category.MECHANICS,
@@ -2426,6 +2533,9 @@ class TestDocumentGeneratorGenerateComponent(unittest.TestCase):
                                     sw_compdocs.document.TableDataRow(["値段", "10"]),
                                     sw_compdocs.document.TableDataRow(
                                         ["タグ", "basic"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["ファイル", "button_push.xml"]
                                     ),
                                 ],
                             )
@@ -2493,6 +2603,7 @@ class TestDocumentGeneratorGenerateComponent(unittest.TestCase):
                         "PROP_TABLE_DIMS_LABEL": "サイズ(WxDxH)",
                         "PROP_TABLE_COST_LABEL": "値段",
                         "PROP_TABLE_TAGS_LABEL": "タグ",
+                        "PROP_TABLE_FILE_LABEL": "ファイル",
                         "LOGIC_TABLE_HEAD_TYPE": "型",
                         "LOGIC_TABLE_HEAD_LABEL": "ラベル",
                         "LOGIC_TABLE_HEAD_DESC": "説明",
@@ -2530,6 +2641,7 @@ class TestDocumentGeneratorGenerateComponent(unittest.TestCase):
                     {"action_interact_left": "q", "action_interact_right": "e"}
                 ),
                 input_comp=sw_compdocs.component.Definition(
+                    file="handle.xml",
                     cid="handle",
                     name="Handle",
                     category=sw_compdocs.component.Category.BLOCKS,
@@ -2567,6 +2679,9 @@ class TestDocumentGeneratorGenerateComponent(unittest.TestCase):
                                     sw_compdocs.document.TableDataRow(
                                         ["タグ", "basic"]
                                     ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["ファイル", "handle.xml"]
+                                    ),
                                 ],
                             )
                         ),
@@ -2578,6 +2693,7 @@ class TestDocumentGeneratorGenerateComponent(unittest.TestCase):
                 input_lang=None,
                 input_fmt=None,
                 input_comp=sw_compdocs.component.Definition(
+                    file="clock.xml",
                     cid="clock",
                     name="Clock",
                     category=sw_compdocs.component.Category.DISPLAYS,
@@ -2641,6 +2757,9 @@ class TestDocumentGeneratorGenerateComponent(unittest.TestCase):
                                     ),
                                     sw_compdocs.document.TableDataRow(
                                         ["PROP_TABLE_TAGS_LABEL", "basic"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_FILE_LABEL", "clock.xml"]
                                     ),
                                 ],
                             )
@@ -2716,6 +2835,7 @@ class TestDocumentGeneratorGenerateComponent(unittest.TestCase):
                 input_lang=None,
                 input_fmt=None,
                 input_comp=sw_compdocs.component.Definition(
+                    file="clock.xml",
                     cid="clock",
                     name="Clock",
                     category=sw_compdocs.component.Category.DISPLAYS,
@@ -2779,6 +2899,9 @@ class TestDocumentGeneratorGenerateComponent(unittest.TestCase):
                                     ),
                                     sw_compdocs.document.TableDataRow(
                                         ["PROP_TABLE_TAGS_LABEL", "basic"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_FILE_LABEL", "clock.xml"]
                                     ),
                                 ],
                             )
@@ -2900,6 +3023,9 @@ class TestDocumentGeneratorGenerateComponentList(unittest.TestCase):
                                     sw_compdocs.document.TableDataRow(
                                         ["PROP_TABLE_TAGS_LABEL", ""]
                                     ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                    ),
                                 ],
                             )
                         ),
@@ -2922,6 +3048,9 @@ class TestDocumentGeneratorGenerateComponentList(unittest.TestCase):
                                     ),
                                     sw_compdocs.document.TableDataRow(
                                         ["PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -2982,6 +3111,9 @@ class TestDocumentGeneratorGenerate(unittest.TestCase):
                                     sw_compdocs.document.TableDataRow(
                                         ["PROP_TABLE_TAGS_LABEL", ""]
                                     ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                    ),
                                 ],
                             )
                         ),
@@ -3033,6 +3165,9 @@ class TestDocumentGeneratorGenerate(unittest.TestCase):
                                     sw_compdocs.document.TableDataRow(
                                         ["PROP_TABLE_TAGS_LABEL", ""]
                                     ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                    ),
                                 ],
                             )
                         ),
@@ -3056,6 +3191,9 @@ class TestDocumentGeneratorGenerate(unittest.TestCase):
                                     sw_compdocs.document.TableDataRow(
                                         ["PROP_TABLE_TAGS_LABEL", ""]
                                     ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                    ),
                                 ],
                             )
                         ),
@@ -3078,6 +3216,9 @@ class TestDocumentGeneratorGenerate(unittest.TestCase):
                                     ),
                                     sw_compdocs.document.TableDataRow(
                                         ["PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -3130,6 +3271,9 @@ class TestDocumentGeneratorGenerate(unittest.TestCase):
                                     sw_compdocs.document.TableDataRow(
                                         ["PROP_TABLE_TAGS_LABEL", ""]
                                     ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                    ),
                                 ],
                             )
                         ),
@@ -3153,6 +3297,9 @@ class TestDocumentGeneratorGenerate(unittest.TestCase):
                                     sw_compdocs.document.TableDataRow(
                                         ["PROP_TABLE_TAGS_LABEL", ""]
                                     ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                    ),
                                 ],
                             )
                         ),
@@ -3175,6 +3322,9 @@ class TestDocumentGeneratorGenerate(unittest.TestCase):
                                     ),
                                     sw_compdocs.document.TableDataRow(
                                         ["PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -3273,6 +3423,9 @@ class TestDocumentGeneratorGenerate(unittest.TestCase):
                                     sw_compdocs.document.TableDataRow(
                                         ["PROP_TABLE_TAGS_LABEL", ""]
                                     ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                    ),
                                 ],
                             )
                         ),
@@ -3296,6 +3449,9 @@ class TestDocumentGeneratorGenerate(unittest.TestCase):
                                     ),
                                     sw_compdocs.document.TableDataRow(
                                         ["PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -3321,6 +3477,9 @@ class TestDocumentGeneratorGenerate(unittest.TestCase):
                                     sw_compdocs.document.TableDataRow(
                                         ["PROP_TABLE_TAGS_LABEL", ""]
                                     ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                    ),
                                 ],
                             )
                         ),
@@ -3344,6 +3503,9 @@ class TestDocumentGeneratorGenerate(unittest.TestCase):
                                     ),
                                     sw_compdocs.document.TableDataRow(
                                         ["PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -3369,6 +3531,9 @@ class TestDocumentGeneratorGenerate(unittest.TestCase):
                                     sw_compdocs.document.TableDataRow(
                                         ["PROP_TABLE_TAGS_LABEL", ""]
                                     ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                    ),
                                 ],
                             )
                         ),
@@ -3392,6 +3557,9 @@ class TestDocumentGeneratorGenerate(unittest.TestCase):
                                     ),
                                     sw_compdocs.document.TableDataRow(
                                         ["PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -3417,6 +3585,9 @@ class TestDocumentGeneratorGenerate(unittest.TestCase):
                                     sw_compdocs.document.TableDataRow(
                                         ["PROP_TABLE_TAGS_LABEL", ""]
                                     ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                    ),
                                 ],
                             )
                         ),
@@ -3440,6 +3611,9 @@ class TestDocumentGeneratorGenerate(unittest.TestCase):
                                     ),
                                     sw_compdocs.document.TableDataRow(
                                         ["PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -3465,6 +3639,9 @@ class TestDocumentGeneratorGenerate(unittest.TestCase):
                                     sw_compdocs.document.TableDataRow(
                                         ["PROP_TABLE_TAGS_LABEL", ""]
                                     ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                    ),
                                 ],
                             )
                         ),
@@ -3488,6 +3665,9 @@ class TestDocumentGeneratorGenerate(unittest.TestCase):
                                     ),
                                     sw_compdocs.document.TableDataRow(
                                         ["PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -3513,6 +3693,9 @@ class TestDocumentGeneratorGenerate(unittest.TestCase):
                                     sw_compdocs.document.TableDataRow(
                                         ["PROP_TABLE_TAGS_LABEL", ""]
                                     ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                    ),
                                 ],
                             )
                         ),
@@ -3536,6 +3719,9 @@ class TestDocumentGeneratorGenerate(unittest.TestCase):
                                     ),
                                     sw_compdocs.document.TableDataRow(
                                         ["PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -3561,6 +3747,9 @@ class TestDocumentGeneratorGenerate(unittest.TestCase):
                                     sw_compdocs.document.TableDataRow(
                                         ["PROP_TABLE_TAGS_LABEL", ""]
                                     ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                    ),
                                 ],
                             )
                         ),
@@ -3584,6 +3773,9 @@ class TestDocumentGeneratorGenerate(unittest.TestCase):
                                     ),
                                     sw_compdocs.document.TableDataRow(
                                         ["PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -3609,6 +3801,9 @@ class TestDocumentGeneratorGenerate(unittest.TestCase):
                                     sw_compdocs.document.TableDataRow(
                                         ["PROP_TABLE_TAGS_LABEL", ""]
                                     ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                    ),
                                 ],
                             )
                         ),
@@ -3632,6 +3827,9 @@ class TestDocumentGeneratorGenerate(unittest.TestCase):
                                     ),
                                     sw_compdocs.document.TableDataRow(
                                         ["PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -3663,6 +3861,7 @@ class TestSheetGeneratorGenerateComponent(unittest.TestCase):
                 input_lang=None,
                 input_fmt=None,
                 input_comp=sw_compdocs.component.Definition(
+                    file="test.xml",
                     name="Name",
                     category=sw_compdocs.component.Category.BLOCKS,
                     mass=1.0,
@@ -3677,6 +3876,70 @@ class TestSheetGeneratorGenerateComponent(unittest.TestCase):
                 ),
                 want_record=[
                     "Name",
+                    "test.xml",
+                    "Blocks",
+                    "tags",
+                    "FALSE",
+                    "1",
+                    "2",
+                    "3",
+                    "7",
+                    "5",
+                    "short_description",
+                    "description",
+                ],
+            ),
+            tt(  # file none
+                input_lang=None,
+                input_fmt=None,
+                input_comp=sw_compdocs.component.Definition(
+                    name="Name",
+                    category=sw_compdocs.component.Category.BLOCKS,
+                    mass=1.0,
+                    value=2,
+                    tags="tags",
+                    tooltip_properties=sw_compdocs.component.TooltipProperties(
+                        short_description="short_description",
+                        description="description",
+                    ),
+                    voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
+                    voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
+                ),
+                want_record=[
+                    "Name",
+                    "",
+                    "Blocks",
+                    "tags",
+                    "FALSE",
+                    "1",
+                    "2",
+                    "3",
+                    "7",
+                    "5",
+                    "short_description",
+                    "description",
+                ],
+            ),
+            tt(  # file
+                input_lang=None,
+                input_fmt=None,
+                input_comp=sw_compdocs.component.Definition(
+                    file=b"path/to/test.xml",
+                    name="Name",
+                    category=sw_compdocs.component.Category.BLOCKS,
+                    mass=1.0,
+                    value=2,
+                    tags="tags",
+                    tooltip_properties=sw_compdocs.component.TooltipProperties(
+                        short_description="short_description",
+                        description="description",
+                    ),
+                    voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
+                    voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
+                ),
+                want_record=[
+                    "Name",
+                    "test.xml",
                     "Blocks",
                     "tags",
                     "FALSE",
@@ -3693,6 +3956,7 @@ class TestSheetGeneratorGenerateComponent(unittest.TestCase):
                 input_lang=None,
                 input_fmt=None,
                 input_comp=sw_compdocs.component.Definition(
+                    file="test.xml",
                     name="Name",
                     category=sw_compdocs.component.Category.BLOCKS,
                     mass=1.0,
@@ -3708,6 +3972,7 @@ class TestSheetGeneratorGenerateComponent(unittest.TestCase):
                 ),
                 want_record=[
                     "Name",
+                    "test.xml",
                     "Blocks",
                     "tags",
                     "TRUE",
@@ -3724,6 +3989,7 @@ class TestSheetGeneratorGenerateComponent(unittest.TestCase):
                 input_lang=None,
                 input_fmt=None,
                 input_comp=sw_compdocs.component.Definition(
+                    file="test.xml",
                     name="Name",
                     category=sw_compdocs.component.Category.BLOCKS,
                     mass=0.25,
@@ -3738,6 +4004,7 @@ class TestSheetGeneratorGenerateComponent(unittest.TestCase):
                 ),
                 want_record=[
                     "Name",
+                    "test.xml",
                     "Blocks",
                     "tags",
                     "FALSE",
@@ -3766,6 +4033,7 @@ class TestSheetGeneratorGenerateComponent(unittest.TestCase):
                 ),
                 input_fmt=None,
                 input_comp=sw_compdocs.component.Definition(
+                    file="test.xml",
                     cid="test",
                     name="Name",
                     category=sw_compdocs.component.Category.BLOCKS,
@@ -3781,6 +4049,7 @@ class TestSheetGeneratorGenerateComponent(unittest.TestCase):
                 ),
                 want_record=[
                     "名前",
+                    "test.xml",
                     "Blocks",
                     "tags",
                     "FALSE",
@@ -3803,6 +4072,7 @@ class TestSheetGeneratorGenerateComponent(unittest.TestCase):
                     }
                 ),
                 input_comp=sw_compdocs.component.Definition(
+                    file="test.xml",
                     name="$[name]",
                     category=sw_compdocs.component.Category.BLOCKS,
                     mass=1.0,
@@ -3817,6 +4087,7 @@ class TestSheetGeneratorGenerateComponent(unittest.TestCase):
                 ),
                 want_record=[
                     "$[name]",
+                    "test.xml",
                     "Blocks",
                     "tags",
                     "FALSE",
@@ -3851,6 +4122,7 @@ class TestSheetGeneratorGenerateComponent(unittest.TestCase):
                     }
                 ),
                 input_comp=sw_compdocs.component.Definition(
+                    file="test.xml",
                     cid="test",
                     name="",
                     category=sw_compdocs.component.Category.BLOCKS,
@@ -3866,6 +4138,7 @@ class TestSheetGeneratorGenerateComponent(unittest.TestCase):
                 ),
                 want_record=[
                     "$[name]",
+                    "test.xml",
                     "Blocks",
                     "tags",
                     "FALSE",
@@ -3905,9 +4178,48 @@ class TestSheetGeneratorGenerateComponentList(unittest.TestCase):
                     sw_compdocs.component.Definition(name="Test 3"),
                 ],
                 want_record_list=[
-                    ["Test 1", "Blocks", "", "FALSE", "0", "0", "1", "1", "1", "", ""],
-                    ["Test 2", "Blocks", "", "FALSE", "0", "0", "1", "1", "1", "", ""],
-                    ["Test 3", "Blocks", "", "FALSE", "0", "0", "1", "1", "1", "", ""],
+                    [
+                        "Test 1",
+                        "",
+                        "Blocks",
+                        "",
+                        "FALSE",
+                        "0",
+                        "0",
+                        "1",
+                        "1",
+                        "1",
+                        "",
+                        "",
+                    ],
+                    [
+                        "Test 2",
+                        "",
+                        "Blocks",
+                        "",
+                        "FALSE",
+                        "0",
+                        "0",
+                        "1",
+                        "1",
+                        "1",
+                        "",
+                        "",
+                    ],
+                    [
+                        "Test 3",
+                        "",
+                        "Blocks",
+                        "",
+                        "FALSE",
+                        "0",
+                        "0",
+                        "1",
+                        "1",
+                        "1",
+                        "",
+                        "",
+                    ],
                 ],
             ),
         ]:
@@ -3939,6 +4251,7 @@ class TestSheetGeneratorGenerate(unittest.TestCase):
                 want_record_list=[
                     [
                         "SHEET_HEAD_NAME",
+                        "SHEET_HEAD_FILE",
                         "SHEET_HEAD_CATEGORY",
                         "SHEET_HEAD_TAGS",
                         "SHEET_HEAD_DEPRECATED",
@@ -3950,9 +4263,48 @@ class TestSheetGeneratorGenerate(unittest.TestCase):
                         "SHEET_HEAD_SDESC",
                         "SHEET_HEAD_DESC",
                     ],
-                    ["Test 1", "Blocks", "", "FALSE", "0", "0", "1", "1", "1", "", ""],
-                    ["Test 2", "Blocks", "", "FALSE", "0", "0", "1", "1", "1", "", ""],
-                    ["Test 3", "Blocks", "", "FALSE", "0", "0", "1", "1", "1", "", ""],
+                    [
+                        "Test 1",
+                        "",
+                        "Blocks",
+                        "",
+                        "FALSE",
+                        "0",
+                        "0",
+                        "1",
+                        "1",
+                        "1",
+                        "",
+                        "",
+                    ],
+                    [
+                        "Test 2",
+                        "",
+                        "Blocks",
+                        "",
+                        "FALSE",
+                        "0",
+                        "0",
+                        "1",
+                        "1",
+                        "1",
+                        "",
+                        "",
+                    ],
+                    [
+                        "Test 3",
+                        "",
+                        "Blocks",
+                        "",
+                        "FALSE",
+                        "0",
+                        "0",
+                        "1",
+                        "1",
+                        "1",
+                        "",
+                        "",
+                    ],
                 ],
             ),
             tt(  # sort
@@ -3986,6 +4338,7 @@ class TestSheetGeneratorGenerate(unittest.TestCase):
                 want_record_list=[
                     [
                         "SHEET_HEAD_NAME",
+                        "SHEET_HEAD_FILE",
                         "SHEET_HEAD_CATEGORY",
                         "SHEET_HEAD_TAGS",
                         "SHEET_HEAD_DEPRECATED",
@@ -3999,6 +4352,7 @@ class TestSheetGeneratorGenerate(unittest.TestCase):
                     ],
                     [
                         "Z",
+                        "",
                         "Blocks",
                         "",
                         "FALSE",
@@ -4012,6 +4366,7 @@ class TestSheetGeneratorGenerate(unittest.TestCase):
                     ],
                     [
                         "A",
+                        "",
                         "Vehicle Control",
                         "",
                         "FALSE",
@@ -4025,6 +4380,7 @@ class TestSheetGeneratorGenerate(unittest.TestCase):
                     ],
                     [
                         "A",
+                        "",
                         "Vehicle Control",
                         "",
                         "FALSE",
@@ -4038,6 +4394,7 @@ class TestSheetGeneratorGenerate(unittest.TestCase):
                     ],
                     [
                         "Z",
+                        "",
                         "Vehicle Control",
                         "",
                         "FALSE",
@@ -4055,6 +4412,7 @@ class TestSheetGeneratorGenerate(unittest.TestCase):
                 input_label=sw_compdocs.generator.LabelDict(
                     {
                         "SHEET_HEAD_NAME": "Name",
+                        "SHEET_HEAD_FILE": "File",
                         "SHEET_HEAD_CATEGORY": "Category",
                         "SHEET_HEAD_TAGS": "Tags",
                         "SHEET_HEAD_DEPRECATED": "Deprecated",
@@ -4075,6 +4433,7 @@ class TestSheetGeneratorGenerate(unittest.TestCase):
                 want_record_list=[
                     [
                         "Name",
+                        "File",
                         "Category",
                         "Tags",
                         "Deprecated",
@@ -4086,9 +4445,48 @@ class TestSheetGeneratorGenerate(unittest.TestCase):
                         "Short Description",
                         "Description",
                     ],
-                    ["Test 1", "Blocks", "", "FALSE", "0", "0", "1", "1", "1", "", ""],
-                    ["Test 2", "Blocks", "", "FALSE", "0", "0", "1", "1", "1", "", ""],
-                    ["Test 3", "Blocks", "", "FALSE", "0", "0", "1", "1", "1", "", ""],
+                    [
+                        "Test 1",
+                        "",
+                        "Blocks",
+                        "",
+                        "FALSE",
+                        "0",
+                        "0",
+                        "1",
+                        "1",
+                        "1",
+                        "",
+                        "",
+                    ],
+                    [
+                        "Test 2",
+                        "",
+                        "Blocks",
+                        "",
+                        "FALSE",
+                        "0",
+                        "0",
+                        "1",
+                        "1",
+                        "1",
+                        "",
+                        "",
+                    ],
+                    [
+                        "Test 3",
+                        "",
+                        "Blocks",
+                        "",
+                        "FALSE",
+                        "0",
+                        "0",
+                        "1",
+                        "1",
+                        "1",
+                        "",
+                        "",
+                    ],
                 ],
             ),
         ]:

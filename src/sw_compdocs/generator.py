@@ -1,4 +1,6 @@
 import collections.abc
+import os
+import pathlib
 import typing
 
 from . import component
@@ -93,6 +95,14 @@ class DocumentGenerator(Generator):
 
         tags_label = self._label_get("PROP_TABLE_TAGS_LABEL")
         data.append(document.TableDataRow([tags_label, comp.tags]))
+
+        file_label = self._label_get("PROP_TABLE_FILE_LABEL")
+        file_value = ""
+        if comp.file is not None:
+            file_value = os.fsdecode(comp.file)
+            file_value = pathlib.PurePath(file_value).name
+        data.append(document.TableDataRow([file_label, file_value]))
+
         return document.Table(data)
 
     def generate_property(self, comp: component.Definition) -> document.Document:
@@ -259,6 +269,11 @@ class SheetGenerator(Generator):
         comp_name_id = f"def_{comp.cid}_name"
         comp_name = self._lang_find_id(comp_name_id, comp.name)
 
+        comp_file = ""
+        if comp.file is not None:
+            comp_file = os.fsdecode(comp.file)
+            comp_file = pathlib.PurePath(comp_file).name
+
         comp_s_desc_id = f"def_{comp.cid}_s_desc"
         comp_s_desc = comp.tooltip_properties.short_description
         comp_s_desc = self._lang_find_id(comp_s_desc_id, comp_s_desc)
@@ -271,6 +286,7 @@ class SheetGenerator(Generator):
 
         return [
             comp_name,
+            comp_file,
             str(comp.category),
             comp.tags,
             "TRUE" if component.Flags.IS_DEPRECATED in comp.flags else "FALSE",
@@ -303,6 +319,7 @@ class SheetGenerator(Generator):
 
         header = [
             self._label_get("SHEET_HEAD_NAME"),
+            self._label_get("SHEET_HEAD_FILE"),
             self._label_get("SHEET_HEAD_CATEGORY"),
             self._label_get("SHEET_HEAD_TAGS"),
             self._label_get("SHEET_HEAD_DEPRECATED"),

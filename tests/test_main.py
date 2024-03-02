@@ -77,6 +77,7 @@ PROP_TABLE_MASS_LABEL = "重量"
 PROP_TABLE_DIMS_LABEL = "サイズ（WxDxH）"
 PROP_TABLE_COST_LABEL = "価格"
 PROP_TABLE_TAGS_LABEL = "タグ"
+PROP_TABLE_FILE_LABEL = "ファイル"
 """
                 )
 
@@ -134,6 +135,7 @@ template_02 = "テンプレート 02"
 | サイズ（WxDxH） | 1x1x1 |
 | 価格 | 0 |
 | タグ |  |
+| ファイル | test_01.xml |
 
 ## テスト 02
 
@@ -147,6 +149,7 @@ template_02 = "テンプレート 02"
 | サイズ（WxDxH） | 1x1x1 |
 | 価格 | 0 |
 | タグ |  |
+| ファイル | test_02.xml |
 """
             want_md = want_md.replace("\n", "\r\n")
             self.assertEqual(got_md, want_md)
@@ -190,6 +193,7 @@ PROP_TABLE_MASS_LABEL = "重量"
 PROP_TABLE_DIMS_LABEL = "サイズ（WxDxH）"
 PROP_TABLE_COST_LABEL = "価格"
 PROP_TABLE_TAGS_LABEL = "タグ"
+PROP_TABLE_FILE_LABEL = "ファイル"
 """
                 )
 
@@ -247,7 +251,7 @@ template_02 = "テンプレート 02"
             with open(out_file, mode="r", encoding="utf-8", newline="\n") as fp:
                 got_md = fp.read()
 
-            want_md = "SHEET_HEAD_NAME,SHEET_HEAD_CATEGORY,SHEET_HEAD_TAGS,SHEET_HEAD_DEPRECATED,SHEET_HEAD_MASS,SHEET_HEAD_COST,SHEET_HEAD_WIDTH,SHEET_HEAD_DEPTH,SHEET_HEAD_HEIGHT,SHEET_HEAD_SDESC,SHEET_HEAD_DESC\n"
+            want_md = "SHEET_HEAD_NAME,SHEET_HEAD_FILE,SHEET_HEAD_CATEGORY,SHEET_HEAD_TAGS,SHEET_HEAD_DEPRECATED,SHEET_HEAD_MASS,SHEET_HEAD_COST,SHEET_HEAD_WIDTH,SHEET_HEAD_DEPTH,SHEET_HEAD_HEIGHT,SHEET_HEAD_SDESC,SHEET_HEAD_DESC\n"
             self.assertEqual(got_md, want_md)
 
     def test_sheet_newline_default(self) -> None:
@@ -265,7 +269,7 @@ template_02 = "テンプレート 02"
             with open(out_file, mode="r", encoding="utf-8", newline="") as fp:
                 got_md = fp.read()
 
-            want_md = "SHEET_HEAD_NAME,SHEET_HEAD_CATEGORY,SHEET_HEAD_TAGS,SHEET_HEAD_DEPRECATED,SHEET_HEAD_MASS,SHEET_HEAD_COST,SHEET_HEAD_WIDTH,SHEET_HEAD_DEPTH,SHEET_HEAD_HEIGHT,SHEET_HEAD_SDESC,SHEET_HEAD_DESC\n"
+            want_md = "SHEET_HEAD_NAME,SHEET_HEAD_FILE,SHEET_HEAD_CATEGORY,SHEET_HEAD_TAGS,SHEET_HEAD_DEPRECATED,SHEET_HEAD_MASS,SHEET_HEAD_COST,SHEET_HEAD_WIDTH,SHEET_HEAD_DEPTH,SHEET_HEAD_HEIGHT,SHEET_HEAD_SDESC,SHEET_HEAD_DESC\n"
             want_md = want_md.replace("\n", os.linesep)
             self.assertEqual(got_md, want_md)
 
@@ -303,6 +307,7 @@ template_02 = "テンプレート 02"
                     """\
 [label]
 SHEET_HEAD_NAME = "Name"
+SHEET_HEAD_FILE = "File"
 SHEET_HEAD_CATEGORY = "Category"
 SHEET_HEAD_TAGS = "Tags"
 SHEET_HEAD_DEPRECATED = "Deprecated"
@@ -355,49 +360,12 @@ template_02 = "テンプレート 02"
                 got_md = fp.read()
 
             want_md = """\
-Name,Category,Tags,Deprecated,Mass,Cost,Width,Depth,Height,Short Description,Description
-テスト 01,Blocks,,FALSE,1,0,1,1,1,テンプレート 01,
-テスト 02,Blocks,,FALSE,2,0,1,1,1,テンプレート 02,
+Name,File,Category,Tags,Deprecated,Mass,Cost,Width,Depth,Height,Short Description,Description
+テスト 01,test_01.xml,Blocks,,FALSE,1,0,1,1,1,テンプレート 01,
+テスト 02,test_02.xml,Blocks,,FALSE,2,0,1,1,1,テンプレート 02,
 """
             want_md = want_md.replace("\n", "\r\n")
             self.assertEqual(got_md, want_md)
-
-
-class TestFormatOSError(unittest.TestCase):
-    def test(self) -> None:
-        tt = typing.NamedTuple("tt", [("input_exc", OSError), ("want_s", str)])
-
-        for tc in [
-            tt(
-                input_exc=OSError("message"),
-                want_s="message",
-            ),
-            tt(
-                input_exc=OSError(errno.ENOENT, "strerror"),
-                want_s="strerror",
-            ),
-            tt(
-                input_exc=OSError(errno.ENOENT, "strerror", "filename"),
-                want_s="strerror (file: 'filename')",
-            ),
-            tt(
-                input_exc=OSError(errno.ENOENT, "strerror", "filename", 2),
-                want_s="strerror (file: 'filename')",
-            ),
-            tt(
-                input_exc=OSError(errno.ENOENT, "strerror", "filename", 2, "filename2"),
-                want_s="strerror (file: 'filename', 'filename2')",
-            ),
-            tt(
-                input_exc=OSError(
-                    errno.ENOENT, "strerror", b"filename", 2, b"filename2"
-                ),
-                want_s="strerror (file: 'filename', 'filename2')",
-            ),
-        ]:
-            with self.subTest(tc=tc):
-                got_s = sw_compdocs.main.format_os_error(tc.input_exc)
-                self.assertEqual(got_s, tc.want_s)
 
     def test_sheet_exc_unicode(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -433,6 +401,7 @@ class TestFormatOSError(unittest.TestCase):
                     """\
 [label]
 SHEET_HEAD_NAME = "Name"
+SHEET_HEAD_FILE = "File"
 SHEET_HEAD_CATEGORY = "Category"
 SHEET_HEAD_TAGS = "Tags"
 SHEET_HEAD_DEPRECATED = "Deprecated"
@@ -482,6 +451,43 @@ template_02 = "テンプレート 02"
                     out_newline="\r\n",
                 )
             self.assertEqual(ctx.exception.filename, out_file)
+
+
+class TestFormatOSError(unittest.TestCase):
+    def test(self) -> None:
+        tt = typing.NamedTuple("tt", [("input_exc", OSError), ("want_s", str)])
+
+        for tc in [
+            tt(
+                input_exc=OSError("message"),
+                want_s="message",
+            ),
+            tt(
+                input_exc=OSError(errno.ENOENT, "strerror"),
+                want_s="strerror",
+            ),
+            tt(
+                input_exc=OSError(errno.ENOENT, "strerror", "filename"),
+                want_s="strerror (file: 'filename')",
+            ),
+            tt(
+                input_exc=OSError(errno.ENOENT, "strerror", "filename", 2),
+                want_s="strerror (file: 'filename')",
+            ),
+            tt(
+                input_exc=OSError(errno.ENOENT, "strerror", "filename", 2, "filename2"),
+                want_s="strerror (file: 'filename', 'filename2')",
+            ),
+            tt(
+                input_exc=OSError(
+                    errno.ENOENT, "strerror", b"filename", 2, b"filename2"
+                ),
+                want_s="strerror (file: 'filename', 'filename2')",
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                got_s = sw_compdocs.main.format_os_error(tc.input_exc)
+                self.assertEqual(got_s, tc.want_s)
 
 
 class TestParseError(unittest.TestCase):
@@ -926,6 +932,7 @@ PROP_TABLE_MASS_LABEL = "重量"
 PROP_TABLE_DIMS_LABEL = "サイズ（WxDxH）"
 PROP_TABLE_COST_LABEL = "価格"
 PROP_TABLE_TAGS_LABEL = "タグ"
+PROP_TABLE_FILE_LABEL = "ファイル"
 """
                 )
 
@@ -999,6 +1006,7 @@ template_02 = "テンプレート 02"
 | サイズ（WxDxH） | 1x1x1 |
 | 価格 | 0 |
 | タグ |  |
+| ファイル | test_01.xml |
 
 ## テスト 02
 
@@ -1012,5 +1020,6 @@ template_02 = "テンプレート 02"
 | サイズ（WxDxH） | 1x1x1 |
 | 価格 | 0 |
 | タグ |  |
+| ファイル | test_02.xml |
 """
             self.assertEqual(got_md, want_md)

@@ -754,7 +754,10 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
 """
         )
 
-        comp = sw_compdocs.component.Definition.from_xml_elem(elem, cid="clock")
+        comp = sw_compdocs.component.Definition.from_xml_elem(
+            elem, file="clock.xml", cid="clock"
+        )
+        self.assertEqual(comp.file, "clock.xml")
         self.assertEqual(comp.cid, "clock")
         self.assertEqual(comp.name, "Clock")
         self.assertEqual(comp.category, sw_compdocs.component.Category.DISPLAYS)
@@ -803,6 +806,7 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
     def test_pass_empty(self) -> None:
         elem = lxml.etree.Element("definition")
         comp = sw_compdocs.component.Definition.from_xml_elem(elem)
+        self.assertIsNone(comp.file)
         self.assertEqual(comp.cid, "")
         self.assertEqual(comp.name, "")
         self.assertEqual(comp.category, sw_compdocs.component.Category.BLOCKS)
@@ -822,7 +826,9 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
             "tt",
             [
                 ("input_elem", lxml.etree._Element),
+                ("input_file", sw_compdocs._types.StrOrBytesPath | None),
                 ("want_msg", str),
+                ("want_file", sw_compdocs._types.StrOrBytesPath | None),
                 ("want_xpath", str),
             ],
         )
@@ -830,56 +836,74 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
         for tc in [
             tt(
                 input_elem=lxml.etree.Element("definition", category="nan"),
+                input_file="file",
                 want_msg="invalid component category 'nan'",
+                want_file="file",
                 want_xpath=".",
             ),
             tt(
                 input_elem=lxml.etree.Element("definition", category="999"),
+                input_file="file",
                 want_msg="invalid component category '999'",
+                want_file="file",
                 want_xpath=".",
             ),
             tt(
                 input_elem=lxml.etree.Element("definition", mass="invalid"),
+                input_file="file",
                 want_msg="invalid component mass 'invalid'",
+                want_file="file",
                 want_xpath=".",
             ),
             tt(
                 input_elem=lxml.etree.Element("definition", value="nan"),
+                input_file="file",
                 want_msg="invalid component value 'nan'",
+                want_file="file",
                 want_xpath=".",
             ),
             tt(
                 input_elem=lxml.etree.Element("definition", flags="nan"),
+                input_file="file",
                 want_msg="invalid component flags 'nan'",
+                want_file="file",
                 want_xpath=".",
             ),
             tt(
                 input_elem=lxml.etree.fromstring(
                     """<definition><logic_nodes><logic_node mode="999"/></logic_nodes></definition>"""
                 ),
+                input_file="file",
                 want_msg="invalid logic node mode '999'",
+                want_file="file",
                 want_xpath="./logic_nodes/logic_node[1]",
             ),
             tt(
                 input_elem=lxml.etree.fromstring(
                     """<definition><voxel_min x="nan"/></definition>"""
                 ),
+                input_file="file",
                 want_msg="invalid voxel x 'nan'",
+                want_file="file",
                 want_xpath="./voxel_min",
             ),
             tt(
                 input_elem=lxml.etree.fromstring(
                     """<definition><voxel_max x="nan"/></definition>"""
                 ),
+                input_file="file",
                 want_msg="invalid voxel x 'nan'",
+                want_file="file",
                 want_xpath="./voxel_max",
             ),
         ]:
             with self.subTest(tc=tc):
                 with self.assertRaises(sw_compdocs.component.ComponentXMLError) as ctx:
-                    sw_compdocs.component.Definition.from_xml_elem(tc.input_elem)
+                    sw_compdocs.component.Definition.from_xml_elem(
+                        tc.input_elem, file=tc.input_file
+                    )
                 self.assertEqual(ctx.exception.msg, tc.want_msg)
-                self.assertEqual(ctx.exception.file, None)
+                self.assertEqual(ctx.exception.file, tc.want_file)
                 self.assertEqual(ctx.exception.xpath, tc.want_xpath)
 
 
@@ -905,6 +929,7 @@ class TestParseXMLFile(unittest.TestCase):
             for path in path_list:
                 with self.subTest(path=path):
                     comp = sw_compdocs.component.parse_xml_file(path)
+                    self.assertEqual(comp.file, path)
                     self.assertEqual(comp.cid, "test")
                     self.assertEqual(comp.name, "name")
                     self.assertEqual(comp.tooltip_properties.description, "description")
@@ -935,6 +960,7 @@ class TestParseXMLFile(unittest.TestCase):
             for path in path_list:
                 with self.subTest(path=path):
                     comp = sw_compdocs.component.parse_xml_file(path)
+                    self.assertEqual(comp.file, path)
                     self.assertEqual(comp.cid, "test")
                     self.assertEqual(comp.name, "name")
                     self.assertEqual(comp.tooltip_properties.description, "description")
@@ -1030,6 +1056,7 @@ class TestParseXMLStr(unittest.TestCase):
             cid="cid",
         )
 
+        self.assertIsNone(comp.file)
         self.assertEqual(comp.cid, "cid")
         self.assertEqual(comp.name, "name")
         self.assertEqual(comp.tooltip_properties.description, "description")
@@ -1049,6 +1076,7 @@ class TestParseXMLStr(unittest.TestCase):
             cid="cid",
         )
 
+        self.assertIsNone(comp.file)
         self.assertEqual(comp.cid, "cid")
         self.assertEqual(comp.name, "name")
         self.assertEqual(comp.tooltip_properties.description, "description")
