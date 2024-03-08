@@ -10,7 +10,7 @@ from . import container
 from . import wraperr
 
 
-@dataclasses.dataclass
+@dataclasses.dataclass(frozen=True)
 class Translation:
     id: str
     description: str
