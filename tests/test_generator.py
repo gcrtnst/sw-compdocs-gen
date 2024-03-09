@@ -1047,6 +1047,730 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
                 self.assertEqual(got_tbl, tc.want_tbl)
 
 
+class TestGenerateDocumentLogic(unittest.TestCase):
+    def test_pass(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_label", sw_compdocs.generator.LabelDict | None),
+                ("input_lang", sw_compdocs.language.Language | None),
+                ("input_fmt", sw_compdocs.template.TemplateFormatter | None),
+                ("input_cid", str),
+                ("input_lns", sw_compdocs.component.LogicNodeList),
+                ("want_doc", sw_compdocs.document.Document),
+            ],
+        )
+
+        for tc in [
+            # empty
+            tt(
+                input_label=None,
+                input_lang=None,
+                input_fmt=None,
+                input_cid="test",
+                input_lns=sw_compdocs.component.LogicNodeList(),
+                want_doc=sw_compdocs.document.Document(),
+            ),
+            # logic node type
+            tt(
+                input_label=None,
+                input_lang=None,
+                input_fmt=None,
+                input_cid="test",
+                input_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(
+                            label="label",
+                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                            type=sw_compdocs.component.LogicNodeType.BOOL,
+                            description="desc",
+                        ),
+                    ]
+                ),
+                want_doc=sw_compdocs.document.Document(
+                    [
+                        sw_compdocs.document.Heading("logic inputs"),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    [
+                                        "LOGIC_TABLE_HEAD_TYPE",
+                                        "LOGIC_TABLE_HEAD_LABEL",
+                                        "LOGIC_TABLE_HEAD_DESC",
+                                    ]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["on/off", "label", "desc"]
+                                    )
+                                ],
+                            )
+                        ),
+                    ]
+                ),
+            ),
+            tt(
+                input_label=None,
+                input_lang=None,
+                input_fmt=None,
+                input_cid="test",
+                input_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(
+                            label="label",
+                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                            type=sw_compdocs.component.LogicNodeType.FLOAT,
+                            description="desc",
+                        ),
+                    ]
+                ),
+                want_doc=sw_compdocs.document.Document(
+                    [
+                        sw_compdocs.document.Heading("logic inputs"),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    [
+                                        "LOGIC_TABLE_HEAD_TYPE",
+                                        "LOGIC_TABLE_HEAD_LABEL",
+                                        "LOGIC_TABLE_HEAD_DESC",
+                                    ]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["number", "label", "desc"]
+                                    )
+                                ],
+                            )
+                        ),
+                    ]
+                ),
+            ),
+            tt(
+                input_label=None,
+                input_lang=None,
+                input_fmt=None,
+                input_cid="test",
+                input_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(
+                            label="label",
+                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                            type=sw_compdocs.component.LogicNodeType.TORQUE,
+                            description="desc",
+                        ),
+                    ]
+                ),
+                want_doc=sw_compdocs.document.Document(
+                    [
+                        sw_compdocs.document.Heading("connections"),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    [
+                                        "LOGIC_TABLE_HEAD_TYPE",
+                                        "LOGIC_TABLE_HEAD_LABEL",
+                                        "LOGIC_TABLE_HEAD_DESC",
+                                    ]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["power", "label", "desc"]
+                                    )
+                                ],
+                            )
+                        ),
+                    ]
+                ),
+            ),
+            tt(
+                input_label=None,
+                input_lang=None,
+                input_fmt=None,
+                input_cid="test",
+                input_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(
+                            label="label",
+                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                            type=sw_compdocs.component.LogicNodeType.WATER,
+                            description="desc",
+                        ),
+                    ]
+                ),
+                want_doc=sw_compdocs.document.Document(
+                    [
+                        sw_compdocs.document.Heading("connections"),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    [
+                                        "LOGIC_TABLE_HEAD_TYPE",
+                                        "LOGIC_TABLE_HEAD_LABEL",
+                                        "LOGIC_TABLE_HEAD_DESC",
+                                    ]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["fluid", "label", "desc"]
+                                    )
+                                ],
+                            )
+                        ),
+                    ]
+                ),
+            ),
+            tt(
+                input_label=None,
+                input_lang=None,
+                input_fmt=None,
+                input_cid="test",
+                input_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(
+                            label="label",
+                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                            type=sw_compdocs.component.LogicNodeType.ELECTRIC,
+                            description="desc",
+                        ),
+                    ]
+                ),
+                want_doc=sw_compdocs.document.Document(
+                    [
+                        sw_compdocs.document.Heading("connections"),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    [
+                                        "LOGIC_TABLE_HEAD_TYPE",
+                                        "LOGIC_TABLE_HEAD_LABEL",
+                                        "LOGIC_TABLE_HEAD_DESC",
+                                    ]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["electric", "label", "desc"]
+                                    )
+                                ],
+                            )
+                        ),
+                    ]
+                ),
+            ),
+            tt(
+                input_label=None,
+                input_lang=None,
+                input_fmt=None,
+                input_cid="test",
+                input_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(
+                            label="label",
+                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                            type=sw_compdocs.component.LogicNodeType.COMPOSITE,
+                            description="desc",
+                        ),
+                    ]
+                ),
+                want_doc=sw_compdocs.document.Document(
+                    [
+                        sw_compdocs.document.Heading("logic inputs"),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    [
+                                        "LOGIC_TABLE_HEAD_TYPE",
+                                        "LOGIC_TABLE_HEAD_LABEL",
+                                        "LOGIC_TABLE_HEAD_DESC",
+                                    ]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["composite", "label", "desc"]
+                                    )
+                                ],
+                            )
+                        ),
+                    ]
+                ),
+            ),
+            tt(
+                input_label=None,
+                input_lang=None,
+                input_fmt=None,
+                input_cid="test",
+                input_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(
+                            label="label",
+                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                            type=sw_compdocs.component.LogicNodeType.VIDEO,
+                            description="desc",
+                        ),
+                    ]
+                ),
+                want_doc=sw_compdocs.document.Document(
+                    [
+                        sw_compdocs.document.Heading("logic inputs"),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    [
+                                        "LOGIC_TABLE_HEAD_TYPE",
+                                        "LOGIC_TABLE_HEAD_LABEL",
+                                        "LOGIC_TABLE_HEAD_DESC",
+                                    ]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["video", "label", "desc"]
+                                    )
+                                ],
+                            )
+                        ),
+                    ]
+                ),
+            ),
+            tt(
+                input_label=None,
+                input_lang=None,
+                input_fmt=None,
+                input_cid="test",
+                input_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(
+                            label="label",
+                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                            type=sw_compdocs.component.LogicNodeType.AUDIO,
+                            description="desc",
+                        ),
+                    ]
+                ),
+                want_doc=sw_compdocs.document.Document(
+                    [
+                        sw_compdocs.document.Heading("logic inputs"),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    [
+                                        "LOGIC_TABLE_HEAD_TYPE",
+                                        "LOGIC_TABLE_HEAD_LABEL",
+                                        "LOGIC_TABLE_HEAD_DESC",
+                                    ]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["audio", "label", "desc"]
+                                    )
+                                ],
+                            )
+                        ),
+                    ]
+                ),
+            ),
+            tt(
+                input_label=None,
+                input_lang=None,
+                input_fmt=None,
+                input_cid="test",
+                input_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(
+                            label="label",
+                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                            type=sw_compdocs.component.LogicNodeType.ROPE,
+                            description="desc",
+                        ),
+                    ]
+                ),
+                want_doc=sw_compdocs.document.Document(
+                    [
+                        sw_compdocs.document.Heading("connections"),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    [
+                                        "LOGIC_TABLE_HEAD_TYPE",
+                                        "LOGIC_TABLE_HEAD_LABEL",
+                                        "LOGIC_TABLE_HEAD_DESC",
+                                    ]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["rope", "label", "desc"]
+                                    )
+                                ],
+                            )
+                        ),
+                    ]
+                ),
+            ),
+            # logic node mode
+            tt(
+                input_label=None,
+                input_lang=None,
+                input_fmt=None,
+                input_cid="test",
+                input_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(
+                            label="label",
+                            mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
+                            type=sw_compdocs.component.LogicNodeType.BOOL,
+                            description="desc",
+                        ),
+                    ]
+                ),
+                want_doc=sw_compdocs.document.Document(
+                    [
+                        sw_compdocs.document.Heading("logic outputs"),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    [
+                                        "LOGIC_TABLE_HEAD_TYPE",
+                                        "LOGIC_TABLE_HEAD_LABEL",
+                                        "LOGIC_TABLE_HEAD_DESC",
+                                    ]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["on/off", "label", "desc"]
+                                    )
+                                ],
+                            )
+                        ),
+                    ]
+                ),
+            ),
+            # lang
+            tt(
+                input_label=None,
+                input_lang=sw_compdocs.language.Language(
+                    [
+                        sw_compdocs.language.Translation(
+                            "", "", "logic inputs", "ロジック入力"
+                        ),
+                        sw_compdocs.language.Translation("", "", "on/off", "オン/オフ"),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_0_label", "", "", "ラベル"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_0_desc", "", "", "説明"
+                        ),
+                    ]
+                ),
+                input_fmt=None,
+                input_cid="test",
+                input_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(
+                            label="label",
+                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                            type=sw_compdocs.component.LogicNodeType.BOOL,
+                            description="desc",
+                        ),
+                    ]
+                ),
+                want_doc=sw_compdocs.document.Document(
+                    [
+                        sw_compdocs.document.Heading("ロジック入力"),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    [
+                                        "LOGIC_TABLE_HEAD_TYPE",
+                                        "LOGIC_TABLE_HEAD_LABEL",
+                                        "LOGIC_TABLE_HEAD_DESC",
+                                    ]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["オン/オフ", "ラベル", "説明"]
+                                    )
+                                ],
+                            )
+                        ),
+                    ]
+                ),
+            ),
+            tt(
+                input_label=None,
+                input_lang=sw_compdocs.language.Language(
+                    [
+                        sw_compdocs.language.Translation(
+                            "", "", "logic outputs", "ロジック出力"
+                        ),
+                        sw_compdocs.language.Translation("", "", "on/off", "オン/オフ"),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_0_label", "", "", "ラベル"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_0_desc", "", "", "説明"
+                        ),
+                    ]
+                ),
+                input_fmt=None,
+                input_cid="test",
+                input_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(
+                            label="label",
+                            mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
+                            type=sw_compdocs.component.LogicNodeType.BOOL,
+                            description="desc",
+                        ),
+                    ]
+                ),
+                want_doc=sw_compdocs.document.Document(
+                    [
+                        sw_compdocs.document.Heading("ロジック出力"),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    [
+                                        "LOGIC_TABLE_HEAD_TYPE",
+                                        "LOGIC_TABLE_HEAD_LABEL",
+                                        "LOGIC_TABLE_HEAD_DESC",
+                                    ]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["オン/オフ", "ラベル", "説明"]
+                                    )
+                                ],
+                            )
+                        ),
+                    ]
+                ),
+            ),
+            tt(
+                input_label=None,
+                input_lang=sw_compdocs.language.Language(
+                    [
+                        sw_compdocs.language.Translation("", "", "connections", "接続"),
+                        sw_compdocs.language.Translation("", "", "power", "動力"),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_0_label", "", "", "ラベル"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_0_desc", "", "", "説明"
+                        ),
+                    ]
+                ),
+                input_fmt=None,
+                input_cid="test",
+                input_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(
+                            label="label",
+                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                            type=sw_compdocs.component.LogicNodeType.TORQUE,
+                            description="desc",
+                        ),
+                    ]
+                ),
+                want_doc=sw_compdocs.document.Document(
+                    [
+                        sw_compdocs.document.Heading("接続"),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    [
+                                        "LOGIC_TABLE_HEAD_TYPE",
+                                        "LOGIC_TABLE_HEAD_LABEL",
+                                        "LOGIC_TABLE_HEAD_DESC",
+                                    ]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["動力", "ラベル", "説明"]
+                                    )
+                                ],
+                            )
+                        ),
+                    ]
+                ),
+            ),
+            # logic idx
+            tt(
+                input_label=None,
+                input_lang=sw_compdocs.language.Language(
+                    [
+                        sw_compdocs.language.Translation(
+                            "", "", "logic inputs", "logic inputs"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "", "", "logic outputs", "logic outputs"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "", "", "connections", "connections"
+                        ),
+                        sw_compdocs.language.Translation("", "", "on/off", "on/off"),
+                        sw_compdocs.language.Translation("", "", "power", "power"),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_0_label", "", "", "label 0"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_0_desc", "", "", "desc 0"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_1_label", "", "", "label 1"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_1_desc", "", "", "desc 1"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_2_label", "", "", "label 2"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_2_desc", "", "", "desc 2"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_3_label", "", "", "label 3"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_3_desc", "", "", "desc 3"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_4_label", "", "", "label 4"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_4_desc", "", "", "desc 4"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_5_label", "", "", "label 5"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_5_desc", "", "", "desc 5"
+                        ),
+                    ]
+                ),
+                input_fmt=None,
+                input_cid="test",
+                input_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(
+                            idx=0,
+                            label="label",
+                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                            type=sw_compdocs.component.LogicNodeType.BOOL,
+                            description="desc",
+                        ),
+                        sw_compdocs.component.LogicNode(
+                            idx=1,
+                            label="label",
+                            mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
+                            type=sw_compdocs.component.LogicNodeType.BOOL,
+                            description="desc",
+                        ),
+                        sw_compdocs.component.LogicNode(
+                            idx=2,
+                            label="label",
+                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                            type=sw_compdocs.component.LogicNodeType.TORQUE,
+                            description="desc",
+                        ),
+                        sw_compdocs.component.LogicNode(
+                            idx=3,
+                            label="label",
+                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                            type=sw_compdocs.component.LogicNodeType.BOOL,
+                            description="desc",
+                        ),
+                        sw_compdocs.component.LogicNode(
+                            idx=4,
+                            label="label",
+                            mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
+                            type=sw_compdocs.component.LogicNodeType.BOOL,
+                            description="desc",
+                        ),
+                        sw_compdocs.component.LogicNode(
+                            idx=5,
+                            label="label",
+                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                            type=sw_compdocs.component.LogicNodeType.TORQUE,
+                            description="desc",
+                        ),
+                    ]
+                ),
+                want_doc=sw_compdocs.document.Document(
+                    [
+                        sw_compdocs.document.Heading("logic inputs"),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    [
+                                        "LOGIC_TABLE_HEAD_TYPE",
+                                        "LOGIC_TABLE_HEAD_LABEL",
+                                        "LOGIC_TABLE_HEAD_DESC",
+                                    ]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["on/off", "label 0", "desc 0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["on/off", "label 3", "desc 3"]
+                                    ),
+                                ],
+                            )
+                        ),
+                        sw_compdocs.document.Heading("logic outputs"),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    [
+                                        "LOGIC_TABLE_HEAD_TYPE",
+                                        "LOGIC_TABLE_HEAD_LABEL",
+                                        "LOGIC_TABLE_HEAD_DESC",
+                                    ]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["on/off", "label 1", "desc 1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["on/off", "label 4", "desc 4"]
+                                    ),
+                                ],
+                            )
+                        ),
+                        sw_compdocs.document.Heading("connections"),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    [
+                                        "LOGIC_TABLE_HEAD_TYPE",
+                                        "LOGIC_TABLE_HEAD_LABEL",
+                                        "LOGIC_TABLE_HEAD_DESC",
+                                    ]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["power", "label 2", "desc 2"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["power", "label 5", "desc 5"]
+                                    ),
+                                ],
+                            )
+                        ),
+                    ]
+                ),
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                got_doc = sw_compdocs.generator.generate_document_logic(
+                    tc.input_cid,
+                    tc.input_lns,
+                    label=tc.input_label,
+                    lang=tc.input_lang,
+                    fmt=tc.input_fmt,
+                )
+                self.assertEqual(got_doc, tc.want_doc)
+
+
 class TestGeneratorInit(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(

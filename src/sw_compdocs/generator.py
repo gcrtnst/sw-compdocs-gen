@@ -141,6 +141,67 @@ def generate_document_logic_table(
     return document.Table(data)
 
 
+def generate_document_logic(
+    cid: str,
+    lns: component.LogicNodeList,
+    *,
+    label: LabelDict | None = None,
+    lang: language.Language | None = None,
+    fmt: template.TemplateFormatter | None = None,
+) -> document.Document:
+    in_lns = component.LogicNodeList()
+    out_lns = component.LogicNodeList()
+    conn_lns = component.LogicNodeList()
+    for ln in lns:
+        if (
+            ln.type is component.LogicNodeType.BOOL
+            or ln.type is component.LogicNodeType.FLOAT
+            or ln.type is component.LogicNodeType.COMPOSITE
+            or ln.type is component.LogicNodeType.VIDEO
+            or ln.type is component.LogicNodeType.AUDIO
+        ):
+            if ln.mode is component.LogicNodeMode.INPUT:
+                in_lns.append(ln)
+                continue
+            if ln.mode is component.LogicNodeMode.OUTPUT:
+                out_lns.append(ln)
+                continue
+            typing.assert_never(ln.mode)
+        if (
+            ln.type is component.LogicNodeType.TORQUE
+            or ln.type is component.LogicNodeType.WATER
+            or ln.type is component.LogicNodeType.ELECTRIC
+            or ln.type is component.LogicNodeType.ROPE
+        ):
+            conn_lns.append(ln)
+            continue
+        typing.assert_never(ln.type)
+
+    doc = document.Document()
+    if len(in_lns) > 0:
+        in_head = document.Heading(_lang_find_en(lang, "logic inputs"))
+        in_tbl = generate_document_logic_table(
+            cid, in_lns, label=label, lang=lang, fmt=fmt
+        )
+        doc.append(in_head)
+        doc.append(in_tbl)
+    if len(out_lns) > 0:
+        out_head = document.Heading(_lang_find_en(lang, "logic outputs"))
+        out_tbl = generate_document_logic_table(
+            cid, out_lns, label=label, lang=lang, fmt=fmt
+        )
+        doc.append(out_head)
+        doc.append(out_tbl)
+    if len(conn_lns) > 0:
+        conn_head = document.Heading(_lang_find_en(lang, "connections"))
+        conn_tbl = generate_document_logic_table(
+            cid, conn_lns, label=label, lang=lang, fmt=fmt
+        )
+        doc.append(conn_head)
+        doc.append(conn_tbl)
+    return doc
+
+
 class Generator:
     def __init__(
         self,
@@ -183,48 +244,9 @@ class DocumentGenerator(Generator):
     def generate_logic(
         self, cid: str, lns: component.LogicNodeList
     ) -> document.Document:
-        in_lns = component.LogicNodeList()
-        out_lns = component.LogicNodeList()
-        conn_lns = component.LogicNodeList()
-        for ln in lns:
-            if (
-                ln.type is component.LogicNodeType.BOOL
-                or ln.type is component.LogicNodeType.FLOAT
-                or ln.type is component.LogicNodeType.COMPOSITE
-                or ln.type is component.LogicNodeType.VIDEO
-                or ln.type is component.LogicNodeType.AUDIO
-            ):
-                if ln.mode is component.LogicNodeMode.INPUT:
-                    in_lns.append(ln)
-                    continue
-                if ln.mode is component.LogicNodeMode.OUTPUT:
-                    out_lns.append(ln)
-                    continue
-                typing.assert_never(ln.mode)
-            if (
-                ln.type is component.LogicNodeType.TORQUE
-                or ln.type is component.LogicNodeType.WATER
-                or ln.type is component.LogicNodeType.ELECTRIC
-                or ln.type is component.LogicNodeType.ROPE
-            ):
-                conn_lns.append(ln)
-                continue
-            typing.assert_never(ln.type)
-
-        doc = document.Document()
-        if len(in_lns) > 0:
-            in_title = self._lang_find_en("logic inputs")
-            doc.append(document.Heading(in_title))
-            doc.append(self.generate_logic_table(cid, in_lns))
-        if len(out_lns) > 0:
-            out_title = self._lang_find_en("logic outputs")
-            doc.append(document.Heading(out_title))
-            doc.append(self.generate_logic_table(cid, out_lns))
-        if len(conn_lns) > 0:
-            conn_title = self._lang_find_en("connections")
-            doc.append(document.Heading(conn_title))
-            doc.append(self.generate_logic_table(cid, conn_lns))
-        return doc
+        return generate_document_logic(
+            cid, lns, label=self.label, lang=self.lang, fmt=self.fmt
+        )
 
     def generate_component(self, comp: component.Definition) -> document.Document:
         doc = document.Document()
