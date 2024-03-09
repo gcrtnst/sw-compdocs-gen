@@ -454,3 +454,21 @@ def parse_xml_str(s: str, *, cid: str | None = None) -> Definition:
     elem: lxml.etree._Element | None
     elem = lxml.etree.fromstring(s, parser=_new_xml_parser())
     return _parse_xml_root(elem, cid=cid)
+
+
+def load_dir(comp_dir: _types.StrOrBytesPath) -> dict[str, Definition]:
+    # Avoid 'Expression type contains "Any"' warning from mypy
+    path_cls: type[pathlib.Path] = pathlib.Path
+
+    if not isinstance(comp_dir, path_cls):
+        comp_dir = os.fsdecode(comp_dir)
+        comp_dir = pathlib.Path(comp_dir)
+
+    comp_dict = {}
+    for comp_file in comp_dir.glob("*.xml"):
+        if not comp_file.is_file():
+            continue
+        cid = generate_cid(comp_file)
+        comp = parse_xml_file(comp_file)
+        comp_dict[cid] = comp
+    return comp_dict

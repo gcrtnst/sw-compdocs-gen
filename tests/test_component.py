@@ -1117,3 +1117,61 @@ class TestParseXMLStr(unittest.TestCase):
         self.assertEqual(ctx.exception.msg, "invalid xml")
         self.assertEqual(ctx.exception.file, None)
         self.assertEqual(ctx.exception.xpath, "/")
+
+
+class TestLoadDir(unittest.TestCase):
+    def test_empty(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            want_comp_dict: dict[str, sw_compdocs.component.Definition] = {}
+
+            path_list: list[sw_compdocs._types.StrOrBytesPath] = [
+                os.fsdecode(temp_dir),
+                os.fsencode(temp_dir),
+                pathlib.Path(temp_dir),
+            ]
+            for path in path_list:
+                with self.subTest(path=path):
+                    got_comp_dict = sw_compdocs.component.load_dir(path)
+                    self.assertEqual(got_comp_dict, want_comp_dict)
+
+    def test_normal(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            dmy1_file = pathlib.Path(temp_dir, "dmy1.xml")
+            with open(dmy1_file, mode="xt", encoding="utf-8", newline="\r\n") as f:
+                f.write(
+                    """\
+<?xml version="1.0" encoding="UTF-8"?>
+<definition name="Dummy 1"/>
+"""
+                )
+
+            dmy2_file = pathlib.Path(temp_dir, "dmy2.xml")
+            with open(dmy2_file, mode="xt", encoding="utf-8", newline="\r\n") as f:
+                f.write(
+                    """\
+<?xml version="1.0" encoding="UTF-8"?>
+<definition name="Dummy 2"/>
+"""
+                )
+
+            dmy3_dir = pathlib.Path(temp_dir, "dmy3.xml")
+            dmy3_dir.mkdir()
+
+            want_comp_dict = {
+                "dmy1": sw_compdocs.component.Definition(
+                    file=dmy1_file, cid="dmy1", name="Dummy 1"
+                ),
+                "dmy2": sw_compdocs.component.Definition(
+                    file=dmy2_file, cid="dmy2", name="Dummy 2"
+                ),
+            }
+
+            path_list: list[sw_compdocs._types.StrOrBytesPath] = [
+                os.fsdecode(temp_dir),
+                os.fsencode(temp_dir),
+                pathlib.Path(temp_dir),
+            ]
+            for path in path_list:
+                with self.subTest(path=path):
+                    got_comp_dict = sw_compdocs.component.load_dir(path)
+                    self.assertEqual(got_comp_dict, want_comp_dict)
