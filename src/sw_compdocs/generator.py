@@ -47,6 +47,12 @@ def _lang_find_id(lang: language.Language | None, lang_id: str, lang_en: str) ->
     return lang.find_id(lang_id).local
 
 
+def _lang_find_en(lang: language.Language | None, lang_en: str) -> str:
+    if lang is None:
+        return lang_en
+    return lang.find_en(lang_en).local
+
+
 class Generator:
     def __init__(
         self,
@@ -66,9 +72,7 @@ class Generator:
         return _lang_find_id(self.lang, lang_id, lang_en)
 
     def _lang_find_en(self, lang_en: str) -> str:
-        if self.lang is None:
-            return lang_en
-        return self.lang.find_en(lang_en).local
+        return _lang_find_en(self.lang, lang_en)
 
     def _fmt_format(self, s: str) -> str:
         if self.fmt is not None:
