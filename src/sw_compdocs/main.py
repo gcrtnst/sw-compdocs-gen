@@ -28,8 +28,7 @@ def generate_document(
     out_encoding: str | None = None,
     out_newline: str | None = None,
 ) -> None:
-    gen = generator.DocumentGenerator(label=label, lang=lang, fmt=fmt)
-    doc = gen.generate(comp_list)
+    doc = generator.generate_document(comp_list, label=label, lang=lang, fmt=fmt)
     md = renderer.render_markdown(doc)
 
     with wraperr.wrap_unicode_error(out_file):
