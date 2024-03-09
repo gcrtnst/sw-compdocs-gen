@@ -202,6 +202,54 @@ def generate_document_logic(
     return doc
 
 
+def generate_document_component(
+    comp: component.Definition,
+    *,
+    label: LabelDict | None = None,
+    lang: language.Language | None = None,
+    fmt: template.TemplateFormatter | None = None,
+) -> document.Document:
+    doc = document.Document()
+
+    comp_name_id = f"def_{comp.cid}_name"
+    comp_name = _lang_find_id(lang, comp_name_id, comp.name)
+    doc.append(document.Heading(comp_name))
+
+    if component.Flags.IS_DEPRECATED in comp.flags:
+        doc.append(
+            document.Callout(
+                _label_get(label, "DEPRECATED_TEXT"),
+                kind=document.CalloutKind.WARNING,
+            )
+        )
+
+    comp_s_desc_id = f"def_{comp.cid}_s_desc"
+    comp_s_desc = comp.tooltip_properties.short_description
+    comp_s_desc = _lang_find_id(lang, comp_s_desc_id, comp_s_desc)
+    comp_s_desc = _fmt_format(fmt, comp_s_desc)
+    if comp_s_desc != "":
+        doc.append(document.Paragraph(comp_s_desc))
+
+    comp_desc_id = f"def_{comp.cid}_desc"
+    comp_desc = comp.tooltip_properties.description
+    comp_desc = _lang_find_id(lang, comp_desc_id, comp_desc)
+    comp_desc = _fmt_format(fmt, comp_desc)
+    if comp_desc != "":
+        doc.append(document.Paragraph(comp_desc))
+
+    prop_doc = generate_document_property(comp, label=label, lang=lang)
+    prop_doc.shift(1)
+    doc.extend(prop_doc)
+
+    logic_doc = generate_document_logic(
+        comp.cid, comp.logic_nodes, label=label, lang=lang, fmt=fmt
+    )
+    logic_doc.shift(1)
+    doc.extend(logic_doc)
+
+    return doc
+
+
 class Generator:
     def __init__(
         self,
@@ -249,43 +297,9 @@ class DocumentGenerator(Generator):
         )
 
     def generate_component(self, comp: component.Definition) -> document.Document:
-        doc = document.Document()
-
-        comp_name_id = f"def_{comp.cid}_name"
-        comp_name = self._lang_find_id(comp_name_id, comp.name)
-        doc.append(document.Heading(comp_name))
-
-        if component.Flags.IS_DEPRECATED in comp.flags:
-            doc.append(
-                document.Callout(
-                    self._label_get("DEPRECATED_TEXT"),
-                    kind=document.CalloutKind.WARNING,
-                )
-            )
-
-        comp_s_desc_id = f"def_{comp.cid}_s_desc"
-        comp_s_desc = comp.tooltip_properties.short_description
-        comp_s_desc = self._lang_find_id(comp_s_desc_id, comp_s_desc)
-        comp_s_desc = self._fmt_format(comp_s_desc)
-        if comp_s_desc != "":
-            doc.append(document.Paragraph(comp_s_desc))
-
-        comp_desc_id = f"def_{comp.cid}_desc"
-        comp_desc = comp.tooltip_properties.description
-        comp_desc = self._lang_find_id(comp_desc_id, comp_desc)
-        comp_desc = self._fmt_format(comp_desc)
-        if comp_desc != "":
-            doc.append(document.Paragraph(comp_desc))
-
-        prop_doc = self.generate_property(comp)
-        prop_doc.shift(1)
-        doc.extend(prop_doc)
-
-        logic_doc = self.generate_logic(comp.cid, comp.logic_nodes)
-        logic_doc.shift(1)
-        doc.extend(logic_doc)
-
-        return doc
+        return generate_document_component(
+            comp, label=self.label, lang=self.lang, fmt=self.fmt
+        )
 
     def generate_component_list(
         self, comp_list: collections.abc.Iterable[component.Definition]
