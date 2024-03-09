@@ -35,6 +35,12 @@ class LabelDict(collections.abc.Mapping[str, str]):
         return len(self._d)
 
 
+def _label_get(label: LabelDict | None, key: str) -> str:
+    if label is not None:
+        key = label[key]
+    return key
+
+
 class Generator:
     def __init__(
         self,
@@ -48,9 +54,7 @@ class Generator:
         self.fmt: template.TemplateFormatter | None = fmt
 
     def _label_get(self, s: str) -> str:
-        if self.label is not None:
-            s = self.label[s]
-        return s
+        return _label_get(self.label, s)
 
     def _lang_find_id(self, lang_id: str, lang_en: str) -> str:
         if self.lang is None:

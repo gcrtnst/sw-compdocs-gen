@@ -86,6 +86,34 @@ class TestLabelDictLen(unittest.TestCase):
         self.assertEqual(len(label), 2)
 
 
+class TestLabelGet(unittest.TestCase):
+    def test_pass(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_label", sw_compdocs.generator.LabelDict | None),
+                ("input_key", str),
+                ("want_s", str),
+            ],
+        )
+
+        for tc in [
+            tt(
+                input_label=None,
+                input_key="LABEL",
+                want_s="LABEL",
+            ),
+            tt(
+                input_label=sw_compdocs.generator.LabelDict({"LABEL": "text"}),
+                input_key="LABEL",
+                want_s="text",
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                got_s = sw_compdocs.generator._label_get(tc.input_label, tc.input_key)
+                self.assertEqual(got_s, tc.want_s)
+
+
 class TestGeneratorInit(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(
