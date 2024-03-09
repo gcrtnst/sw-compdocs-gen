@@ -41,6 +41,12 @@ def _label_get(label: LabelDict | None, key: str) -> str:
     return key
 
 
+def _lang_find_id(lang: language.Language | None, lang_id: str, lang_en: str) -> str:
+    if lang is None:
+        return lang_en
+    return lang.find_id(lang_id).local
+
+
 class Generator:
     def __init__(
         self,
@@ -57,9 +63,7 @@ class Generator:
         return _label_get(self.label, s)
 
     def _lang_find_id(self, lang_id: str, lang_en: str) -> str:
-        if self.lang is None:
-            return lang_en
-        return self.lang.find_id(lang_id).local
+        return _lang_find_id(self.lang, lang_id, lang_en)
 
     def _lang_find_en(self, lang_en: str) -> str:
         if self.lang is None:

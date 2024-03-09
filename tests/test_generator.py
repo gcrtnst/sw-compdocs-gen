@@ -114,6 +114,45 @@ class TestLabelGet(unittest.TestCase):
                 self.assertEqual(got_s, tc.want_s)
 
 
+class TestLangFindID(unittest.TestCase):
+    def test_pass(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_lang", sw_compdocs.language.Language | None),
+                ("input_lang_id", str),
+                ("input_lang_en", str),
+                ("want_s", str),
+            ],
+        )
+
+        for tc in [
+            tt(
+                input_lang=None,
+                input_lang_id="id",
+                input_lang_en="en",
+                want_s="en",
+            ),
+            tt(
+                input_lang=sw_compdocs.language.Language(
+                    [
+                        sw_compdocs.language.Translation(
+                            "id", "description", "en", "local"
+                        )
+                    ]
+                ),
+                input_lang_id="id",
+                input_lang_en="en",
+                want_s="local",
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                got_s = sw_compdocs.generator._lang_find_id(
+                    tc.input_lang, tc.input_lang_id, tc.input_lang_en
+                )
+                self.assertEqual(got_s, tc.want_s)
+
+
 class TestGeneratorInit(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(
