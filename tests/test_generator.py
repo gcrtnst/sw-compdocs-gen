@@ -448,6 +448,101 @@ class TestGenerateDocumentPropertyTable(unittest.TestCase):
                 self.assertEqual(got_tbl, tc.want_tbl)
 
 
+class TestGenerateDocumentProperty(unittest.TestCase):
+    def test_pass(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_label", sw_compdocs.generator.LabelDict | None),
+                ("input_lang", sw_compdocs.language.Language | None),
+                ("input_comp", sw_compdocs.component.Definition),
+                ("want_doc", sw_compdocs.document.Document),
+            ],
+        )
+
+        for tc in [
+            tt(
+                input_label=None,
+                input_lang=None,
+                input_comp=sw_compdocs.component.Definition(),
+                want_doc=sw_compdocs.document.Document(
+                    [
+                        sw_compdocs.document.Heading("PROPERTIES"),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_COST_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                    ),
+                                ],
+                            )
+                        ),
+                    ]
+                ),
+            ),
+            tt(
+                input_label=None,
+                input_lang=sw_compdocs.language.Language(
+                    [
+                        sw_compdocs.language.Translation(
+                            "", "", "PROPERTIES", "プロパティ"
+                        )
+                    ]
+                ),
+                input_comp=sw_compdocs.component.Definition(),
+                want_doc=sw_compdocs.document.Document(
+                    [
+                        sw_compdocs.document.Heading("プロパティ"),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_COST_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                    ),
+                                ],
+                            )
+                        ),
+                    ]
+                ),
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                got_doc = sw_compdocs.generator.generate_document_property(
+                    tc.input_comp, label=tc.input_label, lang=tc.input_lang
+                )
+                self.assertEqual(got_doc, tc.want_doc)
+
+
 class TestGeneratorInit(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(

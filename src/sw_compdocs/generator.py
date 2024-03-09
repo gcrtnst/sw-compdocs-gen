@@ -98,6 +98,20 @@ def generate_document_property_table(
     return document.Table(data)
 
 
+def generate_document_property(
+    comp: component.Definition,
+    *,
+    label: LabelDict | None = None,
+    lang: language.Language | None = None,
+) -> document.Document:
+    return document.Document(
+        [
+            document.Heading(_lang_find_en(lang, "PROPERTIES")),
+            generate_document_property_table(comp, label=label),
+        ]
+    )
+
+
 class Generator:
     def __init__(
         self,
@@ -128,12 +142,7 @@ class DocumentGenerator(Generator):
         return generate_document_property_table(comp, label=self.label)
 
     def generate_property(self, comp: component.Definition) -> document.Document:
-        return document.Document(
-            [
-                document.Heading(self._lang_find_en("PROPERTIES")),
-                self.generate_property_table(comp),
-            ]
-        )
+        return generate_document_property(comp, label=self.label, lang=self.lang)
 
     def generate_logic_table(
         self, cid: str, lns: component.LogicNodeList
