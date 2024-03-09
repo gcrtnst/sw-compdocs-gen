@@ -325,47 +325,6 @@ class Generator:
         return _fmt_format(self.fmt, s)
 
 
-class DocumentGenerator(Generator):
-    def generate_property_table(self, comp: component.Definition) -> document.Table:
-        return generate_document_property_table(comp, label=self.label)
-
-    def generate_property(self, comp: component.Definition) -> document.Document:
-        return generate_document_property(comp, label=self.label, lang=self.lang)
-
-    def generate_logic_table(
-        self, cid: str, lns: component.LogicNodeList
-    ) -> document.Table:
-        return generate_document_logic_table(
-            cid, lns, label=self.label, lang=self.lang, fmt=self.fmt
-        )
-
-    def generate_logic(
-        self, cid: str, lns: component.LogicNodeList
-    ) -> document.Document:
-        return generate_document_logic(
-            cid, lns, label=self.label, lang=self.lang, fmt=self.fmt
-        )
-
-    def generate_component(self, comp: component.Definition) -> document.Document:
-        return generate_document_component(
-            comp, label=self.label, lang=self.lang, fmt=self.fmt
-        )
-
-    def generate_component_list(
-        self, comp_list: collections.abc.Iterable[component.Definition]
-    ) -> document.Document:
-        return generate_document_component_list(
-            comp_list, label=self.label, lang=self.lang, fmt=self.fmt
-        )
-
-    def generate(
-        self, comp_list: collections.abc.Iterable[component.Definition]
-    ) -> document.Document:
-        return generate_document(
-            comp_list, label=self.label, lang=self.lang, fmt=self.fmt
-        )
-
-
 class SheetGenerator(Generator):
     def generate_component(self, comp: component.Definition) -> list[str]:
         dims_w = comp.voxel_max.x - comp.voxel_min.x + 1
