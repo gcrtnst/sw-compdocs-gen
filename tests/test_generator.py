@@ -189,6 +189,34 @@ class TestLangFindEn(unittest.TestCase):
                 self.assertEqual(got_s, tc.want_s)
 
 
+class TestFmtFormat(unittest.TestCase):
+    def test_pass(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_fmt", sw_compdocs.template.TemplateFormatter | None),
+                ("input_s", str),
+                ("want_s", str),
+            ],
+        )
+
+        for tc in [
+            tt(
+                input_fmt=None,
+                input_s="$[var]",
+                want_s="$[var]",
+            ),
+            tt(
+                input_fmt=sw_compdocs.template.TemplateFormatter({"var": "text"}),
+                input_s="$[var]",
+                want_s="text",
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                got_s = sw_compdocs.generator._fmt_format(tc.input_fmt, tc.input_s)
+                self.assertEqual(got_s, tc.want_s)
+
+
 class TestGeneratorInit(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(

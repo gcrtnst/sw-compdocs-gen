@@ -53,6 +53,12 @@ def _lang_find_en(lang: language.Language | None, lang_en: str) -> str:
     return lang.find_en(lang_en).local
 
 
+def _fmt_format(fmt: template.TemplateFormatter | None, s: str) -> str:
+    if fmt is not None:
+        s = fmt.format(s)
+    return s
+
+
 class Generator:
     def __init__(
         self,
@@ -75,9 +81,7 @@ class Generator:
         return _lang_find_en(self.lang, lang_en)
 
     def _fmt_format(self, s: str) -> str:
-        if self.fmt is not None:
-            s = self.fmt.format(s)
-        return s
+        return _fmt_format(self.fmt, s)
 
 
 class DocumentGenerator(Generator):
