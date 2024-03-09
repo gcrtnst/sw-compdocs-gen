@@ -1807,3 +1807,63 @@ class TestParseXMLStr(unittest.TestCase):
         self.assertEqual(ctx.exception.msg, "invalid xml")
         self.assertEqual(ctx.exception.file, None)
         self.assertEqual(ctx.exception.xpath, "/")
+
+
+class TestLoadDefnDict(unittest.TestCase):
+    def test_empty(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            want_defn_dict: dict[str, sw_compdocs.component.Definition] = {}
+
+            path_list: list[sw_compdocs._types.StrOrBytesPath] = [
+                os.fsdecode(temp_dir),
+                os.fsencode(temp_dir),
+                pathlib.Path(temp_dir),
+            ]
+            for path in path_list:
+                with self.subTest(path=path):
+                    got_defn_dict = sw_compdocs.component.load_defn_dict(path)
+                    self.assertEqual(got_defn_dict, want_defn_dict)
+
+    def test_normal(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            dmy1_file = pathlib.Path(temp_dir, "dmy1.xml")
+            with open(dmy1_file, mode="xt", encoding="utf-8", newline="\r\n") as f:
+                f.write(
+                    """\
+<?xml version="1.0" encoding="UTF-8"?>
+<definition name="Dummy 1"/>
+"""
+                )
+
+            dmy2_file = pathlib.Path(temp_dir, "dmy2.xml")
+            with open(dmy2_file, mode="xt", encoding="utf-8", newline="\r\n") as f:
+                f.write(
+                    """\
+<?xml version="1.0" encoding="UTF-8"?>
+<definition name="Dummy 2"/>
+"""
+                )
+
+            dmy3_dir = pathlib.Path(temp_dir, "dmy3.xml")
+            dmy3_dir.mkdir()
+
+            want_defn_dict = {
+                "dmy1": sw_compdocs.component.Definition(
+                    file=dmy1_file, name=sw_compdocs.language.Text(en="Dummy 1")
+                ),
+                "dmy2": sw_compdocs.component.Definition(
+                    file=dmy2_file, name=sw_compdocs.language.Text(en="Dummy 2")
+                ),
+            }
+            for key, defn in want_defn_dict.items():
+                defn.update_id(key)
+
+            path_list: list[sw_compdocs._types.StrOrBytesPath] = [
+                os.fsdecode(temp_dir),
+                os.fsencode(temp_dir),
+                pathlib.Path(temp_dir),
+            ]
+            for path in path_list:
+                with self.subTest(path=path):
+                    got_defn_dict = sw_compdocs.component.load_defn_dict(path)
+                    self.assertEqual(got_defn_dict, want_defn_dict)

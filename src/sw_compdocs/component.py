@@ -522,3 +522,22 @@ def parse_xml_str(s: str, *, key: str | None = None) -> Definition:
     elem: lxml.etree._Element | None
     elem = lxml.etree.fromstring(s, parser=_new_xml_parser())
     return _parse_xml_root(elem, key=key)
+
+
+def load_defn_dict(defn_dir: _types.StrOrBytesPath) -> dict[str, Definition]:
+    # Avoid 'Expression type contains "Any"' warning from mypy
+    path_cls: type[pathlib.Path] = pathlib.Path
+
+    if not isinstance(defn_dir, path_cls):
+        defn_dir = os.fsdecode(defn_dir)
+        defn_dir = pathlib.Path(defn_dir)
+
+    defn_dict = {}
+    for defn_file in defn_dir.glob("*.xml"):
+        if not defn_file.is_file():
+            continue
+
+        defn = parse_xml_file(defn_file)
+        assert defn.key is not None
+        defn_dict[defn.key] = defn
+    return defn_dict
