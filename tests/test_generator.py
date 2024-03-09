@@ -543,6 +543,510 @@ class TestGenerateDocumentProperty(unittest.TestCase):
                 self.assertEqual(got_doc, tc.want_doc)
 
 
+class TestGenerateDocumentLogicTable(unittest.TestCase):
+    def test_pass(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_label", sw_compdocs.generator.LabelDict | None),
+                ("input_lang", sw_compdocs.language.Language | None),
+                ("input_fmt", sw_compdocs.template.TemplateFormatter | None),
+                ("input_cid", str),
+                ("input_lns", sw_compdocs.component.LogicNodeList),
+                ("want_tbl", sw_compdocs.document.Table),
+            ],
+        )
+
+        for tc in [
+            tt(
+                input_label=sw_compdocs.generator.LabelDict(
+                    {
+                        "LOGIC_TABLE_HEAD_TYPE": "種別",
+                        "LOGIC_TABLE_HEAD_LABEL": "ラベル",
+                        "LOGIC_TABLE_HEAD_DESC": "説明",
+                    }
+                ),
+                input_lang=None,
+                input_fmt=None,
+                input_cid="test",
+                input_lns=sw_compdocs.component.LogicNodeList([]),
+                want_tbl=sw_compdocs.document.Table(
+                    sw_compdocs.document.TableData(
+                        sw_compdocs.document.TableDataRow(["種別", "ラベル", "説明"]),
+                        [],
+                    )
+                ),
+            ),
+            tt(
+                input_label=sw_compdocs.generator.LabelDict(
+                    {
+                        "LOGIC_TABLE_HEAD_TYPE": "種別",
+                        "LOGIC_TABLE_HEAD_LABEL": "ラベル",
+                        "LOGIC_TABLE_HEAD_DESC": "説明",
+                    }
+                ),
+                input_lang=sw_compdocs.language.Language(
+                    [
+                        sw_compdocs.language.Translation(
+                            "",
+                            "",
+                            "on/off",
+                            "オン/オフ",
+                        ),
+                        sw_compdocs.language.Translation(
+                            "",
+                            "",
+                            "number",
+                            "数値",
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_0_label",
+                            "",
+                            "label 0 $[label_0]",
+                            "ラベル 0 $[label_0]",
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_0_desc",
+                            "",
+                            "desc 0 $[desc_0]",
+                            "説明 0 $[desc_0]",
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_1_label",
+                            "",
+                            "label 1 $[label_1]",
+                            "ラベル 1 $[label_1]",
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_1_desc",
+                            "",
+                            "desc 1 $[desc_1]",
+                            "説明 1 $[desc_1]",
+                        ),
+                    ]
+                ),
+                input_fmt=sw_compdocs.template.TemplateFormatter(
+                    {
+                        "label_0": "label_0_fmt",
+                        "desc_0": "desc_0_fmt",
+                        "label_1": "label_1_fmt",
+                        "desc_1": "desc_1_fmt",
+                    }
+                ),
+                input_cid="test",
+                input_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(
+                            idx=0,
+                            label="label 0 $[label_0]",
+                            type=sw_compdocs.component.LogicNodeType.BOOL,
+                            description="desc 0 $[desc_0]",
+                        ),
+                        sw_compdocs.component.LogicNode(
+                            idx=1,
+                            label="label 1 $[label_1]",
+                            type=sw_compdocs.component.LogicNodeType.FLOAT,
+                            description="desc 1 $[desc_1]",
+                        ),
+                    ]
+                ),
+                want_tbl=sw_compdocs.document.Table(
+                    sw_compdocs.document.TableData(
+                        sw_compdocs.document.TableDataRow(["種別", "ラベル", "説明"]),
+                        [
+                            sw_compdocs.document.TableDataRow(
+                                [
+                                    "オン/オフ",
+                                    "ラベル 0 label_0_fmt",
+                                    "説明 0 desc_0_fmt",
+                                ]
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                ["数値", "ラベル 1 label_1_fmt", "説明 1 desc_1_fmt"]
+                            ),
+                        ],
+                    )
+                ),
+            ),
+            tt(
+                input_label=None,
+                input_lang=sw_compdocs.language.Language(
+                    [
+                        sw_compdocs.language.Translation(
+                            "",
+                            "",
+                            "on/off",
+                            "オン/オフ",
+                        ),
+                        sw_compdocs.language.Translation(
+                            "",
+                            "",
+                            "number",
+                            "数値",
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_0_label",
+                            "",
+                            "label 0 $[label_0]",
+                            "ラベル 0 $[label_0]",
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_0_desc",
+                            "",
+                            "desc 0 $[desc_0]",
+                            "説明 0 $[desc_0]",
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_1_label",
+                            "",
+                            "label 1 $[label_1]",
+                            "ラベル 1 $[label_1]",
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_1_desc",
+                            "",
+                            "desc 1 $[desc_1]",
+                            "説明 1 $[desc_1]",
+                        ),
+                    ]
+                ),
+                input_fmt=sw_compdocs.template.TemplateFormatter(
+                    {
+                        "label_0": "label_0_fmt",
+                        "desc_0": "desc_0_fmt",
+                        "label_1": "label_1_fmt",
+                        "desc_1": "desc_1_fmt",
+                    }
+                ),
+                input_cid="test",
+                input_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(
+                            idx=0,
+                            label="label 0 $[label_0]",
+                            type=sw_compdocs.component.LogicNodeType.BOOL,
+                            description="desc 0 $[desc_0]",
+                        ),
+                        sw_compdocs.component.LogicNode(
+                            idx=1,
+                            label="label 1 $[label_1]",
+                            type=sw_compdocs.component.LogicNodeType.FLOAT,
+                            description="desc 1 $[desc_1]",
+                        ),
+                    ]
+                ),
+                want_tbl=sw_compdocs.document.Table(
+                    sw_compdocs.document.TableData(
+                        sw_compdocs.document.TableDataRow(
+                            [
+                                "LOGIC_TABLE_HEAD_TYPE",
+                                "LOGIC_TABLE_HEAD_LABEL",
+                                "LOGIC_TABLE_HEAD_DESC",
+                            ]
+                        ),
+                        [
+                            sw_compdocs.document.TableDataRow(
+                                [
+                                    "オン/オフ",
+                                    "ラベル 0 label_0_fmt",
+                                    "説明 0 desc_0_fmt",
+                                ]
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                ["数値", "ラベル 1 label_1_fmt", "説明 1 desc_1_fmt"]
+                            ),
+                        ],
+                    )
+                ),
+            ),
+            tt(
+                input_label=sw_compdocs.generator.LabelDict(
+                    {
+                        "LOGIC_TABLE_HEAD_TYPE": "種別",
+                        "LOGIC_TABLE_HEAD_LABEL": "ラベル",
+                        "LOGIC_TABLE_HEAD_DESC": "説明",
+                    }
+                ),
+                input_lang=None,
+                input_fmt=sw_compdocs.template.TemplateFormatter(
+                    {
+                        "label_0": "label_0_fmt",
+                        "desc_0": "desc_0_fmt",
+                        "label_1": "label_1_fmt",
+                        "desc_1": "desc_1_fmt",
+                    }
+                ),
+                input_cid="test",
+                input_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(
+                            idx=0,
+                            label="label 0 $[label_0]",
+                            type=sw_compdocs.component.LogicNodeType.BOOL,
+                            description="desc 0 $[desc_0]",
+                        ),
+                        sw_compdocs.component.LogicNode(
+                            idx=1,
+                            label="label 1 $[label_1]",
+                            type=sw_compdocs.component.LogicNodeType.FLOAT,
+                            description="desc 1 $[desc_1]",
+                        ),
+                    ]
+                ),
+                want_tbl=sw_compdocs.document.Table(
+                    sw_compdocs.document.TableData(
+                        sw_compdocs.document.TableDataRow(["種別", "ラベル", "説明"]),
+                        [
+                            sw_compdocs.document.TableDataRow(
+                                ["on/off", "label 0 label_0_fmt", "desc 0 desc_0_fmt"]
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                ["number", "label 1 label_1_fmt", "desc 1 desc_1_fmt"]
+                            ),
+                        ],
+                    )
+                ),
+            ),
+            tt(
+                input_label=sw_compdocs.generator.LabelDict(
+                    {
+                        "LOGIC_TABLE_HEAD_TYPE": "種別",
+                        "LOGIC_TABLE_HEAD_LABEL": "ラベル",
+                        "LOGIC_TABLE_HEAD_DESC": "説明",
+                    }
+                ),
+                input_lang=sw_compdocs.language.Language(
+                    [
+                        sw_compdocs.language.Translation(
+                            "",
+                            "",
+                            "on/off",
+                            "オン/オフ",
+                        ),
+                        sw_compdocs.language.Translation(
+                            "",
+                            "",
+                            "number",
+                            "数値",
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_0_label",
+                            "",
+                            "label 0 $[label_0]",
+                            "ラベル 0 $[label_0]",
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_0_desc",
+                            "",
+                            "desc 0 $[desc_0]",
+                            "説明 0 $[desc_0]",
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_1_label",
+                            "",
+                            "label 1 $[label_1]",
+                            "ラベル 1 $[label_1]",
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_1_desc",
+                            "",
+                            "desc 1 $[desc_1]",
+                            "説明 1 $[desc_1]",
+                        ),
+                    ]
+                ),
+                input_fmt=None,
+                input_cid="test",
+                input_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(
+                            idx=0,
+                            label="label 0 $[label_0]",
+                            type=sw_compdocs.component.LogicNodeType.BOOL,
+                            description="desc 0 $[desc_0]",
+                        ),
+                        sw_compdocs.component.LogicNode(
+                            idx=1,
+                            label="label 1 $[label_1]",
+                            type=sw_compdocs.component.LogicNodeType.FLOAT,
+                            description="desc 1 $[desc_1]",
+                        ),
+                    ]
+                ),
+                want_tbl=sw_compdocs.document.Table(
+                    sw_compdocs.document.TableData(
+                        sw_compdocs.document.TableDataRow(["種別", "ラベル", "説明"]),
+                        [
+                            sw_compdocs.document.TableDataRow(
+                                ["オン/オフ", "ラベル 0 $[label_0]", "説明 0 $[desc_0]"]
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                ["数値", "ラベル 1 $[label_1]", "説明 1 $[desc_1]"]
+                            ),
+                        ],
+                    )
+                ),
+            ),
+            tt(
+                input_label=sw_compdocs.generator.LabelDict(
+                    {
+                        "LOGIC_TABLE_HEAD_TYPE": "種別",
+                        "LOGIC_TABLE_HEAD_LABEL": "ラベル",
+                        "LOGIC_TABLE_HEAD_DESC": "説明",
+                    }
+                ),
+                input_lang=sw_compdocs.language.Language(
+                    [
+                        sw_compdocs.language.Translation(
+                            "",
+                            "",
+                            "on/off",
+                            "オン/オフ",
+                        ),
+                        sw_compdocs.language.Translation(
+                            "",
+                            "",
+                            "number",
+                            "数値",
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_3_label",
+                            "",
+                            "label 0 $[label_0]",
+                            "ラベル 0 $[label_0]",
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_3_desc",
+                            "",
+                            "desc 0 $[desc_0]",
+                            "説明 0 $[desc_0]",
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_5_label",
+                            "",
+                            "label 1 $[label_1]",
+                            "ラベル 1 $[label_1]",
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_5_desc",
+                            "",
+                            "desc 1 $[desc_1]",
+                            "説明 1 $[desc_1]",
+                        ),
+                    ]
+                ),
+                input_fmt=sw_compdocs.template.TemplateFormatter(
+                    {
+                        "label_0": "label_0_fmt",
+                        "desc_0": "desc_0_fmt",
+                        "label_1": "label_1_fmt",
+                        "desc_1": "desc_1_fmt",
+                    }
+                ),
+                input_cid="test",
+                input_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(
+                            idx=3,
+                            label="label 0 $[label_0]",
+                            type=sw_compdocs.component.LogicNodeType.BOOL,
+                            description="desc 0 $[desc_0]",
+                        ),
+                        sw_compdocs.component.LogicNode(
+                            idx=5,
+                            label="label 1 $[label_1]",
+                            type=sw_compdocs.component.LogicNodeType.FLOAT,
+                            description="desc 1 $[desc_1]",
+                        ),
+                    ]
+                ),
+                want_tbl=sw_compdocs.document.Table(
+                    sw_compdocs.document.TableData(
+                        sw_compdocs.document.TableDataRow(["種別", "ラベル", "説明"]),
+                        [
+                            sw_compdocs.document.TableDataRow(
+                                [
+                                    "オン/オフ",
+                                    "ラベル 0 label_0_fmt",
+                                    "説明 0 desc_0_fmt",
+                                ]
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                ["数値", "ラベル 1 label_1_fmt", "説明 1 desc_1_fmt"]
+                            ),
+                        ],
+                    )
+                ),
+            ),
+            tt(
+                input_label=None,
+                input_lang=sw_compdocs.language.Language(
+                    [
+                        sw_compdocs.language.Translation(
+                            "",
+                            "",
+                            "on/off",
+                            "オン/オフ",
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_-1_label",
+                            "",
+                            "label -1",
+                            "ラベル -1",
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_-1_desc",
+                            "",
+                            "desc -1",
+                            "説明 -1",
+                        ),
+                    ]
+                ),
+                input_fmt=None,
+                input_cid="test",
+                input_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(
+                            idx=-1,
+                            label="",
+                            type=sw_compdocs.component.LogicNodeType.BOOL,
+                            description="",
+                        )
+                    ]
+                ),
+                want_tbl=sw_compdocs.document.Table(
+                    sw_compdocs.document.TableData(
+                        sw_compdocs.document.TableDataRow(
+                            [
+                                "LOGIC_TABLE_HEAD_TYPE",
+                                "LOGIC_TABLE_HEAD_LABEL",
+                                "LOGIC_TABLE_HEAD_DESC",
+                            ]
+                        ),
+                        [
+                            sw_compdocs.document.TableDataRow(
+                                [
+                                    "オン/オフ",
+                                    "ラベル -1",
+                                    "説明 -1",
+                                ]
+                            )
+                        ],
+                    )
+                ),
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                got_tbl = sw_compdocs.generator.generate_document_logic_table(
+                    tc.input_cid,
+                    tc.input_lns,
+                    label=tc.input_label,
+                    lang=tc.input_lang,
+                    fmt=tc.input_fmt,
+                )
+                self.assertEqual(got_tbl, tc.want_tbl)
+
+
 class TestGeneratorInit(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(

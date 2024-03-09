@@ -112,6 +112,35 @@ def generate_document_property(
     )
 
 
+def generate_document_logic_table(
+    cid: str,
+    lns: component.LogicNodeList,
+    *,
+    label: LabelDict | None = None,
+    lang: language.Language | None = None,
+    fmt: template.TemplateFormatter | None = None,
+) -> document.Table:
+    head = document.TableDataRow(
+        [
+            _label_get(label, "LOGIC_TABLE_HEAD_TYPE"),
+            _label_get(label, "LOGIC_TABLE_HEAD_LABEL"),
+            _label_get(label, "LOGIC_TABLE_HEAD_DESC"),
+        ]
+    )
+    data = document.TableData(head)
+    for ln in lns:
+        lang_id_label = f"def_{cid}_node_{ln.idx:d}_label"
+        lang_id_desc = f"def_{cid}_node_{ln.idx:d}_desc"
+
+        ln_type = _lang_find_en(lang, str(ln.type))
+        ln_label = _lang_find_id(lang, lang_id_label, ln.label)
+        ln_label = _fmt_format(fmt, ln_label)
+        ln_desc = _lang_find_id(lang, lang_id_desc, ln.description)
+        ln_desc = _fmt_format(fmt, ln_desc)
+        data.append(document.TableDataRow([ln_type, ln_label, ln_desc]))
+    return document.Table(data)
+
+
 class Generator:
     def __init__(
         self,
@@ -147,25 +176,9 @@ class DocumentGenerator(Generator):
     def generate_logic_table(
         self, cid: str, lns: component.LogicNodeList
     ) -> document.Table:
-        head = document.TableDataRow(
-            [
-                self._label_get("LOGIC_TABLE_HEAD_TYPE"),
-                self._label_get("LOGIC_TABLE_HEAD_LABEL"),
-                self._label_get("LOGIC_TABLE_HEAD_DESC"),
-            ]
+        return generate_document_logic_table(
+            cid, lns, label=self.label, lang=self.lang, fmt=self.fmt
         )
-        data = document.TableData(head)
-        for ln in lns:
-            lang_id_label = f"def_{cid}_node_{ln.idx:d}_label"
-            lang_id_desc = f"def_{cid}_node_{ln.idx:d}_desc"
-
-            ln_type = self._lang_find_en(str(ln.type))
-            ln_label = self._lang_find_id(lang_id_label, ln.label)
-            ln_label = self._fmt_format(ln_label)
-            ln_desc = self._lang_find_id(lang_id_desc, ln.description)
-            ln_desc = self._fmt_format(ln_desc)
-            data.append(document.TableDataRow([ln_type, ln_label, ln_desc]))
-        return document.Table(data)
 
     def generate_logic(
         self, cid: str, lns: component.LogicNodeList
