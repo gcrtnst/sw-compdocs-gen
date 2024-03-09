@@ -59,6 +59,45 @@ def _fmt_format(fmt: template.TemplateFormatter | None, s: str) -> str:
     return s
 
 
+def generate_document_property_table(
+    comp: component.Definition, *, label: LabelDict | None = None
+) -> document.Table:
+    head = document.TableDataRow(
+        [
+            _label_get(label, "PROP_TABLE_HEAD_LABEL"),
+            _label_get(label, "PROP_TABLE_HEAD_VALUE"),
+        ]
+    )
+    data = document.TableData(head)
+
+    mass_label = _label_get(label, "PROP_TABLE_MASS_LABEL")
+    mass_value = f"{comp.mass:g}"
+    data.append(document.TableDataRow([mass_label, mass_value]))
+
+    dims_w = comp.voxel_max.x - comp.voxel_min.x + 1
+    dims_h = comp.voxel_max.y - comp.voxel_min.y + 1
+    dims_d = comp.voxel_max.z - comp.voxel_min.z + 1
+    dims_label = _label_get(label, "PROP_TABLE_DIMS_LABEL")
+    dims_value = f"{dims_w:d}x{dims_d:d}x{dims_h:d}"
+    data.append(document.TableDataRow([dims_label, dims_value]))
+
+    cost_label = _label_get(label, "PROP_TABLE_COST_LABEL")
+    cost_value = f"{comp.value:d}"
+    data.append(document.TableDataRow([cost_label, cost_value]))
+
+    tags_label = _label_get(label, "PROP_TABLE_TAGS_LABEL")
+    data.append(document.TableDataRow([tags_label, comp.tags]))
+
+    file_label = _label_get(label, "PROP_TABLE_FILE_LABEL")
+    file_value = ""
+    if comp.file is not None:
+        file_value = os.fsdecode(comp.file)
+        file_value = pathlib.PurePath(file_value).name
+    data.append(document.TableDataRow([file_label, file_value]))
+
+    return document.Table(data)
+
+
 class Generator:
     def __init__(
         self,
@@ -86,40 +125,7 @@ class Generator:
 
 class DocumentGenerator(Generator):
     def generate_property_table(self, comp: component.Definition) -> document.Table:
-        head = document.TableDataRow(
-            [
-                self._label_get("PROP_TABLE_HEAD_LABEL"),
-                self._label_get("PROP_TABLE_HEAD_VALUE"),
-            ]
-        )
-        data = document.TableData(head)
-
-        mass_label = self._label_get("PROP_TABLE_MASS_LABEL")
-        mass_value = f"{comp.mass:g}"
-        data.append(document.TableDataRow([mass_label, mass_value]))
-
-        dims_w = comp.voxel_max.x - comp.voxel_min.x + 1
-        dims_h = comp.voxel_max.y - comp.voxel_min.y + 1
-        dims_d = comp.voxel_max.z - comp.voxel_min.z + 1
-        dims_label = self._label_get("PROP_TABLE_DIMS_LABEL")
-        dims_value = f"{dims_w:d}x{dims_d:d}x{dims_h:d}"
-        data.append(document.TableDataRow([dims_label, dims_value]))
-
-        cost_label = self._label_get("PROP_TABLE_COST_LABEL")
-        cost_value = f"{comp.value:d}"
-        data.append(document.TableDataRow([cost_label, cost_value]))
-
-        tags_label = self._label_get("PROP_TABLE_TAGS_LABEL")
-        data.append(document.TableDataRow([tags_label, comp.tags]))
-
-        file_label = self._label_get("PROP_TABLE_FILE_LABEL")
-        file_value = ""
-        if comp.file is not None:
-            file_value = os.fsdecode(comp.file)
-            file_value = pathlib.PurePath(file_value).name
-        data.append(document.TableDataRow([file_label, file_value]))
-
-        return document.Table(data)
+        return generate_document_property_table(comp, label=self.label)
 
     def generate_property(self, comp: component.Definition) -> document.Document:
         return document.Document(

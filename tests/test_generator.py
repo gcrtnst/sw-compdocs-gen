@@ -217,6 +217,237 @@ class TestFmtFormat(unittest.TestCase):
                 self.assertEqual(got_s, tc.want_s)
 
 
+class TestGenerateDocumentPropertyTable(unittest.TestCase):
+    def test_pass(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_label", sw_compdocs.generator.LabelDict | None),
+                ("input_comp", sw_compdocs.component.Definition),
+                ("want_tbl", sw_compdocs.document.Table),
+            ],
+        )
+
+        for tc in [
+            tt(
+                input_label=None,
+                input_comp=sw_compdocs.component.Definition(
+                    file="file",
+                    mass=10.0,
+                    value=100,
+                    tags="tags",
+                    voxel_min=sw_compdocs.component.VoxelPos(x=0, y=-1, z=-2),
+                    voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=2),
+                ),
+                want_tbl=sw_compdocs.document.Table(
+                    sw_compdocs.document.TableData(
+                        sw_compdocs.document.TableDataRow(
+                            ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                        ),
+                        [
+                            sw_compdocs.document.TableDataRow(
+                                ["PROP_TABLE_MASS_LABEL", "10"]
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                ["PROP_TABLE_DIMS_LABEL", "1x5x3"]
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                ["PROP_TABLE_COST_LABEL", "100"]
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                ["PROP_TABLE_TAGS_LABEL", "tags"]
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                ["PROP_TABLE_FILE_LABEL", "file"]
+                            ),
+                        ],
+                    )
+                ),
+            ),
+            # mass format
+            tt(
+                input_label=None,
+                input_comp=sw_compdocs.component.Definition(
+                    file="file",
+                    mass=0.5,
+                    value=100,
+                    tags="tags",
+                    voxel_min=sw_compdocs.component.VoxelPos(x=0, y=-1, z=-2),
+                    voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=2),
+                ),
+                want_tbl=sw_compdocs.document.Table(
+                    sw_compdocs.document.TableData(
+                        sw_compdocs.document.TableDataRow(
+                            ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                        ),
+                        [
+                            sw_compdocs.document.TableDataRow(
+                                ["PROP_TABLE_MASS_LABEL", "0.5"]
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                ["PROP_TABLE_DIMS_LABEL", "1x5x3"]
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                ["PROP_TABLE_COST_LABEL", "100"]
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                ["PROP_TABLE_TAGS_LABEL", "tags"]
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                ["PROP_TABLE_FILE_LABEL", "file"]
+                            ),
+                        ],
+                    )
+                ),
+            ),
+            tt(
+                input_label=None,
+                input_comp=sw_compdocs.component.Definition(
+                    file="file",
+                    mass=0.25,
+                    value=100,
+                    tags="tags",
+                    voxel_min=sw_compdocs.component.VoxelPos(x=0, y=-1, z=-2),
+                    voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=2),
+                ),
+                want_tbl=sw_compdocs.document.Table(
+                    sw_compdocs.document.TableData(
+                        sw_compdocs.document.TableDataRow(
+                            ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                        ),
+                        [
+                            sw_compdocs.document.TableDataRow(
+                                ["PROP_TABLE_MASS_LABEL", "0.25"]
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                ["PROP_TABLE_DIMS_LABEL", "1x5x3"]
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                ["PROP_TABLE_COST_LABEL", "100"]
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                ["PROP_TABLE_TAGS_LABEL", "tags"]
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                ["PROP_TABLE_FILE_LABEL", "file"]
+                            ),
+                        ],
+                    )
+                ),
+            ),
+            # file format
+            tt(
+                input_label=None,
+                input_comp=sw_compdocs.component.Definition(
+                    file=None,
+                    mass=10.0,
+                    value=100,
+                    tags="tags",
+                    voxel_min=sw_compdocs.component.VoxelPos(x=0, y=-1, z=-2),
+                    voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=2),
+                ),
+                want_tbl=sw_compdocs.document.Table(
+                    sw_compdocs.document.TableData(
+                        sw_compdocs.document.TableDataRow(
+                            ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                        ),
+                        [
+                            sw_compdocs.document.TableDataRow(
+                                ["PROP_TABLE_MASS_LABEL", "10"]
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                ["PROP_TABLE_DIMS_LABEL", "1x5x3"]
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                ["PROP_TABLE_COST_LABEL", "100"]
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                ["PROP_TABLE_TAGS_LABEL", "tags"]
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                ["PROP_TABLE_FILE_LABEL", ""]
+                            ),
+                        ],
+                    )
+                ),
+            ),
+            tt(
+                input_label=None,
+                input_comp=sw_compdocs.component.Definition(
+                    file=b"path/to/definition.xml",
+                    mass=10.0,
+                    value=100,
+                    tags="tags",
+                    voxel_min=sw_compdocs.component.VoxelPos(x=0, y=-1, z=-2),
+                    voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=2),
+                ),
+                want_tbl=sw_compdocs.document.Table(
+                    sw_compdocs.document.TableData(
+                        sw_compdocs.document.TableDataRow(
+                            ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                        ),
+                        [
+                            sw_compdocs.document.TableDataRow(
+                                ["PROP_TABLE_MASS_LABEL", "10"]
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                ["PROP_TABLE_DIMS_LABEL", "1x5x3"]
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                ["PROP_TABLE_COST_LABEL", "100"]
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                ["PROP_TABLE_TAGS_LABEL", "tags"]
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                ["PROP_TABLE_FILE_LABEL", "definition.xml"]
+                            ),
+                        ],
+                    )
+                ),
+            ),
+            # label
+            tt(
+                input_label=sw_compdocs.generator.LabelDict(
+                    {
+                        "PROP_TABLE_HEAD_LABEL": "Label",
+                        "PROP_TABLE_HEAD_VALUE": "Value",
+                        "PROP_TABLE_MASS_LABEL": "Mass",
+                        "PROP_TABLE_DIMS_LABEL": "Dimensions",
+                        "PROP_TABLE_COST_LABEL": "Cost",
+                        "PROP_TABLE_TAGS_LABEL": "Tags",
+                        "PROP_TABLE_FILE_LABEL": "File",
+                    }
+                ),
+                input_comp=sw_compdocs.component.Definition(
+                    file="file",
+                    mass=10.0,
+                    value=100,
+                    tags="tags",
+                    voxel_min=sw_compdocs.component.VoxelPos(x=0, y=-1, z=-2),
+                    voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=2),
+                ),
+                want_tbl=sw_compdocs.document.Table(
+                    sw_compdocs.document.TableData(
+                        sw_compdocs.document.TableDataRow(["Label", "Value"]),
+                        [
+                            sw_compdocs.document.TableDataRow(["Mass", "10"]),
+                            sw_compdocs.document.TableDataRow(["Dimensions", "1x5x3"]),
+                            sw_compdocs.document.TableDataRow(["Cost", "100"]),
+                            sw_compdocs.document.TableDataRow(["Tags", "tags"]),
+                            sw_compdocs.document.TableDataRow(["File", "file"]),
+                        ],
+                    )
+                ),
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                got_tbl = sw_compdocs.generator.generate_document_property_table(
+                    tc.input_comp, label=tc.input_label
+                )
+                self.assertEqual(got_tbl, tc.want_tbl)
+
+
 class TestGeneratorInit(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(
