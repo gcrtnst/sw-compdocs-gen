@@ -264,6 +264,42 @@ def generate_document_component_list(
     return doc
 
 
+def generate_document(
+    comp_list: collections.abc.Iterable[component.Definition],
+    *,
+    label: LabelDict | None = None,
+    lang: language.Language | None = None,
+    fmt: template.TemplateFormatter | None = None,
+) -> document.Document:
+    def sort_key_category(category: component.Category) -> int:
+        return category.value
+
+    def sort_key_component(comp: component.Definition) -> tuple[str, str]:
+        return comp.name, comp.cid
+
+    category_comp_dict: dict[component.Category, list[component.Definition]] = {}
+    for comp in comp_list:
+        category_comp_list = category_comp_dict.setdefault(comp.category, [])
+        category_comp_list.append(comp)
+
+    category_list: collections.abc.Iterable[component.Category]
+    category_list = category_comp_dict.keys()
+    category_list = sorted(category_list, key=sort_key_category)
+
+    doc = document.Document()
+    for category in category_list:
+        category_comp_list = category_comp_dict[category]
+        category_comp_list.sort(key=sort_key_component)
+        category_comp_list_doc = generate_document_component_list(
+            category_comp_list, label=label, lang=lang, fmt=fmt
+        )
+        category_comp_list_doc.shift(1)
+
+        doc.append(document.Heading(str(category)))
+        doc.extend(category_comp_list_doc)
+    return doc
+
+
 class Generator:
     def __init__(
         self,
@@ -325,31 +361,9 @@ class DocumentGenerator(Generator):
     def generate(
         self, comp_list: collections.abc.Iterable[component.Definition]
     ) -> document.Document:
-        def sort_key_category(category: component.Category) -> int:
-            return category.value
-
-        def sort_key_component(comp: component.Definition) -> tuple[str, str]:
-            return comp.name, comp.cid
-
-        category_comp_dict: dict[component.Category, list[component.Definition]] = {}
-        for comp in comp_list:
-            category_comp_list = category_comp_dict.setdefault(comp.category, [])
-            category_comp_list.append(comp)
-
-        category_list: collections.abc.Iterable[component.Category]
-        category_list = category_comp_dict.keys()
-        category_list = sorted(category_list, key=sort_key_category)
-
-        doc = document.Document()
-        for category in category_list:
-            category_comp_list = category_comp_dict[category]
-            category_comp_list.sort(key=sort_key_component)
-            category_comp_list_doc = self.generate_component_list(category_comp_list)
-            category_comp_list_doc.shift(1)
-
-            doc.append(document.Heading(str(category)))
-            doc.extend(category_comp_list_doc)
-        return doc
+        return generate_document(
+            comp_list, label=self.label, lang=self.lang, fmt=self.fmt
+        )
 
 
 class SheetGenerator(Generator):

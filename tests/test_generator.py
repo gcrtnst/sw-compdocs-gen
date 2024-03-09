@@ -3111,6 +3111,876 @@ class TestGenerateDocumentComponentList(unittest.TestCase):
                 self.assertEqual(got_doc, tc.want_doc)
 
 
+class TestGenerateDocument(unittest.TestCase):
+    def test_pass(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_comp_list", list[sw_compdocs.component.Definition]),
+                ("input_label", sw_compdocs.generator.LabelDict | None),
+                ("input_lang", sw_compdocs.language.Language | None),
+                ("input_fmt", sw_compdocs.template.TemplateFormatter | None),
+                ("want_doc", sw_compdocs.document.Document),
+            ],
+        )
+
+        for tc in [
+            # empty
+            tt(
+                input_comp_list=[],
+                input_label=None,
+                input_lang=None,
+                input_fmt=None,
+                want_doc=sw_compdocs.document.Document(),
+            ),
+            # single
+            tt(
+                input_comp_list=[
+                    sw_compdocs.component.Definition(
+                        name="Blocks_1", category=sw_compdocs.component.Category.BLOCKS
+                    ),
+                ],
+                input_label=None,
+                input_lang=None,
+                input_fmt=None,
+                want_doc=sw_compdocs.document.Document(
+                    [
+                        sw_compdocs.document.Heading("Blocks", level=1),
+                        sw_compdocs.document.Heading("Blocks_1", level=2),
+                        sw_compdocs.document.Heading("PROPERTIES", level=3),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_COST_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                    ),
+                                ],
+                            )
+                        ),
+                    ],
+                ),
+            ),
+            # sort comp_list name
+            tt(
+                input_comp_list=[
+                    sw_compdocs.component.Definition(
+                        cid="blocks_1",
+                        name="Blocks_3",
+                        value=1,
+                        category=sw_compdocs.component.Category.BLOCKS,
+                    ),
+                    sw_compdocs.component.Definition(
+                        cid="blocks_2",
+                        name="Blocks_2",
+                        value=2,
+                        category=sw_compdocs.component.Category.BLOCKS,
+                    ),
+                    sw_compdocs.component.Definition(
+                        cid="blocks_3",
+                        name="Blocks_1",
+                        value=3,
+                        category=sw_compdocs.component.Category.BLOCKS,
+                    ),
+                ],
+                input_label=None,
+                input_lang=None,
+                input_fmt=None,
+                want_doc=sw_compdocs.document.Document(
+                    [
+                        sw_compdocs.document.Heading("Blocks", level=1),
+                        sw_compdocs.document.Heading("Blocks_1", level=2),
+                        sw_compdocs.document.Heading("PROPERTIES", level=3),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_COST_LABEL", "3"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                    ),
+                                ],
+                            )
+                        ),
+                        sw_compdocs.document.Heading("Blocks_2", level=2),
+                        sw_compdocs.document.Heading("PROPERTIES", level=3),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_COST_LABEL", "2"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                    ),
+                                ],
+                            )
+                        ),
+                        sw_compdocs.document.Heading("Blocks_3", level=2),
+                        sw_compdocs.document.Heading("PROPERTIES", level=3),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_COST_LABEL", "1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                    ),
+                                ],
+                            )
+                        ),
+                    ],
+                ),
+            ),
+            # sort comp_list cid
+            tt(
+                input_comp_list=[
+                    sw_compdocs.component.Definition(
+                        cid="blocks_3",
+                        name="Blocks_1",
+                        value=3,
+                        category=sw_compdocs.component.Category.BLOCKS,
+                    ),
+                    sw_compdocs.component.Definition(
+                        cid="blocks_2",
+                        name="Blocks_1",
+                        value=2,
+                        category=sw_compdocs.component.Category.BLOCKS,
+                    ),
+                    sw_compdocs.component.Definition(
+                        cid="blocks_1",
+                        name="Blocks_1",
+                        value=1,
+                        category=sw_compdocs.component.Category.BLOCKS,
+                    ),
+                ],
+                input_label=None,
+                input_lang=None,
+                input_fmt=None,
+                want_doc=sw_compdocs.document.Document(
+                    [
+                        sw_compdocs.document.Heading("Blocks", level=1),
+                        sw_compdocs.document.Heading("Blocks_1", level=2),
+                        sw_compdocs.document.Heading("PROPERTIES", level=3),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_COST_LABEL", "1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                    ),
+                                ],
+                            )
+                        ),
+                        sw_compdocs.document.Heading("Blocks_1", level=2),
+                        sw_compdocs.document.Heading("PROPERTIES", level=3),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_COST_LABEL", "2"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                    ),
+                                ],
+                            )
+                        ),
+                        sw_compdocs.document.Heading("Blocks_1", level=2),
+                        sw_compdocs.document.Heading("PROPERTIES", level=3),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_COST_LABEL", "3"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                    ),
+                                ],
+                            )
+                        ),
+                    ],
+                ),
+            ),
+            # sort category
+            tt(
+                input_comp_list=[
+                    sw_compdocs.component.Definition(
+                        name="WINDOWS_0",
+                        category=sw_compdocs.component.Category.WINDOWS,
+                    ),
+                    sw_compdocs.component.Definition(
+                        name="INDUSTRY_0",
+                        category=sw_compdocs.component.Category.INDUSTRY,
+                    ),
+                    sw_compdocs.component.Definition(
+                        name="MODULAR_ENGINES_0",
+                        category=sw_compdocs.component.Category.MODULAR_ENGINES,
+                    ),
+                    sw_compdocs.component.Definition(
+                        name="WEAPONS_0",
+                        category=sw_compdocs.component.Category.WEAPONS,
+                    ),
+                    sw_compdocs.component.Definition(
+                        name="JET_ENGINES_0",
+                        category=sw_compdocs.component.Category.JET_ENGINES,
+                    ),
+                    sw_compdocs.component.Definition(
+                        name="ELECTRIC_0",
+                        category=sw_compdocs.component.Category.ELECTRIC,
+                    ),
+                    sw_compdocs.component.Definition(
+                        name="FLUID_0",
+                        category=sw_compdocs.component.Category.FLUID,
+                    ),
+                    sw_compdocs.component.Definition(
+                        name="DECORATIVE_0",
+                        category=sw_compdocs.component.Category.DECORATIVE,
+                    ),
+                    sw_compdocs.component.Definition(
+                        name="SENSORS_0",
+                        category=sw_compdocs.component.Category.SENSORS,
+                    ),
+                    sw_compdocs.component.Definition(
+                        name="DISPLAYS_0",
+                        category=sw_compdocs.component.Category.DISPLAYS,
+                    ),
+                    sw_compdocs.component.Definition(
+                        name="LOGIC_0",
+                        category=sw_compdocs.component.Category.LOGIC,
+                    ),
+                    sw_compdocs.component.Definition(
+                        name="SPECIALIST_EQUIPMENT_0",
+                        category=sw_compdocs.component.Category.SPECIALIST_EQUIPMENT,
+                    ),
+                    sw_compdocs.component.Definition(
+                        name="PROPULSION_0",
+                        category=sw_compdocs.component.Category.PROPULSION,
+                    ),
+                    sw_compdocs.component.Definition(
+                        name="MECHANICS_0",
+                        category=sw_compdocs.component.Category.MECHANICS,
+                    ),
+                    sw_compdocs.component.Definition(
+                        name="VEHICLE_CONTROL_0",
+                        category=sw_compdocs.component.Category.VEHICLE_CONTROL,
+                    ),
+                    sw_compdocs.component.Definition(
+                        name="BLOCKS_0",
+                        category=sw_compdocs.component.Category.BLOCKS,
+                    ),
+                ],
+                input_label=None,
+                input_lang=None,
+                input_fmt=None,
+                want_doc=sw_compdocs.document.Document(
+                    [
+                        sw_compdocs.document.Heading("Blocks", level=1),
+                        sw_compdocs.document.Heading("BLOCKS_0", level=2),
+                        sw_compdocs.document.Heading("PROPERTIES", level=3),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_COST_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                    ),
+                                ],
+                            )
+                        ),
+                        sw_compdocs.document.Heading("Vehicle Control", level=1),
+                        sw_compdocs.document.Heading("VEHICLE_CONTROL_0", level=2),
+                        sw_compdocs.document.Heading("PROPERTIES", level=3),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_COST_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                    ),
+                                ],
+                            )
+                        ),
+                        sw_compdocs.document.Heading("Mechanics", level=1),
+                        sw_compdocs.document.Heading("MECHANICS_0", level=2),
+                        sw_compdocs.document.Heading("PROPERTIES", level=3),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_COST_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                    ),
+                                ],
+                            )
+                        ),
+                        sw_compdocs.document.Heading("Propulsion", level=1),
+                        sw_compdocs.document.Heading("PROPULSION_0", level=2),
+                        sw_compdocs.document.Heading("PROPERTIES", level=3),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_COST_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                    ),
+                                ],
+                            )
+                        ),
+                        sw_compdocs.document.Heading("Specialist Equipment", level=1),
+                        sw_compdocs.document.Heading("SPECIALIST_EQUIPMENT_0", level=2),
+                        sw_compdocs.document.Heading("PROPERTIES", level=3),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_COST_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                    ),
+                                ],
+                            )
+                        ),
+                        sw_compdocs.document.Heading("Logic", level=1),
+                        sw_compdocs.document.Heading("LOGIC_0", level=2),
+                        sw_compdocs.document.Heading("PROPERTIES", level=3),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_COST_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                    ),
+                                ],
+                            )
+                        ),
+                        sw_compdocs.document.Heading("Displays", level=1),
+                        sw_compdocs.document.Heading("DISPLAYS_0", level=2),
+                        sw_compdocs.document.Heading("PROPERTIES", level=3),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_COST_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                    ),
+                                ],
+                            )
+                        ),
+                        sw_compdocs.document.Heading("Sensors", level=1),
+                        sw_compdocs.document.Heading("SENSORS_0", level=2),
+                        sw_compdocs.document.Heading("PROPERTIES", level=3),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_COST_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                    ),
+                                ],
+                            )
+                        ),
+                        sw_compdocs.document.Heading("Decorative", level=1),
+                        sw_compdocs.document.Heading("DECORATIVE_0", level=2),
+                        sw_compdocs.document.Heading("PROPERTIES", level=3),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_COST_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                    ),
+                                ],
+                            )
+                        ),
+                        sw_compdocs.document.Heading("Fluid", level=1),
+                        sw_compdocs.document.Heading("FLUID_0", level=2),
+                        sw_compdocs.document.Heading("PROPERTIES", level=3),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_COST_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                    ),
+                                ],
+                            )
+                        ),
+                        sw_compdocs.document.Heading("Electric", level=1),
+                        sw_compdocs.document.Heading("ELECTRIC_0", level=2),
+                        sw_compdocs.document.Heading("PROPERTIES", level=3),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_COST_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                    ),
+                                ],
+                            )
+                        ),
+                        sw_compdocs.document.Heading("Jet Engines", level=1),
+                        sw_compdocs.document.Heading("JET_ENGINES_0", level=2),
+                        sw_compdocs.document.Heading("PROPERTIES", level=3),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_COST_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                    ),
+                                ],
+                            )
+                        ),
+                        sw_compdocs.document.Heading("Weapons", level=1),
+                        sw_compdocs.document.Heading("WEAPONS_0", level=2),
+                        sw_compdocs.document.Heading("PROPERTIES", level=3),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_COST_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                    ),
+                                ],
+                            )
+                        ),
+                        sw_compdocs.document.Heading("Modular Engines", level=1),
+                        sw_compdocs.document.Heading("MODULAR_ENGINES_0", level=2),
+                        sw_compdocs.document.Heading("PROPERTIES", level=3),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_COST_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                    ),
+                                ],
+                            )
+                        ),
+                        sw_compdocs.document.Heading("Industry", level=1),
+                        sw_compdocs.document.Heading("INDUSTRY_0", level=2),
+                        sw_compdocs.document.Heading("PROPERTIES", level=3),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_COST_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                    ),
+                                ],
+                            )
+                        ),
+                        sw_compdocs.document.Heading("Windows", level=1),
+                        sw_compdocs.document.Heading("WINDOWS_0", level=2),
+                        sw_compdocs.document.Heading("PROPERTIES", level=3),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_COST_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                    ),
+                                ],
+                            )
+                        ),
+                    ],
+                ),
+            ),
+            # label, lang, fmt
+            tt(
+                input_comp_list=[
+                    sw_compdocs.component.Definition(
+                        cid="test",
+                        name="Test",
+                        tooltip_properties=sw_compdocs.component.TooltipProperties(
+                            short_description="Short Description",
+                            description="Description",
+                        ),
+                    ),
+                ],
+                input_label=sw_compdocs.generator.LabelDict(
+                    {
+                        "PROP_TABLE_HEAD_LABEL": "Label",
+                        "PROP_TABLE_HEAD_VALUE": "Value",
+                        "PROP_TABLE_MASS_LABEL": "Mass",
+                        "PROP_TABLE_DIMS_LABEL": "Dimensions (WxDxH)",
+                        "PROP_TABLE_COST_LABEL": "Cost",
+                        "PROP_TABLE_TAGS_LABEL": "Tags",
+                        "PROP_TABLE_FILE_LABEL": "File",
+                    }
+                ),
+                input_lang=sw_compdocs.language.Language(
+                    [
+                        sw_compdocs.language.Translation(
+                            "", "", "PROPERTIES", "プロパティ"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_name", "", "", "テスト"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_s_desc", "", "", "短い説明 $[s_desc]"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_desc", "", "", "長い説明 $[desc]"
+                        ),
+                    ]
+                ),
+                input_fmt=sw_compdocs.template.TemplateFormatter(
+                    {
+                        "s_desc": "foo",
+                        "desc": "bar",
+                    }
+                ),
+                want_doc=sw_compdocs.document.Document(
+                    [
+                        sw_compdocs.document.Heading("Blocks", level=1),
+                        sw_compdocs.document.Heading("テスト", level=2),
+                        sw_compdocs.document.Paragraph("短い説明 foo"),
+                        sw_compdocs.document.Paragraph("長い説明 bar"),
+                        sw_compdocs.document.Heading("プロパティ", level=3),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(["Label", "Value"]),
+                                [
+                                    sw_compdocs.document.TableDataRow(["Mass", "0"]),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["Dimensions (WxDxH)", "1x1x1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(["Cost", "0"]),
+                                    sw_compdocs.document.TableDataRow(["Tags", ""]),
+                                    sw_compdocs.document.TableDataRow(["File", ""]),
+                                ],
+                            )
+                        ),
+                    ]
+                ),
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                got_doc = sw_compdocs.generator.generate_document(
+                    tc.input_comp_list,
+                    label=tc.input_label,
+                    lang=tc.input_lang,
+                    fmt=tc.input_fmt,
+                )
+                self.assertEqual(got_doc, tc.want_doc)
+
+
 class TestGeneratorInit(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(
