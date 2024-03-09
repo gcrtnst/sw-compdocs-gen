@@ -2947,6 +2947,170 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                 self.assertEqual(got_doc, tc.want_doc)
 
 
+class TestGenerateDocumentComponentList(unittest.TestCase):
+    def test_pass(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_comp_list", list[sw_compdocs.component.Definition]),
+                ("input_label", sw_compdocs.generator.LabelDict | None),
+                ("input_lang", sw_compdocs.language.Language | None),
+                ("input_fmt", sw_compdocs.template.TemplateFormatter | None),
+                ("want_doc", sw_compdocs.document.Document),
+            ],
+        )
+
+        for tc in [
+            tt(
+                input_comp_list=[],
+                input_label=None,
+                input_lang=None,
+                input_fmt=None,
+                want_doc=sw_compdocs.document.Document(),
+            ),
+            tt(
+                input_comp_list=[
+                    sw_compdocs.component.Definition(name="A"),
+                    sw_compdocs.component.Definition(name="B"),
+                ],
+                input_label=None,
+                input_lang=None,
+                input_fmt=None,
+                want_doc=sw_compdocs.document.Document(
+                    [
+                        sw_compdocs.document.Heading("A", level=1),
+                        sw_compdocs.document.Heading("PROPERTIES", level=2),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_COST_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                    ),
+                                ],
+                            )
+                        ),
+                        sw_compdocs.document.Heading("B", level=1),
+                        sw_compdocs.document.Heading("PROPERTIES", level=2),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_COST_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                    ),
+                                ],
+                            )
+                        ),
+                    ]
+                ),
+            ),
+            tt(
+                input_comp_list=[
+                    sw_compdocs.component.Definition(
+                        cid="test",
+                        name="Test",
+                        tooltip_properties=sw_compdocs.component.TooltipProperties(
+                            short_description="Short Description",
+                            description="Description",
+                        ),
+                    ),
+                ],
+                input_label=sw_compdocs.generator.LabelDict(
+                    {
+                        "PROP_TABLE_HEAD_LABEL": "Label",
+                        "PROP_TABLE_HEAD_VALUE": "Value",
+                        "PROP_TABLE_MASS_LABEL": "Mass",
+                        "PROP_TABLE_DIMS_LABEL": "Dimensions (WxDxH)",
+                        "PROP_TABLE_COST_LABEL": "Cost",
+                        "PROP_TABLE_TAGS_LABEL": "Tags",
+                        "PROP_TABLE_FILE_LABEL": "File",
+                    }
+                ),
+                input_lang=sw_compdocs.language.Language(
+                    [
+                        sw_compdocs.language.Translation(
+                            "", "", "PROPERTIES", "プロパティ"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_name", "", "", "テスト"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_s_desc", "", "", "短い説明 $[s_desc]"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_desc", "", "", "長い説明 $[desc]"
+                        ),
+                    ]
+                ),
+                input_fmt=sw_compdocs.template.TemplateFormatter(
+                    {
+                        "s_desc": "foo",
+                        "desc": "bar",
+                    }
+                ),
+                want_doc=sw_compdocs.document.Document(
+                    [
+                        sw_compdocs.document.Heading("テスト", level=1),
+                        sw_compdocs.document.Paragraph("短い説明 foo"),
+                        sw_compdocs.document.Paragraph("長い説明 bar"),
+                        sw_compdocs.document.Heading("プロパティ", level=2),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(["Label", "Value"]),
+                                [
+                                    sw_compdocs.document.TableDataRow(["Mass", "0"]),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["Dimensions (WxDxH)", "1x1x1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(["Cost", "0"]),
+                                    sw_compdocs.document.TableDataRow(["Tags", ""]),
+                                    sw_compdocs.document.TableDataRow(["File", ""]),
+                                ],
+                            )
+                        ),
+                    ]
+                ),
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                got_doc = sw_compdocs.generator.generate_document_component_list(
+                    tc.input_comp_list,
+                    label=tc.input_label,
+                    lang=tc.input_lang,
+                    fmt=tc.input_fmt,
+                )
+                self.assertEqual(got_doc, tc.want_doc)
+
+
 class TestGeneratorInit(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(

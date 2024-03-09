@@ -250,6 +250,20 @@ def generate_document_component(
     return doc
 
 
+def generate_document_component_list(
+    comp_list: collections.abc.Iterable[component.Definition],
+    *,
+    label: LabelDict | None = None,
+    lang: language.Language | None = None,
+    fmt: template.TemplateFormatter | None = None,
+) -> document.Document:
+    doc = document.Document()
+    for comp in comp_list:
+        comp_doc = generate_document_component(comp, label=label, lang=lang, fmt=fmt)
+        doc.extend(comp_doc)
+    return doc
+
+
 class Generator:
     def __init__(
         self,
@@ -304,11 +318,9 @@ class DocumentGenerator(Generator):
     def generate_component_list(
         self, comp_list: collections.abc.Iterable[component.Definition]
     ) -> document.Document:
-        doc = document.Document()
-        for comp in comp_list:
-            comp_doc = self.generate_component(comp)
-            doc.extend(comp_doc)
-        return doc
+        return generate_document_component_list(
+            comp_list, label=self.label, lang=self.lang, fmt=self.fmt
+        )
 
     def generate(
         self, comp_list: collections.abc.Iterable[component.Definition]
