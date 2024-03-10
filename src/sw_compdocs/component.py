@@ -122,6 +122,8 @@ class Category(enum.Enum):
 
 @enum.unique
 class Flags(enum.Flag, boundary=enum.KEEP):
+    MULTIBODY_PARENT = 1 << 6
+    MULTIBODY_CHILD = 1 << 7
     IS_DEPRECATED = 1 << 29
 
 
