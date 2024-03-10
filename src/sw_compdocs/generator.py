@@ -344,6 +344,19 @@ def generate_sheet_component(
     ]
 
 
+def generate_sheet_component_list(
+    comp_list: collections.abc.Iterable[component.Definition],
+    *,
+    lang: language.Language | None = None,
+    fmt: template.TemplateFormatter | None = None,
+) -> list[list[str]]:
+    record_list = []
+    for comp in comp_list:
+        record = generate_sheet_component(comp, lang=lang, fmt=fmt)
+        record_list.append(record)
+    return record_list
+
+
 class Generator:
     def __init__(
         self,
@@ -376,11 +389,7 @@ class SheetGenerator(Generator):
     def generate_component_list(
         self, comp_list: collections.abc.Iterable[component.Definition]
     ) -> list[list[str]]:
-        record_list = []
-        for comp in comp_list:
-            record = self.generate_component(comp)
-            record_list.append(record)
-        return record_list
+        return generate_sheet_component_list(comp_list, lang=self.lang, fmt=self.fmt)
 
     def generate(
         self, comp_list: collections.abc.Iterable[component.Definition]

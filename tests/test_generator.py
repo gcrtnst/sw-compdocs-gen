@@ -4296,6 +4296,135 @@ class TestGenerateSheetComponent(unittest.TestCase):
                 self.assertEqual(got_record, tc.want_record)
 
 
+class TestGenerateSheetComponentList(unittest.TestCase):
+    def test(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_comp_list", list[sw_compdocs.component.Definition]),
+                ("input_lang", sw_compdocs.language.Language | None),
+                ("input_fmt", sw_compdocs.template.TemplateFormatter | None),
+                ("want_record_list", list[list[str]]),
+            ],
+        )
+
+        for tc in [
+            tt(
+                input_comp_list=[
+                    sw_compdocs.component.Definition(name="Test 1"),
+                    sw_compdocs.component.Definition(name="Test 2"),
+                    sw_compdocs.component.Definition(name="Test 3"),
+                ],
+                input_lang=None,
+                input_fmt=None,
+                want_record_list=[
+                    [
+                        "Test 1",
+                        "",
+                        "Blocks",
+                        "",
+                        "FALSE",
+                        "0",
+                        "0",
+                        "1",
+                        "1",
+                        "1",
+                        "",
+                        "",
+                    ],
+                    [
+                        "Test 2",
+                        "",
+                        "Blocks",
+                        "",
+                        "FALSE",
+                        "0",
+                        "0",
+                        "1",
+                        "1",
+                        "1",
+                        "",
+                        "",
+                    ],
+                    [
+                        "Test 3",
+                        "",
+                        "Blocks",
+                        "",
+                        "FALSE",
+                        "0",
+                        "0",
+                        "1",
+                        "1",
+                        "1",
+                        "",
+                        "",
+                    ],
+                ],
+            ),
+            tt(
+                input_comp_list=[
+                    sw_compdocs.component.Definition(
+                        file="test.xml",
+                        cid="test",
+                        name="",
+                        category=sw_compdocs.component.Category.BLOCKS,
+                        mass=1.0,
+                        value=2,
+                        tags="tags",
+                        tooltip_properties=sw_compdocs.component.TooltipProperties(
+                            short_description="",
+                            description="",
+                        ),
+                        voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
+                        voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
+                    )
+                ],
+                input_lang=sw_compdocs.language.Language(
+                    [
+                        sw_compdocs.language.Translation(
+                            "def_test_name", "", "", "$[name]"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_s_desc", "", "", "$[s_desc]"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_desc", "", "", "$[desc]"
+                        ),
+                    ]
+                ),
+                input_fmt=sw_compdocs.template.TemplateFormatter(
+                    {
+                        "name": "Name",
+                        "s_desc": "short_description",
+                        "desc": "description",
+                    }
+                ),
+                want_record_list=[
+                    [
+                        "$[name]",
+                        "test.xml",
+                        "Blocks",
+                        "tags",
+                        "FALSE",
+                        "1",
+                        "2",
+                        "3",
+                        "7",
+                        "5",
+                        "short_description",
+                        "description",
+                    ]
+                ],
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                got_record_list = sw_compdocs.generator.generate_sheet_component_list(
+                    tc.input_comp_list, lang=tc.input_lang, fmt=tc.input_fmt
+                )
+                self.assertEqual(got_record_list, tc.want_record_list)
+
+
 class TestGeneratorInit(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(
