@@ -387,28 +387,3 @@ def generate_sheet(
     record_list = [header]
     record_list.extend(generate_sheet_component_list(comp_list, lang=lang, fmt=fmt))
     return record_list
-
-
-class Generator:
-    def __init__(
-        self,
-        *,
-        label: LabelDict | None = None,
-        lang: language.Language | None = None,
-        fmt: template.TemplateFormatter | None = None,
-    ) -> None:
-        self.label: LabelDict | None = label
-        self.lang: language.Language | None = lang
-        self.fmt: template.TemplateFormatter | None = fmt
-
-    def _label_get(self, s: str) -> str:
-        return _label_get(self.label, s)
-
-    def _lang_find_id(self, lang_id: str, lang_en: str) -> str:
-        return _lang_find_id(self.lang, lang_id, lang_en)
-
-    def _lang_find_en(self, lang_en: str) -> str:
-        return _lang_find_en(self.lang, lang_en)
-
-    def _fmt_format(self, s: str) -> str:
-        return _fmt_format(self.fmt, s)
