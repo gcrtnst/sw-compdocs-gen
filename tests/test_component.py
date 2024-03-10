@@ -1312,6 +1312,7 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
         self.assertEqual(defn.value, 100)
         self.assertEqual(defn.flags, sw_compdocs.component.Flags(8192))
         self.assertEqual(defn.tags, "basic")
+        self.assertEqual(defn.child_name, "")
         self.assertEqual(
             defn.tooltip_properties,
             sw_compdocs.component.TooltipProperties(
@@ -1376,6 +1377,53 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
         self.assertEqual(defn.voxel_min, sw_compdocs.component.VoxelPos(x=0, y=0, z=0))
         self.assertEqual(defn.voxel_max, sw_compdocs.component.VoxelPos(x=0, y=1, z=0))
 
+    def test_pass_pivot(self) -> None:
+        elem = lxml.etree.fromstring(
+            """\
+<definition name="Pivot" category="2" type="7" mass="1" value="20" flags="64" tags="hinge" hild_name="multibody_pivot_b">
+	<logic_nodes/>
+	<voxel_min x="0" y="0" z="0"/>
+	<voxel_max x="0" y="1" z="0"/>
+	<tooltip_properties description="The pivot can rotate to 0.25 turns in both directions." short_description="A basic pivot that can move freely."/>
+</definition>
+"""
+        )
+
+        defn = sw_compdocs.component.Definition.from_xml_elem(
+            elem, file="multibody_pivot_a.xml", key="multibody_pivot_a"
+        )
+        self.assertEqual(defn.file, "multibody_pivot_a.xml")
+        self.assertEqual(defn.key, "multibody_pivot_a")
+        self.assertEqual(
+            defn.name,
+            sw_compdocs.language.Text(id="def_multibody_pivot_a_name", en="Pivot"),
+        )
+        self.assertEqual(defn.category, sw_compdocs.component.Category.MECHANICS)
+        self.assertEqual(defn.mass, 1.0)
+        self.assertEqual(defn.value, 20)
+        self.assertEqual(defn.flags, sw_compdocs.component.Flags(64))
+        self.assertEqual(defn.tags, "hinge")
+        self.assertEqual(
+            defn.tooltip_properties,
+            sw_compdocs.component.TooltipProperties(
+                key="multibody_pivot_a",
+                short_description=sw_compdocs.language.Text(
+                    id="def_multibody_pivot_a_s_desc",
+                    en="A basic pivot that can move freely.",
+                ),
+                description=sw_compdocs.language.Text(
+                    id="def_multibody_pivot_a_desc",
+                    en="The pivot can rotate to 0.25 turns in both directions.",
+                ),
+            ),
+        )
+        self.assertEqual(
+            defn.logic_nodes,
+            sw_compdocs.component.LogicNodeList(key="multibody_pivot_a"),
+        )
+        self.assertEqual(defn.voxel_min, sw_compdocs.component.VoxelPos(x=0, y=0, z=0))
+        self.assertEqual(defn.voxel_max, sw_compdocs.component.VoxelPos(x=0, y=1, z=0))
+
     def test_pass_empty(self) -> None:
         elem = lxml.etree.Element("definition")
         defn = sw_compdocs.component.Definition.from_xml_elem(elem)
@@ -1387,6 +1435,7 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
         self.assertEqual(defn.value, 0)
         self.assertEqual(defn.flags, sw_compdocs.component.Flags(0))
         self.assertEqual(defn.tags, "")
+        self.assertEqual(defn.child_name, "")
         self.assertEqual(
             defn.tooltip_properties, sw_compdocs.component.TooltipProperties()
         )

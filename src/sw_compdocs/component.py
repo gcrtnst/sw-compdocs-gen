@@ -349,6 +349,7 @@ class Definition:
     value: int = 0
     flags: Flags = Flags(0)
     tags: str = ""
+    child_name: str = ""
     tooltip_properties: TooltipProperties = dataclasses.field(
         default_factory=TooltipProperties
     )
@@ -366,6 +367,7 @@ class Definition:
     ) -> typing.Self:
         name = language.Text(en=elem.get("name", ""))
         tags = elem.get("tags", cls.tags)
+        child_name = elem.get("child_name", cls.child_name)
 
         category = cls.category
         category_attr = elem.get("category")
@@ -459,6 +461,7 @@ class Definition:
             value=value,
             flags=flags,
             tags=tags,
+            child_name=child_name,
             tooltip_properties=tooltip_properties,
             logic_nodes=logic_nodes,
             voxel_min=voxel_min,
