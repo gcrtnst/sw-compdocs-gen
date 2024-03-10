@@ -292,6 +292,7 @@ class Definition:
     value: int = 0
     flags: Flags = Flags(0)
     tags: str = ""
+    child_name: str = ""
     tooltip_properties: TooltipProperties = dataclasses.field(
         default_factory=TooltipProperties
     )
@@ -392,6 +393,7 @@ class Definition:
         cid = cid if cid is not None else cls.cid
         name = elem.get("name", cls.name)
         tags = elem.get("tags", cls.tags)
+        child_name = elem.get("child_name", cls.child_name)
         return cls(
             file=file,
             cid=cid,
@@ -401,6 +403,7 @@ class Definition:
             value=value,
             flags=flags,
             tags=tags,
+            child_name=child_name,
             tooltip_properties=tooltip_properties,
             logic_nodes=logic_nodes,
             voxel_min=voxel_min,

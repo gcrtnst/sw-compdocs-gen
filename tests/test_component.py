@@ -765,6 +765,7 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
         self.assertEqual(comp.value, 100)
         self.assertEqual(comp.flags, sw_compdocs.component.Flags(8192))
         self.assertEqual(comp.tags, "basic")
+        self.assertEqual(comp.child_name, "")
         self.assertEqual(
             comp.tooltip_properties,
             sw_compdocs.component.TooltipProperties(
@@ -803,6 +804,39 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
         self.assertEqual(comp.voxel_min, sw_compdocs.component.VoxelPos(x=0, y=0, z=0))
         self.assertEqual(comp.voxel_max, sw_compdocs.component.VoxelPos(x=0, y=1, z=0))
 
+    def test_pass_pivot(self) -> None:
+        elem = lxml.etree.fromstring(
+            """\
+<definition name="Pivot" category="2" type="7" mass="1" value="20" flags="64" tags="hinge" hild_name="multibody_pivot_b">
+	<logic_nodes/>
+	<voxel_min x="0" y="0" z="0"/>
+	<voxel_max x="0" y="1" z="0"/>
+	<tooltip_properties description="The pivot can rotate to 0.25 turns in both directions." short_description="A basic pivot that can move freely."/>
+</definition>
+"""
+        )
+
+        comp = sw_compdocs.component.Definition.from_xml_elem(
+            elem, file="multibody_pivot_a.xml", cid="multibody_pivot_a"
+        )
+        self.assertEqual(comp.file, "multibody_pivot_a.xml")
+        self.assertEqual(comp.cid, "multibody_pivot_a")
+        self.assertEqual(comp.category, sw_compdocs.component.Category.MECHANICS)
+        self.assertEqual(comp.mass, 1.0)
+        self.assertEqual(comp.value, 20)
+        self.assertEqual(comp.flags, sw_compdocs.component.Flags(64))
+        self.assertEqual(comp.tags, "hinge")
+        self.assertEqual(
+            comp.tooltip_properties,
+            sw_compdocs.component.TooltipProperties(
+                short_description="A basic pivot that can move freely.",
+                description="The pivot can rotate to 0.25 turns in both directions.",
+            ),
+        )
+        self.assertEqual(comp.logic_nodes, sw_compdocs.component.LogicNodeList())
+        self.assertEqual(comp.voxel_min, sw_compdocs.component.VoxelPos(x=0, y=0, z=0))
+        self.assertEqual(comp.voxel_max, sw_compdocs.component.VoxelPos(x=0, y=1, z=0))
+
     def test_pass_empty(self) -> None:
         elem = lxml.etree.Element("definition")
         comp = sw_compdocs.component.Definition.from_xml_elem(elem)
@@ -814,6 +848,7 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
         self.assertEqual(comp.value, 0)
         self.assertEqual(comp.flags, sw_compdocs.component.Flags(0))
         self.assertEqual(comp.tags, "")
+        self.assertEqual(comp.child_name, "")
         self.assertEqual(
             comp.tooltip_properties, sw_compdocs.component.TooltipProperties()
         )
