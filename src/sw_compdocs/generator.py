@@ -300,6 +300,50 @@ def generate_document(
     return doc
 
 
+def generate_sheet_component(
+    comp: component.Definition,
+    *,
+    lang: language.Language | None = None,
+    fmt: template.TemplateFormatter | None = None,
+) -> list[str]:
+    dims_w = comp.voxel_max.x - comp.voxel_min.x + 1
+    dims_h = comp.voxel_max.y - comp.voxel_min.y + 1
+    dims_d = comp.voxel_max.z - comp.voxel_min.z + 1
+
+    comp_name_id = f"def_{comp.cid}_name"
+    comp_name = _lang_find_id(lang, comp_name_id, comp.name)
+
+    comp_file = ""
+    if comp.file is not None:
+        comp_file = os.fsdecode(comp.file)
+        comp_file = pathlib.PurePath(comp_file).name
+
+    comp_s_desc_id = f"def_{comp.cid}_s_desc"
+    comp_s_desc = comp.tooltip_properties.short_description
+    comp_s_desc = _lang_find_id(lang, comp_s_desc_id, comp_s_desc)
+    comp_s_desc = _fmt_format(fmt, comp_s_desc)
+
+    comp_desc_id = f"def_{comp.cid}_desc"
+    comp_desc = comp.tooltip_properties.description
+    comp_desc = _lang_find_id(lang, comp_desc_id, comp_desc)
+    comp_desc = _fmt_format(fmt, comp_desc)
+
+    return [
+        comp_name,
+        comp_file,
+        str(comp.category),
+        comp.tags,
+        "TRUE" if component.Flags.IS_DEPRECATED in comp.flags else "FALSE",
+        f"{comp.mass:g}",
+        f"{comp.value:d}",
+        f"{dims_w:d}",
+        f"{dims_d:d}",
+        f"{dims_h:d}",
+        comp_s_desc,
+        comp_desc,
+    ]
+
+
 class Generator:
     def __init__(
         self,
@@ -327,42 +371,7 @@ class Generator:
 
 class SheetGenerator(Generator):
     def generate_component(self, comp: component.Definition) -> list[str]:
-        dims_w = comp.voxel_max.x - comp.voxel_min.x + 1
-        dims_h = comp.voxel_max.y - comp.voxel_min.y + 1
-        dims_d = comp.voxel_max.z - comp.voxel_min.z + 1
-
-        comp_name_id = f"def_{comp.cid}_name"
-        comp_name = self._lang_find_id(comp_name_id, comp.name)
-
-        comp_file = ""
-        if comp.file is not None:
-            comp_file = os.fsdecode(comp.file)
-            comp_file = pathlib.PurePath(comp_file).name
-
-        comp_s_desc_id = f"def_{comp.cid}_s_desc"
-        comp_s_desc = comp.tooltip_properties.short_description
-        comp_s_desc = self._lang_find_id(comp_s_desc_id, comp_s_desc)
-        comp_s_desc = self._fmt_format(comp_s_desc)
-
-        comp_desc_id = f"def_{comp.cid}_desc"
-        comp_desc = comp.tooltip_properties.description
-        comp_desc = self._lang_find_id(comp_desc_id, comp_desc)
-        comp_desc = self._fmt_format(comp_desc)
-
-        return [
-            comp_name,
-            comp_file,
-            str(comp.category),
-            comp.tags,
-            "TRUE" if component.Flags.IS_DEPRECATED in comp.flags else "FALSE",
-            f"{comp.mass:g}",
-            f"{comp.value:d}",
-            f"{dims_w:d}",
-            f"{dims_d:d}",
-            f"{dims_h:d}",
-            comp_s_desc,
-            comp_desc,
-        ]
+        return generate_sheet_component(comp, lang=self.lang, fmt=self.fmt)
 
     def generate_component_list(
         self, comp_list: collections.abc.Iterable[component.Definition]

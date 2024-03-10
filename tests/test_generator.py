@@ -3981,6 +3981,321 @@ class TestGenerateDocument(unittest.TestCase):
                 self.assertEqual(got_doc, tc.want_doc)
 
 
+class TestGenerateSheetComponent(unittest.TestCase):
+    def test(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_lang", sw_compdocs.language.Language | None),
+                ("input_fmt", sw_compdocs.template.TemplateFormatter | None),
+                ("input_comp", sw_compdocs.component.Definition),
+                ("want_record", list[str]),
+            ],
+        )
+
+        for tc in [
+            tt(  # normal
+                input_lang=None,
+                input_fmt=None,
+                input_comp=sw_compdocs.component.Definition(
+                    file="test.xml",
+                    name="Name",
+                    category=sw_compdocs.component.Category.BLOCKS,
+                    mass=1.0,
+                    value=2,
+                    tags="tags",
+                    tooltip_properties=sw_compdocs.component.TooltipProperties(
+                        short_description="short_description",
+                        description="description",
+                    ),
+                    voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
+                    voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
+                ),
+                want_record=[
+                    "Name",
+                    "test.xml",
+                    "Blocks",
+                    "tags",
+                    "FALSE",
+                    "1",
+                    "2",
+                    "3",
+                    "7",
+                    "5",
+                    "short_description",
+                    "description",
+                ],
+            ),
+            tt(  # file none
+                input_lang=None,
+                input_fmt=None,
+                input_comp=sw_compdocs.component.Definition(
+                    name="Name",
+                    category=sw_compdocs.component.Category.BLOCKS,
+                    mass=1.0,
+                    value=2,
+                    tags="tags",
+                    tooltip_properties=sw_compdocs.component.TooltipProperties(
+                        short_description="short_description",
+                        description="description",
+                    ),
+                    voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
+                    voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
+                ),
+                want_record=[
+                    "Name",
+                    "",
+                    "Blocks",
+                    "tags",
+                    "FALSE",
+                    "1",
+                    "2",
+                    "3",
+                    "7",
+                    "5",
+                    "short_description",
+                    "description",
+                ],
+            ),
+            tt(  # file
+                input_lang=None,
+                input_fmt=None,
+                input_comp=sw_compdocs.component.Definition(
+                    file=b"path/to/test.xml",
+                    name="Name",
+                    category=sw_compdocs.component.Category.BLOCKS,
+                    mass=1.0,
+                    value=2,
+                    tags="tags",
+                    tooltip_properties=sw_compdocs.component.TooltipProperties(
+                        short_description="short_description",
+                        description="description",
+                    ),
+                    voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
+                    voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
+                ),
+                want_record=[
+                    "Name",
+                    "test.xml",
+                    "Blocks",
+                    "tags",
+                    "FALSE",
+                    "1",
+                    "2",
+                    "3",
+                    "7",
+                    "5",
+                    "short_description",
+                    "description",
+                ],
+            ),
+            tt(  # deprecated
+                input_lang=None,
+                input_fmt=None,
+                input_comp=sw_compdocs.component.Definition(
+                    file="test.xml",
+                    name="Name",
+                    category=sw_compdocs.component.Category.BLOCKS,
+                    mass=1.0,
+                    value=2,
+                    flags=sw_compdocs.component.Flags.IS_DEPRECATED,
+                    tags="tags",
+                    tooltip_properties=sw_compdocs.component.TooltipProperties(
+                        short_description="short_description",
+                        description="description",
+                    ),
+                    voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
+                    voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
+                ),
+                want_record=[
+                    "Name",
+                    "test.xml",
+                    "Blocks",
+                    "tags",
+                    "TRUE",
+                    "1",
+                    "2",
+                    "3",
+                    "7",
+                    "5",
+                    "short_description",
+                    "description",
+                ],
+            ),
+            tt(  # mass
+                input_lang=None,
+                input_fmt=None,
+                input_comp=sw_compdocs.component.Definition(
+                    file="test.xml",
+                    name="Name",
+                    category=sw_compdocs.component.Category.BLOCKS,
+                    mass=0.25,
+                    value=2,
+                    tags="tags",
+                    tooltip_properties=sw_compdocs.component.TooltipProperties(
+                        short_description="short_description",
+                        description="description",
+                    ),
+                    voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
+                    voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
+                ),
+                want_record=[
+                    "Name",
+                    "test.xml",
+                    "Blocks",
+                    "tags",
+                    "FALSE",
+                    "0.25",
+                    "2",
+                    "3",
+                    "7",
+                    "5",
+                    "short_description",
+                    "description",
+                ],
+            ),
+            tt(  # lang
+                input_lang=sw_compdocs.language.Language(
+                    [
+                        sw_compdocs.language.Translation(
+                            "def_test_name", "", "", "名前"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_s_desc", "", "", "短い説明"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_desc", "", "", "説明"
+                        ),
+                    ]
+                ),
+                input_fmt=None,
+                input_comp=sw_compdocs.component.Definition(
+                    file="test.xml",
+                    cid="test",
+                    name="Name",
+                    category=sw_compdocs.component.Category.BLOCKS,
+                    mass=1.0,
+                    value=2,
+                    tags="tags",
+                    tooltip_properties=sw_compdocs.component.TooltipProperties(
+                        short_description="short_description",
+                        description="description",
+                    ),
+                    voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
+                    voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
+                ),
+                want_record=[
+                    "名前",
+                    "test.xml",
+                    "Blocks",
+                    "tags",
+                    "FALSE",
+                    "1",
+                    "2",
+                    "3",
+                    "7",
+                    "5",
+                    "短い説明",
+                    "説明",
+                ],
+            ),
+            tt(  # template
+                input_lang=None,
+                input_fmt=sw_compdocs.template.TemplateFormatter(
+                    {
+                        "name": "Name",
+                        "s_desc": "short_description",
+                        "desc": "description",
+                    }
+                ),
+                input_comp=sw_compdocs.component.Definition(
+                    file="test.xml",
+                    name="$[name]",
+                    category=sw_compdocs.component.Category.BLOCKS,
+                    mass=1.0,
+                    value=2,
+                    tags="tags",
+                    tooltip_properties=sw_compdocs.component.TooltipProperties(
+                        short_description="$[s_desc]",
+                        description="$[desc]",
+                    ),
+                    voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
+                    voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
+                ),
+                want_record=[
+                    "$[name]",
+                    "test.xml",
+                    "Blocks",
+                    "tags",
+                    "FALSE",
+                    "1",
+                    "2",
+                    "3",
+                    "7",
+                    "5",
+                    "short_description",
+                    "description",
+                ],
+            ),
+            tt(  # lang, template
+                input_lang=sw_compdocs.language.Language(
+                    [
+                        sw_compdocs.language.Translation(
+                            "def_test_name", "", "", "$[name]"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_s_desc", "", "", "$[s_desc]"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_desc", "", "", "$[desc]"
+                        ),
+                    ]
+                ),
+                input_fmt=sw_compdocs.template.TemplateFormatter(
+                    {
+                        "name": "Name",
+                        "s_desc": "short_description",
+                        "desc": "description",
+                    }
+                ),
+                input_comp=sw_compdocs.component.Definition(
+                    file="test.xml",
+                    cid="test",
+                    name="",
+                    category=sw_compdocs.component.Category.BLOCKS,
+                    mass=1.0,
+                    value=2,
+                    tags="tags",
+                    tooltip_properties=sw_compdocs.component.TooltipProperties(
+                        short_description="",
+                        description="",
+                    ),
+                    voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
+                    voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
+                ),
+                want_record=[
+                    "$[name]",
+                    "test.xml",
+                    "Blocks",
+                    "tags",
+                    "FALSE",
+                    "1",
+                    "2",
+                    "3",
+                    "7",
+                    "5",
+                    "short_description",
+                    "description",
+                ],
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                got_record = sw_compdocs.generator.generate_sheet_component(
+                    tc.input_comp, lang=tc.input_lang, fmt=tc.input_fmt
+                )
+                self.assertEqual(got_record, tc.want_record)
+
+
 class TestGeneratorInit(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(
