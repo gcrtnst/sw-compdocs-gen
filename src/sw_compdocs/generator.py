@@ -412,18 +412,3 @@ class Generator:
 
     def _fmt_format(self, s: str) -> str:
         return _fmt_format(self.fmt, s)
-
-
-class SheetGenerator(Generator):
-    def generate_component(self, comp: component.Definition) -> list[str]:
-        return generate_sheet_component(comp, lang=self.lang, fmt=self.fmt)
-
-    def generate_component_list(
-        self, comp_list: collections.abc.Iterable[component.Definition]
-    ) -> list[list[str]]:
-        return generate_sheet_component_list(comp_list, lang=self.lang, fmt=self.fmt)
-
-    def generate(
-        self, comp_list: collections.abc.Iterable[component.Definition]
-    ) -> list[list[str]]:
-        return generate_sheet(comp_list, label=self.label, lang=self.lang, fmt=self.fmt)
