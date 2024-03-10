@@ -357,6 +357,38 @@ def generate_sheet_component_list(
     return record_list
 
 
+def generate_sheet(
+    comp_list: collections.abc.Iterable[component.Definition],
+    *,
+    label: LabelDict | None = None,
+    lang: language.Language | None = None,
+    fmt: template.TemplateFormatter | None = None,
+) -> list[list[str]]:
+    def sort_key(comp: component.Definition) -> tuple[int, str, str]:
+        return comp.category.value, comp.name, comp.cid
+
+    comp_list = list(comp_list)
+    comp_list.sort(key=sort_key)
+
+    header = [
+        _label_get(label, "SHEET_HEAD_NAME"),
+        _label_get(label, "SHEET_HEAD_FILE"),
+        _label_get(label, "SHEET_HEAD_CATEGORY"),
+        _label_get(label, "SHEET_HEAD_TAGS"),
+        _label_get(label, "SHEET_HEAD_DEPRECATED"),
+        _label_get(label, "SHEET_HEAD_MASS"),
+        _label_get(label, "SHEET_HEAD_COST"),
+        _label_get(label, "SHEET_HEAD_WIDTH"),
+        _label_get(label, "SHEET_HEAD_DEPTH"),
+        _label_get(label, "SHEET_HEAD_HEIGHT"),
+        _label_get(label, "SHEET_HEAD_SDESC"),
+        _label_get(label, "SHEET_HEAD_DESC"),
+    ]
+    record_list = [header]
+    record_list.extend(generate_sheet_component_list(comp_list, lang=lang, fmt=fmt))
+    return record_list
+
+
 class Generator:
     def __init__(
         self,
@@ -394,26 +426,4 @@ class SheetGenerator(Generator):
     def generate(
         self, comp_list: collections.abc.Iterable[component.Definition]
     ) -> list[list[str]]:
-        def sort_key(comp: component.Definition) -> tuple[int, str, str]:
-            return comp.category.value, comp.name, comp.cid
-
-        comp_list = list(comp_list)
-        comp_list.sort(key=sort_key)
-
-        header = [
-            self._label_get("SHEET_HEAD_NAME"),
-            self._label_get("SHEET_HEAD_FILE"),
-            self._label_get("SHEET_HEAD_CATEGORY"),
-            self._label_get("SHEET_HEAD_TAGS"),
-            self._label_get("SHEET_HEAD_DEPRECATED"),
-            self._label_get("SHEET_HEAD_MASS"),
-            self._label_get("SHEET_HEAD_COST"),
-            self._label_get("SHEET_HEAD_WIDTH"),
-            self._label_get("SHEET_HEAD_DEPTH"),
-            self._label_get("SHEET_HEAD_HEIGHT"),
-            self._label_get("SHEET_HEAD_SDESC"),
-            self._label_get("SHEET_HEAD_DESC"),
-        ]
-        record_list = [header]
-        record_list.extend(self.generate_component_list(comp_list))
-        return record_list
+        return generate_sheet(comp_list, label=self.label, lang=self.lang, fmt=self.fmt)
