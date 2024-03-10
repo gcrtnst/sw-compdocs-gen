@@ -28,8 +28,7 @@ def generate_document(
     out_encoding: str | None = None,
     out_newline: str | None = None,
 ) -> None:
-    gen = generator.DocumentGenerator(label=label, lang=lang, fmt=fmt)
-    doc = gen.generate(comp_list)
+    doc = generator.generate_document(comp_list, label=label, lang=lang, fmt=fmt)
     md = renderer.render_markdown(doc)
 
     with wraperr.wrap_unicode_error(out_file):
@@ -56,9 +55,7 @@ def generate_sheet(
     if out_newline is None:
         out_newline = os.linesep
 
-    gen = generator.SheetGenerator(label=label, lang=lang, fmt=fmt)
-    record_list = gen.generate(comp_list)
-
+    record_list = generator.generate_sheet(comp_list, label=label, lang=lang, fmt=fmt)
     with wraperr.wrap_unicode_error(out_file):
         with open(
             out_file, mode="w", encoding=out_encoding, errors="strict", newline=""

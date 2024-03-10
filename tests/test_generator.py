@@ -86,55 +86,13 @@ class TestLabelDictLen(unittest.TestCase):
         self.assertEqual(len(label), 2)
 
 
-class TestGeneratorInit(unittest.TestCase):
+class TestLabelGet(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(
             "tt",
             [
                 ("input_label", sw_compdocs.generator.LabelDict | None),
-                ("input_lang", sw_compdocs.language.Language | None),
-                ("input_fmt", sw_compdocs.template.TemplateFormatter | None),
-            ],
-        )
-
-        for tc in [
-            tt(
-                input_label=sw_compdocs.generator.LabelDict(),
-                input_lang=sw_compdocs.language.Language(),
-                input_fmt=sw_compdocs.template.TemplateFormatter({}),
-            ),
-            tt(
-                input_label=None,
-                input_lang=sw_compdocs.language.Language(),
-                input_fmt=sw_compdocs.template.TemplateFormatter({}),
-            ),
-            tt(
-                input_label=sw_compdocs.generator.LabelDict(),
-                input_lang=None,
-                input_fmt=sw_compdocs.template.TemplateFormatter({}),
-            ),
-            tt(
-                input_label=sw_compdocs.generator.LabelDict(),
-                input_lang=sw_compdocs.language.Language(),
-                input_fmt=None,
-            ),
-        ]:
-            with self.subTest(tc=tc):
-                gen = sw_compdocs.generator.Generator(
-                    label=tc.input_label, lang=tc.input_lang, fmt=tc.input_fmt
-                )
-                self.assertIs(gen.label, tc.input_label)
-                self.assertIs(gen.lang, tc.input_lang)
-                self.assertIs(gen.fmt, tc.input_fmt)
-
-
-class TestGeneratorLabelGet(unittest.TestCase):
-    def test_pass(self) -> None:
-        tt = typing.NamedTuple(
-            "tt",
-            [
-                ("input_label", sw_compdocs.generator.LabelDict | None),
-                ("input_s", str),
+                ("input_key", str),
                 ("want_s", str),
             ],
         )
@@ -142,22 +100,21 @@ class TestGeneratorLabelGet(unittest.TestCase):
         for tc in [
             tt(
                 input_label=None,
-                input_s="LABEL",
+                input_key="LABEL",
                 want_s="LABEL",
             ),
             tt(
                 input_label=sw_compdocs.generator.LabelDict({"LABEL": "text"}),
-                input_s="LABEL",
+                input_key="LABEL",
                 want_s="text",
             ),
         ]:
             with self.subTest(tc=tc):
-                gen = sw_compdocs.generator.Generator(label=tc.input_label)
-                got_s = gen._label_get(tc.input_s)
+                got_s = sw_compdocs.generator._label_get(tc.input_label, tc.input_key)
                 self.assertEqual(got_s, tc.want_s)
 
 
-class TestGeneratorLangFindID(unittest.TestCase):
+class TestLangFindID(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(
             "tt",
@@ -190,12 +147,13 @@ class TestGeneratorLangFindID(unittest.TestCase):
             ),
         ]:
             with self.subTest(tc=tc):
-                gen = sw_compdocs.generator.Generator(lang=tc.input_lang)
-                got_s = gen._lang_find_id(tc.input_lang_id, tc.input_lang_en)
+                got_s = sw_compdocs.generator._lang_find_id(
+                    tc.input_lang, tc.input_lang_id, tc.input_lang_en
+                )
                 self.assertEqual(got_s, tc.want_s)
 
 
-class TestGeneratorLangFindEn(unittest.TestCase):
+class TestLangFindEn(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(
             "tt",
@@ -225,12 +183,13 @@ class TestGeneratorLangFindEn(unittest.TestCase):
             ),
         ]:
             with self.subTest(tc=tc):
-                gen = sw_compdocs.generator.Generator(lang=tc.input_lang)
-                got_s = gen._lang_find_en(tc.input_lang_en)
+                got_s = sw_compdocs.generator._lang_find_en(
+                    tc.input_lang, tc.input_lang_en
+                )
                 self.assertEqual(got_s, tc.want_s)
 
 
-class TestGeneratorFmtFormat(unittest.TestCase):
+class TestFmtFormat(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(
             "tt",
@@ -254,12 +213,11 @@ class TestGeneratorFmtFormat(unittest.TestCase):
             ),
         ]:
             with self.subTest(tc=tc):
-                gen = sw_compdocs.generator.Generator(fmt=tc.input_fmt)
-                got_s = gen._fmt_format(tc.input_s)
+                got_s = sw_compdocs.generator._fmt_format(tc.input_fmt, tc.input_s)
                 self.assertEqual(got_s, tc.want_s)
 
 
-class TestDocumentGeneratorGeneratePropertyTable(unittest.TestCase):
+class TestGenerateDocumentPropertyTable(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(
             "tt",
@@ -484,12 +442,13 @@ class TestDocumentGeneratorGeneratePropertyTable(unittest.TestCase):
             ),
         ]:
             with self.subTest(tc=tc):
-                gen = sw_compdocs.generator.DocumentGenerator(label=tc.input_label)
-                got_tbl = gen.generate_property_table(tc.input_comp)
+                got_tbl = sw_compdocs.generator.generate_document_property_table(
+                    tc.input_comp, label=tc.input_label
+                )
                 self.assertEqual(got_tbl, tc.want_tbl)
 
 
-class TestDocumentGeneratorGenerateProperty(unittest.TestCase):
+class TestGenerateDocumentProperty(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(
             "tt",
@@ -578,14 +537,13 @@ class TestDocumentGeneratorGenerateProperty(unittest.TestCase):
             ),
         ]:
             with self.subTest(tc=tc):
-                gen = sw_compdocs.generator.DocumentGenerator(
-                    label=tc.input_label, lang=tc.input_lang
+                got_doc = sw_compdocs.generator.generate_document_property(
+                    tc.input_comp, label=tc.input_label, lang=tc.input_lang
                 )
-                got_doc = gen.generate_property(tc.input_comp)
                 self.assertEqual(got_doc, tc.want_doc)
 
 
-class TestDocumentGeneratorGenerateLogicTable(unittest.TestCase):
+class TestGenerateDocumentLogicTable(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(
             "tt",
@@ -1079,14 +1037,17 @@ class TestDocumentGeneratorGenerateLogicTable(unittest.TestCase):
             ),
         ]:
             with self.subTest(tc=tc):
-                gen = sw_compdocs.generator.DocumentGenerator(
-                    label=tc.input_label, lang=tc.input_lang, fmt=tc.input_fmt
+                got_tbl = sw_compdocs.generator.generate_document_logic_table(
+                    tc.input_cid,
+                    tc.input_lns,
+                    label=tc.input_label,
+                    lang=tc.input_lang,
+                    fmt=tc.input_fmt,
                 )
-                got_tbl = gen.generate_logic_table(tc.input_cid, tc.input_lns)
                 self.assertEqual(got_tbl, tc.want_tbl)
 
 
-class TestDocumentGeneratorGenerateLogic(unittest.TestCase):
+class TestGenerateDocumentLogic(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(
             "tt",
@@ -1800,14 +1761,17 @@ class TestDocumentGeneratorGenerateLogic(unittest.TestCase):
             ),
         ]:
             with self.subTest(tc=tc):
-                gen = sw_compdocs.generator.DocumentGenerator(
-                    label=tc.input_label, lang=tc.input_lang, fmt=tc.input_fmt
+                got_doc = sw_compdocs.generator.generate_document_logic(
+                    tc.input_cid,
+                    tc.input_lns,
+                    label=tc.input_label,
+                    lang=tc.input_lang,
+                    fmt=tc.input_fmt,
                 )
-                got_doc = gen.generate_logic(tc.input_cid, tc.input_lns)
                 self.assertEqual(got_doc, tc.want_doc)
 
 
-class TestDocumentGeneratorGenerateComponent(unittest.TestCase):
+class TestGenerateDocumentComponent(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(
             "tt",
@@ -2974,19 +2938,24 @@ class TestDocumentGeneratorGenerateComponent(unittest.TestCase):
             ),
         ]:
             with self.subTest(tc=tc):
-                gen = sw_compdocs.generator.DocumentGenerator(
-                    label=tc.input_label, lang=tc.input_lang, fmt=tc.input_fmt
+                got_doc = sw_compdocs.generator.generate_document_component(
+                    tc.input_comp,
+                    label=tc.input_label,
+                    lang=tc.input_lang,
+                    fmt=tc.input_fmt,
                 )
-                got_doc = gen.generate_component(tc.input_comp)
                 self.assertEqual(got_doc, tc.want_doc)
 
 
-class TestDocumentGeneratorGenerateComponentList(unittest.TestCase):
+class TestGenerateDocumentComponentList(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(
             "tt",
             [
                 ("input_comp_list", list[sw_compdocs.component.Definition]),
+                ("input_label", sw_compdocs.generator.LabelDict | None),
+                ("input_lang", sw_compdocs.language.Language | None),
+                ("input_fmt", sw_compdocs.template.TemplateFormatter | None),
                 ("want_doc", sw_compdocs.document.Document),
             ],
         )
@@ -2994,6 +2963,9 @@ class TestDocumentGeneratorGenerateComponentList(unittest.TestCase):
         for tc in [
             tt(
                 input_comp_list=[],
+                input_label=None,
+                input_lang=None,
+                input_fmt=None,
                 want_doc=sw_compdocs.document.Document(),
             ),
             tt(
@@ -3001,6 +2973,9 @@ class TestDocumentGeneratorGenerateComponentList(unittest.TestCase):
                     sw_compdocs.component.Definition(name="A"),
                     sw_compdocs.component.Definition(name="B"),
                 ],
+                input_label=None,
+                input_lang=None,
+                input_fmt=None,
                 want_doc=sw_compdocs.document.Document(
                     [
                         sw_compdocs.document.Heading("A", level=1),
@@ -3058,19 +3033,93 @@ class TestDocumentGeneratorGenerateComponentList(unittest.TestCase):
                     ]
                 ),
             ),
+            tt(
+                input_comp_list=[
+                    sw_compdocs.component.Definition(
+                        cid="test",
+                        name="Test",
+                        tooltip_properties=sw_compdocs.component.TooltipProperties(
+                            short_description="Short Description",
+                            description="Description",
+                        ),
+                    ),
+                ],
+                input_label=sw_compdocs.generator.LabelDict(
+                    {
+                        "PROP_TABLE_HEAD_LABEL": "Label",
+                        "PROP_TABLE_HEAD_VALUE": "Value",
+                        "PROP_TABLE_MASS_LABEL": "Mass",
+                        "PROP_TABLE_DIMS_LABEL": "Dimensions (WxDxH)",
+                        "PROP_TABLE_COST_LABEL": "Cost",
+                        "PROP_TABLE_TAGS_LABEL": "Tags",
+                        "PROP_TABLE_FILE_LABEL": "File",
+                    }
+                ),
+                input_lang=sw_compdocs.language.Language(
+                    [
+                        sw_compdocs.language.Translation(
+                            "", "", "PROPERTIES", "プロパティ"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_name", "", "", "テスト"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_s_desc", "", "", "短い説明 $[s_desc]"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_desc", "", "", "長い説明 $[desc]"
+                        ),
+                    ]
+                ),
+                input_fmt=sw_compdocs.template.TemplateFormatter(
+                    {
+                        "s_desc": "foo",
+                        "desc": "bar",
+                    }
+                ),
+                want_doc=sw_compdocs.document.Document(
+                    [
+                        sw_compdocs.document.Heading("テスト", level=1),
+                        sw_compdocs.document.Paragraph("短い説明 foo"),
+                        sw_compdocs.document.Paragraph("長い説明 bar"),
+                        sw_compdocs.document.Heading("プロパティ", level=2),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(["Label", "Value"]),
+                                [
+                                    sw_compdocs.document.TableDataRow(["Mass", "0"]),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["Dimensions (WxDxH)", "1x1x1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(["Cost", "0"]),
+                                    sw_compdocs.document.TableDataRow(["Tags", ""]),
+                                    sw_compdocs.document.TableDataRow(["File", ""]),
+                                ],
+                            )
+                        ),
+                    ]
+                ),
+            ),
         ]:
             with self.subTest(tc=tc):
-                gen = sw_compdocs.generator.DocumentGenerator()
-                got_doc = gen.generate_component_list(tc.input_comp_list)
+                got_doc = sw_compdocs.generator.generate_document_component_list(
+                    tc.input_comp_list,
+                    label=tc.input_label,
+                    lang=tc.input_lang,
+                    fmt=tc.input_fmt,
+                )
                 self.assertEqual(got_doc, tc.want_doc)
 
 
-class TestDocumentGeneratorGenerate(unittest.TestCase):
+class TestGenerateDocument(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(
             "tt",
             [
                 ("input_comp_list", list[sw_compdocs.component.Definition]),
+                ("input_label", sw_compdocs.generator.LabelDict | None),
+                ("input_lang", sw_compdocs.language.Language | None),
+                ("input_fmt", sw_compdocs.template.TemplateFormatter | None),
                 ("want_doc", sw_compdocs.document.Document),
             ],
         )
@@ -3079,6 +3128,9 @@ class TestDocumentGeneratorGenerate(unittest.TestCase):
             # empty
             tt(
                 input_comp_list=[],
+                input_label=None,
+                input_lang=None,
+                input_fmt=None,
                 want_doc=sw_compdocs.document.Document(),
             ),
             # single
@@ -3088,6 +3140,9 @@ class TestDocumentGeneratorGenerate(unittest.TestCase):
                         name="Blocks_1", category=sw_compdocs.component.Category.BLOCKS
                     ),
                 ],
+                input_label=None,
+                input_lang=None,
+                input_fmt=None,
                 want_doc=sw_compdocs.document.Document(
                     [
                         sw_compdocs.document.Heading("Blocks", level=1),
@@ -3142,6 +3197,9 @@ class TestDocumentGeneratorGenerate(unittest.TestCase):
                         category=sw_compdocs.component.Category.BLOCKS,
                     ),
                 ],
+                input_label=None,
+                input_lang=None,
+                input_fmt=None,
                 want_doc=sw_compdocs.document.Document(
                     [
                         sw_compdocs.document.Heading("Blocks", level=1),
@@ -3248,6 +3306,9 @@ class TestDocumentGeneratorGenerate(unittest.TestCase):
                         category=sw_compdocs.component.Category.BLOCKS,
                     ),
                 ],
+                input_label=None,
+                input_lang=None,
+                input_fmt=None,
                 want_doc=sw_compdocs.document.Document(
                     [
                         sw_compdocs.document.Heading("Blocks", level=1),
@@ -3400,6 +3461,9 @@ class TestDocumentGeneratorGenerate(unittest.TestCase):
                         category=sw_compdocs.component.Category.BLOCKS,
                     ),
                 ],
+                input_label=None,
+                input_lang=None,
+                input_fmt=None,
                 want_doc=sw_compdocs.document.Document(
                     [
                         sw_compdocs.document.Heading("Blocks", level=1),
@@ -3837,14 +3901,87 @@ class TestDocumentGeneratorGenerate(unittest.TestCase):
                     ],
                 ),
             ),
+            # label, lang, fmt
+            tt(
+                input_comp_list=[
+                    sw_compdocs.component.Definition(
+                        cid="test",
+                        name="Test",
+                        tooltip_properties=sw_compdocs.component.TooltipProperties(
+                            short_description="Short Description",
+                            description="Description",
+                        ),
+                    ),
+                ],
+                input_label=sw_compdocs.generator.LabelDict(
+                    {
+                        "PROP_TABLE_HEAD_LABEL": "Label",
+                        "PROP_TABLE_HEAD_VALUE": "Value",
+                        "PROP_TABLE_MASS_LABEL": "Mass",
+                        "PROP_TABLE_DIMS_LABEL": "Dimensions (WxDxH)",
+                        "PROP_TABLE_COST_LABEL": "Cost",
+                        "PROP_TABLE_TAGS_LABEL": "Tags",
+                        "PROP_TABLE_FILE_LABEL": "File",
+                    }
+                ),
+                input_lang=sw_compdocs.language.Language(
+                    [
+                        sw_compdocs.language.Translation(
+                            "", "", "PROPERTIES", "プロパティ"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_name", "", "", "テスト"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_s_desc", "", "", "短い説明 $[s_desc]"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_desc", "", "", "長い説明 $[desc]"
+                        ),
+                    ]
+                ),
+                input_fmt=sw_compdocs.template.TemplateFormatter(
+                    {
+                        "s_desc": "foo",
+                        "desc": "bar",
+                    }
+                ),
+                want_doc=sw_compdocs.document.Document(
+                    [
+                        sw_compdocs.document.Heading("Blocks", level=1),
+                        sw_compdocs.document.Heading("テスト", level=2),
+                        sw_compdocs.document.Paragraph("短い説明 foo"),
+                        sw_compdocs.document.Paragraph("長い説明 bar"),
+                        sw_compdocs.document.Heading("プロパティ", level=3),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(["Label", "Value"]),
+                                [
+                                    sw_compdocs.document.TableDataRow(["Mass", "0"]),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["Dimensions (WxDxH)", "1x1x1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(["Cost", "0"]),
+                                    sw_compdocs.document.TableDataRow(["Tags", ""]),
+                                    sw_compdocs.document.TableDataRow(["File", ""]),
+                                ],
+                            )
+                        ),
+                    ]
+                ),
+            ),
         ]:
             with self.subTest(tc=tc):
-                gen = sw_compdocs.generator.DocumentGenerator()
-                got_doc = gen.generate(tc.input_comp_list)
+                got_doc = sw_compdocs.generator.generate_document(
+                    tc.input_comp_list,
+                    label=tc.input_label,
+                    lang=tc.input_lang,
+                    fmt=tc.input_fmt,
+                )
                 self.assertEqual(got_doc, tc.want_doc)
 
 
-class TestSheetGeneratorGenerateComponent(unittest.TestCase):
+class TestGenerateSheetComponent(unittest.TestCase):
     def test(self) -> None:
         tt = typing.NamedTuple(
             "tt",
@@ -4153,19 +4290,20 @@ class TestSheetGeneratorGenerateComponent(unittest.TestCase):
             ),
         ]:
             with self.subTest(tc=tc):
-                gen = sw_compdocs.generator.SheetGenerator(
-                    lang=tc.input_lang, fmt=tc.input_fmt
+                got_record = sw_compdocs.generator.generate_sheet_component(
+                    tc.input_comp, lang=tc.input_lang, fmt=tc.input_fmt
                 )
-                got_record = gen.generate_component(tc.input_comp)
                 self.assertEqual(got_record, tc.want_record)
 
 
-class TestSheetGeneratorGenerateComponentList(unittest.TestCase):
+class TestGenerateSheetComponentList(unittest.TestCase):
     def test(self) -> None:
         tt = typing.NamedTuple(
             "tt",
             [
                 ("input_comp_list", list[sw_compdocs.component.Definition]),
+                ("input_lang", sw_compdocs.language.Language | None),
+                ("input_fmt", sw_compdocs.template.TemplateFormatter | None),
                 ("want_record_list", list[list[str]]),
             ],
         )
@@ -4177,6 +4315,8 @@ class TestSheetGeneratorGenerateComponentList(unittest.TestCase):
                     sw_compdocs.component.Definition(name="Test 2"),
                     sw_compdocs.component.Definition(name="Test 3"),
                 ],
+                input_lang=None,
+                input_fmt=None,
                 want_record_list=[
                     [
                         "Test 1",
@@ -4222,19 +4362,77 @@ class TestSheetGeneratorGenerateComponentList(unittest.TestCase):
                     ],
                 ],
             ),
+            tt(
+                input_comp_list=[
+                    sw_compdocs.component.Definition(
+                        file="test.xml",
+                        cid="test",
+                        name="",
+                        category=sw_compdocs.component.Category.BLOCKS,
+                        mass=1.0,
+                        value=2,
+                        tags="tags",
+                        tooltip_properties=sw_compdocs.component.TooltipProperties(
+                            short_description="",
+                            description="",
+                        ),
+                        voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
+                        voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
+                    )
+                ],
+                input_lang=sw_compdocs.language.Language(
+                    [
+                        sw_compdocs.language.Translation(
+                            "def_test_name", "", "", "$[name]"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_s_desc", "", "", "$[s_desc]"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_desc", "", "", "$[desc]"
+                        ),
+                    ]
+                ),
+                input_fmt=sw_compdocs.template.TemplateFormatter(
+                    {
+                        "name": "Name",
+                        "s_desc": "short_description",
+                        "desc": "description",
+                    }
+                ),
+                want_record_list=[
+                    [
+                        "$[name]",
+                        "test.xml",
+                        "Blocks",
+                        "tags",
+                        "FALSE",
+                        "1",
+                        "2",
+                        "3",
+                        "7",
+                        "5",
+                        "short_description",
+                        "description",
+                    ]
+                ],
+            ),
         ]:
             with self.subTest(tc=tc):
-                gen = sw_compdocs.generator.SheetGenerator()
-                got_record_list = gen.generate_component_list(tc.input_comp_list)
+                got_record_list = sw_compdocs.generator.generate_sheet_component_list(
+                    tc.input_comp_list, lang=tc.input_lang, fmt=tc.input_fmt
+                )
                 self.assertEqual(got_record_list, tc.want_record_list)
 
 
-class TestSheetGeneratorGenerate(unittest.TestCase):
+class TestGenerateSheet(unittest.TestCase):
     def test(self) -> None:
         tt = typing.NamedTuple(
             "tt",
             [
                 ("input_label", sw_compdocs.generator.LabelDict | None),
+                ("input_lang", sw_compdocs.language.Language | None),
+                ("input_fmt", sw_compdocs.template.TemplateFormatter | None),
                 ("input_comp_list", list[sw_compdocs.component.Definition]),
                 ("want_record_list", list[list[str]]),
             ],
@@ -4243,6 +4441,8 @@ class TestSheetGeneratorGenerate(unittest.TestCase):
         for tc in [
             tt(  # normal
                 input_label=None,
+                input_lang=None,
+                input_fmt=None,
                 input_comp_list=[
                     sw_compdocs.component.Definition(name="Test 1"),
                     sw_compdocs.component.Definition(name="Test 2"),
@@ -4309,6 +4509,8 @@ class TestSheetGeneratorGenerate(unittest.TestCase):
             ),
             tt(  # sort
                 input_label=None,
+                input_lang=None,
+                input_fmt=None,
                 input_comp_list=[
                     sw_compdocs.component.Definition(
                         cid="a",
@@ -4425,6 +4627,8 @@ class TestSheetGeneratorGenerate(unittest.TestCase):
                         "SHEET_HEAD_DESC": "Description",
                     }
                 ),
+                input_lang=None,
+                input_fmt=None,
                 input_comp_list=[
                     sw_compdocs.component.Definition(name="Test 1"),
                     sw_compdocs.component.Definition(name="Test 2"),
@@ -4489,8 +4693,82 @@ class TestSheetGeneratorGenerate(unittest.TestCase):
                     ],
                 ],
             ),
+            tt(
+                input_label=None,
+                input_lang=sw_compdocs.language.Language(
+                    [
+                        sw_compdocs.language.Translation(
+                            "def_test_name", "", "", "$[name]"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_s_desc", "", "", "$[s_desc]"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_desc", "", "", "$[desc]"
+                        ),
+                    ]
+                ),
+                input_fmt=sw_compdocs.template.TemplateFormatter(
+                    {
+                        "name": "Name",
+                        "s_desc": "short_description",
+                        "desc": "description",
+                    }
+                ),
+                input_comp_list=[
+                    sw_compdocs.component.Definition(
+                        file="test.xml",
+                        cid="test",
+                        name="",
+                        category=sw_compdocs.component.Category.BLOCKS,
+                        mass=1.0,
+                        value=2,
+                        tags="tags",
+                        tooltip_properties=sw_compdocs.component.TooltipProperties(
+                            short_description="",
+                            description="",
+                        ),
+                        voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
+                        voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
+                    )
+                ],
+                want_record_list=[
+                    [
+                        "SHEET_HEAD_NAME",
+                        "SHEET_HEAD_FILE",
+                        "SHEET_HEAD_CATEGORY",
+                        "SHEET_HEAD_TAGS",
+                        "SHEET_HEAD_DEPRECATED",
+                        "SHEET_HEAD_MASS",
+                        "SHEET_HEAD_COST",
+                        "SHEET_HEAD_WIDTH",
+                        "SHEET_HEAD_DEPTH",
+                        "SHEET_HEAD_HEIGHT",
+                        "SHEET_HEAD_SDESC",
+                        "SHEET_HEAD_DESC",
+                    ],
+                    [
+                        "$[name]",
+                        "test.xml",
+                        "Blocks",
+                        "tags",
+                        "FALSE",
+                        "1",
+                        "2",
+                        "3",
+                        "7",
+                        "5",
+                        "short_description",
+                        "description",
+                    ],
+                ],
+            ),
         ]:
             with self.subTest(tc=tc):
-                gen = sw_compdocs.generator.SheetGenerator(label=tc.input_label)
-                got_record_list = gen.generate(tc.input_comp_list)
+                got_record_list = sw_compdocs.generator.generate_sheet(
+                    tc.input_comp_list,
+                    label=tc.input_label,
+                    lang=tc.input_lang,
+                    fmt=tc.input_fmt,
+                )
                 self.assertEqual(got_record_list, tc.want_record_list)
