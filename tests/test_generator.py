@@ -242,23 +242,26 @@ class TestGenerateDocumentPropertyTableSingle(unittest.TestCase):
                 want_tbl=sw_compdocs.document.Table(
                     sw_compdocs.document.TableData(
                         sw_compdocs.document.TableDataRow(
-                            ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                            [
+                                "PROP_TABLE_SINGLE_HEAD_LABEL",
+                                "PROP_TABLE_SINGLE_HEAD_VALUE",
+                            ]
                         ),
                         [
                             sw_compdocs.document.TableDataRow(
-                                ["PROP_TABLE_MASS_LABEL", "10"]
+                                ["PROP_TABLE_SINGLE_MASS_LABEL", "10"]
                             ),
                             sw_compdocs.document.TableDataRow(
-                                ["PROP_TABLE_DIMS_LABEL", "1x5x3"]
+                                ["PROP_TABLE_SINGLE_DIMS_LABEL", "1x5x3"]
                             ),
                             sw_compdocs.document.TableDataRow(
-                                ["PROP_TABLE_COST_LABEL", "100"]
+                                ["PROP_TABLE_SINGLE_COST_LABEL", "100"]
                             ),
                             sw_compdocs.document.TableDataRow(
-                                ["PROP_TABLE_TAGS_LABEL", "tags"]
+                                ["PROP_TABLE_SINGLE_TAGS_LABEL", "tags"]
                             ),
                             sw_compdocs.document.TableDataRow(
-                                ["PROP_TABLE_FILE_LABEL", "file"]
+                                ["PROP_TABLE_SINGLE_FILE_LABEL", "file"]
                             ),
                         ],
                     )
@@ -278,23 +281,26 @@ class TestGenerateDocumentPropertyTableSingle(unittest.TestCase):
                 want_tbl=sw_compdocs.document.Table(
                     sw_compdocs.document.TableData(
                         sw_compdocs.document.TableDataRow(
-                            ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                            [
+                                "PROP_TABLE_SINGLE_HEAD_LABEL",
+                                "PROP_TABLE_SINGLE_HEAD_VALUE",
+                            ]
                         ),
                         [
                             sw_compdocs.document.TableDataRow(
-                                ["PROP_TABLE_MASS_LABEL", "0.5"]
+                                ["PROP_TABLE_SINGLE_MASS_LABEL", "0.5"]
                             ),
                             sw_compdocs.document.TableDataRow(
-                                ["PROP_TABLE_DIMS_LABEL", "1x5x3"]
+                                ["PROP_TABLE_SINGLE_DIMS_LABEL", "1x5x3"]
                             ),
                             sw_compdocs.document.TableDataRow(
-                                ["PROP_TABLE_COST_LABEL", "100"]
+                                ["PROP_TABLE_SINGLE_COST_LABEL", "100"]
                             ),
                             sw_compdocs.document.TableDataRow(
-                                ["PROP_TABLE_TAGS_LABEL", "tags"]
+                                ["PROP_TABLE_SINGLE_TAGS_LABEL", "tags"]
                             ),
                             sw_compdocs.document.TableDataRow(
-                                ["PROP_TABLE_FILE_LABEL", "file"]
+                                ["PROP_TABLE_SINGLE_FILE_LABEL", "file"]
                             ),
                         ],
                     )
@@ -313,23 +319,26 @@ class TestGenerateDocumentPropertyTableSingle(unittest.TestCase):
                 want_tbl=sw_compdocs.document.Table(
                     sw_compdocs.document.TableData(
                         sw_compdocs.document.TableDataRow(
-                            ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                            [
+                                "PROP_TABLE_SINGLE_HEAD_LABEL",
+                                "PROP_TABLE_SINGLE_HEAD_VALUE",
+                            ]
                         ),
                         [
                             sw_compdocs.document.TableDataRow(
-                                ["PROP_TABLE_MASS_LABEL", "0.25"]
+                                ["PROP_TABLE_SINGLE_MASS_LABEL", "0.25"]
                             ),
                             sw_compdocs.document.TableDataRow(
-                                ["PROP_TABLE_DIMS_LABEL", "1x5x3"]
+                                ["PROP_TABLE_SINGLE_DIMS_LABEL", "1x5x3"]
                             ),
                             sw_compdocs.document.TableDataRow(
-                                ["PROP_TABLE_COST_LABEL", "100"]
+                                ["PROP_TABLE_SINGLE_COST_LABEL", "100"]
                             ),
                             sw_compdocs.document.TableDataRow(
-                                ["PROP_TABLE_TAGS_LABEL", "tags"]
+                                ["PROP_TABLE_SINGLE_TAGS_LABEL", "tags"]
                             ),
                             sw_compdocs.document.TableDataRow(
-                                ["PROP_TABLE_FILE_LABEL", "file"]
+                                ["PROP_TABLE_SINGLE_FILE_LABEL", "file"]
                             ),
                         ],
                     )
@@ -349,23 +358,26 @@ class TestGenerateDocumentPropertyTableSingle(unittest.TestCase):
                 want_tbl=sw_compdocs.document.Table(
                     sw_compdocs.document.TableData(
                         sw_compdocs.document.TableDataRow(
-                            ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                            [
+                                "PROP_TABLE_SINGLE_HEAD_LABEL",
+                                "PROP_TABLE_SINGLE_HEAD_VALUE",
+                            ]
                         ),
                         [
                             sw_compdocs.document.TableDataRow(
-                                ["PROP_TABLE_MASS_LABEL", "10"]
+                                ["PROP_TABLE_SINGLE_MASS_LABEL", "10"]
                             ),
                             sw_compdocs.document.TableDataRow(
-                                ["PROP_TABLE_DIMS_LABEL", "1x5x3"]
+                                ["PROP_TABLE_SINGLE_DIMS_LABEL", "1x5x3"]
                             ),
                             sw_compdocs.document.TableDataRow(
-                                ["PROP_TABLE_COST_LABEL", "100"]
+                                ["PROP_TABLE_SINGLE_COST_LABEL", "100"]
                             ),
                             sw_compdocs.document.TableDataRow(
-                                ["PROP_TABLE_TAGS_LABEL", "tags"]
+                                ["PROP_TABLE_SINGLE_TAGS_LABEL", "tags"]
                             ),
                             sw_compdocs.document.TableDataRow(
-                                ["PROP_TABLE_FILE_LABEL", ""]
+                                ["PROP_TABLE_SINGLE_FILE_LABEL", ""]
                             ),
                         ],
                     )
@@ -384,23 +396,26 @@ class TestGenerateDocumentPropertyTableSingle(unittest.TestCase):
                 want_tbl=sw_compdocs.document.Table(
                     sw_compdocs.document.TableData(
                         sw_compdocs.document.TableDataRow(
-                            ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                            [
+                                "PROP_TABLE_SINGLE_HEAD_LABEL",
+                                "PROP_TABLE_SINGLE_HEAD_VALUE",
+                            ]
                         ),
                         [
                             sw_compdocs.document.TableDataRow(
-                                ["PROP_TABLE_MASS_LABEL", "10"]
+                                ["PROP_TABLE_SINGLE_MASS_LABEL", "10"]
                             ),
                             sw_compdocs.document.TableDataRow(
-                                ["PROP_TABLE_DIMS_LABEL", "1x5x3"]
+                                ["PROP_TABLE_SINGLE_DIMS_LABEL", "1x5x3"]
                             ),
                             sw_compdocs.document.TableDataRow(
-                                ["PROP_TABLE_COST_LABEL", "100"]
+                                ["PROP_TABLE_SINGLE_COST_LABEL", "100"]
                             ),
                             sw_compdocs.document.TableDataRow(
-                                ["PROP_TABLE_TAGS_LABEL", "tags"]
+                                ["PROP_TABLE_SINGLE_TAGS_LABEL", "tags"]
                             ),
                             sw_compdocs.document.TableDataRow(
-                                ["PROP_TABLE_FILE_LABEL", "definition.xml"]
+                                ["PROP_TABLE_SINGLE_FILE_LABEL", "definition.xml"]
                             ),
                         ],
                     )
@@ -410,13 +425,13 @@ class TestGenerateDocumentPropertyTableSingle(unittest.TestCase):
             tt(
                 input_label=sw_compdocs.generator.LabelDict(
                     {
-                        "PROP_TABLE_HEAD_LABEL": "Label",
-                        "PROP_TABLE_HEAD_VALUE": "Value",
-                        "PROP_TABLE_MASS_LABEL": "Mass",
-                        "PROP_TABLE_DIMS_LABEL": "Dimensions",
-                        "PROP_TABLE_COST_LABEL": "Cost",
-                        "PROP_TABLE_TAGS_LABEL": "Tags",
-                        "PROP_TABLE_FILE_LABEL": "File",
+                        "PROP_TABLE_SINGLE_HEAD_LABEL": "Label",
+                        "PROP_TABLE_SINGLE_HEAD_VALUE": "Value",
+                        "PROP_TABLE_SINGLE_MASS_LABEL": "Mass",
+                        "PROP_TABLE_SINGLE_DIMS_LABEL": "Dimensions",
+                        "PROP_TABLE_SINGLE_COST_LABEL": "Cost",
+                        "PROP_TABLE_SINGLE_TAGS_LABEL": "Tags",
+                        "PROP_TABLE_SINGLE_FILE_LABEL": "File",
                     }
                 ),
                 input_comp=sw_compdocs.component.Definition(
@@ -471,23 +486,26 @@ class TestGenerateDocumentProperty(unittest.TestCase):
                         sw_compdocs.document.Table(
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
-                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                    [
+                                        "PROP_TABLE_SINGLE_HEAD_LABEL",
+                                        "PROP_TABLE_SINGLE_HEAD_VALUE",
+                                    ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                        ["PROP_TABLE_SINGLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                        ["PROP_TABLE_SINGLE_DIMS_LABEL", "1x1x1"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_COST_LABEL", "0"]
+                                        ["PROP_TABLE_SINGLE_COST_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                        ["PROP_TABLE_SINGLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                        ["PROP_TABLE_SINGLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -511,23 +529,26 @@ class TestGenerateDocumentProperty(unittest.TestCase):
                         sw_compdocs.document.Table(
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
-                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                    [
+                                        "PROP_TABLE_SINGLE_HEAD_LABEL",
+                                        "PROP_TABLE_SINGLE_HEAD_VALUE",
+                                    ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                        ["PROP_TABLE_SINGLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                        ["PROP_TABLE_SINGLE_DIMS_LABEL", "1x1x1"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_COST_LABEL", "0"]
+                                        ["PROP_TABLE_SINGLE_COST_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                        ["PROP_TABLE_SINGLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                        ["PROP_TABLE_SINGLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -1843,23 +1864,26 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                         sw_compdocs.document.Table(
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
-                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                    [
+                                        "PROP_TABLE_SINGLE_HEAD_LABEL",
+                                        "PROP_TABLE_SINGLE_HEAD_VALUE",
+                                    ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_MASS_LABEL", "1"]
+                                        ["PROP_TABLE_SINGLE_MASS_LABEL", "1"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_DIMS_LABEL", "1x1x2"]
+                                        ["PROP_TABLE_SINGLE_DIMS_LABEL", "1x1x2"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_COST_LABEL", "100"]
+                                        ["PROP_TABLE_SINGLE_COST_LABEL", "100"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_TAGS_LABEL", "basic"]
+                                        ["PROP_TABLE_SINGLE_TAGS_LABEL", "basic"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_FILE_LABEL", "clock.xml"]
+                                        ["PROP_TABLE_SINGLE_FILE_LABEL", "clock.xml"]
                                     ),
                                 ],
                             )
@@ -1992,23 +2016,26 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                         sw_compdocs.document.Table(
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
-                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                    [
+                                        "PROP_TABLE_SINGLE_HEAD_LABEL",
+                                        "PROP_TABLE_SINGLE_HEAD_VALUE",
+                                    ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_MASS_LABEL", "1"]
+                                        ["PROP_TABLE_SINGLE_MASS_LABEL", "1"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_DIMS_LABEL", "1x1x2"]
+                                        ["PROP_TABLE_SINGLE_DIMS_LABEL", "1x1x2"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_COST_LABEL", "100"]
+                                        ["PROP_TABLE_SINGLE_COST_LABEL", "100"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_TAGS_LABEL", "basic"]
+                                        ["PROP_TABLE_SINGLE_TAGS_LABEL", "basic"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_FILE_LABEL", "clock.xml"]
+                                        ["PROP_TABLE_SINGLE_FILE_LABEL", "clock.xml"]
                                     ),
                                 ],
                             )
@@ -2083,13 +2110,13 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                 input_label=sw_compdocs.generator.LabelDict(
                     {
                         "DEPRECATED_TEXT": "この部品は非推奨です。",
-                        "PROP_TABLE_HEAD_LABEL": "ラベル",
-                        "PROP_TABLE_HEAD_VALUE": "値",
-                        "PROP_TABLE_MASS_LABEL": "重量",
-                        "PROP_TABLE_DIMS_LABEL": "サイズ(WxDxH)",
-                        "PROP_TABLE_COST_LABEL": "値段",
-                        "PROP_TABLE_TAGS_LABEL": "タグ",
-                        "PROP_TABLE_FILE_LABEL": "ファイル",
+                        "PROP_TABLE_SINGLE_HEAD_LABEL": "ラベル",
+                        "PROP_TABLE_SINGLE_HEAD_VALUE": "値",
+                        "PROP_TABLE_SINGLE_MASS_LABEL": "重量",
+                        "PROP_TABLE_SINGLE_DIMS_LABEL": "サイズ(WxDxH)",
+                        "PROP_TABLE_SINGLE_COST_LABEL": "値段",
+                        "PROP_TABLE_SINGLE_TAGS_LABEL": "タグ",
+                        "PROP_TABLE_SINGLE_FILE_LABEL": "ファイル",
                         "LOGIC_TABLE_HEAD_TYPE": "型",
                         "LOGIC_TABLE_HEAD_LABEL": "ラベル",
                         "LOGIC_TABLE_HEAD_DESC": "説明",
@@ -2326,13 +2353,13 @@ class TestGenerateDocumentComponent(unittest.TestCase):
             tt(  # label, lang, template
                 input_label=sw_compdocs.generator.LabelDict(
                     {
-                        "PROP_TABLE_HEAD_LABEL": "ラベル",
-                        "PROP_TABLE_HEAD_VALUE": "値",
-                        "PROP_TABLE_MASS_LABEL": "重量",
-                        "PROP_TABLE_DIMS_LABEL": "サイズ(WxDxH)",
-                        "PROP_TABLE_COST_LABEL": "値段",
-                        "PROP_TABLE_TAGS_LABEL": "タグ",
-                        "PROP_TABLE_FILE_LABEL": "ファイル",
+                        "PROP_TABLE_SINGLE_HEAD_LABEL": "ラベル",
+                        "PROP_TABLE_SINGLE_HEAD_VALUE": "値",
+                        "PROP_TABLE_SINGLE_MASS_LABEL": "重量",
+                        "PROP_TABLE_SINGLE_DIMS_LABEL": "サイズ(WxDxH)",
+                        "PROP_TABLE_SINGLE_COST_LABEL": "値段",
+                        "PROP_TABLE_SINGLE_TAGS_LABEL": "タグ",
+                        "PROP_TABLE_SINGLE_FILE_LABEL": "ファイル",
                         "LOGIC_TABLE_HEAD_TYPE": "型",
                         "LOGIC_TABLE_HEAD_LABEL": "ラベル",
                         "LOGIC_TABLE_HEAD_DESC": "説明",
@@ -2561,13 +2588,13 @@ class TestGenerateDocumentComponent(unittest.TestCase):
             tt(  # label, lang, template
                 input_label=sw_compdocs.generator.LabelDict(
                     {
-                        "PROP_TABLE_HEAD_LABEL": "ラベル",
-                        "PROP_TABLE_HEAD_VALUE": "値",
-                        "PROP_TABLE_MASS_LABEL": "重量",
-                        "PROP_TABLE_DIMS_LABEL": "サイズ(WxDxH)",
-                        "PROP_TABLE_COST_LABEL": "値段",
-                        "PROP_TABLE_TAGS_LABEL": "タグ",
-                        "PROP_TABLE_FILE_LABEL": "ファイル",
+                        "PROP_TABLE_SINGLE_HEAD_LABEL": "ラベル",
+                        "PROP_TABLE_SINGLE_HEAD_VALUE": "値",
+                        "PROP_TABLE_SINGLE_MASS_LABEL": "重量",
+                        "PROP_TABLE_SINGLE_DIMS_LABEL": "サイズ(WxDxH)",
+                        "PROP_TABLE_SINGLE_COST_LABEL": "値段",
+                        "PROP_TABLE_SINGLE_TAGS_LABEL": "タグ",
+                        "PROP_TABLE_SINGLE_FILE_LABEL": "ファイル",
                         "LOGIC_TABLE_HEAD_TYPE": "型",
                         "LOGIC_TABLE_HEAD_LABEL": "ラベル",
                         "LOGIC_TABLE_HEAD_DESC": "説明",
@@ -2707,23 +2734,26 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                         sw_compdocs.document.Table(
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
-                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                    [
+                                        "PROP_TABLE_SINGLE_HEAD_LABEL",
+                                        "PROP_TABLE_SINGLE_HEAD_VALUE",
+                                    ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_MASS_LABEL", "1"]
+                                        ["PROP_TABLE_SINGLE_MASS_LABEL", "1"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_DIMS_LABEL", "1x1x2"]
+                                        ["PROP_TABLE_SINGLE_DIMS_LABEL", "1x1x2"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_COST_LABEL", "100"]
+                                        ["PROP_TABLE_SINGLE_COST_LABEL", "100"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_TAGS_LABEL", "basic"]
+                                        ["PROP_TABLE_SINGLE_TAGS_LABEL", "basic"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_FILE_LABEL", "clock.xml"]
+                                        ["PROP_TABLE_SINGLE_FILE_LABEL", "clock.xml"]
                                     ),
                                 ],
                             )
@@ -2849,23 +2879,26 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                         sw_compdocs.document.Table(
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
-                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                    [
+                                        "PROP_TABLE_SINGLE_HEAD_LABEL",
+                                        "PROP_TABLE_SINGLE_HEAD_VALUE",
+                                    ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_MASS_LABEL", "1"]
+                                        ["PROP_TABLE_SINGLE_MASS_LABEL", "1"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_DIMS_LABEL", "1x1x2"]
+                                        ["PROP_TABLE_SINGLE_DIMS_LABEL", "1x1x2"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_COST_LABEL", "100"]
+                                        ["PROP_TABLE_SINGLE_COST_LABEL", "100"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_TAGS_LABEL", "basic"]
+                                        ["PROP_TABLE_SINGLE_TAGS_LABEL", "basic"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_FILE_LABEL", "clock.xml"]
+                                        ["PROP_TABLE_SINGLE_FILE_LABEL", "clock.xml"]
                                     ),
                                 ],
                             )
@@ -2983,23 +3016,26 @@ class TestGenerateDocumentComponentList(unittest.TestCase):
                         sw_compdocs.document.Table(
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
-                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                    [
+                                        "PROP_TABLE_SINGLE_HEAD_LABEL",
+                                        "PROP_TABLE_SINGLE_HEAD_VALUE",
+                                    ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                        ["PROP_TABLE_SINGLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                        ["PROP_TABLE_SINGLE_DIMS_LABEL", "1x1x1"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_COST_LABEL", "0"]
+                                        ["PROP_TABLE_SINGLE_COST_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                        ["PROP_TABLE_SINGLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                        ["PROP_TABLE_SINGLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -3009,23 +3045,26 @@ class TestGenerateDocumentComponentList(unittest.TestCase):
                         sw_compdocs.document.Table(
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
-                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                    [
+                                        "PROP_TABLE_SINGLE_HEAD_LABEL",
+                                        "PROP_TABLE_SINGLE_HEAD_VALUE",
+                                    ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                        ["PROP_TABLE_SINGLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                        ["PROP_TABLE_SINGLE_DIMS_LABEL", "1x1x1"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_COST_LABEL", "0"]
+                                        ["PROP_TABLE_SINGLE_COST_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                        ["PROP_TABLE_SINGLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                        ["PROP_TABLE_SINGLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -3046,13 +3085,13 @@ class TestGenerateDocumentComponentList(unittest.TestCase):
                 ],
                 input_label=sw_compdocs.generator.LabelDict(
                     {
-                        "PROP_TABLE_HEAD_LABEL": "Label",
-                        "PROP_TABLE_HEAD_VALUE": "Value",
-                        "PROP_TABLE_MASS_LABEL": "Mass",
-                        "PROP_TABLE_DIMS_LABEL": "Dimensions (WxDxH)",
-                        "PROP_TABLE_COST_LABEL": "Cost",
-                        "PROP_TABLE_TAGS_LABEL": "Tags",
-                        "PROP_TABLE_FILE_LABEL": "File",
+                        "PROP_TABLE_SINGLE_HEAD_LABEL": "Label",
+                        "PROP_TABLE_SINGLE_HEAD_VALUE": "Value",
+                        "PROP_TABLE_SINGLE_MASS_LABEL": "Mass",
+                        "PROP_TABLE_SINGLE_DIMS_LABEL": "Dimensions (WxDxH)",
+                        "PROP_TABLE_SINGLE_COST_LABEL": "Cost",
+                        "PROP_TABLE_SINGLE_TAGS_LABEL": "Tags",
+                        "PROP_TABLE_SINGLE_FILE_LABEL": "File",
                     }
                 ),
                 input_lang=sw_compdocs.language.Language(
@@ -3151,23 +3190,26 @@ class TestGenerateDocument(unittest.TestCase):
                         sw_compdocs.document.Table(
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
-                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                    [
+                                        "PROP_TABLE_SINGLE_HEAD_LABEL",
+                                        "PROP_TABLE_SINGLE_HEAD_VALUE",
+                                    ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                        ["PROP_TABLE_SINGLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                        ["PROP_TABLE_SINGLE_DIMS_LABEL", "1x1x1"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_COST_LABEL", "0"]
+                                        ["PROP_TABLE_SINGLE_COST_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                        ["PROP_TABLE_SINGLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                        ["PROP_TABLE_SINGLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -3208,23 +3250,26 @@ class TestGenerateDocument(unittest.TestCase):
                         sw_compdocs.document.Table(
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
-                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                    [
+                                        "PROP_TABLE_SINGLE_HEAD_LABEL",
+                                        "PROP_TABLE_SINGLE_HEAD_VALUE",
+                                    ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                        ["PROP_TABLE_SINGLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                        ["PROP_TABLE_SINGLE_DIMS_LABEL", "1x1x1"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_COST_LABEL", "3"]
+                                        ["PROP_TABLE_SINGLE_COST_LABEL", "3"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                        ["PROP_TABLE_SINGLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                        ["PROP_TABLE_SINGLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -3234,23 +3279,26 @@ class TestGenerateDocument(unittest.TestCase):
                         sw_compdocs.document.Table(
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
-                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                    [
+                                        "PROP_TABLE_SINGLE_HEAD_LABEL",
+                                        "PROP_TABLE_SINGLE_HEAD_VALUE",
+                                    ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                        ["PROP_TABLE_SINGLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                        ["PROP_TABLE_SINGLE_DIMS_LABEL", "1x1x1"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_COST_LABEL", "2"]
+                                        ["PROP_TABLE_SINGLE_COST_LABEL", "2"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                        ["PROP_TABLE_SINGLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                        ["PROP_TABLE_SINGLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -3260,23 +3308,26 @@ class TestGenerateDocument(unittest.TestCase):
                         sw_compdocs.document.Table(
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
-                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                    [
+                                        "PROP_TABLE_SINGLE_HEAD_LABEL",
+                                        "PROP_TABLE_SINGLE_HEAD_VALUE",
+                                    ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                        ["PROP_TABLE_SINGLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                        ["PROP_TABLE_SINGLE_DIMS_LABEL", "1x1x1"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_COST_LABEL", "1"]
+                                        ["PROP_TABLE_SINGLE_COST_LABEL", "1"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                        ["PROP_TABLE_SINGLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                        ["PROP_TABLE_SINGLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -3317,23 +3368,26 @@ class TestGenerateDocument(unittest.TestCase):
                         sw_compdocs.document.Table(
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
-                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                    [
+                                        "PROP_TABLE_SINGLE_HEAD_LABEL",
+                                        "PROP_TABLE_SINGLE_HEAD_VALUE",
+                                    ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                        ["PROP_TABLE_SINGLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                        ["PROP_TABLE_SINGLE_DIMS_LABEL", "1x1x1"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_COST_LABEL", "1"]
+                                        ["PROP_TABLE_SINGLE_COST_LABEL", "1"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                        ["PROP_TABLE_SINGLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                        ["PROP_TABLE_SINGLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -3343,23 +3397,26 @@ class TestGenerateDocument(unittest.TestCase):
                         sw_compdocs.document.Table(
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
-                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                    [
+                                        "PROP_TABLE_SINGLE_HEAD_LABEL",
+                                        "PROP_TABLE_SINGLE_HEAD_VALUE",
+                                    ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                        ["PROP_TABLE_SINGLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                        ["PROP_TABLE_SINGLE_DIMS_LABEL", "1x1x1"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_COST_LABEL", "2"]
+                                        ["PROP_TABLE_SINGLE_COST_LABEL", "2"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                        ["PROP_TABLE_SINGLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                        ["PROP_TABLE_SINGLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -3369,23 +3426,26 @@ class TestGenerateDocument(unittest.TestCase):
                         sw_compdocs.document.Table(
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
-                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                    [
+                                        "PROP_TABLE_SINGLE_HEAD_LABEL",
+                                        "PROP_TABLE_SINGLE_HEAD_VALUE",
+                                    ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                        ["PROP_TABLE_SINGLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                        ["PROP_TABLE_SINGLE_DIMS_LABEL", "1x1x1"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_COST_LABEL", "3"]
+                                        ["PROP_TABLE_SINGLE_COST_LABEL", "3"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                        ["PROP_TABLE_SINGLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                        ["PROP_TABLE_SINGLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -3472,23 +3532,26 @@ class TestGenerateDocument(unittest.TestCase):
                         sw_compdocs.document.Table(
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
-                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                    [
+                                        "PROP_TABLE_SINGLE_HEAD_LABEL",
+                                        "PROP_TABLE_SINGLE_HEAD_VALUE",
+                                    ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                        ["PROP_TABLE_SINGLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                        ["PROP_TABLE_SINGLE_DIMS_LABEL", "1x1x1"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_COST_LABEL", "0"]
+                                        ["PROP_TABLE_SINGLE_COST_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                        ["PROP_TABLE_SINGLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                        ["PROP_TABLE_SINGLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -3499,23 +3562,26 @@ class TestGenerateDocument(unittest.TestCase):
                         sw_compdocs.document.Table(
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
-                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                    [
+                                        "PROP_TABLE_SINGLE_HEAD_LABEL",
+                                        "PROP_TABLE_SINGLE_HEAD_VALUE",
+                                    ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                        ["PROP_TABLE_SINGLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                        ["PROP_TABLE_SINGLE_DIMS_LABEL", "1x1x1"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_COST_LABEL", "0"]
+                                        ["PROP_TABLE_SINGLE_COST_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                        ["PROP_TABLE_SINGLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                        ["PROP_TABLE_SINGLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -3526,23 +3592,26 @@ class TestGenerateDocument(unittest.TestCase):
                         sw_compdocs.document.Table(
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
-                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                    [
+                                        "PROP_TABLE_SINGLE_HEAD_LABEL",
+                                        "PROP_TABLE_SINGLE_HEAD_VALUE",
+                                    ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                        ["PROP_TABLE_SINGLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                        ["PROP_TABLE_SINGLE_DIMS_LABEL", "1x1x1"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_COST_LABEL", "0"]
+                                        ["PROP_TABLE_SINGLE_COST_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                        ["PROP_TABLE_SINGLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                        ["PROP_TABLE_SINGLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -3553,23 +3622,26 @@ class TestGenerateDocument(unittest.TestCase):
                         sw_compdocs.document.Table(
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
-                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                    [
+                                        "PROP_TABLE_SINGLE_HEAD_LABEL",
+                                        "PROP_TABLE_SINGLE_HEAD_VALUE",
+                                    ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                        ["PROP_TABLE_SINGLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                        ["PROP_TABLE_SINGLE_DIMS_LABEL", "1x1x1"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_COST_LABEL", "0"]
+                                        ["PROP_TABLE_SINGLE_COST_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                        ["PROP_TABLE_SINGLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                        ["PROP_TABLE_SINGLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -3580,23 +3652,26 @@ class TestGenerateDocument(unittest.TestCase):
                         sw_compdocs.document.Table(
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
-                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                    [
+                                        "PROP_TABLE_SINGLE_HEAD_LABEL",
+                                        "PROP_TABLE_SINGLE_HEAD_VALUE",
+                                    ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                        ["PROP_TABLE_SINGLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                        ["PROP_TABLE_SINGLE_DIMS_LABEL", "1x1x1"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_COST_LABEL", "0"]
+                                        ["PROP_TABLE_SINGLE_COST_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                        ["PROP_TABLE_SINGLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                        ["PROP_TABLE_SINGLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -3607,23 +3682,26 @@ class TestGenerateDocument(unittest.TestCase):
                         sw_compdocs.document.Table(
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
-                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                    [
+                                        "PROP_TABLE_SINGLE_HEAD_LABEL",
+                                        "PROP_TABLE_SINGLE_HEAD_VALUE",
+                                    ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                        ["PROP_TABLE_SINGLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                        ["PROP_TABLE_SINGLE_DIMS_LABEL", "1x1x1"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_COST_LABEL", "0"]
+                                        ["PROP_TABLE_SINGLE_COST_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                        ["PROP_TABLE_SINGLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                        ["PROP_TABLE_SINGLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -3634,23 +3712,26 @@ class TestGenerateDocument(unittest.TestCase):
                         sw_compdocs.document.Table(
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
-                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                    [
+                                        "PROP_TABLE_SINGLE_HEAD_LABEL",
+                                        "PROP_TABLE_SINGLE_HEAD_VALUE",
+                                    ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                        ["PROP_TABLE_SINGLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                        ["PROP_TABLE_SINGLE_DIMS_LABEL", "1x1x1"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_COST_LABEL", "0"]
+                                        ["PROP_TABLE_SINGLE_COST_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                        ["PROP_TABLE_SINGLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                        ["PROP_TABLE_SINGLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -3661,23 +3742,26 @@ class TestGenerateDocument(unittest.TestCase):
                         sw_compdocs.document.Table(
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
-                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                    [
+                                        "PROP_TABLE_SINGLE_HEAD_LABEL",
+                                        "PROP_TABLE_SINGLE_HEAD_VALUE",
+                                    ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                        ["PROP_TABLE_SINGLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                        ["PROP_TABLE_SINGLE_DIMS_LABEL", "1x1x1"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_COST_LABEL", "0"]
+                                        ["PROP_TABLE_SINGLE_COST_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                        ["PROP_TABLE_SINGLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                        ["PROP_TABLE_SINGLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -3688,23 +3772,26 @@ class TestGenerateDocument(unittest.TestCase):
                         sw_compdocs.document.Table(
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
-                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                    [
+                                        "PROP_TABLE_SINGLE_HEAD_LABEL",
+                                        "PROP_TABLE_SINGLE_HEAD_VALUE",
+                                    ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                        ["PROP_TABLE_SINGLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                        ["PROP_TABLE_SINGLE_DIMS_LABEL", "1x1x1"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_COST_LABEL", "0"]
+                                        ["PROP_TABLE_SINGLE_COST_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                        ["PROP_TABLE_SINGLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                        ["PROP_TABLE_SINGLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -3715,23 +3802,26 @@ class TestGenerateDocument(unittest.TestCase):
                         sw_compdocs.document.Table(
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
-                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                    [
+                                        "PROP_TABLE_SINGLE_HEAD_LABEL",
+                                        "PROP_TABLE_SINGLE_HEAD_VALUE",
+                                    ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                        ["PROP_TABLE_SINGLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                        ["PROP_TABLE_SINGLE_DIMS_LABEL", "1x1x1"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_COST_LABEL", "0"]
+                                        ["PROP_TABLE_SINGLE_COST_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                        ["PROP_TABLE_SINGLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                        ["PROP_TABLE_SINGLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -3742,23 +3832,26 @@ class TestGenerateDocument(unittest.TestCase):
                         sw_compdocs.document.Table(
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
-                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                    [
+                                        "PROP_TABLE_SINGLE_HEAD_LABEL",
+                                        "PROP_TABLE_SINGLE_HEAD_VALUE",
+                                    ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                        ["PROP_TABLE_SINGLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                        ["PROP_TABLE_SINGLE_DIMS_LABEL", "1x1x1"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_COST_LABEL", "0"]
+                                        ["PROP_TABLE_SINGLE_COST_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                        ["PROP_TABLE_SINGLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                        ["PROP_TABLE_SINGLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -3769,23 +3862,26 @@ class TestGenerateDocument(unittest.TestCase):
                         sw_compdocs.document.Table(
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
-                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                    [
+                                        "PROP_TABLE_SINGLE_HEAD_LABEL",
+                                        "PROP_TABLE_SINGLE_HEAD_VALUE",
+                                    ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                        ["PROP_TABLE_SINGLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                        ["PROP_TABLE_SINGLE_DIMS_LABEL", "1x1x1"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_COST_LABEL", "0"]
+                                        ["PROP_TABLE_SINGLE_COST_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                        ["PROP_TABLE_SINGLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                        ["PROP_TABLE_SINGLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -3796,23 +3892,26 @@ class TestGenerateDocument(unittest.TestCase):
                         sw_compdocs.document.Table(
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
-                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                    [
+                                        "PROP_TABLE_SINGLE_HEAD_LABEL",
+                                        "PROP_TABLE_SINGLE_HEAD_VALUE",
+                                    ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                        ["PROP_TABLE_SINGLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                        ["PROP_TABLE_SINGLE_DIMS_LABEL", "1x1x1"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_COST_LABEL", "0"]
+                                        ["PROP_TABLE_SINGLE_COST_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                        ["PROP_TABLE_SINGLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                        ["PROP_TABLE_SINGLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -3823,23 +3922,26 @@ class TestGenerateDocument(unittest.TestCase):
                         sw_compdocs.document.Table(
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
-                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                    [
+                                        "PROP_TABLE_SINGLE_HEAD_LABEL",
+                                        "PROP_TABLE_SINGLE_HEAD_VALUE",
+                                    ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                        ["PROP_TABLE_SINGLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                        ["PROP_TABLE_SINGLE_DIMS_LABEL", "1x1x1"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_COST_LABEL", "0"]
+                                        ["PROP_TABLE_SINGLE_COST_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                        ["PROP_TABLE_SINGLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                        ["PROP_TABLE_SINGLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -3850,23 +3952,26 @@ class TestGenerateDocument(unittest.TestCase):
                         sw_compdocs.document.Table(
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
-                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                    [
+                                        "PROP_TABLE_SINGLE_HEAD_LABEL",
+                                        "PROP_TABLE_SINGLE_HEAD_VALUE",
+                                    ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                        ["PROP_TABLE_SINGLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                        ["PROP_TABLE_SINGLE_DIMS_LABEL", "1x1x1"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_COST_LABEL", "0"]
+                                        ["PROP_TABLE_SINGLE_COST_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                        ["PROP_TABLE_SINGLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                        ["PROP_TABLE_SINGLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -3877,23 +3982,26 @@ class TestGenerateDocument(unittest.TestCase):
                         sw_compdocs.document.Table(
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
-                                    ["PROP_TABLE_HEAD_LABEL", "PROP_TABLE_HEAD_VALUE"]
+                                    [
+                                        "PROP_TABLE_SINGLE_HEAD_LABEL",
+                                        "PROP_TABLE_SINGLE_HEAD_VALUE",
+                                    ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_MASS_LABEL", "0"]
+                                        ["PROP_TABLE_SINGLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                        ["PROP_TABLE_SINGLE_DIMS_LABEL", "1x1x1"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_COST_LABEL", "0"]
+                                        ["PROP_TABLE_SINGLE_COST_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_TAGS_LABEL", ""]
+                                        ["PROP_TABLE_SINGLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["PROP_TABLE_FILE_LABEL", ""]
+                                        ["PROP_TABLE_SINGLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -3915,13 +4023,13 @@ class TestGenerateDocument(unittest.TestCase):
                 ],
                 input_label=sw_compdocs.generator.LabelDict(
                     {
-                        "PROP_TABLE_HEAD_LABEL": "Label",
-                        "PROP_TABLE_HEAD_VALUE": "Value",
-                        "PROP_TABLE_MASS_LABEL": "Mass",
-                        "PROP_TABLE_DIMS_LABEL": "Dimensions (WxDxH)",
-                        "PROP_TABLE_COST_LABEL": "Cost",
-                        "PROP_TABLE_TAGS_LABEL": "Tags",
-                        "PROP_TABLE_FILE_LABEL": "File",
+                        "PROP_TABLE_SINGLE_HEAD_LABEL": "Label",
+                        "PROP_TABLE_SINGLE_HEAD_VALUE": "Value",
+                        "PROP_TABLE_SINGLE_MASS_LABEL": "Mass",
+                        "PROP_TABLE_SINGLE_DIMS_LABEL": "Dimensions (WxDxH)",
+                        "PROP_TABLE_SINGLE_COST_LABEL": "Cost",
+                        "PROP_TABLE_SINGLE_TAGS_LABEL": "Tags",
+                        "PROP_TABLE_SINGLE_FILE_LABEL": "File",
                     }
                 ),
                 input_lang=sw_compdocs.language.Language(

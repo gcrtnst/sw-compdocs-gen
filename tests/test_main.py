@@ -71,13 +71,13 @@ class TestRun(unittest.TestCase):
                 fp.write(
                     """\
 [label]
-PROP_TABLE_HEAD_LABEL = "ラベル"
-PROP_TABLE_HEAD_VALUE = "値"
-PROP_TABLE_MASS_LABEL = "重量"
-PROP_TABLE_DIMS_LABEL = "サイズ（WxDxH）"
-PROP_TABLE_COST_LABEL = "価格"
-PROP_TABLE_TAGS_LABEL = "タグ"
-PROP_TABLE_FILE_LABEL = "ファイル"
+PROP_TABLE_SINGLE_HEAD_LABEL = "ラベル"
+PROP_TABLE_SINGLE_HEAD_VALUE = "値"
+PROP_TABLE_SINGLE_MASS_LABEL = "重量"
+PROP_TABLE_SINGLE_DIMS_LABEL = "サイズ（WxDxH）"
+PROP_TABLE_SINGLE_COST_LABEL = "価格"
+PROP_TABLE_SINGLE_TAGS_LABEL = "タグ"
+PROP_TABLE_SINGLE_FILE_LABEL = "ファイル"
 """
                 )
 
@@ -187,13 +187,13 @@ template_02 = "テンプレート 02"
                 fp.write(
                     """\
 [label]
-PROP_TABLE_HEAD_LABEL = "ラベル"
-PROP_TABLE_HEAD_VALUE = "値"
-PROP_TABLE_MASS_LABEL = "重量"
-PROP_TABLE_DIMS_LABEL = "サイズ（WxDxH）"
-PROP_TABLE_COST_LABEL = "価格"
-PROP_TABLE_TAGS_LABEL = "タグ"
-PROP_TABLE_FILE_LABEL = "ファイル"
+PROP_TABLE_SINGLE_HEAD_LABEL = "ラベル"
+PROP_TABLE_SINGLE_HEAD_VALUE = "値"
+PROP_TABLE_SINGLE_MASS_LABEL = "重量"
+PROP_TABLE_SINGLE_DIMS_LABEL = "サイズ（WxDxH）"
+PROP_TABLE_SINGLE_COST_LABEL = "価格"
+PROP_TABLE_SINGLE_TAGS_LABEL = "タグ"
+PROP_TABLE_SINGLE_FILE_LABEL = "ファイル"
 """
                 )
 
@@ -926,13 +926,13 @@ class TestMain(unittest.TestCase):
                 fp.write(
                     """\
 [label]
-PROP_TABLE_HEAD_LABEL = "ラベル"
-PROP_TABLE_HEAD_VALUE = "値"
-PROP_TABLE_MASS_LABEL = "重量"
-PROP_TABLE_DIMS_LABEL = "サイズ（WxDxH）"
-PROP_TABLE_COST_LABEL = "価格"
-PROP_TABLE_TAGS_LABEL = "タグ"
-PROP_TABLE_FILE_LABEL = "ファイル"
+PROP_TABLE_SINGLE_HEAD_LABEL = "ラベル"
+PROP_TABLE_SINGLE_HEAD_VALUE = "値"
+PROP_TABLE_SINGLE_MASS_LABEL = "重量"
+PROP_TABLE_SINGLE_DIMS_LABEL = "サイズ（WxDxH）"
+PROP_TABLE_SINGLE_COST_LABEL = "価格"
+PROP_TABLE_SINGLE_TAGS_LABEL = "タグ"
+PROP_TABLE_SINGLE_FILE_LABEL = "ファイル"
 """
                 )
 

@@ -64,31 +64,31 @@ def generate_document_property_table_single(
 ) -> document.Table:
     head = document.TableDataRow(
         [
-            _label_get(label, "PROP_TABLE_HEAD_LABEL"),
-            _label_get(label, "PROP_TABLE_HEAD_VALUE"),
+            _label_get(label, "PROP_TABLE_SINGLE_HEAD_LABEL"),
+            _label_get(label, "PROP_TABLE_SINGLE_HEAD_VALUE"),
         ]
     )
     data = document.TableData(head)
 
-    mass_label = _label_get(label, "PROP_TABLE_MASS_LABEL")
+    mass_label = _label_get(label, "PROP_TABLE_SINGLE_MASS_LABEL")
     mass_value = f"{comp.mass:g}"
     data.append(document.TableDataRow([mass_label, mass_value]))
 
     dims_w = comp.voxel_max.x - comp.voxel_min.x + 1
     dims_h = comp.voxel_max.y - comp.voxel_min.y + 1
     dims_d = comp.voxel_max.z - comp.voxel_min.z + 1
-    dims_label = _label_get(label, "PROP_TABLE_DIMS_LABEL")
+    dims_label = _label_get(label, "PROP_TABLE_SINGLE_DIMS_LABEL")
     dims_value = f"{dims_w:d}x{dims_d:d}x{dims_h:d}"
     data.append(document.TableDataRow([dims_label, dims_value]))
 
-    cost_label = _label_get(label, "PROP_TABLE_COST_LABEL")
+    cost_label = _label_get(label, "PROP_TABLE_SINGLE_COST_LABEL")
     cost_value = f"{comp.value:d}"
     data.append(document.TableDataRow([cost_label, cost_value]))
 
-    tags_label = _label_get(label, "PROP_TABLE_TAGS_LABEL")
+    tags_label = _label_get(label, "PROP_TABLE_SINGLE_TAGS_LABEL")
     data.append(document.TableDataRow([tags_label, comp.tags]))
 
-    file_label = _label_get(label, "PROP_TABLE_FILE_LABEL")
+    file_label = _label_get(label, "PROP_TABLE_SINGLE_FILE_LABEL")
     file_value = ""
     if comp.file is not None:
         file_value = os.fsdecode(comp.file)
