@@ -59,7 +59,7 @@ def _fmt_format(fmt: template.TemplateFormatter | None, s: str) -> str:
     return s
 
 
-def generate_document_property_table(
+def generate_document_property_table_single(
     comp: component.Definition, *, label: LabelDict | None = None
 ) -> document.Table:
     head = document.TableDataRow(
@@ -107,7 +107,7 @@ def generate_document_property(
     return document.Document(
         [
             document.Heading(_lang_find_en(lang, "PROPERTIES")),
-            generate_document_property_table(comp, label=label),
+            generate_document_property_table_single(comp, label=label),
         ]
     )
 

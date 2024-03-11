@@ -217,7 +217,7 @@ class TestFmtFormat(unittest.TestCase):
                 self.assertEqual(got_s, tc.want_s)
 
 
-class TestGenerateDocumentPropertyTable(unittest.TestCase):
+class TestGenerateDocumentPropertyTableSingle(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(
             "tt",
@@ -442,7 +442,7 @@ class TestGenerateDocumentPropertyTable(unittest.TestCase):
             ),
         ]:
             with self.subTest(tc=tc):
-                got_tbl = sw_compdocs.generator.generate_document_property_table(
+                got_tbl = sw_compdocs.generator.generate_document_property_table_single(
                     tc.input_comp, label=tc.input_label
                 )
                 self.assertEqual(got_tbl, tc.want_tbl)
