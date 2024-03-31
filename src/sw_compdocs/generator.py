@@ -64,31 +64,31 @@ def generate_document_property_table(
 ) -> document.Table:
     head = document.TableDataRow(
         [
-            _label_get(label, "PROP_TABLE_HEAD_LABEL"),
-            _label_get(label, "PROP_TABLE_HEAD_VALUE"),
+            _label_get(label, "DOCUMENT_PROP_TABLE_HEAD_LABEL"),
+            _label_get(label, "DOCUMENT_PROP_TABLE_HEAD_VALUE"),
         ]
     )
     data = document.TableData(head)
 
-    mass_label = _label_get(label, "PROP_TABLE_MASS_LABEL")
+    mass_label = _label_get(label, "DOCUMENT_PROP_TABLE_MASS_LABEL")
     mass_value = f"{comp.mass:g}"
     data.append(document.TableDataRow([mass_label, mass_value]))
 
     dims_w = comp.voxel_max.x - comp.voxel_min.x + 1
     dims_h = comp.voxel_max.y - comp.voxel_min.y + 1
     dims_d = comp.voxel_max.z - comp.voxel_min.z + 1
-    dims_label = _label_get(label, "PROP_TABLE_DIMS_LABEL")
+    dims_label = _label_get(label, "DOCUMENT_PROP_TABLE_DIMS_LABEL")
     dims_value = f"{dims_w:d}x{dims_d:d}x{dims_h:d}"
     data.append(document.TableDataRow([dims_label, dims_value]))
 
-    cost_label = _label_get(label, "PROP_TABLE_COST_LABEL")
+    cost_label = _label_get(label, "DOCUMENT_PROP_TABLE_COST_LABEL")
     cost_value = f"{comp.value:d}"
     data.append(document.TableDataRow([cost_label, cost_value]))
 
-    tags_label = _label_get(label, "PROP_TABLE_TAGS_LABEL")
+    tags_label = _label_get(label, "DOCUMENT_PROP_TABLE_TAGS_LABEL")
     data.append(document.TableDataRow([tags_label, comp.tags]))
 
-    file_label = _label_get(label, "PROP_TABLE_FILE_LABEL")
+    file_label = _label_get(label, "DOCUMENT_PROP_TABLE_FILE_LABEL")
     file_value = ""
     if comp.file is not None:
         file_value = os.fsdecode(comp.file)
@@ -122,9 +122,9 @@ def generate_document_logic_table(
 ) -> document.Table:
     head = document.TableDataRow(
         [
-            _label_get(label, "LOGIC_TABLE_HEAD_TYPE"),
-            _label_get(label, "LOGIC_TABLE_HEAD_LABEL"),
-            _label_get(label, "LOGIC_TABLE_HEAD_DESC"),
+            _label_get(label, "DOCUMENT_LOGIC_TABLE_HEAD_TYPE"),
+            _label_get(label, "DOCUMENT_LOGIC_TABLE_HEAD_LABEL"),
+            _label_get(label, "DOCUMENT_LOGIC_TABLE_HEAD_DESC"),
         ]
     )
     data = document.TableData(head)
@@ -218,7 +218,7 @@ def generate_document_component(
     if component.Flags.IS_DEPRECATED in comp.flags:
         doc.append(
             document.Callout(
-                _label_get(label, "DEPRECATED_TEXT"),
+                _label_get(label, "DOCUMENT_DEPRECATED_TEXT"),
                 kind=document.CalloutKind.WARNING,
             )
         )
