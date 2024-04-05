@@ -1295,6 +1295,7 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
 	</logic_nodes>
 	<voxel_min x="0" y="0" z="0"/>
 	<voxel_max x="0" y="1" z="0"/>
+	<voxel_location_child x="0" y="0" z="0"/>
 </definition>
 """
         )
@@ -1376,6 +1377,9 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
         )
         self.assertEqual(defn.voxel_min, sw_compdocs.component.VoxelPos(x=0, y=0, z=0))
         self.assertEqual(defn.voxel_max, sw_compdocs.component.VoxelPos(x=0, y=1, z=0))
+        self.assertEqual(
+            defn.voxel_location_child, sw_compdocs.component.VoxelPos(x=0, y=0, z=0)
+        )
 
     def test_pass_pivot(self) -> None:
         elem = lxml.etree.fromstring(
@@ -1384,6 +1388,7 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
 	<logic_nodes/>
 	<voxel_min x="0" y="0" z="0"/>
 	<voxel_max x="0" y="1" z="0"/>
+	<voxel_location_child x="0" y="2" z="0"/>
 	<tooltip_properties description="The pivot can rotate to 0.25 turns in both directions." short_description="A basic pivot that can move freely."/>
 </definition>
 """
@@ -1423,6 +1428,9 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
         )
         self.assertEqual(defn.voxel_min, sw_compdocs.component.VoxelPos(x=0, y=0, z=0))
         self.assertEqual(defn.voxel_max, sw_compdocs.component.VoxelPos(x=0, y=1, z=0))
+        self.assertEqual(
+            defn.voxel_location_child, sw_compdocs.component.VoxelPos(x=0, y=2, z=0)
+        )
 
     def test_pass_empty(self) -> None:
         elem = lxml.etree.Element("definition")
@@ -1442,6 +1450,7 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
         self.assertEqual(defn.logic_nodes, sw_compdocs.component.LogicNodeList())
         self.assertEqual(defn.voxel_min, sw_compdocs.component.VoxelPos())
         self.assertEqual(defn.voxel_max, sw_compdocs.component.VoxelPos())
+        self.assertEqual(defn.voxel_location_child, sw_compdocs.component.VoxelPos())
 
     def test_pass_empty_key(self) -> None:
         elem = lxml.etree.Element("definition")
@@ -1454,6 +1463,7 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
         self.assertEqual(defn.value, 0)
         self.assertEqual(defn.flags, sw_compdocs.component.Flags(0))
         self.assertEqual(defn.tags, "")
+        self.assertEqual(defn.child_name, "")
         self.assertEqual(
             defn.tooltip_properties,
             sw_compdocs.component.TooltipProperties(
@@ -1467,6 +1477,7 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
         )
         self.assertEqual(defn.voxel_min, sw_compdocs.component.VoxelPos())
         self.assertEqual(defn.voxel_max, sw_compdocs.component.VoxelPos())
+        self.assertEqual(defn.voxel_location_child, sw_compdocs.component.VoxelPos())
 
     def test_exc_xml(self) -> None:
         tt = typing.NamedTuple(
@@ -1542,6 +1553,15 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
                 want_msg="invalid voxel x 'nan'",
                 want_file="file",
                 want_xpath="./voxel_max",
+            ),
+            tt(
+                input_elem=lxml.etree.fromstring(
+                    """<definition><voxel_location_child x="nan"/></definition>"""
+                ),
+                input_file="file",
+                want_msg="invalid voxel x 'nan'",
+                want_file="file",
+                want_xpath="./voxel_location_child",
             ),
         ]:
             with self.subTest(tc=tc):

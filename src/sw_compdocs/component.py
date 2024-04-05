@@ -356,6 +356,7 @@ class Definition:
     logic_nodes: LogicNodeList = dataclasses.field(default_factory=LogicNodeList)
     voxel_min: VoxelPos = dataclasses.field(default_factory=VoxelPos)
     voxel_max: VoxelPos = dataclasses.field(default_factory=VoxelPos)
+    voxel_location_child: VoxelPos = dataclasses.field(default_factory=VoxelPos)
 
     @classmethod
     def from_xml_elem(
@@ -453,6 +454,16 @@ class Definition:
             exc.prepend_xpath("voxel_max")
             raise
 
+        voxel_location_child_elem = elem.find("voxel_location_child")
+        if voxel_location_child_elem is None:
+            voxel_location_child_elem = lxml.etree.Element("voxel_location_child")
+        try:
+            voxel_location_child = VoxelPos.from_xml_elem(voxel_location_child_elem)
+        except DefinitionXMLError as exc:
+            exc.file = file
+            exc.prepend_xpath("voxel_location_child")
+            raise
+
         self = cls(
             file=file,
             name=name,
@@ -466,6 +477,7 @@ class Definition:
             logic_nodes=logic_nodes,
             voxel_min=voxel_min,
             voxel_max=voxel_max,
+            voxel_location_child=voxel_location_child,
         )
         self.update_id(key, recursive=False)
         return self
