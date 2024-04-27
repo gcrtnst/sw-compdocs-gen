@@ -24,11 +24,11 @@ class TestRun(unittest.TestCase):
     def test_document_empty(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             out_file = pathlib.Path(temp_dir, "out.md")
-            comp_dir = pathlib.Path(temp_dir, "definitions")
-            comp_dir.mkdir()
+            defn_dir = pathlib.Path(temp_dir, "definitions")
+            defn_dir.mkdir()
             sw_compdocs.main.run(
                 out_file=out_file,
-                comp_dir=comp_dir,
+                defn_dir=defn_dir,
                 out_mode="document",
                 out_encoding="utf-8",
                 out_newline="\n",
@@ -42,11 +42,11 @@ class TestRun(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp_dir:
             out_file = pathlib.Path(temp_dir, "out.md")
 
-            comp_dir = pathlib.Path(temp_dir, "definitions")
-            comp_dir.mkdir()
+            defn_dir = pathlib.Path(temp_dir, "definitions")
+            defn_dir.mkdir()
 
-            comp_file = pathlib.Path(comp_dir, "test_01.xml")
-            with open(comp_file, mode="x", encoding="utf-8", newline="\r\n") as fp:
+            defn_file = pathlib.Path(defn_dir, "test_01.xml")
+            with open(defn_file, mode="x", encoding="utf-8", newline="\r\n") as fp:
                 fp.write(
                     """\
 <?xml version="1.0" encoding="UTF-8"?>
@@ -54,8 +54,8 @@ class TestRun(unittest.TestCase):
 """
                 )
 
-            comp_file = pathlib.Path(comp_dir, "test_02.xml")
-            with open(comp_file, mode="x", encoding="utf-8", newline="\r\n") as fp:
+            defn_file = pathlib.Path(defn_dir, "test_02.xml")
+            with open(defn_file, mode="x", encoding="utf-8", newline="\r\n") as fp:
                 fp.write(
                     """\
 <?xml version="1.0" encoding="UTF-8"?>
@@ -63,8 +63,8 @@ class TestRun(unittest.TestCase):
 """
                 )
 
-            comp_file = pathlib.Path(comp_dir, "dummy")
-            comp_file.mkdir()
+            defn_file = pathlib.Path(defn_dir, "dummy")
+            defn_file.mkdir()
 
             label_file = pathlib.Path(temp_dir, "label.toml")
             with open(label_file, mode="x", encoding="utf-8", newline="\n") as fp:
@@ -108,7 +108,7 @@ template_02 = "テンプレート 02"
 
             sw_compdocs.main.run(
                 out_file=out_file,
-                comp_dir=comp_dir,
+                defn_dir=defn_dir,
                 label_file=label_file,
                 lang_file=lang_file,
                 template_file=template_file,
@@ -158,11 +158,11 @@ template_02 = "テンプレート 02"
         with tempfile.TemporaryDirectory() as temp_dir:
             out_file = pathlib.Path(temp_dir, "out.md")
 
-            comp_dir = pathlib.Path(temp_dir, "definitions")
-            comp_dir.mkdir()
+            defn_dir = pathlib.Path(temp_dir, "definitions")
+            defn_dir.mkdir()
 
-            comp_file = pathlib.Path(comp_dir, "test_01.xml")
-            with open(comp_file, mode="x", encoding="utf-8", newline="\r\n") as fp:
+            defn_file = pathlib.Path(defn_dir, "test_01.xml")
+            with open(defn_file, mode="x", encoding="utf-8", newline="\r\n") as fp:
                 fp.write(
                     """\
 <?xml version="1.0" encoding="UTF-8"?>
@@ -170,8 +170,8 @@ template_02 = "テンプレート 02"
 """
                 )
 
-            comp_file = pathlib.Path(comp_dir, "test_02.xml")
-            with open(comp_file, mode="x", encoding="utf-8", newline="\r\n") as fp:
+            defn_file = pathlib.Path(defn_dir, "test_02.xml")
+            with open(defn_file, mode="x", encoding="utf-8", newline="\r\n") as fp:
                 fp.write(
                     """\
 <?xml version="1.0" encoding="UTF-8"?>
@@ -179,8 +179,8 @@ template_02 = "テンプレート 02"
 """
                 )
 
-            comp_file = pathlib.Path(comp_dir, "dummy")
-            comp_file.mkdir()
+            defn_file = pathlib.Path(defn_dir, "dummy")
+            defn_file.mkdir()
 
             label_file = pathlib.Path(temp_dir, "label.toml")
             with open(label_file, mode="x", encoding="utf-8", newline="\n") as fp:
@@ -225,7 +225,7 @@ template_02 = "テンプレート 02"
             with self.assertRaises(sw_compdocs.wraperr.UnicodeEncodeFileError) as ctx:
                 sw_compdocs.main.run(
                     out_file=out_file,
-                    comp_dir=comp_dir,
+                    defn_dir=defn_dir,
                     label_file=label_file,
                     lang_file=lang_file,
                     template_file=template_file,
@@ -238,11 +238,11 @@ template_02 = "テンプレート 02"
     def test_sheet_empty(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             out_file = pathlib.Path(temp_dir, "out.csv")
-            comp_dir = pathlib.Path(temp_dir, "definitions")
-            comp_dir.mkdir()
+            defn_dir = pathlib.Path(temp_dir, "definitions")
+            defn_dir.mkdir()
             sw_compdocs.main.run(
                 out_file=out_file,
-                comp_dir=comp_dir,
+                defn_dir=defn_dir,
                 out_mode="sheet",
                 out_encoding="utf-8",
                 out_newline="\n",
@@ -257,11 +257,11 @@ template_02 = "テンプレート 02"
     def test_sheet_newline_default(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             out_file = pathlib.Path(temp_dir, "out.csv")
-            comp_dir = pathlib.Path(temp_dir, "definitions")
-            comp_dir.mkdir()
+            defn_dir = pathlib.Path(temp_dir, "definitions")
+            defn_dir.mkdir()
             sw_compdocs.main.run(
                 out_file=out_file,
-                comp_dir=comp_dir,
+                defn_dir=defn_dir,
                 out_mode="sheet",
                 out_encoding="utf-8",
             )
@@ -277,11 +277,11 @@ template_02 = "テンプレート 02"
         with tempfile.TemporaryDirectory() as temp_dir:
             out_file = pathlib.Path(temp_dir, "out.csv")
 
-            comp_dir = pathlib.Path(temp_dir, "definitions")
-            comp_dir.mkdir()
+            defn_dir = pathlib.Path(temp_dir, "definitions")
+            defn_dir.mkdir()
 
-            comp_file = pathlib.Path(comp_dir, "test_01.xml")
-            with open(comp_file, mode="x", encoding="utf-8", newline="\r\n") as fp:
+            defn_file = pathlib.Path(defn_dir, "test_01.xml")
+            with open(defn_file, mode="x", encoding="utf-8", newline="\r\n") as fp:
                 fp.write(
                     """\
 <?xml version="1.0" encoding="UTF-8"?>
@@ -289,8 +289,8 @@ template_02 = "テンプレート 02"
 """
                 )
 
-            comp_file = pathlib.Path(comp_dir, "test_02.xml")
-            with open(comp_file, mode="x", encoding="utf-8", newline="\r\n") as fp:
+            defn_file = pathlib.Path(defn_dir, "test_02.xml")
+            with open(defn_file, mode="x", encoding="utf-8", newline="\r\n") as fp:
                 fp.write(
                     """\
 <?xml version="1.0" encoding="UTF-8"?>
@@ -298,8 +298,8 @@ template_02 = "テンプレート 02"
 """
                 )
 
-            comp_file = pathlib.Path(comp_dir, "dummy")
-            comp_file.mkdir()
+            defn_file = pathlib.Path(defn_dir, "dummy")
+            defn_file.mkdir()
 
             label_file = pathlib.Path(temp_dir, "label.toml")
             with open(label_file, mode="x", encoding="utf-8", newline="\n") as fp:
@@ -347,7 +347,7 @@ template_02 = "テンプレート 02"
 
             sw_compdocs.main.run(
                 out_file=out_file,
-                comp_dir=comp_dir,
+                defn_dir=defn_dir,
                 label_file=label_file,
                 lang_file=lang_file,
                 template_file=template_file,
@@ -371,11 +371,11 @@ Name,File,Category,Tags,Deprecated,Mass,Cost,Width,Depth,Height,Short Descriptio
         with tempfile.TemporaryDirectory() as temp_dir:
             out_file = pathlib.Path(temp_dir, "out.csv")
 
-            comp_dir = pathlib.Path(temp_dir, "definitions")
-            comp_dir.mkdir()
+            defn_dir = pathlib.Path(temp_dir, "definitions")
+            defn_dir.mkdir()
 
-            comp_file = pathlib.Path(comp_dir, "test_01.xml")
-            with open(comp_file, mode="x", encoding="utf-8", newline="\r\n") as fp:
+            defn_file = pathlib.Path(defn_dir, "test_01.xml")
+            with open(defn_file, mode="x", encoding="utf-8", newline="\r\n") as fp:
                 fp.write(
                     """\
 <?xml version="1.0" encoding="UTF-8"?>
@@ -383,8 +383,8 @@ Name,File,Category,Tags,Deprecated,Mass,Cost,Width,Depth,Height,Short Descriptio
 """
                 )
 
-            comp_file = pathlib.Path(comp_dir, "test_02.xml")
-            with open(comp_file, mode="x", encoding="utf-8", newline="\r\n") as fp:
+            defn_file = pathlib.Path(defn_dir, "test_02.xml")
+            with open(defn_file, mode="x", encoding="utf-8", newline="\r\n") as fp:
                 fp.write(
                     """\
 <?xml version="1.0" encoding="UTF-8"?>
@@ -392,8 +392,8 @@ Name,File,Category,Tags,Deprecated,Mass,Cost,Width,Depth,Height,Short Descriptio
 """
                 )
 
-            comp_file = pathlib.Path(comp_dir, "dummy")
-            comp_file.mkdir()
+            defn_file = pathlib.Path(defn_dir, "dummy")
+            defn_file.mkdir()
 
             label_file = pathlib.Path(temp_dir, "label.toml")
             with open(label_file, mode="x", encoding="utf-8", newline="\n") as fp:
@@ -442,7 +442,7 @@ template_02 = "テンプレート 02"
             with self.assertRaises(sw_compdocs.wraperr.UnicodeEncodeFileError) as ctx:
                 sw_compdocs.main.run(
                     out_file=out_file,
-                    comp_dir=comp_dir,
+                    defn_dir=defn_dir,
                     label_file=label_file,
                     lang_file=lang_file,
                     template_file=template_file,
@@ -536,7 +536,7 @@ class TestMain(unittest.TestCase):
                 ],
                 want_call_args=unittest.mock.call(
                     out_file="path/to/output",
-                    comp_dir="path/to/definitions",
+                    defn_dir="path/to/definitions",
                     label_file=None,
                     lang_file=None,
                     template_file=None,
@@ -555,7 +555,7 @@ class TestMain(unittest.TestCase):
                 ],
                 want_call_args=unittest.mock.call(
                     out_file="path/to/output",
-                    comp_dir="path/to/definitions",
+                    defn_dir="path/to/definitions",
                     label_file="path/to/label",
                     lang_file=None,
                     template_file=None,
@@ -574,7 +574,7 @@ class TestMain(unittest.TestCase):
                 ],
                 want_call_args=unittest.mock.call(
                     out_file="path/to/output",
-                    comp_dir="path/to/definitions",
+                    defn_dir="path/to/definitions",
                     label_file=None,
                     lang_file="path/to/language",
                     template_file=None,
@@ -593,7 +593,7 @@ class TestMain(unittest.TestCase):
                 ],
                 want_call_args=unittest.mock.call(
                     out_file="path/to/output",
-                    comp_dir="path/to/definitions",
+                    defn_dir="path/to/definitions",
                     label_file=None,
                     lang_file=None,
                     template_file="path/to/template",
@@ -612,7 +612,7 @@ class TestMain(unittest.TestCase):
                 ],
                 want_call_args=unittest.mock.call(
                     out_file="path/to/output",
-                    comp_dir="path/to/definitions",
+                    defn_dir="path/to/definitions",
                     label_file=None,
                     lang_file=None,
                     template_file=None,
@@ -631,7 +631,7 @@ class TestMain(unittest.TestCase):
                 ],
                 want_call_args=unittest.mock.call(
                     out_file="path/to/output",
-                    comp_dir="path/to/definitions",
+                    defn_dir="path/to/definitions",
                     label_file=None,
                     lang_file=None,
                     template_file=None,
@@ -650,7 +650,7 @@ class TestMain(unittest.TestCase):
                 ],
                 want_call_args=unittest.mock.call(
                     out_file="path/to/output",
-                    comp_dir="path/to/definitions",
+                    defn_dir="path/to/definitions",
                     label_file=None,
                     lang_file=None,
                     template_file=None,
@@ -669,7 +669,7 @@ class TestMain(unittest.TestCase):
                 ],
                 want_call_args=unittest.mock.call(
                     out_file="path/to/output",
-                    comp_dir="path/to/definitions",
+                    defn_dir="path/to/definitions",
                     label_file=None,
                     lang_file=None,
                     template_file=None,
@@ -690,7 +690,7 @@ class TestMain(unittest.TestCase):
                 ],
                 want_call_args=unittest.mock.call(
                     out_file="path/to/output",
-                    comp_dir="path/to/definitions",
+                    defn_dir="path/to/definitions",
                     label_file=None,
                     lang_file=None,
                     template_file=None,
@@ -728,7 +728,7 @@ class TestMain(unittest.TestCase):
             mock_call_args,
             unittest.mock.call(
                 out_file="path/to/output",
-                comp_dir=str(definitions),
+                defn_dir=str(definitions),
                 label_file=None,
                 lang_file=None,
                 template_file=None,
@@ -900,11 +900,11 @@ class TestMain(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp_dir:
             out_file = pathlib.Path(temp_dir, "out.md")
 
-            comp_dir = pathlib.Path(temp_dir, "definitions")
-            comp_dir.mkdir()
+            defn_dir = pathlib.Path(temp_dir, "definitions")
+            defn_dir.mkdir()
 
-            comp_file = pathlib.Path(comp_dir, "test_01.xml")
-            with open(comp_file, mode="x", encoding="utf-8", newline="\r\n") as fp:
+            defn_file = pathlib.Path(defn_dir, "test_01.xml")
+            with open(defn_file, mode="x", encoding="utf-8", newline="\r\n") as fp:
                 fp.write(
                     """\
 <?xml version="1.0" encoding="UTF-8"?>
@@ -912,8 +912,8 @@ class TestMain(unittest.TestCase):
 """
                 )
 
-            comp_file = pathlib.Path(comp_dir, "test_02.xml")
-            with open(comp_file, mode="x", encoding="utf-8", newline="\r\n") as fp:
+            defn_file = pathlib.Path(defn_dir, "test_02.xml")
+            with open(defn_file, mode="x", encoding="utf-8", newline="\r\n") as fp:
                 fp.write(
                     """\
 <?xml version="1.0" encoding="UTF-8"?>
@@ -970,7 +970,7 @@ template_02 = "テンプレート 02"
                 sw_compdocs.main.main(
                     args=[
                         "--definitions",
-                        str(comp_dir),
+                        str(defn_dir),
                         "--label",
                         str(label_file),
                         "--language",

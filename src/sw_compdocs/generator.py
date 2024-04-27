@@ -60,7 +60,7 @@ def _fmt_format(fmt: template.TemplateFormatter | None, s: str) -> str:
 
 
 def generate_document_property_table(
-    comp: component.Definition, *, label: LabelDict | None = None
+    defn: component.Definition, *, label: LabelDict | None = None
 ) -> document.Table:
     head = document.TableDataRow(
         [
@@ -71,27 +71,27 @@ def generate_document_property_table(
     data = document.TableData(head)
 
     mass_label = _label_get(label, "DOCUMENT_PROP_TABLE_MASS_LABEL")
-    mass_value = f"{comp.mass:g}"
+    mass_value = f"{defn.mass:g}"
     data.append(document.TableDataRow([mass_label, mass_value]))
 
-    dims_w = comp.voxel_max.x - comp.voxel_min.x + 1
-    dims_h = comp.voxel_max.y - comp.voxel_min.y + 1
-    dims_d = comp.voxel_max.z - comp.voxel_min.z + 1
+    dims_w = defn.voxel_max.x - defn.voxel_min.x + 1
+    dims_h = defn.voxel_max.y - defn.voxel_min.y + 1
+    dims_d = defn.voxel_max.z - defn.voxel_min.z + 1
     dims_label = _label_get(label, "DOCUMENT_PROP_TABLE_DIMS_LABEL")
     dims_value = f"{dims_w:d}x{dims_d:d}x{dims_h:d}"
     data.append(document.TableDataRow([dims_label, dims_value]))
 
     cost_label = _label_get(label, "DOCUMENT_PROP_TABLE_COST_LABEL")
-    cost_value = f"{comp.value:d}"
+    cost_value = f"{defn.value:d}"
     data.append(document.TableDataRow([cost_label, cost_value]))
 
     tags_label = _label_get(label, "DOCUMENT_PROP_TABLE_TAGS_LABEL")
-    data.append(document.TableDataRow([tags_label, comp.tags]))
+    data.append(document.TableDataRow([tags_label, defn.tags]))
 
     file_label = _label_get(label, "DOCUMENT_PROP_TABLE_FILE_LABEL")
     file_value = ""
-    if comp.file is not None:
-        file_value = os.fsdecode(comp.file)
+    if defn.file is not None:
+        file_value = os.fsdecode(defn.file)
         file_value = pathlib.PurePath(file_value).name
     data.append(document.TableDataRow([file_label, file_value]))
 
@@ -99,7 +99,7 @@ def generate_document_property_table(
 
 
 def generate_document_property(
-    comp: component.Definition,
+    defn: component.Definition,
     *,
     label: LabelDict | None = None,
     lang: language.Language | None = None,
@@ -107,7 +107,7 @@ def generate_document_property(
     return document.Document(
         [
             document.Heading(_lang_find_en(lang, "PROPERTIES")),
-            generate_document_property_table(comp, label=label),
+            generate_document_property_table(defn, label=label),
         ]
     )
 
@@ -203,7 +203,7 @@ def generate_document_logic(
 
 
 def generate_document_component(
-    comp: component.Definition,
+    defn: component.Definition,
     *,
     label: LabelDict | None = None,
     lang: language.Language | None = None,
@@ -211,11 +211,11 @@ def generate_document_component(
 ) -> document.Document:
     doc = document.Document()
 
-    comp_name_id = f"def_{comp.key}_name"
-    comp_name = _lang_find_id(lang, comp_name_id, comp.name)
-    doc.append(document.Heading(comp_name))
+    defn_name_id = f"def_{defn.key}_name"
+    defn_name = _lang_find_id(lang, defn_name_id, defn.name)
+    doc.append(document.Heading(defn_name))
 
-    if component.Flags.IS_DEPRECATED in comp.flags:
+    if component.Flags.IS_DEPRECATED in defn.flags:
         doc.append(
             document.Callout(
                 _label_get(label, "DOCUMENT_DEPRECATED_TEXT"),
@@ -223,26 +223,26 @@ def generate_document_component(
             )
         )
 
-    comp_s_desc_id = f"def_{comp.key}_s_desc"
-    comp_s_desc = comp.tooltip_properties.short_description
-    comp_s_desc = _lang_find_id(lang, comp_s_desc_id, comp_s_desc)
-    comp_s_desc = _fmt_format(fmt, comp_s_desc)
-    if comp_s_desc != "":
-        doc.append(document.Paragraph(comp_s_desc))
+    defn_s_desc_id = f"def_{defn.key}_s_desc"
+    defn_s_desc = defn.tooltip_properties.short_description
+    defn_s_desc = _lang_find_id(lang, defn_s_desc_id, defn_s_desc)
+    defn_s_desc = _fmt_format(fmt, defn_s_desc)
+    if defn_s_desc != "":
+        doc.append(document.Paragraph(defn_s_desc))
 
-    comp_desc_id = f"def_{comp.key}_desc"
-    comp_desc = comp.tooltip_properties.description
-    comp_desc = _lang_find_id(lang, comp_desc_id, comp_desc)
-    comp_desc = _fmt_format(fmt, comp_desc)
-    if comp_desc != "":
-        doc.append(document.Paragraph(comp_desc))
+    defn_desc_id = f"def_{defn.key}_desc"
+    defn_desc = defn.tooltip_properties.description
+    defn_desc = _lang_find_id(lang, defn_desc_id, defn_desc)
+    defn_desc = _fmt_format(fmt, defn_desc)
+    if defn_desc != "":
+        doc.append(document.Paragraph(defn_desc))
 
-    prop_doc = generate_document_property(comp, label=label, lang=lang)
+    prop_doc = generate_document_property(defn, label=label, lang=lang)
     prop_doc.shift(1)
     doc.extend(prop_doc)
 
     logic_doc = generate_document_logic(
-        comp.key, comp.logic_nodes, label=label, lang=lang, fmt=fmt
+        defn.key, defn.logic_nodes, label=label, lang=lang, fmt=fmt
     )
     logic_doc.shift(1)
     doc.extend(logic_doc)
@@ -251,21 +251,21 @@ def generate_document_component(
 
 
 def generate_document_component_list(
-    comp_list: collections.abc.Iterable[component.Definition],
+    defn_list: collections.abc.Iterable[component.Definition],
     *,
     label: LabelDict | None = None,
     lang: language.Language | None = None,
     fmt: template.TemplateFormatter | None = None,
 ) -> document.Document:
     doc = document.Document()
-    for comp in comp_list:
-        comp_doc = generate_document_component(comp, label=label, lang=lang, fmt=fmt)
-        doc.extend(comp_doc)
+    for defn in defn_list:
+        defn_doc = generate_document_component(defn, label=label, lang=lang, fmt=fmt)
+        doc.extend(defn_doc)
     return doc
 
 
 def generate_document(
-    comp_list: collections.abc.Iterable[component.Definition],
+    defn_list: collections.abc.Iterable[component.Definition],
     *,
     label: LabelDict | None = None,
     lang: language.Language | None = None,
@@ -274,101 +274,101 @@ def generate_document(
     def sort_key_category(category: component.Category) -> int:
         return category.value
 
-    def sort_key_component(comp: component.Definition) -> tuple[str, str]:
-        return comp.name, comp.key
+    def sort_key_component(defn: component.Definition) -> tuple[str, str]:
+        return defn.name, defn.key
 
-    category_comp_dict: dict[component.Category, list[component.Definition]] = {}
-    for comp in comp_list:
-        category_comp_list = category_comp_dict.setdefault(comp.category, [])
-        category_comp_list.append(comp)
+    category_defn_dict: dict[component.Category, list[component.Definition]] = {}
+    for defn in defn_list:
+        category_defn_list = category_defn_dict.setdefault(defn.category, [])
+        category_defn_list.append(defn)
 
     category_list: collections.abc.Iterable[component.Category]
-    category_list = category_comp_dict.keys()
+    category_list = category_defn_dict.keys()
     category_list = sorted(category_list, key=sort_key_category)
 
     doc = document.Document()
     for category in category_list:
-        category_comp_list = category_comp_dict[category]
-        category_comp_list.sort(key=sort_key_component)
-        category_comp_list_doc = generate_document_component_list(
-            category_comp_list, label=label, lang=lang, fmt=fmt
+        category_defn_list = category_defn_dict[category]
+        category_defn_list.sort(key=sort_key_component)
+        category_defn_list_doc = generate_document_component_list(
+            category_defn_list, label=label, lang=lang, fmt=fmt
         )
-        category_comp_list_doc.shift(1)
+        category_defn_list_doc.shift(1)
 
         doc.append(document.Heading(str(category)))
-        doc.extend(category_comp_list_doc)
+        doc.extend(category_defn_list_doc)
     return doc
 
 
 def generate_sheet_component(
-    comp: component.Definition,
+    defn: component.Definition,
     *,
     lang: language.Language | None = None,
     fmt: template.TemplateFormatter | None = None,
 ) -> list[str]:
-    dims_w = comp.voxel_max.x - comp.voxel_min.x + 1
-    dims_h = comp.voxel_max.y - comp.voxel_min.y + 1
-    dims_d = comp.voxel_max.z - comp.voxel_min.z + 1
+    dims_w = defn.voxel_max.x - defn.voxel_min.x + 1
+    dims_h = defn.voxel_max.y - defn.voxel_min.y + 1
+    dims_d = defn.voxel_max.z - defn.voxel_min.z + 1
 
-    comp_name_id = f"def_{comp.key}_name"
-    comp_name = _lang_find_id(lang, comp_name_id, comp.name)
+    defn_name_id = f"def_{defn.key}_name"
+    defn_name = _lang_find_id(lang, defn_name_id, defn.name)
 
-    comp_file = ""
-    if comp.file is not None:
-        comp_file = os.fsdecode(comp.file)
-        comp_file = pathlib.PurePath(comp_file).name
+    defn_file = ""
+    if defn.file is not None:
+        defn_file = os.fsdecode(defn.file)
+        defn_file = pathlib.PurePath(defn_file).name
 
-    comp_s_desc_id = f"def_{comp.key}_s_desc"
-    comp_s_desc = comp.tooltip_properties.short_description
-    comp_s_desc = _lang_find_id(lang, comp_s_desc_id, comp_s_desc)
-    comp_s_desc = _fmt_format(fmt, comp_s_desc)
+    defn_s_desc_id = f"def_{defn.key}_s_desc"
+    defn_s_desc = defn.tooltip_properties.short_description
+    defn_s_desc = _lang_find_id(lang, defn_s_desc_id, defn_s_desc)
+    defn_s_desc = _fmt_format(fmt, defn_s_desc)
 
-    comp_desc_id = f"def_{comp.key}_desc"
-    comp_desc = comp.tooltip_properties.description
-    comp_desc = _lang_find_id(lang, comp_desc_id, comp_desc)
-    comp_desc = _fmt_format(fmt, comp_desc)
+    defn_desc_id = f"def_{defn.key}_desc"
+    defn_desc = defn.tooltip_properties.description
+    defn_desc = _lang_find_id(lang, defn_desc_id, defn_desc)
+    defn_desc = _fmt_format(fmt, defn_desc)
 
     return [
-        comp_name,
-        comp_file,
-        str(comp.category),
-        comp.tags,
-        "TRUE" if component.Flags.IS_DEPRECATED in comp.flags else "FALSE",
-        f"{comp.mass:g}",
-        f"{comp.value:d}",
+        defn_name,
+        defn_file,
+        str(defn.category),
+        defn.tags,
+        "TRUE" if component.Flags.IS_DEPRECATED in defn.flags else "FALSE",
+        f"{defn.mass:g}",
+        f"{defn.value:d}",
         f"{dims_w:d}",
         f"{dims_d:d}",
         f"{dims_h:d}",
-        comp_s_desc,
-        comp_desc,
+        defn_s_desc,
+        defn_desc,
     ]
 
 
 def generate_sheet_component_list(
-    comp_list: collections.abc.Iterable[component.Definition],
+    defn_list: collections.abc.Iterable[component.Definition],
     *,
     lang: language.Language | None = None,
     fmt: template.TemplateFormatter | None = None,
 ) -> list[list[str]]:
     record_list = []
-    for comp in comp_list:
-        record = generate_sheet_component(comp, lang=lang, fmt=fmt)
+    for defn in defn_list:
+        record = generate_sheet_component(defn, lang=lang, fmt=fmt)
         record_list.append(record)
     return record_list
 
 
 def generate_sheet(
-    comp_list: collections.abc.Iterable[component.Definition],
+    defn_list: collections.abc.Iterable[component.Definition],
     *,
     label: LabelDict | None = None,
     lang: language.Language | None = None,
     fmt: template.TemplateFormatter | None = None,
 ) -> list[list[str]]:
-    def sort_key(comp: component.Definition) -> tuple[int, str, str]:
-        return comp.category.value, comp.name, comp.key
+    def sort_key(defn: component.Definition) -> tuple[int, str, str]:
+        return defn.category.value, defn.name, defn.key
 
-    comp_list = list(comp_list)
-    comp_list.sort(key=sort_key)
+    defn_list = list(defn_list)
+    defn_list.sort(key=sort_key)
 
     header = [
         _label_get(label, "SHEET_HEAD_NAME"),
@@ -385,5 +385,5 @@ def generate_sheet(
         _label_get(label, "SHEET_HEAD_DESC"),
     ]
     record_list = [header]
-    record_list.extend(generate_sheet_component_list(comp_list, lang=lang, fmt=fmt))
+    record_list.extend(generate_sheet_component_list(defn_list, lang=lang, fmt=fmt))
     return record_list

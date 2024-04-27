@@ -754,26 +754,26 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
 """
         )
 
-        comp = sw_compdocs.component.Definition.from_xml_elem(
+        defn = sw_compdocs.component.Definition.from_xml_elem(
             elem, file="clock.xml", key="clock"
         )
-        self.assertEqual(comp.file, "clock.xml")
-        self.assertEqual(comp.key, "clock")
-        self.assertEqual(comp.name, "Clock")
-        self.assertEqual(comp.category, sw_compdocs.component.Category.DISPLAYS)
-        self.assertEqual(comp.mass, 1.0)
-        self.assertEqual(comp.value, 100)
-        self.assertEqual(comp.flags, sw_compdocs.component.Flags(8192))
-        self.assertEqual(comp.tags, "basic")
+        self.assertEqual(defn.file, "clock.xml")
+        self.assertEqual(defn.key, "clock")
+        self.assertEqual(defn.name, "Clock")
+        self.assertEqual(defn.category, sw_compdocs.component.Category.DISPLAYS)
+        self.assertEqual(defn.mass, 1.0)
+        self.assertEqual(defn.value, 100)
+        self.assertEqual(defn.flags, sw_compdocs.component.Flags(8192))
+        self.assertEqual(defn.tags, "basic")
         self.assertEqual(
-            comp.tooltip_properties,
+            defn.tooltip_properties,
             sw_compdocs.component.TooltipProperties(
                 short_description="An analogue clock display that outputs a number value representing the time of day.",
                 description="The clock has a display to visualise the time of day or night. The 12 o'clock position is the white arrow on the face of the display.",
             ),
         )
         self.assertEqual(
-            comp.logic_nodes,
+            defn.logic_nodes,
             sw_compdocs.component.LogicNodeList(
                 [
                     sw_compdocs.component.LogicNode(
@@ -800,26 +800,26 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
                 ]
             ),
         )
-        self.assertEqual(comp.voxel_min, sw_compdocs.component.VoxelPos(x=0, y=0, z=0))
-        self.assertEqual(comp.voxel_max, sw_compdocs.component.VoxelPos(x=0, y=1, z=0))
+        self.assertEqual(defn.voxel_min, sw_compdocs.component.VoxelPos(x=0, y=0, z=0))
+        self.assertEqual(defn.voxel_max, sw_compdocs.component.VoxelPos(x=0, y=1, z=0))
 
     def test_pass_empty(self) -> None:
         elem = lxml.etree.Element("definition")
-        comp = sw_compdocs.component.Definition.from_xml_elem(elem)
-        self.assertIsNone(comp.file)
-        self.assertEqual(comp.key, "")
-        self.assertEqual(comp.name, "")
-        self.assertEqual(comp.category, sw_compdocs.component.Category.BLOCKS)
-        self.assertEqual(comp.mass, 0.0)
-        self.assertEqual(comp.value, 0)
-        self.assertEqual(comp.flags, sw_compdocs.component.Flags(0))
-        self.assertEqual(comp.tags, "")
+        defn = sw_compdocs.component.Definition.from_xml_elem(elem)
+        self.assertIsNone(defn.file)
+        self.assertEqual(defn.key, "")
+        self.assertEqual(defn.name, "")
+        self.assertEqual(defn.category, sw_compdocs.component.Category.BLOCKS)
+        self.assertEqual(defn.mass, 0.0)
+        self.assertEqual(defn.value, 0)
+        self.assertEqual(defn.flags, sw_compdocs.component.Flags(0))
+        self.assertEqual(defn.tags, "")
         self.assertEqual(
-            comp.tooltip_properties, sw_compdocs.component.TooltipProperties()
+            defn.tooltip_properties, sw_compdocs.component.TooltipProperties()
         )
-        self.assertEqual(comp.logic_nodes, sw_compdocs.component.LogicNodeList())
-        self.assertEqual(comp.voxel_min, sw_compdocs.component.VoxelPos())
-        self.assertEqual(comp.voxel_max, sw_compdocs.component.VoxelPos())
+        self.assertEqual(defn.logic_nodes, sw_compdocs.component.LogicNodeList())
+        self.assertEqual(defn.voxel_min, sw_compdocs.component.VoxelPos())
+        self.assertEqual(defn.voxel_max, sw_compdocs.component.VoxelPos())
 
     def test_exc_xml(self) -> None:
         tt = typing.NamedTuple(
@@ -928,11 +928,11 @@ class TestParseXMLFile(unittest.TestCase):
             ]
             for path in path_list:
                 with self.subTest(path=path):
-                    comp = sw_compdocs.component.parse_xml_file(path)
-                    self.assertEqual(comp.file, path)
-                    self.assertEqual(comp.key, "test")
-                    self.assertEqual(comp.name, "name")
-                    self.assertEqual(comp.tooltip_properties.description, "description")
+                    defn = sw_compdocs.component.parse_xml_file(path)
+                    self.assertEqual(defn.file, path)
+                    self.assertEqual(defn.key, "test")
+                    self.assertEqual(defn.name, "name")
+                    self.assertEqual(defn.tooltip_properties.description, "description")
 
     def test_pass_recover(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -959,11 +959,11 @@ class TestParseXMLFile(unittest.TestCase):
             ]
             for path in path_list:
                 with self.subTest(path=path):
-                    comp = sw_compdocs.component.parse_xml_file(path)
-                    self.assertEqual(comp.file, path)
-                    self.assertEqual(comp.key, "test")
-                    self.assertEqual(comp.name, "name")
-                    self.assertEqual(comp.tooltip_properties.description, "description")
+                    defn = sw_compdocs.component.parse_xml_file(path)
+                    self.assertEqual(defn.file, path)
+                    self.assertEqual(defn.key, "test")
+                    self.assertEqual(defn.name, "name")
+                    self.assertEqual(defn.tooltip_properties.description, "description")
 
     def test_exc_root(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -1047,7 +1047,7 @@ class TestParseXMLFile(unittest.TestCase):
 
 class TestParseXMLStr(unittest.TestCase):
     def test_pass(self) -> None:
-        comp = sw_compdocs.component.parse_xml_str(
+        defn = sw_compdocs.component.parse_xml_str(
             """\
 <definition name="name">
     <tooltip_properties description="description"/>
@@ -1056,13 +1056,13 @@ class TestParseXMLStr(unittest.TestCase):
             key="key",
         )
 
-        self.assertIsNone(comp.file)
-        self.assertEqual(comp.key, "key")
-        self.assertEqual(comp.name, "name")
-        self.assertEqual(comp.tooltip_properties.description, "description")
+        self.assertIsNone(defn.file)
+        self.assertEqual(defn.key, "key")
+        self.assertEqual(defn.name, "name")
+        self.assertEqual(defn.tooltip_properties.description, "description")
 
     def test_pass_recover(self) -> None:
-        comp = sw_compdocs.component.parse_xml_str(
+        defn = sw_compdocs.component.parse_xml_str(
             """\
 <definition name="name">
     <voxels>
@@ -1076,10 +1076,10 @@ class TestParseXMLStr(unittest.TestCase):
             key="key",
         )
 
-        self.assertIsNone(comp.file)
-        self.assertEqual(comp.key, "key")
-        self.assertEqual(comp.name, "name")
-        self.assertEqual(comp.tooltip_properties.description, "description")
+        self.assertIsNone(defn.file)
+        self.assertEqual(defn.key, "key")
+        self.assertEqual(defn.name, "name")
+        self.assertEqual(defn.tooltip_properties.description, "description")
 
     def test_exc_root(self) -> None:
         with self.assertRaises(sw_compdocs.component.ComponentXMLError) as ctx:

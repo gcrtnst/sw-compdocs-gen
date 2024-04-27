@@ -21,14 +21,14 @@ from . import wraperr
 def generate_document(
     *,
     out_file: _types.StrOrBytesPath,
-    comp_list: collections.abc.Iterable[component.Definition],
+    defn_list: collections.abc.Iterable[component.Definition],
     label: generator.LabelDict | None,
     lang: language.Language | None,
     fmt: template.TemplateFormatter | None,
     out_encoding: str | None = None,
     out_newline: str | None = None,
 ) -> None:
-    doc = generator.generate_document(comp_list, label=label, lang=lang, fmt=fmt)
+    doc = generator.generate_document(defn_list, label=label, lang=lang, fmt=fmt)
     md = renderer.render_markdown(doc)
 
     with wraperr.wrap_unicode_error(out_file):
@@ -45,7 +45,7 @@ def generate_document(
 def generate_sheet(
     *,
     out_file: _types.StrOrBytesPath,
-    comp_list: collections.abc.Iterable[component.Definition],
+    defn_list: collections.abc.Iterable[component.Definition],
     label: generator.LabelDict | None,
     lang: language.Language | None,
     fmt: template.TemplateFormatter | None,
@@ -55,7 +55,7 @@ def generate_sheet(
     if out_newline is None:
         out_newline = os.linesep
 
-    record_list = generator.generate_sheet(comp_list, label=label, lang=lang, fmt=fmt)
+    record_list = generator.generate_sheet(defn_list, label=label, lang=lang, fmt=fmt)
     with wraperr.wrap_unicode_error(out_file):
         with open(
             out_file, mode="w", encoding=out_encoding, errors="strict", newline=""
@@ -67,7 +67,7 @@ def generate_sheet(
 def run(
     *,
     out_file: _types.StrOrBytesPath,
-    comp_dir: _types.StrOrBytesPath,
+    defn_dir: _types.StrOrBytesPath,
     label_file: _types.StrOrBytesPath | None = None,
     lang_file: _types.StrOrBytesPath | None = None,
     template_file: _types.StrOrBytesPath | None = None,
@@ -89,18 +89,18 @@ def run(
         template_tbl = resource.load_toml_table(template_file, "template")
         fmt = template.TemplateFormatter(template_tbl)
 
-    comp_list = []
-    comp_dir = pathlib.Path(os.fsdecode(comp_dir))
-    for comp_file in comp_dir.iterdir():
-        if not comp_file.is_file():
+    defn_list = []
+    defn_dir = pathlib.Path(os.fsdecode(defn_dir))
+    for defn_file in defn_dir.iterdir():
+        if not defn_file.is_file():
             continue
-        comp = component.parse_xml_file(comp_file)
-        comp_list.append(comp)
+        defn = component.parse_xml_file(defn_file)
+        defn_list.append(defn)
 
     if out_mode == "document":
         generate_document(
             out_file=out_file,
-            comp_list=comp_list,
+            defn_list=defn_list,
             label=label,
             lang=lang,
             fmt=fmt,
@@ -111,7 +111,7 @@ def run(
     if out_mode == "sheet":
         generate_sheet(
             out_file=out_file,
-            comp_list=comp_list,
+            defn_list=defn_list,
             label=label,
             lang=lang,
             fmt=fmt,
@@ -273,7 +273,7 @@ def main(
     try:
         run(
             out_file=argv_output,
-            comp_dir=argv_definitions,
+            defn_dir=argv_definitions,
             label_file=argv_label,
             lang_file=argv_language,
             template_file=argv_template,

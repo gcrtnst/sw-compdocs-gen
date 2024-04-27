@@ -223,7 +223,7 @@ class TestGenerateDocumentPropertyTable(unittest.TestCase):
             "tt",
             [
                 ("input_label", sw_compdocs.generator.LabelDict | None),
-                ("input_comp", sw_compdocs.component.Definition),
+                ("input_defn", sw_compdocs.component.Definition),
                 ("want_tbl", sw_compdocs.document.Table),
             ],
         )
@@ -231,7 +231,7 @@ class TestGenerateDocumentPropertyTable(unittest.TestCase):
         for tc in [
             tt(
                 input_label=None,
-                input_comp=sw_compdocs.component.Definition(
+                input_defn=sw_compdocs.component.Definition(
                     file="file",
                     mass=10.0,
                     value=100,
@@ -270,7 +270,7 @@ class TestGenerateDocumentPropertyTable(unittest.TestCase):
             # mass format
             tt(
                 input_label=None,
-                input_comp=sw_compdocs.component.Definition(
+                input_defn=sw_compdocs.component.Definition(
                     file="file",
                     mass=0.5,
                     value=100,
@@ -308,7 +308,7 @@ class TestGenerateDocumentPropertyTable(unittest.TestCase):
             ),
             tt(
                 input_label=None,
-                input_comp=sw_compdocs.component.Definition(
+                input_defn=sw_compdocs.component.Definition(
                     file="file",
                     mass=0.25,
                     value=100,
@@ -347,7 +347,7 @@ class TestGenerateDocumentPropertyTable(unittest.TestCase):
             # file format
             tt(
                 input_label=None,
-                input_comp=sw_compdocs.component.Definition(
+                input_defn=sw_compdocs.component.Definition(
                     file=None,
                     mass=10.0,
                     value=100,
@@ -385,7 +385,7 @@ class TestGenerateDocumentPropertyTable(unittest.TestCase):
             ),
             tt(
                 input_label=None,
-                input_comp=sw_compdocs.component.Definition(
+                input_defn=sw_compdocs.component.Definition(
                     file=b"path/to/definition.xml",
                     mass=10.0,
                     value=100,
@@ -434,7 +434,7 @@ class TestGenerateDocumentPropertyTable(unittest.TestCase):
                         "DOCUMENT_PROP_TABLE_FILE_LABEL": "File",
                     }
                 ),
-                input_comp=sw_compdocs.component.Definition(
+                input_defn=sw_compdocs.component.Definition(
                     file="file",
                     mass=10.0,
                     value=100,
@@ -458,7 +458,7 @@ class TestGenerateDocumentPropertyTable(unittest.TestCase):
         ]:
             with self.subTest(tc=tc):
                 got_tbl = sw_compdocs.generator.generate_document_property_table(
-                    tc.input_comp, label=tc.input_label
+                    tc.input_defn, label=tc.input_label
                 )
                 self.assertEqual(got_tbl, tc.want_tbl)
 
@@ -470,7 +470,7 @@ class TestGenerateDocumentProperty(unittest.TestCase):
             [
                 ("input_label", sw_compdocs.generator.LabelDict | None),
                 ("input_lang", sw_compdocs.language.Language | None),
-                ("input_comp", sw_compdocs.component.Definition),
+                ("input_defn", sw_compdocs.component.Definition),
                 ("want_doc", sw_compdocs.document.Document),
             ],
         )
@@ -479,7 +479,7 @@ class TestGenerateDocumentProperty(unittest.TestCase):
             tt(
                 input_label=None,
                 input_lang=None,
-                input_comp=sw_compdocs.component.Definition(),
+                input_defn=sw_compdocs.component.Definition(),
                 want_doc=sw_compdocs.document.Document(
                     [
                         sw_compdocs.document.Heading("PROPERTIES"),
@@ -522,7 +522,7 @@ class TestGenerateDocumentProperty(unittest.TestCase):
                         )
                     ]
                 ),
-                input_comp=sw_compdocs.component.Definition(),
+                input_defn=sw_compdocs.component.Definition(),
                 want_doc=sw_compdocs.document.Document(
                     [
                         sw_compdocs.document.Heading("プロパティ"),
@@ -559,7 +559,7 @@ class TestGenerateDocumentProperty(unittest.TestCase):
         ]:
             with self.subTest(tc=tc):
                 got_doc = sw_compdocs.generator.generate_document_property(
-                    tc.input_comp, label=tc.input_label, lang=tc.input_lang
+                    tc.input_defn, label=tc.input_label, lang=tc.input_lang
                 )
                 self.assertEqual(got_doc, tc.want_doc)
 
@@ -1800,7 +1800,7 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                 ("input_label", sw_compdocs.generator.LabelDict | None),
                 ("input_lang", sw_compdocs.language.Language | None),
                 ("input_fmt", sw_compdocs.template.TemplateFormatter | None),
-                ("input_comp", sw_compdocs.component.Definition),
+                ("input_defn", sw_compdocs.component.Definition),
                 ("want_doc", sw_compdocs.document.Document),
             ],
         )
@@ -1810,7 +1810,7 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                 input_label=None,
                 input_lang=None,
                 input_fmt=None,
-                input_comp=sw_compdocs.component.Definition(
+                input_defn=sw_compdocs.component.Definition(
                     file="clock.xml",
                     key="clock",
                     name="Clock",
@@ -1958,7 +1958,7 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                 input_label=None,
                 input_lang=None,
                 input_fmt=None,
-                input_comp=sw_compdocs.component.Definition(
+                input_defn=sw_compdocs.component.Definition(
                     file="clock.xml",
                     key="clock",
                     name="Clock",
@@ -2223,7 +2223,7 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                     ]
                 ),
                 input_fmt=sw_compdocs.template.TemplateFormatter({}),
-                input_comp=sw_compdocs.component.Definition(
+                input_defn=sw_compdocs.component.Definition(
                     file="clock.xml",
                     key="clock",
                     name="Clock",
@@ -2462,7 +2462,7 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                 input_fmt=sw_compdocs.template.TemplateFormatter(
                     {"action_interact_left": "q", "action_interact_right": "e"}
                 ),
-                input_comp=sw_compdocs.component.Definition(
+                input_defn=sw_compdocs.component.Definition(
                     file="button_push.xml",
                     key="button_push",
                     name="Push Button",
@@ -2631,7 +2631,7 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                 input_fmt=sw_compdocs.template.TemplateFormatter(
                     {"action_interact_left": "q", "action_interact_right": "e"}
                 ),
-                input_comp=sw_compdocs.component.Definition(
+                input_defn=sw_compdocs.component.Definition(
                     file="handle.xml",
                     key="handle",
                     name="Handle",
@@ -2683,7 +2683,7 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                 input_label=None,
                 input_lang=None,
                 input_fmt=None,
-                input_comp=sw_compdocs.component.Definition(
+                input_defn=sw_compdocs.component.Definition(
                     file="clock.xml",
                     key="clock",
                     name="Clock",
@@ -2828,7 +2828,7 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                 input_label=None,
                 input_lang=None,
                 input_fmt=None,
-                input_comp=sw_compdocs.component.Definition(
+                input_defn=sw_compdocs.component.Definition(
                     file="clock.xml",
                     key="clock",
                     name="Clock",
@@ -2972,7 +2972,7 @@ class TestGenerateDocumentComponent(unittest.TestCase):
         ]:
             with self.subTest(tc=tc):
                 got_doc = sw_compdocs.generator.generate_document_component(
-                    tc.input_comp,
+                    tc.input_defn,
                     label=tc.input_label,
                     lang=tc.input_lang,
                     fmt=tc.input_fmt,
@@ -2985,7 +2985,7 @@ class TestGenerateDocumentComponentList(unittest.TestCase):
         tt = typing.NamedTuple(
             "tt",
             [
-                ("input_comp_list", list[sw_compdocs.component.Definition]),
+                ("input_defn_list", list[sw_compdocs.component.Definition]),
                 ("input_label", sw_compdocs.generator.LabelDict | None),
                 ("input_lang", sw_compdocs.language.Language | None),
                 ("input_fmt", sw_compdocs.template.TemplateFormatter | None),
@@ -2995,14 +2995,14 @@ class TestGenerateDocumentComponentList(unittest.TestCase):
 
         for tc in [
             tt(
-                input_comp_list=[],
+                input_defn_list=[],
                 input_label=None,
                 input_lang=None,
                 input_fmt=None,
                 want_doc=sw_compdocs.document.Document(),
             ),
             tt(
-                input_comp_list=[
+                input_defn_list=[
                     sw_compdocs.component.Definition(name="A"),
                     sw_compdocs.component.Definition(name="B"),
                 ],
@@ -3073,7 +3073,7 @@ class TestGenerateDocumentComponentList(unittest.TestCase):
                 ),
             ),
             tt(
-                input_comp_list=[
+                input_defn_list=[
                     sw_compdocs.component.Definition(
                         key="test",
                         name="Test",
@@ -3142,7 +3142,7 @@ class TestGenerateDocumentComponentList(unittest.TestCase):
         ]:
             with self.subTest(tc=tc):
                 got_doc = sw_compdocs.generator.generate_document_component_list(
-                    tc.input_comp_list,
+                    tc.input_defn_list,
                     label=tc.input_label,
                     lang=tc.input_lang,
                     fmt=tc.input_fmt,
@@ -3155,7 +3155,7 @@ class TestGenerateDocument(unittest.TestCase):
         tt = typing.NamedTuple(
             "tt",
             [
-                ("input_comp_list", list[sw_compdocs.component.Definition]),
+                ("input_defn_list", list[sw_compdocs.component.Definition]),
                 ("input_label", sw_compdocs.generator.LabelDict | None),
                 ("input_lang", sw_compdocs.language.Language | None),
                 ("input_fmt", sw_compdocs.template.TemplateFormatter | None),
@@ -3166,7 +3166,7 @@ class TestGenerateDocument(unittest.TestCase):
         for tc in [
             # empty
             tt(
-                input_comp_list=[],
+                input_defn_list=[],
                 input_label=None,
                 input_lang=None,
                 input_fmt=None,
@@ -3174,7 +3174,7 @@ class TestGenerateDocument(unittest.TestCase):
             ),
             # single
             tt(
-                input_comp_list=[
+                input_defn_list=[
                     sw_compdocs.component.Definition(
                         name="Blocks_1", category=sw_compdocs.component.Category.BLOCKS
                     ),
@@ -3217,9 +3217,9 @@ class TestGenerateDocument(unittest.TestCase):
                     ],
                 ),
             ),
-            # sort comp_list name
+            # sort defn_list name
             tt(
-                input_comp_list=[
+                input_defn_list=[
                     sw_compdocs.component.Definition(
                         key="blocks_1",
                         name="Blocks_3",
@@ -3335,9 +3335,9 @@ class TestGenerateDocument(unittest.TestCase):
                     ],
                 ),
             ),
-            # sort comp_list key
+            # sort defn_list key
             tt(
-                input_comp_list=[
+                input_defn_list=[
                     sw_compdocs.component.Definition(
                         key="blocks_3",
                         name="Blocks_1",
@@ -3455,7 +3455,7 @@ class TestGenerateDocument(unittest.TestCase):
             ),
             # sort category
             tt(
-                input_comp_list=[
+                input_defn_list=[
                     sw_compdocs.component.Definition(
                         name="WINDOWS_0",
                         category=sw_compdocs.component.Category.WINDOWS,
@@ -4011,7 +4011,7 @@ class TestGenerateDocument(unittest.TestCase):
             ),
             # label, lang, fmt
             tt(
-                input_comp_list=[
+                input_defn_list=[
                     sw_compdocs.component.Definition(
                         key="test",
                         name="Test",
@@ -4081,7 +4081,7 @@ class TestGenerateDocument(unittest.TestCase):
         ]:
             with self.subTest(tc=tc):
                 got_doc = sw_compdocs.generator.generate_document(
-                    tc.input_comp_list,
+                    tc.input_defn_list,
                     label=tc.input_label,
                     lang=tc.input_lang,
                     fmt=tc.input_fmt,
@@ -4096,7 +4096,7 @@ class TestGenerateSheetComponent(unittest.TestCase):
             [
                 ("input_lang", sw_compdocs.language.Language | None),
                 ("input_fmt", sw_compdocs.template.TemplateFormatter | None),
-                ("input_comp", sw_compdocs.component.Definition),
+                ("input_defn", sw_compdocs.component.Definition),
                 ("want_record", list[str]),
             ],
         )
@@ -4105,7 +4105,7 @@ class TestGenerateSheetComponent(unittest.TestCase):
             tt(  # normal
                 input_lang=None,
                 input_fmt=None,
-                input_comp=sw_compdocs.component.Definition(
+                input_defn=sw_compdocs.component.Definition(
                     file="test.xml",
                     name="Name",
                     category=sw_compdocs.component.Category.BLOCKS,
@@ -4137,7 +4137,7 @@ class TestGenerateSheetComponent(unittest.TestCase):
             tt(  # file none
                 input_lang=None,
                 input_fmt=None,
-                input_comp=sw_compdocs.component.Definition(
+                input_defn=sw_compdocs.component.Definition(
                     name="Name",
                     category=sw_compdocs.component.Category.BLOCKS,
                     mass=1.0,
@@ -4168,7 +4168,7 @@ class TestGenerateSheetComponent(unittest.TestCase):
             tt(  # file
                 input_lang=None,
                 input_fmt=None,
-                input_comp=sw_compdocs.component.Definition(
+                input_defn=sw_compdocs.component.Definition(
                     file=b"path/to/test.xml",
                     name="Name",
                     category=sw_compdocs.component.Category.BLOCKS,
@@ -4200,7 +4200,7 @@ class TestGenerateSheetComponent(unittest.TestCase):
             tt(  # deprecated
                 input_lang=None,
                 input_fmt=None,
-                input_comp=sw_compdocs.component.Definition(
+                input_defn=sw_compdocs.component.Definition(
                     file="test.xml",
                     name="Name",
                     category=sw_compdocs.component.Category.BLOCKS,
@@ -4233,7 +4233,7 @@ class TestGenerateSheetComponent(unittest.TestCase):
             tt(  # mass
                 input_lang=None,
                 input_fmt=None,
-                input_comp=sw_compdocs.component.Definition(
+                input_defn=sw_compdocs.component.Definition(
                     file="test.xml",
                     name="Name",
                     category=sw_compdocs.component.Category.BLOCKS,
@@ -4277,7 +4277,7 @@ class TestGenerateSheetComponent(unittest.TestCase):
                     ]
                 ),
                 input_fmt=None,
-                input_comp=sw_compdocs.component.Definition(
+                input_defn=sw_compdocs.component.Definition(
                     file="test.xml",
                     key="test",
                     name="Name",
@@ -4316,7 +4316,7 @@ class TestGenerateSheetComponent(unittest.TestCase):
                         "desc": "description",
                     }
                 ),
-                input_comp=sw_compdocs.component.Definition(
+                input_defn=sw_compdocs.component.Definition(
                     file="test.xml",
                     name="$[name]",
                     category=sw_compdocs.component.Category.BLOCKS,
@@ -4366,7 +4366,7 @@ class TestGenerateSheetComponent(unittest.TestCase):
                         "desc": "description",
                     }
                 ),
-                input_comp=sw_compdocs.component.Definition(
+                input_defn=sw_compdocs.component.Definition(
                     file="test.xml",
                     key="test",
                     name="",
@@ -4399,7 +4399,7 @@ class TestGenerateSheetComponent(unittest.TestCase):
         ]:
             with self.subTest(tc=tc):
                 got_record = sw_compdocs.generator.generate_sheet_component(
-                    tc.input_comp, lang=tc.input_lang, fmt=tc.input_fmt
+                    tc.input_defn, lang=tc.input_lang, fmt=tc.input_fmt
                 )
                 self.assertEqual(got_record, tc.want_record)
 
@@ -4409,7 +4409,7 @@ class TestGenerateSheetComponentList(unittest.TestCase):
         tt = typing.NamedTuple(
             "tt",
             [
-                ("input_comp_list", list[sw_compdocs.component.Definition]),
+                ("input_defn_list", list[sw_compdocs.component.Definition]),
                 ("input_lang", sw_compdocs.language.Language | None),
                 ("input_fmt", sw_compdocs.template.TemplateFormatter | None),
                 ("want_record_list", list[list[str]]),
@@ -4418,7 +4418,7 @@ class TestGenerateSheetComponentList(unittest.TestCase):
 
         for tc in [
             tt(
-                input_comp_list=[
+                input_defn_list=[
                     sw_compdocs.component.Definition(name="Test 1"),
                     sw_compdocs.component.Definition(name="Test 2"),
                     sw_compdocs.component.Definition(name="Test 3"),
@@ -4471,7 +4471,7 @@ class TestGenerateSheetComponentList(unittest.TestCase):
                 ],
             ),
             tt(
-                input_comp_list=[
+                input_defn_list=[
                     sw_compdocs.component.Definition(
                         file="test.xml",
                         key="test",
@@ -4528,7 +4528,7 @@ class TestGenerateSheetComponentList(unittest.TestCase):
         ]:
             with self.subTest(tc=tc):
                 got_record_list = sw_compdocs.generator.generate_sheet_component_list(
-                    tc.input_comp_list, lang=tc.input_lang, fmt=tc.input_fmt
+                    tc.input_defn_list, lang=tc.input_lang, fmt=tc.input_fmt
                 )
                 self.assertEqual(got_record_list, tc.want_record_list)
 
@@ -4541,7 +4541,7 @@ class TestGenerateSheet(unittest.TestCase):
                 ("input_label", sw_compdocs.generator.LabelDict | None),
                 ("input_lang", sw_compdocs.language.Language | None),
                 ("input_fmt", sw_compdocs.template.TemplateFormatter | None),
-                ("input_comp_list", list[sw_compdocs.component.Definition]),
+                ("input_defn_list", list[sw_compdocs.component.Definition]),
                 ("want_record_list", list[list[str]]),
             ],
         )
@@ -4551,7 +4551,7 @@ class TestGenerateSheet(unittest.TestCase):
                 input_label=None,
                 input_lang=None,
                 input_fmt=None,
-                input_comp_list=[
+                input_defn_list=[
                     sw_compdocs.component.Definition(name="Test 1"),
                     sw_compdocs.component.Definition(name="Test 2"),
                     sw_compdocs.component.Definition(name="Test 3"),
@@ -4619,7 +4619,7 @@ class TestGenerateSheet(unittest.TestCase):
                 input_label=None,
                 input_lang=None,
                 input_fmt=None,
-                input_comp_list=[
+                input_defn_list=[
                     sw_compdocs.component.Definition(
                         key="a",
                         name="Z",
@@ -4737,7 +4737,7 @@ class TestGenerateSheet(unittest.TestCase):
                 ),
                 input_lang=None,
                 input_fmt=None,
-                input_comp_list=[
+                input_defn_list=[
                     sw_compdocs.component.Definition(name="Test 1"),
                     sw_compdocs.component.Definition(name="Test 2"),
                     sw_compdocs.component.Definition(name="Test 3"),
@@ -4823,7 +4823,7 @@ class TestGenerateSheet(unittest.TestCase):
                         "desc": "description",
                     }
                 ),
-                input_comp_list=[
+                input_defn_list=[
                     sw_compdocs.component.Definition(
                         file="test.xml",
                         key="test",
@@ -4874,7 +4874,7 @@ class TestGenerateSheet(unittest.TestCase):
         ]:
             with self.subTest(tc=tc):
                 got_record_list = sw_compdocs.generator.generate_sheet(
-                    tc.input_comp_list,
+                    tc.input_defn_list,
                     label=tc.input_label,
                     lang=tc.input_lang,
                     fmt=tc.input_fmt,
