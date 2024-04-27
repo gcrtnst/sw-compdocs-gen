@@ -794,7 +794,7 @@ class TestMain(unittest.TestCase):
 
         for tc in [
             tt(
-                input_exc=sw_compdocs.component.ComponentXMLError("message"),
+                input_exc=sw_compdocs.component.DefinitionXMLError("message"),
                 want_stderr="sw_compdocs: error: message\n",
             ),
             tt(

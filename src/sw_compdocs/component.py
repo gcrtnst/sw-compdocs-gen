@@ -11,7 +11,7 @@ from . import _types
 from . import container
 
 
-class ComponentXMLError(Exception):
+class DefinitionXMLError(Exception):
     def __init__(self, msg: str) -> None:
         super().__init__(msg)
         self.msg: typing.Final[str] = msg
@@ -207,7 +207,7 @@ class LogicNode:
             try:
                 mode = LogicNodeMode(int(mode_attr, base=10))
             except ValueError as exc:
-                raise ComponentXMLError(
+                raise DefinitionXMLError(
                     f"invalid logic node mode {mode_attr!r}"
                 ) from exc
 
@@ -217,7 +217,7 @@ class LogicNode:
             try:
                 typo = LogicNodeType(int(typo_attr, base=10))
             except ValueError as exc:
-                raise ComponentXMLError(
+                raise DefinitionXMLError(
                     f"invalid logic node type {typo_attr!r}"
                 ) from exc
 
@@ -235,7 +235,7 @@ class LogicNodeList(container.MutableSequence[LogicNode]):
             for idx, sub in enumerate(elem.findall(tag)):
                 try:
                     ln = LogicNode.from_xml_elem(sub, idx=idx)
-                except ComponentXMLError as exc:
+                except DefinitionXMLError as exc:
                     exc.prepend_xpath(f"{tag}[{idx + 1}]")
                     raise
                 yield ln
@@ -258,7 +258,7 @@ class VoxelPos:
             try:
                 x = int(x_attr, base=10)
             except ValueError as exc:
-                raise ComponentXMLError(f"invalid voxel x {x_attr!r}") from exc
+                raise DefinitionXMLError(f"invalid voxel x {x_attr!r}") from exc
 
         y = cls.y
         y_attr = elem.get("y")
@@ -266,7 +266,7 @@ class VoxelPos:
             try:
                 y = int(y_attr, base=10)
             except ValueError as exc:
-                raise ComponentXMLError(f"invalid voxel y {y_attr!r}") from exc
+                raise DefinitionXMLError(f"invalid voxel y {y_attr!r}") from exc
 
         z = cls.z
         z_attr = elem.get("z")
@@ -274,7 +274,7 @@ class VoxelPos:
             try:
                 z = int(z_attr, base=10)
             except ValueError as exc:
-                raise ComponentXMLError(f"invalid voxel z {z_attr!r}") from exc
+                raise DefinitionXMLError(f"invalid voxel z {z_attr!r}") from exc
 
         return cls(x=x, y=y, z=z)
 
@@ -311,7 +311,9 @@ class Definition:
             try:
                 category = Category(int(category_attr, base=10))
             except ValueError as base_exc:
-                exc = ComponentXMLError(f"invalid component category {category_attr!r}")
+                exc = DefinitionXMLError(
+                    f"invalid component category {category_attr!r}"
+                )
                 exc.file = file
                 raise exc from base_exc
 
@@ -321,7 +323,7 @@ class Definition:
             try:
                 mass = float(mass_attr)
             except ValueError as base_exc:
-                exc = ComponentXMLError(f"invalid component mass {mass_attr!r}")
+                exc = DefinitionXMLError(f"invalid component mass {mass_attr!r}")
                 exc.file = file
                 raise exc from base_exc
 
@@ -331,7 +333,7 @@ class Definition:
             try:
                 value = int(value_attr, base=10)
             except ValueError as base_exc:
-                exc = ComponentXMLError(f"invalid component value {value_attr!r}")
+                exc = DefinitionXMLError(f"invalid component value {value_attr!r}")
                 exc.file = file
                 raise exc from base_exc
 
@@ -341,7 +343,7 @@ class Definition:
             try:
                 flags = Flags(int(flags_attr, base=10))
             except ValueError as base_exc:
-                exc = ComponentXMLError(f"invalid component flags {flags_attr!r}")
+                exc = DefinitionXMLError(f"invalid component flags {flags_attr!r}")
                 exc.file = file
                 raise exc from base_exc
 
@@ -352,7 +354,7 @@ class Definition:
                 tooltip_properties = TooltipProperties.from_xml_elem(
                     tooltip_properties_elem
                 )
-            except ComponentXMLError as exc:
+            except DefinitionXMLError as exc:
                 exc.file = file
                 exc.prepend_xpath("tooltip_properties")
                 raise
@@ -362,7 +364,7 @@ class Definition:
         if logic_nodes_elem is not None:
             try:
                 logic_nodes = LogicNodeList.from_xml_elem(logic_nodes_elem)
-            except ComponentXMLError as exc:
+            except DefinitionXMLError as exc:
                 exc.file = file
                 exc.prepend_xpath("logic_nodes")
                 raise
@@ -372,7 +374,7 @@ class Definition:
         if voxel_min_elem is not None:
             try:
                 voxel_min = VoxelPos.from_xml_elem(voxel_min_elem)
-            except ComponentXMLError as exc:
+            except DefinitionXMLError as exc:
                 exc.file = file
                 exc.prepend_xpath("voxel_min")
                 raise
@@ -382,7 +384,7 @@ class Definition:
         if voxel_max_elem is not None:
             try:
                 voxel_max = VoxelPos.from_xml_elem(voxel_max_elem)
-            except ComponentXMLError as exc:
+            except DefinitionXMLError as exc:
                 exc.file = file
                 exc.prepend_xpath("voxel_max")
                 raise
@@ -423,13 +425,13 @@ def _parse_xml_root(
 ) -> Definition:
     # elem may be None if the XML is invalid.
     if elem is None:
-        exc = ComponentXMLError("invalid xml")
+        exc = DefinitionXMLError("invalid xml")
         exc.file = file
         exc.prepend_xpath("/")
         raise exc
 
     if elem.tag != "definition":
-        exc = ComponentXMLError(f"invalid xml root tag {elem.tag!r}")
+        exc = DefinitionXMLError(f"invalid xml root tag {elem.tag!r}")
         exc.file = file
         exc.prepend_xpath(elem.tag)
         exc.prepend_xpath("/")
@@ -437,7 +439,7 @@ def _parse_xml_root(
 
     try:
         return Definition.from_xml_elem(elem, file=file, key=key)
-    except ComponentXMLError as exc:
+    except DefinitionXMLError as exc:
         exc.prepend_xpath(elem.tag)
         exc.prepend_xpath("/")
         raise

@@ -8,9 +8,9 @@ import typing
 import unittest
 
 
-class TestComponentXMLErrorInit(unittest.TestCase):
+class TestDefinitionXMLErrorInit(unittest.TestCase):
     def test_pass(self) -> None:
-        exc = sw_compdocs.component.ComponentXMLError("msg")
+        exc = sw_compdocs.component.DefinitionXMLError("msg")
         exc_args: tuple[object, ...] = exc.args
         self.assertEqual(exc_args, ("msg",))
         self.assertEqual(exc.msg, "msg")
@@ -18,9 +18,9 @@ class TestComponentXMLErrorInit(unittest.TestCase):
         self.assertEqual(exc.xpath, ".")
 
 
-class TestComponentXMLErrorStr(unittest.TestCase):
+class TestDefinitionXMLErrorStr(unittest.TestCase):
     def test(self) -> None:
-        exc = sw_compdocs.component.ComponentXMLError("any useful message")
+        exc = sw_compdocs.component.DefinitionXMLError("any useful message")
         exc.file = "01_block.xml"
         exc.prepend_xpath("logic_node[52149]")
         exc.prepend_xpath("logic_nodes")
@@ -80,7 +80,7 @@ class TestComponentXMLErrorStr(unittest.TestCase):
             ),
         ]:
             with self.subTest(tc=tc):
-                exc = sw_compdocs.component.ComponentXMLError(tc.input_msg)
+                exc = sw_compdocs.component.DefinitionXMLError(tc.input_msg)
                 exc.file = tc.input_file
                 for input_xpath_seg in tc.input_xpath_list:
                     exc.prepend_xpath(input_xpath_seg)
@@ -89,9 +89,9 @@ class TestComponentXMLErrorStr(unittest.TestCase):
                 self.assertEqual(got_s, tc.want_s)
 
 
-class TestComponentXMLErrorPrependXPath(unittest.TestCase):
+class TestDefinitionXMLErrorPrependXPath(unittest.TestCase):
     def test_pass(self) -> None:
-        exc = sw_compdocs.component.ComponentXMLError("msg")
+        exc = sw_compdocs.component.DefinitionXMLError("msg")
         self.assertEqual(exc.xpath, ".")
 
         exc.prepend_xpath("logic_node[52149]")
@@ -107,7 +107,7 @@ class TestComponentXMLErrorPrependXPath(unittest.TestCase):
         self.assertEqual(exc.xpath, "/definition/logic_nodes/logic_node[52149]")
 
     def test_exc_runtime(self) -> None:
-        exc = sw_compdocs.component.ComponentXMLError("msg")
+        exc = sw_compdocs.component.DefinitionXMLError("msg")
         exc.prepend_xpath("xpath")
         exc.prepend_xpath("/")
         self.assertEqual(exc.xpath, "/xpath")
@@ -121,7 +121,7 @@ class TestComponentXMLErrorPrependXPath(unittest.TestCase):
     def test_exc_value(self) -> None:
         for s in ["", "logic_nodes/logic_node[52149]"]:
             with self.subTest(s=s):
-                exc = sw_compdocs.component.ComponentXMLError("msg")
+                exc = sw_compdocs.component.DefinitionXMLError("msg")
                 with self.assertRaises(ValueError):
                     exc.prepend_xpath(s)
 
@@ -540,7 +540,7 @@ class TestLogicNodeFromXMLElem(unittest.TestCase):
             ),
         ]:
             with self.subTest(tc=tc):
-                with self.assertRaises(sw_compdocs.component.ComponentXMLError) as ctx:
+                with self.assertRaises(sw_compdocs.component.DefinitionXMLError) as ctx:
                     sw_compdocs.component.LogicNode.from_xml_elem(tc.input_elem)
                 self.assertEqual(ctx.exception.msg, tc.want_msg)
                 self.assertEqual(ctx.exception.file, None)
@@ -638,7 +638,7 @@ class TestLogicNodeListFromXMLElem(unittest.TestCase):
             with self.subTest(tc=tc):
                 input_elem = lxml.etree.Element("logic_nodes")
                 input_elem.extend(tc.input_sub_list)
-                with self.assertRaises(sw_compdocs.component.ComponentXMLError) as ctx:
+                with self.assertRaises(sw_compdocs.component.DefinitionXMLError) as ctx:
                     sw_compdocs.component.LogicNodeList.from_xml_elem(input_elem)
                 self.assertEqual(ctx.exception.msg, tc.want_msg)
                 self.assertEqual(ctx.exception.file, None)
@@ -730,7 +730,7 @@ class TestVoxelPosFromXMLElem(unittest.TestCase):
             ),
         ]:
             with self.subTest(tc=tc):
-                with self.assertRaises(sw_compdocs.component.ComponentXMLError) as ctx:
+                with self.assertRaises(sw_compdocs.component.DefinitionXMLError) as ctx:
                     sw_compdocs.component.VoxelPos.from_xml_elem(tc.input_elem)
                 self.assertEqual(ctx.exception.msg, tc.want_msg)
                 self.assertEqual(ctx.exception.file, None)
@@ -898,7 +898,7 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
             ),
         ]:
             with self.subTest(tc=tc):
-                with self.assertRaises(sw_compdocs.component.ComponentXMLError) as ctx:
+                with self.assertRaises(sw_compdocs.component.DefinitionXMLError) as ctx:
                     sw_compdocs.component.Definition.from_xml_elem(
                         tc.input_elem, file=tc.input_file
                     )
@@ -986,7 +986,7 @@ class TestParseXMLFile(unittest.TestCase):
             for path in path_list:
                 with self.subTest(path=path):
                     with self.assertRaises(
-                        sw_compdocs.component.ComponentXMLError
+                        sw_compdocs.component.DefinitionXMLError
                     ) as ctx:
                         sw_compdocs.component.parse_xml_file(path)
                     self.assertEqual(
@@ -1016,7 +1016,7 @@ class TestParseXMLFile(unittest.TestCase):
             for path in path_list:
                 with self.subTest(path=path):
                     with self.assertRaises(
-                        sw_compdocs.component.ComponentXMLError
+                        sw_compdocs.component.DefinitionXMLError
                     ) as ctx:
                         sw_compdocs.component.parse_xml_file(path)
                     self.assertEqual(ctx.exception.msg, "invalid voxel x 'invalid'")
@@ -1037,7 +1037,7 @@ class TestParseXMLFile(unittest.TestCase):
             for path in path_list:
                 with self.subTest(path=path):
                     with self.assertRaises(
-                        sw_compdocs.component.ComponentXMLError
+                        sw_compdocs.component.DefinitionXMLError
                     ) as ctx:
                         sw_compdocs.component.parse_xml_file(path)
                     self.assertEqual(ctx.exception.msg, "invalid xml")
@@ -1082,7 +1082,7 @@ class TestParseXMLStr(unittest.TestCase):
         self.assertEqual(defn.tooltip_properties.description, "description")
 
     def test_exc_root(self) -> None:
-        with self.assertRaises(sw_compdocs.component.ComponentXMLError) as ctx:
+        with self.assertRaises(sw_compdocs.component.DefinitionXMLError) as ctx:
             sw_compdocs.component.parse_xml_str(
                 """\
 <invalid name="name">
@@ -1097,7 +1097,7 @@ class TestParseXMLStr(unittest.TestCase):
         self.assertEqual(ctx.exception.xpath, "/invalid")
 
     def test_exc_xml(self) -> None:
-        with self.assertRaises(sw_compdocs.component.ComponentXMLError) as ctx:
+        with self.assertRaises(sw_compdocs.component.DefinitionXMLError) as ctx:
             sw_compdocs.component.parse_xml_str(
                 """\
 <definition>
@@ -1112,7 +1112,7 @@ class TestParseXMLStr(unittest.TestCase):
         self.assertEqual(ctx.exception.xpath, "/definition/voxel_min")
 
     def test_exc_parse(self) -> None:
-        with self.assertRaises(sw_compdocs.component.ComponentXMLError) as ctx:
+        with self.assertRaises(sw_compdocs.component.DefinitionXMLError) as ctx:
             sw_compdocs.component.parse_xml_str(" ")
         self.assertEqual(ctx.exception.msg, "invalid xml")
         self.assertEqual(ctx.exception.file, None)

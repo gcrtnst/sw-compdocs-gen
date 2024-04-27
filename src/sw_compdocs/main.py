@@ -281,7 +281,7 @@ def main(
             out_encoding=argv_encoding,
             out_newline=argv_newline,
         )
-    except component.ComponentXMLError as exc:
+    except component.DefinitionXMLError as exc:
         error(exc)
     except generator.LabelKeyError as exc:
         error(exc)
