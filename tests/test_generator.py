@@ -572,7 +572,7 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
                 ("input_label", sw_compdocs.generator.LabelDict | None),
                 ("input_lang", sw_compdocs.language.Language | None),
                 ("input_fmt", sw_compdocs.template.TemplateFormatter | None),
-                ("input_cid", str),
+                ("input_key", str),
                 ("input_lns", sw_compdocs.component.LogicNodeList),
                 ("want_tbl", sw_compdocs.document.Table),
             ],
@@ -589,7 +589,7 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
                 ),
                 input_lang=None,
                 input_fmt=None,
-                input_cid="test",
+                input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList([]),
                 want_tbl=sw_compdocs.document.Table(
                     sw_compdocs.document.TableData(
@@ -654,7 +654,7 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
                         "desc_1": "desc_1_fmt",
                     }
                 ),
-                input_cid="test",
+                input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
@@ -739,7 +739,7 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
                         "desc_1": "desc_1_fmt",
                     }
                 ),
-                input_cid="test",
+                input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
@@ -797,7 +797,7 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
                         "desc_1": "desc_1_fmt",
                     }
                 ),
-                input_cid="test",
+                input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
@@ -877,7 +877,7 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
                     ]
                 ),
                 input_fmt=None,
-                input_cid="test",
+                input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
@@ -964,7 +964,7 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
                         "desc_1": "desc_1_fmt",
                     }
                 ),
-                input_cid="test",
+                input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
@@ -1024,7 +1024,7 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
                     ]
                 ),
                 input_fmt=None,
-                input_cid="test",
+                input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
@@ -1059,7 +1059,7 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
         ]:
             with self.subTest(tc=tc):
                 got_tbl = sw_compdocs.generator.generate_document_logic_table(
-                    tc.input_cid,
+                    tc.input_key,
                     tc.input_lns,
                     label=tc.input_label,
                     lang=tc.input_lang,
@@ -1076,7 +1076,7 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                 ("input_label", sw_compdocs.generator.LabelDict | None),
                 ("input_lang", sw_compdocs.language.Language | None),
                 ("input_fmt", sw_compdocs.template.TemplateFormatter | None),
-                ("input_cid", str),
+                ("input_key", str),
                 ("input_lns", sw_compdocs.component.LogicNodeList),
                 ("want_doc", sw_compdocs.document.Document),
             ],
@@ -1088,7 +1088,7 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                 input_label=None,
                 input_lang=None,
                 input_fmt=None,
-                input_cid="test",
+                input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(),
                 want_doc=sw_compdocs.document.Document(),
             ),
@@ -1097,7 +1097,7 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                 input_label=None,
                 input_lang=None,
                 input_fmt=None,
-                input_cid="test",
+                input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
@@ -1134,7 +1134,7 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                 input_label=None,
                 input_lang=None,
                 input_fmt=None,
-                input_cid="test",
+                input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
@@ -1171,7 +1171,7 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                 input_label=None,
                 input_lang=None,
                 input_fmt=None,
-                input_cid="test",
+                input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
@@ -1208,7 +1208,7 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                 input_label=None,
                 input_lang=None,
                 input_fmt=None,
-                input_cid="test",
+                input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
@@ -1245,7 +1245,7 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                 input_label=None,
                 input_lang=None,
                 input_fmt=None,
-                input_cid="test",
+                input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
@@ -1282,7 +1282,7 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                 input_label=None,
                 input_lang=None,
                 input_fmt=None,
-                input_cid="test",
+                input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
@@ -1319,7 +1319,7 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                 input_label=None,
                 input_lang=None,
                 input_fmt=None,
-                input_cid="test",
+                input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
@@ -1356,7 +1356,7 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                 input_label=None,
                 input_lang=None,
                 input_fmt=None,
-                input_cid="test",
+                input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
@@ -1393,7 +1393,7 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                 input_label=None,
                 input_lang=None,
                 input_fmt=None,
-                input_cid="test",
+                input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
@@ -1431,7 +1431,7 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                 input_label=None,
                 input_lang=None,
                 input_fmt=None,
-                input_cid="test",
+                input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
@@ -1482,7 +1482,7 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                     ]
                 ),
                 input_fmt=None,
-                input_cid="test",
+                input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
@@ -1532,7 +1532,7 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                     ]
                 ),
                 input_fmt=None,
-                input_cid="test",
+                input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
@@ -1580,7 +1580,7 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                     ]
                 ),
                 input_fmt=None,
-                input_cid="test",
+                input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
@@ -1668,7 +1668,7 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                     ]
                 ),
                 input_fmt=None,
-                input_cid="test",
+                input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
@@ -1783,7 +1783,7 @@ class TestGenerateDocumentLogic(unittest.TestCase):
         ]:
             with self.subTest(tc=tc):
                 got_doc = sw_compdocs.generator.generate_document_logic(
-                    tc.input_cid,
+                    tc.input_key,
                     tc.input_lns,
                     label=tc.input_label,
                     lang=tc.input_lang,
@@ -1812,7 +1812,7 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                 input_fmt=None,
                 input_comp=sw_compdocs.component.Definition(
                     file="clock.xml",
-                    cid="clock",
+                    key="clock",
                     name="Clock",
                     category=sw_compdocs.component.Category.DISPLAYS,
                     mass=1.0,
@@ -1960,7 +1960,7 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                 input_fmt=None,
                 input_comp=sw_compdocs.component.Definition(
                     file="clock.xml",
-                    cid="clock",
+                    key="clock",
                     name="Clock",
                     category=sw_compdocs.component.Category.DISPLAYS,
                     mass=1.0,
@@ -2225,7 +2225,7 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                 input_fmt=sw_compdocs.template.TemplateFormatter({}),
                 input_comp=sw_compdocs.component.Definition(
                     file="clock.xml",
-                    cid="clock",
+                    key="clock",
                     name="Clock",
                     category=sw_compdocs.component.Category.DISPLAYS,
                     mass=1.0,
@@ -2464,7 +2464,7 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                 ),
                 input_comp=sw_compdocs.component.Definition(
                     file="button_push.xml",
-                    cid="button_push",
+                    key="button_push",
                     name="Push Button",
                     category=sw_compdocs.component.Category.MECHANICS,
                     mass=1.0,
@@ -2633,7 +2633,7 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                 ),
                 input_comp=sw_compdocs.component.Definition(
                     file="handle.xml",
-                    cid="handle",
+                    key="handle",
                     name="Handle",
                     category=sw_compdocs.component.Category.BLOCKS,
                     mass=1.0,
@@ -2685,7 +2685,7 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                 input_fmt=None,
                 input_comp=sw_compdocs.component.Definition(
                     file="clock.xml",
-                    cid="clock",
+                    key="clock",
                     name="Clock",
                     category=sw_compdocs.component.Category.DISPLAYS,
                     mass=1.0,
@@ -2830,7 +2830,7 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                 input_fmt=None,
                 input_comp=sw_compdocs.component.Definition(
                     file="clock.xml",
-                    cid="clock",
+                    key="clock",
                     name="Clock",
                     category=sw_compdocs.component.Category.DISPLAYS,
                     mass=1.0,
@@ -3075,7 +3075,7 @@ class TestGenerateDocumentComponentList(unittest.TestCase):
             tt(
                 input_comp_list=[
                     sw_compdocs.component.Definition(
-                        cid="test",
+                        key="test",
                         name="Test",
                         tooltip_properties=sw_compdocs.component.TooltipProperties(
                             short_description="Short Description",
@@ -3221,19 +3221,19 @@ class TestGenerateDocument(unittest.TestCase):
             tt(
                 input_comp_list=[
                     sw_compdocs.component.Definition(
-                        cid="blocks_1",
+                        key="blocks_1",
                         name="Blocks_3",
                         value=1,
                         category=sw_compdocs.component.Category.BLOCKS,
                     ),
                     sw_compdocs.component.Definition(
-                        cid="blocks_2",
+                        key="blocks_2",
                         name="Blocks_2",
                         value=2,
                         category=sw_compdocs.component.Category.BLOCKS,
                     ),
                     sw_compdocs.component.Definition(
-                        cid="blocks_3",
+                        key="blocks_3",
                         name="Blocks_1",
                         value=3,
                         category=sw_compdocs.component.Category.BLOCKS,
@@ -3335,23 +3335,23 @@ class TestGenerateDocument(unittest.TestCase):
                     ],
                 ),
             ),
-            # sort comp_list cid
+            # sort comp_list key
             tt(
                 input_comp_list=[
                     sw_compdocs.component.Definition(
-                        cid="blocks_3",
+                        key="blocks_3",
                         name="Blocks_1",
                         value=3,
                         category=sw_compdocs.component.Category.BLOCKS,
                     ),
                     sw_compdocs.component.Definition(
-                        cid="blocks_2",
+                        key="blocks_2",
                         name="Blocks_1",
                         value=2,
                         category=sw_compdocs.component.Category.BLOCKS,
                     ),
                     sw_compdocs.component.Definition(
-                        cid="blocks_1",
+                        key="blocks_1",
                         name="Blocks_1",
                         value=1,
                         category=sw_compdocs.component.Category.BLOCKS,
@@ -4013,7 +4013,7 @@ class TestGenerateDocument(unittest.TestCase):
             tt(
                 input_comp_list=[
                     sw_compdocs.component.Definition(
-                        cid="test",
+                        key="test",
                         name="Test",
                         tooltip_properties=sw_compdocs.component.TooltipProperties(
                             short_description="Short Description",
@@ -4279,7 +4279,7 @@ class TestGenerateSheetComponent(unittest.TestCase):
                 input_fmt=None,
                 input_comp=sw_compdocs.component.Definition(
                     file="test.xml",
-                    cid="test",
+                    key="test",
                     name="Name",
                     category=sw_compdocs.component.Category.BLOCKS,
                     mass=1.0,
@@ -4368,7 +4368,7 @@ class TestGenerateSheetComponent(unittest.TestCase):
                 ),
                 input_comp=sw_compdocs.component.Definition(
                     file="test.xml",
-                    cid="test",
+                    key="test",
                     name="",
                     category=sw_compdocs.component.Category.BLOCKS,
                     mass=1.0,
@@ -4474,7 +4474,7 @@ class TestGenerateSheetComponentList(unittest.TestCase):
                 input_comp_list=[
                     sw_compdocs.component.Definition(
                         file="test.xml",
-                        cid="test",
+                        key="test",
                         name="",
                         category=sw_compdocs.component.Category.BLOCKS,
                         mass=1.0,
@@ -4621,25 +4621,25 @@ class TestGenerateSheet(unittest.TestCase):
                 input_fmt=None,
                 input_comp_list=[
                     sw_compdocs.component.Definition(
-                        cid="a",
+                        key="a",
                         name="Z",
                         category=sw_compdocs.component.Category.VEHICLE_CONTROL,
                         value=1,
                     ),
                     sw_compdocs.component.Definition(
-                        cid="z",
+                        key="z",
                         name="A",
                         category=sw_compdocs.component.Category.VEHICLE_CONTROL,
                         value=2,
                     ),
                     sw_compdocs.component.Definition(
-                        cid="a",
+                        key="a",
                         name="A",
                         category=sw_compdocs.component.Category.VEHICLE_CONTROL,
                         value=3,
                     ),
                     sw_compdocs.component.Definition(
-                        cid="z",
+                        key="z",
                         name="Z",
                         category=sw_compdocs.component.Category.BLOCKS,
                         value=4,
@@ -4826,7 +4826,7 @@ class TestGenerateSheet(unittest.TestCase):
                 input_comp_list=[
                     sw_compdocs.component.Definition(
                         file="test.xml",
-                        cid="test",
+                        key="test",
                         name="",
                         category=sw_compdocs.component.Category.BLOCKS,
                         mass=1.0,

@@ -126,53 +126,53 @@ class TestComponentXMLErrorPrependXPath(unittest.TestCase):
                     exc.prepend_xpath(s)
 
 
-class TestGenerateCID(unittest.TestCase):
+class TestGenerateKey(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(
             "tt",
             [
                 ("input_file", sw_compdocs._types.StrOrBytesPath),
-                ("want_cid", str),
+                ("want_key", str),
             ],
         )
 
         for tc in [
             tt(
                 input_file="01_block_test.xml",
-                want_cid="01_block_test",
+                want_key="01_block_test",
             ),
             tt(
                 input_file="01_block_test.test.xml.xml",
-                want_cid="01_block_test.test.xml",
+                want_key="01_block_test.test.xml",
             ),
             tt(
                 input_file="01_block_test.dmy",
-                want_cid="01_block_test",
+                want_key="01_block_test",
             ),
             tt(
                 input_file="01_block-.xml",
-                want_cid="01_block-",
+                want_key="01_block-",
             ),
             tt(
                 input_file=".xml",
-                want_cid="",
+                want_key="",
             ),
             tt(
                 input_file=b"01_block_test.xml",
-                want_cid="01_block_test",
+                want_key="01_block_test",
             ),
             tt(
                 input_file=pathlib.PurePath("01_block_test.xml"),
-                want_cid="01_block_test",
+                want_key="01_block_test",
             ),
             tt(
                 input_file=pathlib.PurePosixPath("/tmp/01_block_test.xml"),
-                want_cid="01_block_test",
+                want_key="01_block_test",
             ),
         ]:
             with self.subTest(tc=tc):
-                got_id = sw_compdocs.component.generate_cid(tc.input_file)
-                self.assertEqual(got_id, tc.want_cid)
+                got_id = sw_compdocs.component.generate_key(tc.input_file)
+                self.assertEqual(got_id, tc.want_key)
 
 
 class TestCategoryStr(unittest.TestCase):
@@ -755,10 +755,10 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
         )
 
         comp = sw_compdocs.component.Definition.from_xml_elem(
-            elem, file="clock.xml", cid="clock"
+            elem, file="clock.xml", key="clock"
         )
         self.assertEqual(comp.file, "clock.xml")
-        self.assertEqual(comp.cid, "clock")
+        self.assertEqual(comp.key, "clock")
         self.assertEqual(comp.name, "Clock")
         self.assertEqual(comp.category, sw_compdocs.component.Category.DISPLAYS)
         self.assertEqual(comp.mass, 1.0)
@@ -807,7 +807,7 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
         elem = lxml.etree.Element("definition")
         comp = sw_compdocs.component.Definition.from_xml_elem(elem)
         self.assertIsNone(comp.file)
-        self.assertEqual(comp.cid, "")
+        self.assertEqual(comp.key, "")
         self.assertEqual(comp.name, "")
         self.assertEqual(comp.category, sw_compdocs.component.Category.BLOCKS)
         self.assertEqual(comp.mass, 0.0)
@@ -930,7 +930,7 @@ class TestParseXMLFile(unittest.TestCase):
                 with self.subTest(path=path):
                     comp = sw_compdocs.component.parse_xml_file(path)
                     self.assertEqual(comp.file, path)
-                    self.assertEqual(comp.cid, "test")
+                    self.assertEqual(comp.key, "test")
                     self.assertEqual(comp.name, "name")
                     self.assertEqual(comp.tooltip_properties.description, "description")
 
@@ -961,7 +961,7 @@ class TestParseXMLFile(unittest.TestCase):
                 with self.subTest(path=path):
                     comp = sw_compdocs.component.parse_xml_file(path)
                     self.assertEqual(comp.file, path)
-                    self.assertEqual(comp.cid, "test")
+                    self.assertEqual(comp.key, "test")
                     self.assertEqual(comp.name, "name")
                     self.assertEqual(comp.tooltip_properties.description, "description")
 
@@ -1053,11 +1053,11 @@ class TestParseXMLStr(unittest.TestCase):
     <tooltip_properties description="description"/>
 </definition>
 """,
-            cid="cid",
+            key="key",
         )
 
         self.assertIsNone(comp.file)
-        self.assertEqual(comp.cid, "cid")
+        self.assertEqual(comp.key, "key")
         self.assertEqual(comp.name, "name")
         self.assertEqual(comp.tooltip_properties.description, "description")
 
@@ -1073,11 +1073,11 @@ class TestParseXMLStr(unittest.TestCase):
     <tooltip_properties description="description"/>
 </definition>
 """,
-            cid="cid",
+            key="key",
         )
 
         self.assertIsNone(comp.file)
-        self.assertEqual(comp.cid, "cid")
+        self.assertEqual(comp.key, "key")
         self.assertEqual(comp.name, "name")
         self.assertEqual(comp.tooltip_properties.description, "description")
 
@@ -1089,7 +1089,7 @@ class TestParseXMLStr(unittest.TestCase):
     <tooltip_properties description="description"/>
 </invalid>
     """,
-                cid="cid",
+                key="key",
             )
 
         self.assertEqual(ctx.exception.msg, "invalid xml root tag 'invalid'")
@@ -1104,7 +1104,7 @@ class TestParseXMLStr(unittest.TestCase):
     <voxel_min x="invalid"/>
 </definition>
 """,
-                cid="cid",
+                key="key",
             )
 
         self.assertEqual(ctx.exception.msg, "invalid voxel x 'invalid'")

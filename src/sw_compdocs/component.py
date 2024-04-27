@@ -50,7 +50,7 @@ class ComponentXMLError(Exception):
         raise ValueError
 
 
-def generate_cid(file: _types.StrOrBytesPath) -> str:
+def generate_key(file: _types.StrOrBytesPath) -> str:
     if not isinstance(file, pathlib.PurePath):
         file = os.fsdecode(file)
         file = pathlib.PurePath(file)
@@ -283,7 +283,7 @@ class VoxelPos:
 class Definition:
     _: dataclasses.KW_ONLY
     file: _types.StrOrBytesPath | None = None
-    cid: str = ""
+    key: str = ""
     name: str = ""
     category: Category = Category.BLOCKS
     mass: float = 0.0
@@ -303,7 +303,7 @@ class Definition:
         elem: lxml.etree._Element,
         *,
         file: _types.StrOrBytesPath | None = None,
-        cid: str | None = None,
+        key: str | None = None,
     ) -> typing.Self:
         category = cls.category
         category_attr = elem.get("category")
@@ -387,12 +387,12 @@ class Definition:
                 exc.prepend_xpath("voxel_max")
                 raise
 
-        cid = cid if cid is not None else cls.cid
+        key = key if key is not None else cls.key
         name = elem.get("name", cls.name)
         tags = elem.get("tags", cls.tags)
         return cls(
             file=file,
-            cid=cid,
+            key=key,
             name=name,
             category=category,
             mass=mass,
@@ -419,7 +419,7 @@ def _parse_xml_root(
     elem: lxml.etree._Element | None,
     *,
     file: _types.StrOrBytesPath | None = None,
-    cid: str | None = None,
+    key: str | None = None,
 ) -> Definition:
     # elem may be None if the XML is invalid.
     if elem is None:
@@ -436,7 +436,7 @@ def _parse_xml_root(
         raise exc
 
     try:
-        return Definition.from_xml_elem(elem, file=file, cid=cid)
+        return Definition.from_xml_elem(elem, file=file, key=key)
     except ComponentXMLError as exc:
         exc.prepend_xpath(elem.tag)
         exc.prepend_xpath("/")
@@ -444,13 +444,13 @@ def _parse_xml_root(
 
 
 def parse_xml_file(file: _types.StrOrBytesPath) -> Definition:
-    cid = generate_cid(file)
+    key = generate_key(file)
     tree = lxml.etree.parse(file, parser=_new_xml_parser())
     elem: lxml.etree._Element | None = tree.getroot()
-    return _parse_xml_root(elem, file=file, cid=cid)
+    return _parse_xml_root(elem, file=file, key=key)
 
 
-def parse_xml_str(s: str, *, cid: str | None = None) -> Definition:
+def parse_xml_str(s: str, *, key: str | None = None) -> Definition:
     elem: lxml.etree._Element | None
     elem = lxml.etree.fromstring(s, parser=_new_xml_parser())
-    return _parse_xml_root(elem, cid=cid)
+    return _parse_xml_root(elem, key=key)

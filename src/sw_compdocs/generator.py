@@ -113,7 +113,7 @@ def generate_document_property(
 
 
 def generate_document_logic_table(
-    cid: str,
+    key: str,
     lns: component.LogicNodeList,
     *,
     label: LabelDict | None = None,
@@ -129,8 +129,8 @@ def generate_document_logic_table(
     )
     data = document.TableData(head)
     for ln in lns:
-        lang_id_label = f"def_{cid}_node_{ln.idx:d}_label"
-        lang_id_desc = f"def_{cid}_node_{ln.idx:d}_desc"
+        lang_id_label = f"def_{key}_node_{ln.idx:d}_label"
+        lang_id_desc = f"def_{key}_node_{ln.idx:d}_desc"
 
         ln_type = _lang_find_en(lang, str(ln.type))
         ln_label = _lang_find_id(lang, lang_id_label, ln.label)
@@ -142,7 +142,7 @@ def generate_document_logic_table(
 
 
 def generate_document_logic(
-    cid: str,
+    key: str,
     lns: component.LogicNodeList,
     *,
     label: LabelDict | None = None,
@@ -181,21 +181,21 @@ def generate_document_logic(
     if len(in_lns) > 0:
         in_head = document.Heading(_lang_find_en(lang, "logic inputs"))
         in_tbl = generate_document_logic_table(
-            cid, in_lns, label=label, lang=lang, fmt=fmt
+            key, in_lns, label=label, lang=lang, fmt=fmt
         )
         doc.append(in_head)
         doc.append(in_tbl)
     if len(out_lns) > 0:
         out_head = document.Heading(_lang_find_en(lang, "logic outputs"))
         out_tbl = generate_document_logic_table(
-            cid, out_lns, label=label, lang=lang, fmt=fmt
+            key, out_lns, label=label, lang=lang, fmt=fmt
         )
         doc.append(out_head)
         doc.append(out_tbl)
     if len(conn_lns) > 0:
         conn_head = document.Heading(_lang_find_en(lang, "connections"))
         conn_tbl = generate_document_logic_table(
-            cid, conn_lns, label=label, lang=lang, fmt=fmt
+            key, conn_lns, label=label, lang=lang, fmt=fmt
         )
         doc.append(conn_head)
         doc.append(conn_tbl)
@@ -211,7 +211,7 @@ def generate_document_component(
 ) -> document.Document:
     doc = document.Document()
 
-    comp_name_id = f"def_{comp.cid}_name"
+    comp_name_id = f"def_{comp.key}_name"
     comp_name = _lang_find_id(lang, comp_name_id, comp.name)
     doc.append(document.Heading(comp_name))
 
@@ -223,14 +223,14 @@ def generate_document_component(
             )
         )
 
-    comp_s_desc_id = f"def_{comp.cid}_s_desc"
+    comp_s_desc_id = f"def_{comp.key}_s_desc"
     comp_s_desc = comp.tooltip_properties.short_description
     comp_s_desc = _lang_find_id(lang, comp_s_desc_id, comp_s_desc)
     comp_s_desc = _fmt_format(fmt, comp_s_desc)
     if comp_s_desc != "":
         doc.append(document.Paragraph(comp_s_desc))
 
-    comp_desc_id = f"def_{comp.cid}_desc"
+    comp_desc_id = f"def_{comp.key}_desc"
     comp_desc = comp.tooltip_properties.description
     comp_desc = _lang_find_id(lang, comp_desc_id, comp_desc)
     comp_desc = _fmt_format(fmt, comp_desc)
@@ -242,7 +242,7 @@ def generate_document_component(
     doc.extend(prop_doc)
 
     logic_doc = generate_document_logic(
-        comp.cid, comp.logic_nodes, label=label, lang=lang, fmt=fmt
+        comp.key, comp.logic_nodes, label=label, lang=lang, fmt=fmt
     )
     logic_doc.shift(1)
     doc.extend(logic_doc)
@@ -275,7 +275,7 @@ def generate_document(
         return category.value
 
     def sort_key_component(comp: component.Definition) -> tuple[str, str]:
-        return comp.name, comp.cid
+        return comp.name, comp.key
 
     category_comp_dict: dict[component.Category, list[component.Definition]] = {}
     for comp in comp_list:
@@ -310,7 +310,7 @@ def generate_sheet_component(
     dims_h = comp.voxel_max.y - comp.voxel_min.y + 1
     dims_d = comp.voxel_max.z - comp.voxel_min.z + 1
 
-    comp_name_id = f"def_{comp.cid}_name"
+    comp_name_id = f"def_{comp.key}_name"
     comp_name = _lang_find_id(lang, comp_name_id, comp.name)
 
     comp_file = ""
@@ -318,12 +318,12 @@ def generate_sheet_component(
         comp_file = os.fsdecode(comp.file)
         comp_file = pathlib.PurePath(comp_file).name
 
-    comp_s_desc_id = f"def_{comp.cid}_s_desc"
+    comp_s_desc_id = f"def_{comp.key}_s_desc"
     comp_s_desc = comp.tooltip_properties.short_description
     comp_s_desc = _lang_find_id(lang, comp_s_desc_id, comp_s_desc)
     comp_s_desc = _fmt_format(fmt, comp_s_desc)
 
-    comp_desc_id = f"def_{comp.cid}_desc"
+    comp_desc_id = f"def_{comp.key}_desc"
     comp_desc = comp.tooltip_properties.description
     comp_desc = _lang_find_id(lang, comp_desc_id, comp_desc)
     comp_desc = _fmt_format(fmt, comp_desc)
@@ -365,7 +365,7 @@ def generate_sheet(
     fmt: template.TemplateFormatter | None = None,
 ) -> list[list[str]]:
     def sort_key(comp: component.Definition) -> tuple[int, str, str]:
-        return comp.category.value, comp.name, comp.cid
+        return comp.category.value, comp.name, comp.key
 
     comp_list = list(comp_list)
     comp_list.sort(key=sort_key)
