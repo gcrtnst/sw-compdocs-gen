@@ -22,7 +22,7 @@ def generate_document(
     *,
     out_file: _types.StrOrBytesPath,
     defn_list: collections.abc.Iterable[component.Definition],
-    label: generator.LabelDict | None,
+    label: collections.abc.Mapping[str, str] | None,
     lang: language.Language | None,
     fmt: template.TemplateFormatter | None,
     out_encoding: str | None = None,
@@ -46,7 +46,7 @@ def generate_sheet(
     *,
     out_file: _types.StrOrBytesPath,
     defn_list: collections.abc.Iterable[component.Definition],
-    label: generator.LabelDict | None,
+    label: collections.abc.Mapping[str, str] | None,
     lang: language.Language | None,
     fmt: template.TemplateFormatter | None,
     out_encoding: str | None = None,
@@ -77,8 +77,7 @@ def run(
 ) -> None:
     label = None
     if label_file is not None:
-        label_tbl = resource.load_toml_table(label_file, "label")
-        label = generator.LabelDict(label_tbl)
+        label = resource.load_toml_table(label_file, "label")
 
     lang = None
     if lang_file is not None:

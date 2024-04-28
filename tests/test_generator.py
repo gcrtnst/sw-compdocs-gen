@@ -23,75 +23,12 @@ class TestLabelKeyErrorStr(unittest.TestCase):
         self.assertEqual(str(exc), "missing label text for key 'key'")
 
 
-class TestLabelDictInit(unittest.TestCase):
-    def test_pass(self) -> None:
-        tt = typing.NamedTuple(
-            "tt",
-            [
-                ("input_mapping", collections.abc.Mapping[str, str]),
-                ("want_label_d", dict[str, str]),
-            ],
-        )
-
-        for tc in [
-            tt(
-                input_mapping={},
-                want_label_d={},
-            ),
-            tt(
-                input_mapping={"key_1": "value_1", "key_2": "value_2"},
-                want_label_d={"key_1": "value_1", "key_2": "value_2"},
-            ),
-            tt(
-                input_mapping=sw_compdocs.generator.LabelDict(
-                    {"key_1": "value_1", "key_2": "value_2"}
-                ),
-                want_label_d={"key_1": "value_1", "key_2": "value_2"},
-            ),
-        ]:
-            with self.subTest(tc=tc):
-                got_label = sw_compdocs.generator.LabelDict(tc.input_mapping)
-                self.assertEqual(got_label._d, tc.want_label_d)
-                self.assertIsNot(got_label._d, tc.input_mapping)
-
-
-class TestLabelDictGetItem(unittest.TestCase):
-    def test_pass(self) -> None:
-        label = sw_compdocs.generator.LabelDict(
-            {"key_1": "value_1", "key_2": "value_2"}
-        )
-        self.assertEqual(label["key_1"], "value_1")
-        self.assertEqual(label["key_2"], "value_2")
-
-    def test_exc_key(self) -> None:
-        label = sw_compdocs.generator.LabelDict({"key_1": "value_1"})
-        with self.assertRaises(sw_compdocs.generator.LabelKeyError) as ctx:
-            label["key_2"]
-        self.assertEqual(ctx.exception.key, "key_2")
-
-
-class TestLabelDictIter(unittest.TestCase):
-    def test(self) -> None:
-        label = sw_compdocs.generator.LabelDict(
-            {"key_1": "value_1", "key_2": "value_2"}
-        )
-        self.assertEqual(list[str](label), list[str](["key_1", "key_2"]))
-
-
-class TestLabelDictLen(unittest.TestCase):
-    def test(self) -> None:
-        label = sw_compdocs.generator.LabelDict(
-            {"key_1": "value_1", "key_2": "value_2"}
-        )
-        self.assertEqual(len(label), 2)
-
-
 class TestLabelGet(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(
             "tt",
             [
-                ("input_label", sw_compdocs.generator.LabelDict | None),
+                ("input_label", collections.abc.Mapping[str, str] | None),
                 ("input_key", str),
                 ("want_s", str),
             ],
@@ -104,7 +41,7 @@ class TestLabelGet(unittest.TestCase):
                 want_s="LABEL",
             ),
             tt(
-                input_label=sw_compdocs.generator.LabelDict({"LABEL": "text"}),
+                input_label={"LABEL": "text"},
                 input_key="LABEL",
                 want_s="text",
             ),
@@ -112,6 +49,11 @@ class TestLabelGet(unittest.TestCase):
             with self.subTest(tc=tc):
                 got_s = sw_compdocs.generator._label_get(tc.input_label, tc.input_key)
                 self.assertEqual(got_s, tc.want_s)
+
+    def test_exc_label(self) -> None:
+        with self.assertRaises(sw_compdocs.generator.LabelKeyError) as ctx:
+            sw_compdocs.generator._label_get({}, "LABEL")
+        self.assertEqual(ctx.exception.key, "LABEL")
 
 
 class TestLangFindID(unittest.TestCase):
@@ -222,7 +164,7 @@ class TestGenerateDocumentPropertyTable(unittest.TestCase):
         tt = typing.NamedTuple(
             "tt",
             [
-                ("input_label", sw_compdocs.generator.LabelDict | None),
+                ("input_label", collections.abc.Mapping[str, str] | None),
                 ("input_defn", sw_compdocs.component.Definition),
                 ("want_tbl", sw_compdocs.document.Table),
             ],
@@ -423,17 +365,15 @@ class TestGenerateDocumentPropertyTable(unittest.TestCase):
             ),
             # label
             tt(
-                input_label=sw_compdocs.generator.LabelDict(
-                    {
-                        "DOCUMENT_PROP_TABLE_HEAD_LABEL": "Label",
-                        "DOCUMENT_PROP_TABLE_HEAD_VALUE": "Value",
-                        "DOCUMENT_PROP_TABLE_MASS_LABEL": "Mass",
-                        "DOCUMENT_PROP_TABLE_DIMS_LABEL": "Dimensions",
-                        "DOCUMENT_PROP_TABLE_COST_LABEL": "Cost",
-                        "DOCUMENT_PROP_TABLE_TAGS_LABEL": "Tags",
-                        "DOCUMENT_PROP_TABLE_FILE_LABEL": "File",
-                    }
-                ),
+                input_label={
+                    "DOCUMENT_PROP_TABLE_HEAD_LABEL": "Label",
+                    "DOCUMENT_PROP_TABLE_HEAD_VALUE": "Value",
+                    "DOCUMENT_PROP_TABLE_MASS_LABEL": "Mass",
+                    "DOCUMENT_PROP_TABLE_DIMS_LABEL": "Dimensions",
+                    "DOCUMENT_PROP_TABLE_COST_LABEL": "Cost",
+                    "DOCUMENT_PROP_TABLE_TAGS_LABEL": "Tags",
+                    "DOCUMENT_PROP_TABLE_FILE_LABEL": "File",
+                },
                 input_defn=sw_compdocs.component.Definition(
                     file="file",
                     mass=10.0,
@@ -462,13 +402,34 @@ class TestGenerateDocumentPropertyTable(unittest.TestCase):
                 )
                 self.assertEqual(got_tbl, tc.want_tbl)
 
+    def test_exc_label(self) -> None:
+        defn = sw_compdocs.component.Definition()
+        label_all = {
+            "DOCUMENT_PROP_TABLE_HEAD_LABEL": "Label",
+            "DOCUMENT_PROP_TABLE_HEAD_VALUE": "Value",
+            "DOCUMENT_PROP_TABLE_MASS_LABEL": "Mass",
+            "DOCUMENT_PROP_TABLE_DIMS_LABEL": "Dimensions",
+            "DOCUMENT_PROP_TABLE_COST_LABEL": "Cost",
+            "DOCUMENT_PROP_TABLE_TAGS_LABEL": "Tags",
+            "DOCUMENT_PROP_TABLE_FILE_LABEL": "File",
+        }
+        for key in label_all.keys():
+            with self.subTest(label_key=key):
+                label = label_all.copy()
+                del label[key]
+                with self.assertRaises(sw_compdocs.generator.LabelKeyError) as ctx:
+                    sw_compdocs.generator.generate_document_property_table(
+                        defn, label=label
+                    )
+                self.assertEqual(ctx.exception.key, key)
+
 
 class TestGenerateDocumentProperty(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(
             "tt",
             [
-                ("input_label", sw_compdocs.generator.LabelDict | None),
+                ("input_label", collections.abc.Mapping[str, str] | None),
                 ("input_lang", sw_compdocs.language.Language | None),
                 ("input_defn", sw_compdocs.component.Definition),
                 ("want_doc", sw_compdocs.document.Document),
@@ -514,7 +475,15 @@ class TestGenerateDocumentProperty(unittest.TestCase):
                 ),
             ),
             tt(
-                input_label=None,
+                input_label={
+                    "DOCUMENT_PROP_TABLE_HEAD_LABEL": "ラベル",
+                    "DOCUMENT_PROP_TABLE_HEAD_VALUE": "値",
+                    "DOCUMENT_PROP_TABLE_MASS_LABEL": "重量",
+                    "DOCUMENT_PROP_TABLE_DIMS_LABEL": "サイズ",
+                    "DOCUMENT_PROP_TABLE_COST_LABEL": "値段",
+                    "DOCUMENT_PROP_TABLE_TAGS_LABEL": "タグ",
+                    "DOCUMENT_PROP_TABLE_FILE_LABEL": "ファイル",
+                },
                 input_lang=sw_compdocs.language.Language(
                     [
                         sw_compdocs.language.Translation(
@@ -528,28 +497,15 @@ class TestGenerateDocumentProperty(unittest.TestCase):
                         sw_compdocs.document.Heading("プロパティ"),
                         sw_compdocs.document.Table(
                             sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_PROP_TABLE_HEAD_VALUE",
-                                    ]
-                                ),
+                                sw_compdocs.document.TableDataRow(["ラベル", "値"]),
                                 [
+                                    sw_compdocs.document.TableDataRow(["重量", "0"]),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_MASS_LABEL", "0"]
+                                        ["サイズ", "1x1x1"]
                                     ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x1x1"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_COST_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_TAGS_LABEL", ""]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_FILE_LABEL", ""]
-                                    ),
+                                    sw_compdocs.document.TableDataRow(["値段", "0"]),
+                                    sw_compdocs.document.TableDataRow(["タグ", ""]),
+                                    sw_compdocs.document.TableDataRow(["ファイル", ""]),
                                 ],
                             )
                         ),
@@ -569,7 +525,7 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
         tt = typing.NamedTuple(
             "tt",
             [
-                ("input_label", sw_compdocs.generator.LabelDict | None),
+                ("input_label", collections.abc.Mapping[str, str] | None),
                 ("input_lang", sw_compdocs.language.Language | None),
                 ("input_fmt", sw_compdocs.template.TemplateFormatter | None),
                 ("input_key", str),
@@ -580,13 +536,11 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
 
         for tc in [
             tt(
-                input_label=sw_compdocs.generator.LabelDict(
-                    {
-                        "DOCUMENT_LOGIC_TABLE_HEAD_TYPE": "種別",
-                        "DOCUMENT_LOGIC_TABLE_HEAD_LABEL": "ラベル",
-                        "DOCUMENT_LOGIC_TABLE_HEAD_DESC": "説明",
-                    }
-                ),
+                input_label={
+                    "DOCUMENT_LOGIC_TABLE_HEAD_TYPE": "種別",
+                    "DOCUMENT_LOGIC_TABLE_HEAD_LABEL": "ラベル",
+                    "DOCUMENT_LOGIC_TABLE_HEAD_DESC": "説明",
+                },
                 input_lang=None,
                 input_fmt=None,
                 input_key="test",
@@ -599,13 +553,11 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
                 ),
             ),
             tt(
-                input_label=sw_compdocs.generator.LabelDict(
-                    {
-                        "DOCUMENT_LOGIC_TABLE_HEAD_TYPE": "種別",
-                        "DOCUMENT_LOGIC_TABLE_HEAD_LABEL": "ラベル",
-                        "DOCUMENT_LOGIC_TABLE_HEAD_DESC": "説明",
-                    }
-                ),
+                input_label={
+                    "DOCUMENT_LOGIC_TABLE_HEAD_TYPE": "種別",
+                    "DOCUMENT_LOGIC_TABLE_HEAD_LABEL": "ラベル",
+                    "DOCUMENT_LOGIC_TABLE_HEAD_DESC": "説明",
+                },
                 input_lang=sw_compdocs.language.Language(
                     [
                         sw_compdocs.language.Translation(
@@ -781,13 +733,11 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
                 ),
             ),
             tt(
-                input_label=sw_compdocs.generator.LabelDict(
-                    {
-                        "DOCUMENT_LOGIC_TABLE_HEAD_TYPE": "種別",
-                        "DOCUMENT_LOGIC_TABLE_HEAD_LABEL": "ラベル",
-                        "DOCUMENT_LOGIC_TABLE_HEAD_DESC": "説明",
-                    }
-                ),
+                input_label={
+                    "DOCUMENT_LOGIC_TABLE_HEAD_TYPE": "種別",
+                    "DOCUMENT_LOGIC_TABLE_HEAD_LABEL": "ラベル",
+                    "DOCUMENT_LOGIC_TABLE_HEAD_DESC": "説明",
+                },
                 input_lang=None,
                 input_fmt=sw_compdocs.template.TemplateFormatter(
                     {
@@ -829,13 +779,11 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
                 ),
             ),
             tt(
-                input_label=sw_compdocs.generator.LabelDict(
-                    {
-                        "DOCUMENT_LOGIC_TABLE_HEAD_TYPE": "種別",
-                        "DOCUMENT_LOGIC_TABLE_HEAD_LABEL": "ラベル",
-                        "DOCUMENT_LOGIC_TABLE_HEAD_DESC": "説明",
-                    }
-                ),
+                input_label={
+                    "DOCUMENT_LOGIC_TABLE_HEAD_TYPE": "種別",
+                    "DOCUMENT_LOGIC_TABLE_HEAD_LABEL": "ラベル",
+                    "DOCUMENT_LOGIC_TABLE_HEAD_DESC": "説明",
+                },
                 input_lang=sw_compdocs.language.Language(
                     [
                         sw_compdocs.language.Translation(
@@ -909,13 +857,11 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
                 ),
             ),
             tt(
-                input_label=sw_compdocs.generator.LabelDict(
-                    {
-                        "DOCUMENT_LOGIC_TABLE_HEAD_TYPE": "種別",
-                        "DOCUMENT_LOGIC_TABLE_HEAD_LABEL": "ラベル",
-                        "DOCUMENT_LOGIC_TABLE_HEAD_DESC": "説明",
-                    }
-                ),
+                input_label={
+                    "DOCUMENT_LOGIC_TABLE_HEAD_TYPE": "種別",
+                    "DOCUMENT_LOGIC_TABLE_HEAD_LABEL": "ラベル",
+                    "DOCUMENT_LOGIC_TABLE_HEAD_DESC": "説明",
+                },
                 input_lang=sw_compdocs.language.Language(
                     [
                         sw_compdocs.language.Translation(
@@ -1067,13 +1013,30 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
                 )
                 self.assertEqual(got_tbl, tc.want_tbl)
 
+    def test_exc_label(self) -> None:
+        lns = sw_compdocs.component.LogicNodeList()
+        label_all = {
+            "DOCUMENT_LOGIC_TABLE_HEAD_TYPE": "種別",
+            "DOCUMENT_LOGIC_TABLE_HEAD_LABEL": "ラベル",
+            "DOCUMENT_LOGIC_TABLE_HEAD_DESC": "説明",
+        }
+        for key in label_all.keys():
+            with self.subTest(label_key=key):
+                label = label_all.copy()
+                del label[key]
+                with self.assertRaises(sw_compdocs.generator.LabelKeyError) as ctx:
+                    sw_compdocs.generator.generate_document_logic_table(
+                        "key", lns, label=label
+                    )
+                self.assertEqual(ctx.exception.key, key)
+
 
 class TestGenerateDocumentLogic(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(
             "tt",
             [
-                ("input_label", sw_compdocs.generator.LabelDict | None),
+                ("input_label", collections.abc.Mapping[str, str] | None),
                 ("input_lang", sw_compdocs.language.Language | None),
                 ("input_fmt", sw_compdocs.template.TemplateFormatter | None),
                 ("input_key", str),
@@ -1797,7 +1760,7 @@ class TestGenerateDocumentComponent(unittest.TestCase):
         tt = typing.NamedTuple(
             "tt",
             [
-                ("input_label", sw_compdocs.generator.LabelDict | None),
+                ("input_label", collections.abc.Mapping[str, str] | None),
                 ("input_lang", sw_compdocs.language.Language | None),
                 ("input_fmt", sw_compdocs.template.TemplateFormatter | None),
                 ("input_defn", sw_compdocs.component.Definition),
@@ -2107,21 +2070,19 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                 ),
             ),
             tt(  # label, lang
-                input_label=sw_compdocs.generator.LabelDict(
-                    {
-                        "DOCUMENT_DEPRECATED_TEXT": "この部品は非推奨です。",
-                        "DOCUMENT_PROP_TABLE_HEAD_LABEL": "ラベル",
-                        "DOCUMENT_PROP_TABLE_HEAD_VALUE": "値",
-                        "DOCUMENT_PROP_TABLE_MASS_LABEL": "重量",
-                        "DOCUMENT_PROP_TABLE_DIMS_LABEL": "サイズ(WxDxH)",
-                        "DOCUMENT_PROP_TABLE_COST_LABEL": "値段",
-                        "DOCUMENT_PROP_TABLE_TAGS_LABEL": "タグ",
-                        "DOCUMENT_PROP_TABLE_FILE_LABEL": "ファイル",
-                        "DOCUMENT_LOGIC_TABLE_HEAD_TYPE": "型",
-                        "DOCUMENT_LOGIC_TABLE_HEAD_LABEL": "ラベル",
-                        "DOCUMENT_LOGIC_TABLE_HEAD_DESC": "説明",
-                    }
-                ),
+                input_label={
+                    "DOCUMENT_DEPRECATED_TEXT": "この部品は非推奨です。",
+                    "DOCUMENT_PROP_TABLE_HEAD_LABEL": "ラベル",
+                    "DOCUMENT_PROP_TABLE_HEAD_VALUE": "値",
+                    "DOCUMENT_PROP_TABLE_MASS_LABEL": "重量",
+                    "DOCUMENT_PROP_TABLE_DIMS_LABEL": "サイズ(WxDxH)",
+                    "DOCUMENT_PROP_TABLE_COST_LABEL": "値段",
+                    "DOCUMENT_PROP_TABLE_TAGS_LABEL": "タグ",
+                    "DOCUMENT_PROP_TABLE_FILE_LABEL": "ファイル",
+                    "DOCUMENT_LOGIC_TABLE_HEAD_TYPE": "型",
+                    "DOCUMENT_LOGIC_TABLE_HEAD_LABEL": "ラベル",
+                    "DOCUMENT_LOGIC_TABLE_HEAD_DESC": "説明",
+                },
                 input_lang=sw_compdocs.language.Language(
                     [
                         sw_compdocs.language.Translation(
@@ -2351,20 +2312,18 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                 ),
             ),
             tt(  # label, lang, template
-                input_label=sw_compdocs.generator.LabelDict(
-                    {
-                        "DOCUMENT_PROP_TABLE_HEAD_LABEL": "ラベル",
-                        "DOCUMENT_PROP_TABLE_HEAD_VALUE": "値",
-                        "DOCUMENT_PROP_TABLE_MASS_LABEL": "重量",
-                        "DOCUMENT_PROP_TABLE_DIMS_LABEL": "サイズ(WxDxH)",
-                        "DOCUMENT_PROP_TABLE_COST_LABEL": "値段",
-                        "DOCUMENT_PROP_TABLE_TAGS_LABEL": "タグ",
-                        "DOCUMENT_PROP_TABLE_FILE_LABEL": "ファイル",
-                        "DOCUMENT_LOGIC_TABLE_HEAD_TYPE": "型",
-                        "DOCUMENT_LOGIC_TABLE_HEAD_LABEL": "ラベル",
-                        "DOCUMENT_LOGIC_TABLE_HEAD_DESC": "説明",
-                    }
-                ),
+                input_label={
+                    "DOCUMENT_PROP_TABLE_HEAD_LABEL": "ラベル",
+                    "DOCUMENT_PROP_TABLE_HEAD_VALUE": "値",
+                    "DOCUMENT_PROP_TABLE_MASS_LABEL": "重量",
+                    "DOCUMENT_PROP_TABLE_DIMS_LABEL": "サイズ(WxDxH)",
+                    "DOCUMENT_PROP_TABLE_COST_LABEL": "値段",
+                    "DOCUMENT_PROP_TABLE_TAGS_LABEL": "タグ",
+                    "DOCUMENT_PROP_TABLE_FILE_LABEL": "ファイル",
+                    "DOCUMENT_LOGIC_TABLE_HEAD_TYPE": "型",
+                    "DOCUMENT_LOGIC_TABLE_HEAD_LABEL": "ラベル",
+                    "DOCUMENT_LOGIC_TABLE_HEAD_DESC": "説明",
+                },
                 input_lang=sw_compdocs.language.Language(
                     [
                         sw_compdocs.language.Translation(
@@ -2586,20 +2545,18 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                 ),
             ),
             tt(  # label, lang, template
-                input_label=sw_compdocs.generator.LabelDict(
-                    {
-                        "DOCUMENT_PROP_TABLE_HEAD_LABEL": "ラベル",
-                        "DOCUMENT_PROP_TABLE_HEAD_VALUE": "値",
-                        "DOCUMENT_PROP_TABLE_MASS_LABEL": "重量",
-                        "DOCUMENT_PROP_TABLE_DIMS_LABEL": "サイズ(WxDxH)",
-                        "DOCUMENT_PROP_TABLE_COST_LABEL": "値段",
-                        "DOCUMENT_PROP_TABLE_TAGS_LABEL": "タグ",
-                        "DOCUMENT_PROP_TABLE_FILE_LABEL": "ファイル",
-                        "DOCUMENT_LOGIC_TABLE_HEAD_TYPE": "型",
-                        "DOCUMENT_LOGIC_TABLE_HEAD_LABEL": "ラベル",
-                        "DOCUMENT_LOGIC_TABLE_HEAD_DESC": "説明",
-                    }
-                ),
+                input_label={
+                    "DOCUMENT_PROP_TABLE_HEAD_LABEL": "ラベル",
+                    "DOCUMENT_PROP_TABLE_HEAD_VALUE": "値",
+                    "DOCUMENT_PROP_TABLE_MASS_LABEL": "重量",
+                    "DOCUMENT_PROP_TABLE_DIMS_LABEL": "サイズ(WxDxH)",
+                    "DOCUMENT_PROP_TABLE_COST_LABEL": "値段",
+                    "DOCUMENT_PROP_TABLE_TAGS_LABEL": "タグ",
+                    "DOCUMENT_PROP_TABLE_FILE_LABEL": "ファイル",
+                    "DOCUMENT_LOGIC_TABLE_HEAD_TYPE": "型",
+                    "DOCUMENT_LOGIC_TABLE_HEAD_LABEL": "ラベル",
+                    "DOCUMENT_LOGIC_TABLE_HEAD_DESC": "説明",
+                },
                 input_lang=sw_compdocs.language.Language(
                     [
                         sw_compdocs.language.Translation(
@@ -2979,6 +2936,14 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                 )
                 self.assertEqual(got_doc, tc.want_doc)
 
+    def test_exc_label(self) -> None:
+        defn = sw_compdocs.component.Definition(
+            flags=sw_compdocs.component.Flags.IS_DEPRECATED
+        )
+        with self.assertRaises(sw_compdocs.generator.LabelKeyError) as ctx:
+            sw_compdocs.generator.generate_document_component(defn, label={})
+        self.assertEqual(ctx.exception.key, "DOCUMENT_DEPRECATED_TEXT")
+
 
 class TestGenerateDocumentComponentList(unittest.TestCase):
     def test_pass(self) -> None:
@@ -2986,7 +2951,7 @@ class TestGenerateDocumentComponentList(unittest.TestCase):
             "tt",
             [
                 ("input_defn_list", list[sw_compdocs.component.Definition]),
-                ("input_label", sw_compdocs.generator.LabelDict | None),
+                ("input_label", collections.abc.Mapping[str, str] | None),
                 ("input_lang", sw_compdocs.language.Language | None),
                 ("input_fmt", sw_compdocs.template.TemplateFormatter | None),
                 ("want_doc", sw_compdocs.document.Document),
@@ -3083,17 +3048,15 @@ class TestGenerateDocumentComponentList(unittest.TestCase):
                         ),
                     ),
                 ],
-                input_label=sw_compdocs.generator.LabelDict(
-                    {
-                        "DOCUMENT_PROP_TABLE_HEAD_LABEL": "Label",
-                        "DOCUMENT_PROP_TABLE_HEAD_VALUE": "Value",
-                        "DOCUMENT_PROP_TABLE_MASS_LABEL": "Mass",
-                        "DOCUMENT_PROP_TABLE_DIMS_LABEL": "Dimensions (WxDxH)",
-                        "DOCUMENT_PROP_TABLE_COST_LABEL": "Cost",
-                        "DOCUMENT_PROP_TABLE_TAGS_LABEL": "Tags",
-                        "DOCUMENT_PROP_TABLE_FILE_LABEL": "File",
-                    }
-                ),
+                input_label={
+                    "DOCUMENT_PROP_TABLE_HEAD_LABEL": "Label",
+                    "DOCUMENT_PROP_TABLE_HEAD_VALUE": "Value",
+                    "DOCUMENT_PROP_TABLE_MASS_LABEL": "Mass",
+                    "DOCUMENT_PROP_TABLE_DIMS_LABEL": "Dimensions (WxDxH)",
+                    "DOCUMENT_PROP_TABLE_COST_LABEL": "Cost",
+                    "DOCUMENT_PROP_TABLE_TAGS_LABEL": "Tags",
+                    "DOCUMENT_PROP_TABLE_FILE_LABEL": "File",
+                },
                 input_lang=sw_compdocs.language.Language(
                     [
                         sw_compdocs.language.Translation(
@@ -3156,7 +3119,7 @@ class TestGenerateDocument(unittest.TestCase):
             "tt",
             [
                 ("input_defn_list", list[sw_compdocs.component.Definition]),
-                ("input_label", sw_compdocs.generator.LabelDict | None),
+                ("input_label", collections.abc.Mapping[str, str] | None),
                 ("input_lang", sw_compdocs.language.Language | None),
                 ("input_fmt", sw_compdocs.template.TemplateFormatter | None),
                 ("want_doc", sw_compdocs.document.Document),
@@ -4021,17 +3984,15 @@ class TestGenerateDocument(unittest.TestCase):
                         ),
                     ),
                 ],
-                input_label=sw_compdocs.generator.LabelDict(
-                    {
-                        "DOCUMENT_PROP_TABLE_HEAD_LABEL": "Label",
-                        "DOCUMENT_PROP_TABLE_HEAD_VALUE": "Value",
-                        "DOCUMENT_PROP_TABLE_MASS_LABEL": "Mass",
-                        "DOCUMENT_PROP_TABLE_DIMS_LABEL": "Dimensions (WxDxH)",
-                        "DOCUMENT_PROP_TABLE_COST_LABEL": "Cost",
-                        "DOCUMENT_PROP_TABLE_TAGS_LABEL": "Tags",
-                        "DOCUMENT_PROP_TABLE_FILE_LABEL": "File",
-                    }
-                ),
+                input_label={
+                    "DOCUMENT_PROP_TABLE_HEAD_LABEL": "Label",
+                    "DOCUMENT_PROP_TABLE_HEAD_VALUE": "Value",
+                    "DOCUMENT_PROP_TABLE_MASS_LABEL": "Mass",
+                    "DOCUMENT_PROP_TABLE_DIMS_LABEL": "Dimensions (WxDxH)",
+                    "DOCUMENT_PROP_TABLE_COST_LABEL": "Cost",
+                    "DOCUMENT_PROP_TABLE_TAGS_LABEL": "Tags",
+                    "DOCUMENT_PROP_TABLE_FILE_LABEL": "File",
+                },
                 input_lang=sw_compdocs.language.Language(
                     [
                         sw_compdocs.language.Translation(
@@ -4538,7 +4499,7 @@ class TestGenerateSheet(unittest.TestCase):
         tt = typing.NamedTuple(
             "tt",
             [
-                ("input_label", sw_compdocs.generator.LabelDict | None),
+                ("input_label", collections.abc.Mapping[str, str] | None),
                 ("input_lang", sw_compdocs.language.Language | None),
                 ("input_fmt", sw_compdocs.template.TemplateFormatter | None),
                 ("input_defn_list", list[sw_compdocs.component.Definition]),
@@ -4719,22 +4680,20 @@ class TestGenerateSheet(unittest.TestCase):
                 ],
             ),
             tt(  # label
-                input_label=sw_compdocs.generator.LabelDict(
-                    {
-                        "SHEET_HEAD_NAME": "Name",
-                        "SHEET_HEAD_FILE": "File",
-                        "SHEET_HEAD_CATEGORY": "Category",
-                        "SHEET_HEAD_TAGS": "Tags",
-                        "SHEET_HEAD_DEPRECATED": "Deprecated",
-                        "SHEET_HEAD_MASS": "Mass",
-                        "SHEET_HEAD_COST": "Cost",
-                        "SHEET_HEAD_WIDTH": "Width",
-                        "SHEET_HEAD_DEPTH": "Depth",
-                        "SHEET_HEAD_HEIGHT": "Height",
-                        "SHEET_HEAD_SDESC": "Short Description",
-                        "SHEET_HEAD_DESC": "Description",
-                    }
-                ),
+                input_label={
+                    "SHEET_HEAD_NAME": "Name",
+                    "SHEET_HEAD_FILE": "File",
+                    "SHEET_HEAD_CATEGORY": "Category",
+                    "SHEET_HEAD_TAGS": "Tags",
+                    "SHEET_HEAD_DEPRECATED": "Deprecated",
+                    "SHEET_HEAD_MASS": "Mass",
+                    "SHEET_HEAD_COST": "Cost",
+                    "SHEET_HEAD_WIDTH": "Width",
+                    "SHEET_HEAD_DEPTH": "Depth",
+                    "SHEET_HEAD_HEIGHT": "Height",
+                    "SHEET_HEAD_SDESC": "Short Description",
+                    "SHEET_HEAD_DESC": "Description",
+                },
                 input_lang=None,
                 input_fmt=None,
                 input_defn_list=[
@@ -4880,3 +4839,26 @@ class TestGenerateSheet(unittest.TestCase):
                     fmt=tc.input_fmt,
                 )
                 self.assertEqual(got_record_list, tc.want_record_list)
+
+    def test_exc_label(self) -> None:
+        label_all = {
+            "SHEET_HEAD_NAME": "Name",
+            "SHEET_HEAD_FILE": "File",
+            "SHEET_HEAD_CATEGORY": "Category",
+            "SHEET_HEAD_TAGS": "Tags",
+            "SHEET_HEAD_DEPRECATED": "Deprecated",
+            "SHEET_HEAD_MASS": "Mass",
+            "SHEET_HEAD_COST": "Cost",
+            "SHEET_HEAD_WIDTH": "Width",
+            "SHEET_HEAD_DEPTH": "Depth",
+            "SHEET_HEAD_HEIGHT": "Height",
+            "SHEET_HEAD_SDESC": "Short Description",
+            "SHEET_HEAD_DESC": "Description",
+        }
+        for key in label_all.keys():
+            with self.subTest(label_key=key):
+                label = label_all.copy()
+                del label[key]
+                with self.assertRaises(sw_compdocs.generator.LabelKeyError) as ctx:
+                    sw_compdocs.generator.generate_sheet([], label=label)
+                self.assertEqual(ctx.exception.key, key)

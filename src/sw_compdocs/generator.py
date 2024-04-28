@@ -18,26 +18,12 @@ class LabelKeyError(KeyError):
         return f"missing label text for key {self.key!r}"
 
 
-class LabelDict(collections.abc.Mapping[str, str]):
-    def __init__(self, mapping: collections.abc.Mapping[str, str] = {}) -> None:
-        self._d: dict[str, str] = dict(mapping)
-
-    def __getitem__(self, key: str) -> str:
+def _label_get(label: collections.abc.Mapping[str, str] | None, key: str) -> str:
+    if label is not None:
         try:
-            return self._d[key]
+            key = label[key]
         except KeyError as exc:
             raise LabelKeyError(key) from exc
-
-    def __iter__(self) -> collections.abc.Iterator[str]:
-        return iter(self._d)
-
-    def __len__(self) -> int:
-        return len(self._d)
-
-
-def _label_get(label: LabelDict | None, key: str) -> str:
-    if label is not None:
-        key = label[key]
     return key
 
 
@@ -60,7 +46,9 @@ def _fmt_format(fmt: template.TemplateFormatter | None, s: str) -> str:
 
 
 def generate_document_property_table(
-    defn: component.Definition, *, label: LabelDict | None = None
+    defn: component.Definition,
+    *,
+    label: collections.abc.Mapping[str, str] | None = None,
 ) -> document.Table:
     head = document.TableDataRow(
         [
@@ -101,7 +89,7 @@ def generate_document_property_table(
 def generate_document_property(
     defn: component.Definition,
     *,
-    label: LabelDict | None = None,
+    label: collections.abc.Mapping[str, str] | None = None,
     lang: language.Language | None = None,
 ) -> document.Document:
     return document.Document(
@@ -116,7 +104,7 @@ def generate_document_logic_table(
     key: str,
     lns: component.LogicNodeList,
     *,
-    label: LabelDict | None = None,
+    label: collections.abc.Mapping[str, str] | None = None,
     lang: language.Language | None = None,
     fmt: template.TemplateFormatter | None = None,
 ) -> document.Table:
@@ -145,7 +133,7 @@ def generate_document_logic(
     key: str,
     lns: component.LogicNodeList,
     *,
-    label: LabelDict | None = None,
+    label: collections.abc.Mapping[str, str] | None = None,
     lang: language.Language | None = None,
     fmt: template.TemplateFormatter | None = None,
 ) -> document.Document:
@@ -205,7 +193,7 @@ def generate_document_logic(
 def generate_document_component(
     defn: component.Definition,
     *,
-    label: LabelDict | None = None,
+    label: collections.abc.Mapping[str, str] | None = None,
     lang: language.Language | None = None,
     fmt: template.TemplateFormatter | None = None,
 ) -> document.Document:
@@ -253,7 +241,7 @@ def generate_document_component(
 def generate_document_component_list(
     defn_list: collections.abc.Iterable[component.Definition],
     *,
-    label: LabelDict | None = None,
+    label: collections.abc.Mapping[str, str] | None = None,
     lang: language.Language | None = None,
     fmt: template.TemplateFormatter | None = None,
 ) -> document.Document:
@@ -267,7 +255,7 @@ def generate_document_component_list(
 def generate_document(
     defn_list: collections.abc.Iterable[component.Definition],
     *,
-    label: LabelDict | None = None,
+    label: collections.abc.Mapping[str, str] | None = None,
     lang: language.Language | None = None,
     fmt: template.TemplateFormatter | None = None,
 ) -> document.Document:
@@ -360,7 +348,7 @@ def generate_sheet_component_list(
 def generate_sheet(
     defn_list: collections.abc.Iterable[component.Definition],
     *,
-    label: LabelDict | None = None,
+    label: collections.abc.Mapping[str, str] | None = None,
     lang: language.Language | None = None,
     fmt: template.TemplateFormatter | None = None,
 ) -> list[list[str]]:
