@@ -12,17 +12,13 @@ class TemplateKeyError(Exception):
         return f"missing replacement string for placeholder $[{self.key}]"
 
 
-class TemplateFormatter:
-    def __init__(self, mapping: collections.abc.Mapping[str, str]) -> None:
-        self._d: dict[str, str] = dict(mapping)
+def format(template: str, mapping: collections.abc.Mapping[str, str]) -> str:
+    def repl(match: re.Match[str]) -> str:
+        key: str = match["key"]
+        try:
+            val = mapping[key]
+        except KeyError as exc:
+            raise TemplateKeyError(key) from exc
+        return val
 
-    def format(self, s: str) -> str:
-        def repl(match: re.Match[str]) -> str:
-            key: str = match["key"]
-            try:
-                val = self._d[key]
-            except KeyError as exc:
-                raise TemplateKeyError(key) from exc
-            return val
-
-        return re.sub(r"(?s:\$\[(?P<key>.*?)\])", repl, s)
+    return re.sub(r"(?s:\$\[(?P<key>.*?)\])", repl, template)

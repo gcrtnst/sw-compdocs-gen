@@ -131,12 +131,12 @@ class TestLangFindEn(unittest.TestCase):
                 self.assertEqual(got_s, tc.want_s)
 
 
-class TestFmtFormat(unittest.TestCase):
+class TestCtxFormat(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(
             "tt",
             [
-                ("input_fmt", sw_compdocs.template.TemplateFormatter | None),
+                ("input_ctx", collections.abc.Mapping[str, str] | None),
                 ("input_s", str),
                 ("want_s", str),
             ],
@@ -144,18 +144,18 @@ class TestFmtFormat(unittest.TestCase):
 
         for tc in [
             tt(
-                input_fmt=None,
+                input_ctx=None,
                 input_s="$[var]",
                 want_s="$[var]",
             ),
             tt(
-                input_fmt=sw_compdocs.template.TemplateFormatter({"var": "text"}),
+                input_ctx={"var": "text"},
                 input_s="$[var]",
                 want_s="text",
             ),
         ]:
             with self.subTest(tc=tc):
-                got_s = sw_compdocs.generator._fmt_format(tc.input_fmt, tc.input_s)
+                got_s = sw_compdocs.generator._ctx_format(tc.input_ctx, tc.input_s)
                 self.assertEqual(got_s, tc.want_s)
 
 
@@ -527,7 +527,7 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
             [
                 ("input_label", collections.abc.Mapping[str, str] | None),
                 ("input_lang", sw_compdocs.language.Language | None),
-                ("input_fmt", sw_compdocs.template.TemplateFormatter | None),
+                ("input_ctx", collections.abc.Mapping[str, str] | None),
                 ("input_key", str),
                 ("input_lns", sw_compdocs.component.LogicNodeList),
                 ("want_tbl", sw_compdocs.document.Table),
@@ -542,7 +542,7 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
                     "DOCUMENT_LOGIC_TABLE_HEAD_DESC": "説明",
                 },
                 input_lang=None,
-                input_fmt=None,
+                input_ctx=None,
                 input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList([]),
                 want_tbl=sw_compdocs.document.Table(
@@ -598,14 +598,12 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
                         ),
                     ]
                 ),
-                input_fmt=sw_compdocs.template.TemplateFormatter(
-                    {
-                        "label_0": "label_0_fmt",
-                        "desc_0": "desc_0_fmt",
-                        "label_1": "label_1_fmt",
-                        "desc_1": "desc_1_fmt",
-                    }
-                ),
+                input_ctx={
+                    "label_0": "label_0_fmt",
+                    "desc_0": "desc_0_fmt",
+                    "label_1": "label_1_fmt",
+                    "desc_1": "desc_1_fmt",
+                },
                 input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
@@ -683,14 +681,12 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
                         ),
                     ]
                 ),
-                input_fmt=sw_compdocs.template.TemplateFormatter(
-                    {
-                        "label_0": "label_0_fmt",
-                        "desc_0": "desc_0_fmt",
-                        "label_1": "label_1_fmt",
-                        "desc_1": "desc_1_fmt",
-                    }
-                ),
+                input_ctx={
+                    "label_0": "label_0_fmt",
+                    "desc_0": "desc_0_fmt",
+                    "label_1": "label_1_fmt",
+                    "desc_1": "desc_1_fmt",
+                },
                 input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
@@ -739,14 +735,12 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
                     "DOCUMENT_LOGIC_TABLE_HEAD_DESC": "説明",
                 },
                 input_lang=None,
-                input_fmt=sw_compdocs.template.TemplateFormatter(
-                    {
-                        "label_0": "label_0_fmt",
-                        "desc_0": "desc_0_fmt",
-                        "label_1": "label_1_fmt",
-                        "desc_1": "desc_1_fmt",
-                    }
-                ),
+                input_ctx={
+                    "label_0": "label_0_fmt",
+                    "desc_0": "desc_0_fmt",
+                    "label_1": "label_1_fmt",
+                    "desc_1": "desc_1_fmt",
+                },
                 input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
@@ -824,7 +818,7 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
                         ),
                     ]
                 ),
-                input_fmt=None,
+                input_ctx=None,
                 input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
@@ -902,14 +896,12 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
                         ),
                     ]
                 ),
-                input_fmt=sw_compdocs.template.TemplateFormatter(
-                    {
-                        "label_0": "label_0_fmt",
-                        "desc_0": "desc_0_fmt",
-                        "label_1": "label_1_fmt",
-                        "desc_1": "desc_1_fmt",
-                    }
-                ),
+                input_ctx={
+                    "label_0": "label_0_fmt",
+                    "desc_0": "desc_0_fmt",
+                    "label_1": "label_1_fmt",
+                    "desc_1": "desc_1_fmt",
+                },
                 input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
@@ -969,7 +961,7 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
                         ),
                     ]
                 ),
-                input_fmt=None,
+                input_ctx=None,
                 input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
@@ -1009,7 +1001,7 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
                     tc.input_lns,
                     label=tc.input_label,
                     lang=tc.input_lang,
-                    fmt=tc.input_fmt,
+                    ctx=tc.input_ctx,
                 )
                 self.assertEqual(got_tbl, tc.want_tbl)
 
@@ -1038,7 +1030,7 @@ class TestGenerateDocumentLogic(unittest.TestCase):
             [
                 ("input_label", collections.abc.Mapping[str, str] | None),
                 ("input_lang", sw_compdocs.language.Language | None),
-                ("input_fmt", sw_compdocs.template.TemplateFormatter | None),
+                ("input_ctx", collections.abc.Mapping[str, str] | None),
                 ("input_key", str),
                 ("input_lns", sw_compdocs.component.LogicNodeList),
                 ("want_doc", sw_compdocs.document.Document),
@@ -1050,7 +1042,7 @@ class TestGenerateDocumentLogic(unittest.TestCase):
             tt(
                 input_label=None,
                 input_lang=None,
-                input_fmt=None,
+                input_ctx=None,
                 input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(),
                 want_doc=sw_compdocs.document.Document(),
@@ -1059,7 +1051,7 @@ class TestGenerateDocumentLogic(unittest.TestCase):
             tt(
                 input_label=None,
                 input_lang=None,
-                input_fmt=None,
+                input_ctx=None,
                 input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
@@ -1096,7 +1088,7 @@ class TestGenerateDocumentLogic(unittest.TestCase):
             tt(
                 input_label=None,
                 input_lang=None,
-                input_fmt=None,
+                input_ctx=None,
                 input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
@@ -1133,7 +1125,7 @@ class TestGenerateDocumentLogic(unittest.TestCase):
             tt(
                 input_label=None,
                 input_lang=None,
-                input_fmt=None,
+                input_ctx=None,
                 input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
@@ -1170,7 +1162,7 @@ class TestGenerateDocumentLogic(unittest.TestCase):
             tt(
                 input_label=None,
                 input_lang=None,
-                input_fmt=None,
+                input_ctx=None,
                 input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
@@ -1207,7 +1199,7 @@ class TestGenerateDocumentLogic(unittest.TestCase):
             tt(
                 input_label=None,
                 input_lang=None,
-                input_fmt=None,
+                input_ctx=None,
                 input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
@@ -1244,7 +1236,7 @@ class TestGenerateDocumentLogic(unittest.TestCase):
             tt(
                 input_label=None,
                 input_lang=None,
-                input_fmt=None,
+                input_ctx=None,
                 input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
@@ -1281,7 +1273,7 @@ class TestGenerateDocumentLogic(unittest.TestCase):
             tt(
                 input_label=None,
                 input_lang=None,
-                input_fmt=None,
+                input_ctx=None,
                 input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
@@ -1318,7 +1310,7 @@ class TestGenerateDocumentLogic(unittest.TestCase):
             tt(
                 input_label=None,
                 input_lang=None,
-                input_fmt=None,
+                input_ctx=None,
                 input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
@@ -1355,7 +1347,7 @@ class TestGenerateDocumentLogic(unittest.TestCase):
             tt(
                 input_label=None,
                 input_lang=None,
-                input_fmt=None,
+                input_ctx=None,
                 input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
@@ -1393,7 +1385,7 @@ class TestGenerateDocumentLogic(unittest.TestCase):
             tt(
                 input_label=None,
                 input_lang=None,
-                input_fmt=None,
+                input_ctx=None,
                 input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
@@ -1444,7 +1436,7 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                         ),
                     ]
                 ),
-                input_fmt=None,
+                input_ctx=None,
                 input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
@@ -1494,7 +1486,7 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                         ),
                     ]
                 ),
-                input_fmt=None,
+                input_ctx=None,
                 input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
@@ -1542,7 +1534,7 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                         ),
                     ]
                 ),
-                input_fmt=None,
+                input_ctx=None,
                 input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
@@ -1630,7 +1622,7 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                         ),
                     ]
                 ),
-                input_fmt=None,
+                input_ctx=None,
                 input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
@@ -1750,7 +1742,7 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                     tc.input_lns,
                     label=tc.input_label,
                     lang=tc.input_lang,
-                    fmt=tc.input_fmt,
+                    ctx=tc.input_ctx,
                 )
                 self.assertEqual(got_doc, tc.want_doc)
 
@@ -1762,7 +1754,7 @@ class TestGenerateDocumentComponent(unittest.TestCase):
             [
                 ("input_label", collections.abc.Mapping[str, str] | None),
                 ("input_lang", sw_compdocs.language.Language | None),
-                ("input_fmt", sw_compdocs.template.TemplateFormatter | None),
+                ("input_ctx", collections.abc.Mapping[str, str] | None),
                 ("input_defn", sw_compdocs.component.Definition),
                 ("want_doc", sw_compdocs.document.Document),
             ],
@@ -1772,7 +1764,7 @@ class TestGenerateDocumentComponent(unittest.TestCase):
             tt(  # normal
                 input_label=None,
                 input_lang=None,
-                input_fmt=None,
+                input_ctx=None,
                 input_defn=sw_compdocs.component.Definition(
                     file="clock.xml",
                     key="clock",
@@ -1920,7 +1912,7 @@ class TestGenerateDocumentComponent(unittest.TestCase):
             tt(  # deprecated
                 input_label=None,
                 input_lang=None,
-                input_fmt=None,
+                input_ctx=None,
                 input_defn=sw_compdocs.component.Definition(
                     file="clock.xml",
                     key="clock",
@@ -2183,7 +2175,7 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                         ),
                     ]
                 ),
-                input_fmt=sw_compdocs.template.TemplateFormatter({}),
+                input_ctx={},
                 input_defn=sw_compdocs.component.Definition(
                     file="clock.xml",
                     key="clock",
@@ -2418,9 +2410,7 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                         ),
                     ]
                 ),
-                input_fmt=sw_compdocs.template.TemplateFormatter(
-                    {"action_interact_left": "q", "action_interact_right": "e"}
-                ),
+                input_ctx={"action_interact_left": "q", "action_interact_right": "e"},
                 input_defn=sw_compdocs.component.Definition(
                     file="button_push.xml",
                     key="button_push",
@@ -2585,9 +2575,7 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                         ),
                     ]
                 ),
-                input_fmt=sw_compdocs.template.TemplateFormatter(
-                    {"action_interact_left": "q", "action_interact_right": "e"}
-                ),
+                input_ctx={"action_interact_left": "q", "action_interact_right": "e"},
                 input_defn=sw_compdocs.component.Definition(
                     file="handle.xml",
                     key="handle",
@@ -2639,7 +2627,7 @@ class TestGenerateDocumentComponent(unittest.TestCase):
             tt(  # omit short_description
                 input_label=None,
                 input_lang=None,
-                input_fmt=None,
+                input_ctx=None,
                 input_defn=sw_compdocs.component.Definition(
                     file="clock.xml",
                     key="clock",
@@ -2784,7 +2772,7 @@ class TestGenerateDocumentComponent(unittest.TestCase):
             tt(  # omit description
                 input_label=None,
                 input_lang=None,
-                input_fmt=None,
+                input_ctx=None,
                 input_defn=sw_compdocs.component.Definition(
                     file="clock.xml",
                     key="clock",
@@ -2932,7 +2920,7 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                     tc.input_defn,
                     label=tc.input_label,
                     lang=tc.input_lang,
-                    fmt=tc.input_fmt,
+                    ctx=tc.input_ctx,
                 )
                 self.assertEqual(got_doc, tc.want_doc)
 
@@ -2953,7 +2941,7 @@ class TestGenerateDocumentComponentList(unittest.TestCase):
                 ("input_defn_list", list[sw_compdocs.component.Definition]),
                 ("input_label", collections.abc.Mapping[str, str] | None),
                 ("input_lang", sw_compdocs.language.Language | None),
-                ("input_fmt", sw_compdocs.template.TemplateFormatter | None),
+                ("input_ctx", collections.abc.Mapping[str, str] | None),
                 ("want_doc", sw_compdocs.document.Document),
             ],
         )
@@ -2963,7 +2951,7 @@ class TestGenerateDocumentComponentList(unittest.TestCase):
                 input_defn_list=[],
                 input_label=None,
                 input_lang=None,
-                input_fmt=None,
+                input_ctx=None,
                 want_doc=sw_compdocs.document.Document(),
             ),
             tt(
@@ -2973,7 +2961,7 @@ class TestGenerateDocumentComponentList(unittest.TestCase):
                 ],
                 input_label=None,
                 input_lang=None,
-                input_fmt=None,
+                input_ctx=None,
                 want_doc=sw_compdocs.document.Document(
                     [
                         sw_compdocs.document.Heading("A", level=1),
@@ -3073,12 +3061,7 @@ class TestGenerateDocumentComponentList(unittest.TestCase):
                         ),
                     ]
                 ),
-                input_fmt=sw_compdocs.template.TemplateFormatter(
-                    {
-                        "s_desc": "foo",
-                        "desc": "bar",
-                    }
-                ),
+                input_ctx={"s_desc": "foo", "desc": "bar"},
                 want_doc=sw_compdocs.document.Document(
                     [
                         sw_compdocs.document.Heading("テスト", level=1),
@@ -3108,7 +3091,7 @@ class TestGenerateDocumentComponentList(unittest.TestCase):
                     tc.input_defn_list,
                     label=tc.input_label,
                     lang=tc.input_lang,
-                    fmt=tc.input_fmt,
+                    ctx=tc.input_ctx,
                 )
                 self.assertEqual(got_doc, tc.want_doc)
 
@@ -3121,7 +3104,7 @@ class TestGenerateDocument(unittest.TestCase):
                 ("input_defn_list", list[sw_compdocs.component.Definition]),
                 ("input_label", collections.abc.Mapping[str, str] | None),
                 ("input_lang", sw_compdocs.language.Language | None),
-                ("input_fmt", sw_compdocs.template.TemplateFormatter | None),
+                ("input_ctx", collections.abc.Mapping[str, str] | None),
                 ("want_doc", sw_compdocs.document.Document),
             ],
         )
@@ -3132,7 +3115,7 @@ class TestGenerateDocument(unittest.TestCase):
                 input_defn_list=[],
                 input_label=None,
                 input_lang=None,
-                input_fmt=None,
+                input_ctx=None,
                 want_doc=sw_compdocs.document.Document(),
             ),
             # single
@@ -3144,7 +3127,7 @@ class TestGenerateDocument(unittest.TestCase):
                 ],
                 input_label=None,
                 input_lang=None,
-                input_fmt=None,
+                input_ctx=None,
                 want_doc=sw_compdocs.document.Document(
                     [
                         sw_compdocs.document.Heading("Blocks", level=1),
@@ -3204,7 +3187,7 @@ class TestGenerateDocument(unittest.TestCase):
                 ],
                 input_label=None,
                 input_lang=None,
-                input_fmt=None,
+                input_ctx=None,
                 want_doc=sw_compdocs.document.Document(
                     [
                         sw_compdocs.document.Heading("Blocks", level=1),
@@ -3322,7 +3305,7 @@ class TestGenerateDocument(unittest.TestCase):
                 ],
                 input_label=None,
                 input_lang=None,
-                input_fmt=None,
+                input_ctx=None,
                 want_doc=sw_compdocs.document.Document(
                     [
                         sw_compdocs.document.Heading("Blocks", level=1),
@@ -3486,7 +3469,7 @@ class TestGenerateDocument(unittest.TestCase):
                 ],
                 input_label=None,
                 input_lang=None,
-                input_fmt=None,
+                input_ctx=None,
                 want_doc=sw_compdocs.document.Document(
                     [
                         sw_compdocs.document.Heading("Blocks", level=1),
@@ -3972,7 +3955,7 @@ class TestGenerateDocument(unittest.TestCase):
                     ],
                 ),
             ),
-            # label, lang, fmt
+            # label, lang, template
             tt(
                 input_defn_list=[
                     sw_compdocs.component.Definition(
@@ -4009,12 +3992,7 @@ class TestGenerateDocument(unittest.TestCase):
                         ),
                     ]
                 ),
-                input_fmt=sw_compdocs.template.TemplateFormatter(
-                    {
-                        "s_desc": "foo",
-                        "desc": "bar",
-                    }
-                ),
+                input_ctx={"s_desc": "foo", "desc": "bar"},
                 want_doc=sw_compdocs.document.Document(
                     [
                         sw_compdocs.document.Heading("Blocks", level=1),
@@ -4045,7 +4023,7 @@ class TestGenerateDocument(unittest.TestCase):
                     tc.input_defn_list,
                     label=tc.input_label,
                     lang=tc.input_lang,
-                    fmt=tc.input_fmt,
+                    ctx=tc.input_ctx,
                 )
                 self.assertEqual(got_doc, tc.want_doc)
 
@@ -4056,7 +4034,7 @@ class TestGenerateSheetComponent(unittest.TestCase):
             "tt",
             [
                 ("input_lang", sw_compdocs.language.Language | None),
-                ("input_fmt", sw_compdocs.template.TemplateFormatter | None),
+                ("input_ctx", collections.abc.Mapping[str, str] | None),
                 ("input_defn", sw_compdocs.component.Definition),
                 ("want_record", list[str]),
             ],
@@ -4065,7 +4043,7 @@ class TestGenerateSheetComponent(unittest.TestCase):
         for tc in [
             tt(  # normal
                 input_lang=None,
-                input_fmt=None,
+                input_ctx=None,
                 input_defn=sw_compdocs.component.Definition(
                     file="test.xml",
                     name="Name",
@@ -4097,7 +4075,7 @@ class TestGenerateSheetComponent(unittest.TestCase):
             ),
             tt(  # file none
                 input_lang=None,
-                input_fmt=None,
+                input_ctx=None,
                 input_defn=sw_compdocs.component.Definition(
                     name="Name",
                     category=sw_compdocs.component.Category.BLOCKS,
@@ -4128,7 +4106,7 @@ class TestGenerateSheetComponent(unittest.TestCase):
             ),
             tt(  # file
                 input_lang=None,
-                input_fmt=None,
+                input_ctx=None,
                 input_defn=sw_compdocs.component.Definition(
                     file=b"path/to/test.xml",
                     name="Name",
@@ -4160,7 +4138,7 @@ class TestGenerateSheetComponent(unittest.TestCase):
             ),
             tt(  # deprecated
                 input_lang=None,
-                input_fmt=None,
+                input_ctx=None,
                 input_defn=sw_compdocs.component.Definition(
                     file="test.xml",
                     name="Name",
@@ -4193,7 +4171,7 @@ class TestGenerateSheetComponent(unittest.TestCase):
             ),
             tt(  # mass
                 input_lang=None,
-                input_fmt=None,
+                input_ctx=None,
                 input_defn=sw_compdocs.component.Definition(
                     file="test.xml",
                     name="Name",
@@ -4237,7 +4215,7 @@ class TestGenerateSheetComponent(unittest.TestCase):
                         ),
                     ]
                 ),
-                input_fmt=None,
+                input_ctx=None,
                 input_defn=sw_compdocs.component.Definition(
                     file="test.xml",
                     key="test",
@@ -4270,13 +4248,11 @@ class TestGenerateSheetComponent(unittest.TestCase):
             ),
             tt(  # template
                 input_lang=None,
-                input_fmt=sw_compdocs.template.TemplateFormatter(
-                    {
-                        "name": "Name",
-                        "s_desc": "short_description",
-                        "desc": "description",
-                    }
-                ),
+                input_ctx={
+                    "name": "Name",
+                    "s_desc": "short_description",
+                    "desc": "description",
+                },
                 input_defn=sw_compdocs.component.Definition(
                     file="test.xml",
                     name="$[name]",
@@ -4320,13 +4296,11 @@ class TestGenerateSheetComponent(unittest.TestCase):
                         ),
                     ]
                 ),
-                input_fmt=sw_compdocs.template.TemplateFormatter(
-                    {
-                        "name": "Name",
-                        "s_desc": "short_description",
-                        "desc": "description",
-                    }
-                ),
+                input_ctx={
+                    "name": "Name",
+                    "s_desc": "short_description",
+                    "desc": "description",
+                },
                 input_defn=sw_compdocs.component.Definition(
                     file="test.xml",
                     key="test",
@@ -4360,7 +4334,7 @@ class TestGenerateSheetComponent(unittest.TestCase):
         ]:
             with self.subTest(tc=tc):
                 got_record = sw_compdocs.generator.generate_sheet_component(
-                    tc.input_defn, lang=tc.input_lang, fmt=tc.input_fmt
+                    tc.input_defn, lang=tc.input_lang, ctx=tc.input_ctx
                 )
                 self.assertEqual(got_record, tc.want_record)
 
@@ -4372,7 +4346,7 @@ class TestGenerateSheetComponentList(unittest.TestCase):
             [
                 ("input_defn_list", list[sw_compdocs.component.Definition]),
                 ("input_lang", sw_compdocs.language.Language | None),
-                ("input_fmt", sw_compdocs.template.TemplateFormatter | None),
+                ("input_ctx", collections.abc.Mapping[str, str] | None),
                 ("want_record_list", list[list[str]]),
             ],
         )
@@ -4385,7 +4359,7 @@ class TestGenerateSheetComponentList(unittest.TestCase):
                     sw_compdocs.component.Definition(name="Test 3"),
                 ],
                 input_lang=None,
-                input_fmt=None,
+                input_ctx=None,
                 want_record_list=[
                     [
                         "Test 1",
@@ -4462,13 +4436,11 @@ class TestGenerateSheetComponentList(unittest.TestCase):
                         ),
                     ]
                 ),
-                input_fmt=sw_compdocs.template.TemplateFormatter(
-                    {
-                        "name": "Name",
-                        "s_desc": "short_description",
-                        "desc": "description",
-                    }
-                ),
+                input_ctx={
+                    "name": "Name",
+                    "s_desc": "short_description",
+                    "desc": "description",
+                },
                 want_record_list=[
                     [
                         "$[name]",
@@ -4489,7 +4461,7 @@ class TestGenerateSheetComponentList(unittest.TestCase):
         ]:
             with self.subTest(tc=tc):
                 got_record_list = sw_compdocs.generator.generate_sheet_component_list(
-                    tc.input_defn_list, lang=tc.input_lang, fmt=tc.input_fmt
+                    tc.input_defn_list, lang=tc.input_lang, ctx=tc.input_ctx
                 )
                 self.assertEqual(got_record_list, tc.want_record_list)
 
@@ -4501,7 +4473,7 @@ class TestGenerateSheet(unittest.TestCase):
             [
                 ("input_label", collections.abc.Mapping[str, str] | None),
                 ("input_lang", sw_compdocs.language.Language | None),
-                ("input_fmt", sw_compdocs.template.TemplateFormatter | None),
+                ("input_ctx", collections.abc.Mapping[str, str] | None),
                 ("input_defn_list", list[sw_compdocs.component.Definition]),
                 ("want_record_list", list[list[str]]),
             ],
@@ -4511,7 +4483,7 @@ class TestGenerateSheet(unittest.TestCase):
             tt(  # normal
                 input_label=None,
                 input_lang=None,
-                input_fmt=None,
+                input_ctx=None,
                 input_defn_list=[
                     sw_compdocs.component.Definition(name="Test 1"),
                     sw_compdocs.component.Definition(name="Test 2"),
@@ -4579,7 +4551,7 @@ class TestGenerateSheet(unittest.TestCase):
             tt(  # sort
                 input_label=None,
                 input_lang=None,
-                input_fmt=None,
+                input_ctx=None,
                 input_defn_list=[
                     sw_compdocs.component.Definition(
                         key="a",
@@ -4695,7 +4667,7 @@ class TestGenerateSheet(unittest.TestCase):
                     "SHEET_HEAD_DESC": "Description",
                 },
                 input_lang=None,
-                input_fmt=None,
+                input_ctx=None,
                 input_defn_list=[
                     sw_compdocs.component.Definition(name="Test 1"),
                     sw_compdocs.component.Definition(name="Test 2"),
@@ -4775,13 +4747,11 @@ class TestGenerateSheet(unittest.TestCase):
                         ),
                     ]
                 ),
-                input_fmt=sw_compdocs.template.TemplateFormatter(
-                    {
-                        "name": "Name",
-                        "s_desc": "short_description",
-                        "desc": "description",
-                    }
-                ),
+                input_ctx={
+                    "name": "Name",
+                    "s_desc": "short_description",
+                    "desc": "description",
+                },
                 input_defn_list=[
                     sw_compdocs.component.Definition(
                         file="test.xml",
@@ -4836,7 +4806,7 @@ class TestGenerateSheet(unittest.TestCase):
                     tc.input_defn_list,
                     label=tc.input_label,
                     lang=tc.input_lang,
-                    fmt=tc.input_fmt,
+                    ctx=tc.input_ctx,
                 )
                 self.assertEqual(got_record_list, tc.want_record_list)
 

@@ -24,11 +24,11 @@ def generate_document(
     defn_list: collections.abc.Iterable[component.Definition],
     label: collections.abc.Mapping[str, str] | None,
     lang: language.Language | None,
-    fmt: template.TemplateFormatter | None,
+    ctx: collections.abc.Mapping[str, str] | None,
     out_encoding: str | None = None,
     out_newline: str | None = None,
 ) -> None:
-    doc = generator.generate_document(defn_list, label=label, lang=lang, fmt=fmt)
+    doc = generator.generate_document(defn_list, label=label, lang=lang, ctx=ctx)
     md = renderer.render_markdown(doc)
 
     with wraperr.wrap_unicode_error(out_file):
@@ -48,14 +48,14 @@ def generate_sheet(
     defn_list: collections.abc.Iterable[component.Definition],
     label: collections.abc.Mapping[str, str] | None,
     lang: language.Language | None,
-    fmt: template.TemplateFormatter | None,
+    ctx: collections.abc.Mapping[str, str] | None,
     out_encoding: str | None = None,
     out_newline: str | None = None,
 ) -> None:
     if out_newline is None:
         out_newline = os.linesep
 
-    record_list = generator.generate_sheet(defn_list, label=label, lang=lang, fmt=fmt)
+    record_list = generator.generate_sheet(defn_list, label=label, lang=lang, ctx=ctx)
     with wraperr.wrap_unicode_error(out_file):
         with open(
             out_file, mode="w", encoding=out_encoding, errors="strict", newline=""
@@ -83,10 +83,9 @@ def run(
     if lang_file is not None:
         lang = language.Language.from_file(lang_file, errors="strict")
 
-    fmt = None
+    ctx = None
     if template_file is not None:
-        template_tbl = resource.load_toml_table(template_file, "template")
-        fmt = template.TemplateFormatter(template_tbl)
+        ctx = resource.load_toml_table(template_file, "template")
 
     defn_list = []
     defn_dir = pathlib.Path(os.fsdecode(defn_dir))
@@ -102,7 +101,7 @@ def run(
             defn_list=defn_list,
             label=label,
             lang=lang,
-            fmt=fmt,
+            ctx=ctx,
             out_encoding=out_encoding,
             out_newline=out_newline,
         )
@@ -113,7 +112,7 @@ def run(
             defn_list=defn_list,
             label=label,
             lang=lang,
-            fmt=fmt,
+            ctx=ctx,
             out_encoding=out_encoding,
             out_newline=out_newline,
         )

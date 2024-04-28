@@ -39,9 +39,9 @@ def _lang_find_en(lang: language.Language | None, lang_en: str) -> str:
     return lang.find_en(lang_en).local
 
 
-def _fmt_format(fmt: template.TemplateFormatter | None, s: str) -> str:
-    if fmt is not None:
-        s = fmt.format(s)
+def _ctx_format(ctx: collections.abc.Mapping[str, str] | None, s: str) -> str:
+    if ctx is not None:
+        s = template.format(s, ctx)
     return s
 
 
@@ -106,7 +106,7 @@ def generate_document_logic_table(
     *,
     label: collections.abc.Mapping[str, str] | None = None,
     lang: language.Language | None = None,
-    fmt: template.TemplateFormatter | None = None,
+    ctx: collections.abc.Mapping[str, str] | None = None,
 ) -> document.Table:
     head = document.TableDataRow(
         [
@@ -122,9 +122,9 @@ def generate_document_logic_table(
 
         ln_type = _lang_find_en(lang, str(ln.type))
         ln_label = _lang_find_id(lang, lang_id_label, ln.label)
-        ln_label = _fmt_format(fmt, ln_label)
+        ln_label = _ctx_format(ctx, ln_label)
         ln_desc = _lang_find_id(lang, lang_id_desc, ln.description)
-        ln_desc = _fmt_format(fmt, ln_desc)
+        ln_desc = _ctx_format(ctx, ln_desc)
         data.append(document.TableDataRow([ln_type, ln_label, ln_desc]))
     return document.Table(data)
 
@@ -135,7 +135,7 @@ def generate_document_logic(
     *,
     label: collections.abc.Mapping[str, str] | None = None,
     lang: language.Language | None = None,
-    fmt: template.TemplateFormatter | None = None,
+    ctx: collections.abc.Mapping[str, str] | None = None,
 ) -> document.Document:
     in_lns = component.LogicNodeList()
     out_lns = component.LogicNodeList()
@@ -169,21 +169,21 @@ def generate_document_logic(
     if len(in_lns) > 0:
         in_head = document.Heading(_lang_find_en(lang, "logic inputs"))
         in_tbl = generate_document_logic_table(
-            key, in_lns, label=label, lang=lang, fmt=fmt
+            key, in_lns, label=label, lang=lang, ctx=ctx
         )
         doc.append(in_head)
         doc.append(in_tbl)
     if len(out_lns) > 0:
         out_head = document.Heading(_lang_find_en(lang, "logic outputs"))
         out_tbl = generate_document_logic_table(
-            key, out_lns, label=label, lang=lang, fmt=fmt
+            key, out_lns, label=label, lang=lang, ctx=ctx
         )
         doc.append(out_head)
         doc.append(out_tbl)
     if len(conn_lns) > 0:
         conn_head = document.Heading(_lang_find_en(lang, "connections"))
         conn_tbl = generate_document_logic_table(
-            key, conn_lns, label=label, lang=lang, fmt=fmt
+            key, conn_lns, label=label, lang=lang, ctx=ctx
         )
         doc.append(conn_head)
         doc.append(conn_tbl)
@@ -195,7 +195,7 @@ def generate_document_component(
     *,
     label: collections.abc.Mapping[str, str] | None = None,
     lang: language.Language | None = None,
-    fmt: template.TemplateFormatter | None = None,
+    ctx: collections.abc.Mapping[str, str] | None = None,
 ) -> document.Document:
     doc = document.Document()
 
@@ -214,14 +214,14 @@ def generate_document_component(
     defn_s_desc_id = f"def_{defn.key}_s_desc"
     defn_s_desc = defn.tooltip_properties.short_description
     defn_s_desc = _lang_find_id(lang, defn_s_desc_id, defn_s_desc)
-    defn_s_desc = _fmt_format(fmt, defn_s_desc)
+    defn_s_desc = _ctx_format(ctx, defn_s_desc)
     if defn_s_desc != "":
         doc.append(document.Paragraph(defn_s_desc))
 
     defn_desc_id = f"def_{defn.key}_desc"
     defn_desc = defn.tooltip_properties.description
     defn_desc = _lang_find_id(lang, defn_desc_id, defn_desc)
-    defn_desc = _fmt_format(fmt, defn_desc)
+    defn_desc = _ctx_format(ctx, defn_desc)
     if defn_desc != "":
         doc.append(document.Paragraph(defn_desc))
 
@@ -230,7 +230,7 @@ def generate_document_component(
     doc.extend(prop_doc)
 
     logic_doc = generate_document_logic(
-        defn.key, defn.logic_nodes, label=label, lang=lang, fmt=fmt
+        defn.key, defn.logic_nodes, label=label, lang=lang, ctx=ctx
     )
     logic_doc.shift(1)
     doc.extend(logic_doc)
@@ -243,11 +243,11 @@ def generate_document_component_list(
     *,
     label: collections.abc.Mapping[str, str] | None = None,
     lang: language.Language | None = None,
-    fmt: template.TemplateFormatter | None = None,
+    ctx: collections.abc.Mapping[str, str] | None = None,
 ) -> document.Document:
     doc = document.Document()
     for defn in defn_list:
-        defn_doc = generate_document_component(defn, label=label, lang=lang, fmt=fmt)
+        defn_doc = generate_document_component(defn, label=label, lang=lang, ctx=ctx)
         doc.extend(defn_doc)
     return doc
 
@@ -257,7 +257,7 @@ def generate_document(
     *,
     label: collections.abc.Mapping[str, str] | None = None,
     lang: language.Language | None = None,
-    fmt: template.TemplateFormatter | None = None,
+    ctx: collections.abc.Mapping[str, str] | None = None,
 ) -> document.Document:
     def sort_key_category(category: component.Category) -> int:
         return category.value
@@ -279,7 +279,7 @@ def generate_document(
         category_defn_list = category_defn_dict[category]
         category_defn_list.sort(key=sort_key_component)
         category_defn_list_doc = generate_document_component_list(
-            category_defn_list, label=label, lang=lang, fmt=fmt
+            category_defn_list, label=label, lang=lang, ctx=ctx
         )
         category_defn_list_doc.shift(1)
 
@@ -292,7 +292,7 @@ def generate_sheet_component(
     defn: component.Definition,
     *,
     lang: language.Language | None = None,
-    fmt: template.TemplateFormatter | None = None,
+    ctx: collections.abc.Mapping[str, str] | None = None,
 ) -> list[str]:
     dims_w = defn.voxel_max.x - defn.voxel_min.x + 1
     dims_h = defn.voxel_max.y - defn.voxel_min.y + 1
@@ -309,12 +309,12 @@ def generate_sheet_component(
     defn_s_desc_id = f"def_{defn.key}_s_desc"
     defn_s_desc = defn.tooltip_properties.short_description
     defn_s_desc = _lang_find_id(lang, defn_s_desc_id, defn_s_desc)
-    defn_s_desc = _fmt_format(fmt, defn_s_desc)
+    defn_s_desc = _ctx_format(ctx, defn_s_desc)
 
     defn_desc_id = f"def_{defn.key}_desc"
     defn_desc = defn.tooltip_properties.description
     defn_desc = _lang_find_id(lang, defn_desc_id, defn_desc)
-    defn_desc = _fmt_format(fmt, defn_desc)
+    defn_desc = _ctx_format(ctx, defn_desc)
 
     return [
         defn_name,
@@ -336,11 +336,11 @@ def generate_sheet_component_list(
     defn_list: collections.abc.Iterable[component.Definition],
     *,
     lang: language.Language | None = None,
-    fmt: template.TemplateFormatter | None = None,
+    ctx: collections.abc.Mapping[str, str] | None = None,
 ) -> list[list[str]]:
     record_list = []
     for defn in defn_list:
-        record = generate_sheet_component(defn, lang=lang, fmt=fmt)
+        record = generate_sheet_component(defn, lang=lang, ctx=ctx)
         record_list.append(record)
     return record_list
 
@@ -350,7 +350,7 @@ def generate_sheet(
     *,
     label: collections.abc.Mapping[str, str] | None = None,
     lang: language.Language | None = None,
-    fmt: template.TemplateFormatter | None = None,
+    ctx: collections.abc.Mapping[str, str] | None = None,
 ) -> list[list[str]]:
     def sort_key(defn: component.Definition) -> tuple[int, str, str]:
         return defn.category.value, defn.name, defn.key
@@ -373,5 +373,5 @@ def generate_sheet(
         _label_get(label, "SHEET_HEAD_DESC"),
     ]
     record_list = [header]
-    record_list.extend(generate_sheet_component_list(defn_list, lang=lang, fmt=fmt))
+    record_list.extend(generate_sheet_component_list(defn_list, lang=lang, ctx=ctx))
     return record_list
