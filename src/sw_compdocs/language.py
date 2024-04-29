@@ -10,6 +10,13 @@ from . import container
 from . import wraperr
 
 
+@dataclasses.dataclass
+class Text:
+    _: dataclasses.KW_ONLY
+    id: str | None = None
+    en: str = ""
+
+
 @dataclasses.dataclass(frozen=True)
 class Translation:
     id: str
