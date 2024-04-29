@@ -149,3 +149,10 @@ class Language(container.Sequence[Translation]):
         if len(trans_list) <= 0:
             raise LanguageFindEnError(en)
         return trans_list[0]
+
+    def translate(self, text: Text) -> str:
+        if text.id is not None:
+            trans = self.find_id(text.id)
+        else:
+            trans = self.find_en(text.en)
+        return trans.local
