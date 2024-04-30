@@ -39,6 +39,12 @@ def _lang_find_en(lang: language.Language | None, lang_en: str) -> str:
     return lang.find_en(lang_en).local
 
 
+def _lang_translate(lang: language.Language | None, text: language.Text) -> str:
+    if lang is None:
+        return text.en
+    return lang.translate(text)
+
+
 def _ctx_format(ctx: collections.abc.Mapping[str, str] | None, s: str) -> str:
     if ctx is not None:
         s = template.format(s, ctx)

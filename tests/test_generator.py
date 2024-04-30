@@ -131,6 +131,40 @@ class TestLangFindEn(unittest.TestCase):
                 self.assertEqual(got_s, tc.want_s)
 
 
+class TestLangTranslate(unittest.TestCase):
+    def test_pass(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_lang", sw_compdocs.language.Language | None),
+                ("input_text", sw_compdocs.language.Text),
+                ("want_s", str),
+            ],
+        )
+
+        for tc in [
+            tt(
+                input_lang=None,
+                input_text=sw_compdocs.language.Text(id="id", en="en"),
+                want_s="en",
+            ),
+            tt(
+                input_lang=sw_compdocs.language.Language(
+                    [
+                        sw_compdocs.language.Translation("id", "", "", "local"),
+                    ]
+                ),
+                input_text=sw_compdocs.language.Text(id="id", en="en"),
+                want_s="local",
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                got_s = sw_compdocs.generator._lang_translate(
+                    tc.input_lang, tc.input_text
+                )
+                self.assertEqual(got_s, tc.want_s)
+
+
 class TestCtxFormat(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(
