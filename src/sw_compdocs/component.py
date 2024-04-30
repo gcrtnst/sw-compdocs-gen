@@ -274,7 +274,7 @@ class VoxelPos:
 class Definition:
     _: dataclasses.KW_ONLY
     file: _types.StrOrBytesPath | None = None
-    key: str = ""
+    key: str | None = None
     name: str = ""
     category: Category = Category.BLOCKS
     mass: float = 0.0
@@ -380,7 +380,6 @@ class Definition:
                 exc.prepend_xpath("voxel_max")
                 raise
 
-        key = key if key is not None else cls.key
         name = elem.get("name", cls.name)
         tags = elem.get("tags", cls.tags)
         return cls(

@@ -766,7 +766,7 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
         elem = lxml.etree.Element("definition")
         defn = sw_compdocs.component.Definition.from_xml_elem(elem)
         self.assertIsNone(defn.file)
-        self.assertEqual(defn.key, "")
+        self.assertEqual(defn.key, None)
         self.assertEqual(defn.name, "")
         self.assertEqual(defn.category, sw_compdocs.component.Category.BLOCKS)
         self.assertEqual(defn.mass, 0.0)
