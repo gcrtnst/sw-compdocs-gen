@@ -137,15 +137,6 @@ class TooltipProperties:
             description=elem.get("description", cls.description),
         )
 
-    def full_description(self) -> str:
-        if self.short_description == "" and self.description == "":
-            return ""
-        elif self.short_description == "":
-            return self.description
-        elif self.description == "":
-            return self.short_description
-        return self.short_description + " " + self.description
-
 
 @enum.unique
 class LogicNodeMode(enum.Enum):

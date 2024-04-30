@@ -296,47 +296,6 @@ class TestTooltipPropertiesFromXMLElem(unittest.TestCase):
                 self.assertEqual(got.description, tc.want_description)
 
 
-class TestTooltipPropertiesFullDescription(unittest.TestCase):
-    def test(self) -> None:
-        tt = typing.NamedTuple(
-            "tt",
-            [
-                ("input_self", sw_compdocs.component.TooltipProperties),
-                ("want_s", str),
-            ],
-        )
-
-        for tc in [
-            tt(
-                input_self=sw_compdocs.component.TooltipProperties(
-                    short_description="", description=""
-                ),
-                want_s="",
-            ),
-            tt(
-                input_self=sw_compdocs.component.TooltipProperties(
-                    short_description="a", description=""
-                ),
-                want_s="a",
-            ),
-            tt(
-                input_self=sw_compdocs.component.TooltipProperties(
-                    short_description="", description="b"
-                ),
-                want_s="b",
-            ),
-            tt(
-                input_self=sw_compdocs.component.TooltipProperties(
-                    short_description="a", description="b"
-                ),
-                want_s="a b",
-            ),
-        ]:
-            with self.subTest(tc=tc):
-                got_s = tc.input_self.full_description()
-                self.assertEqual(got_s, tc.want_s)
-
-
 class TestLogicNodeTypeStr(unittest.TestCase):
     def test(self) -> None:
         tt = typing.NamedTuple(
