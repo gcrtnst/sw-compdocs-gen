@@ -414,7 +414,7 @@ class TestLogicNodeFromXMLElem(unittest.TestCase):
             [
                 ("input_elem", lxml.etree._Element),
                 ("input_idx", int | None),
-                ("want_idx", int),
+                ("want_idx", int | None),
                 ("want_label", str),
                 ("want_mode", sw_compdocs.component.LogicNodeMode),
                 ("want_type", sw_compdocs.component.LogicNodeType),
@@ -493,6 +493,21 @@ class TestLogicNodeFromXMLElem(unittest.TestCase):
                 want_mode=sw_compdocs.component.LogicNodeMode.INPUT,
                 want_type=sw_compdocs.component.LogicNodeType.TORQUE,
                 want_description="",
+            ),
+            tt(
+                input_elem=lxml.etree.Element(
+                    "logic_node",
+                    label="label",
+                    mode="1",
+                    type="2",
+                    description="description",
+                ),
+                input_idx=None,
+                want_idx=None,
+                want_label="label",
+                want_mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                want_type=sw_compdocs.component.LogicNodeType.TORQUE,
+                want_description="description",
             ),
         ]:
             with self.subTest(tc=tc):

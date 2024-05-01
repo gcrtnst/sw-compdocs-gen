@@ -190,7 +190,7 @@ class LogicNodeType(enum.Enum):
 @dataclasses.dataclass
 class LogicNode:
     _: dataclasses.KW_ONLY
-    idx: int = 0
+    idx: int | None = None
     label: str = ""
     mode: LogicNodeMode = LogicNodeMode.OUTPUT
     type: LogicNodeType = LogicNodeType.BOOL
@@ -220,7 +220,6 @@ class LogicNode:
                     f"invalid logic node type {typo_attr!r}"
                 ) from exc
 
-        idx = idx if idx is not None else cls.idx
         label = elem.get("label", cls.label)
         description = elem.get("description", cls.description)
         return cls(idx=idx, label=label, mode=mode, type=typo, description=description)

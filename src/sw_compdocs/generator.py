@@ -123,8 +123,9 @@ def generate_document_logic_table(
     )
     data = document.TableData(head)
     for ln in lns:
-        lang_id_label = f"def_{key}_node_{ln.idx:d}_label"
-        lang_id_desc = f"def_{key}_node_{ln.idx:d}_desc"
+        ln_idx = ln.idx or 0
+        lang_id_label = f"def_{key}_node_{ln_idx:d}_label"
+        lang_id_desc = f"def_{key}_node_{ln_idx:d}_desc"
 
         ln_type = _lang_find_en(lang, str(ln.type))
         ln_label = _lang_find_id(lang, lang_id_label, ln.label)
