@@ -262,6 +262,8 @@ class TestTooltipPropertiesFromXMLElem(unittest.TestCase):
             "tt",
             [
                 ("input_elem", lxml.etree._Element),
+                ("input_key", str | None),
+                ("want_key", str | None),
                 ("want_short_description", str),
                 ("want_description", str),
             ],
@@ -272,11 +274,15 @@ class TestTooltipPropertiesFromXMLElem(unittest.TestCase):
                 input_elem=lxml.etree.Element(
                     "tooltip_properties", short_description="a", description="b"
                 ),
+                input_key=None,
+                want_key=None,
                 want_short_description="a",
                 want_description="b",
             ),
             tt(
                 input_elem=lxml.etree.Element("tooltip_properties", description="b"),
+                input_key=None,
+                want_key=None,
                 want_short_description="",
                 want_description="b",
             ),
@@ -284,16 +290,67 @@ class TestTooltipPropertiesFromXMLElem(unittest.TestCase):
                 input_elem=lxml.etree.Element(
                     "tooltip_properties", short_description="a"
                 ),
+                input_key=None,
+                want_key=None,
                 want_short_description="a",
                 want_description="",
+            ),
+            tt(
+                input_elem=lxml.etree.Element(
+                    "tooltip_properties", short_description="a", description="b"
+                ),
+                input_key="key",
+                want_key="key",
+                want_short_description="a",
+                want_description="b",
             ),
         ]:
             with self.subTest(tc=tc):
                 got = sw_compdocs.component.TooltipProperties.from_xml_elem(
-                    tc.input_elem
+                    tc.input_elem, key=tc.input_key
                 )
+                self.assertEqual(got.key, tc.want_key)
                 self.assertEqual(got.short_description, tc.want_short_description)
                 self.assertEqual(got.description, tc.want_description)
+
+
+class TestTooltipPropertiesUpdateID(unittest.TestCase):
+    def test(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_key", str | None),
+                ("input_recursive", bool),
+                ("want_key", str | None),
+            ],
+        )
+
+        for tc in [
+            tt(
+                input_key=None,
+                input_recursive=False,
+                want_key=None,
+            ),
+            tt(
+                input_key="key",
+                input_recursive=False,
+                want_key="key",
+            ),
+            tt(
+                input_key=None,
+                input_recursive=True,
+                want_key=None,
+            ),
+            tt(
+                input_key="key",
+                input_recursive=True,
+                want_key="key",
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                tooltip_properties = sw_compdocs.component.TooltipProperties()
+                tooltip_properties.update_id(tc.input_key, recursive=tc.input_recursive)
+                self.assertEqual(tooltip_properties.key, tc.want_key)
 
 
 class TestLogicNodeTypeStr(unittest.TestCase):
@@ -727,6 +784,7 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
         self.assertEqual(
             defn.tooltip_properties,
             sw_compdocs.component.TooltipProperties(
+                key="clock",
                 short_description="An analogue clock display that outputs a number value representing the time of day.",
                 description="The clock has a display to visualise the time of day or night. The 12 o'clock position is the white arrow on the face of the display.",
             ),
@@ -775,6 +833,24 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
         self.assertEqual(defn.tags, "")
         self.assertEqual(
             defn.tooltip_properties, sw_compdocs.component.TooltipProperties()
+        )
+        self.assertEqual(defn.logic_nodes, sw_compdocs.component.LogicNodeList())
+        self.assertEqual(defn.voxel_min, sw_compdocs.component.VoxelPos())
+        self.assertEqual(defn.voxel_max, sw_compdocs.component.VoxelPos())
+
+    def test_pass_empty_key(self) -> None:
+        elem = lxml.etree.Element("definition")
+        defn = sw_compdocs.component.Definition.from_xml_elem(elem, key="key")
+        self.assertIsNone(defn.file)
+        self.assertEqual(defn.key, "key")
+        self.assertEqual(defn.name, "")
+        self.assertEqual(defn.category, sw_compdocs.component.Category.BLOCKS)
+        self.assertEqual(defn.mass, 0.0)
+        self.assertEqual(defn.value, 0)
+        self.assertEqual(defn.flags, sw_compdocs.component.Flags(0))
+        self.assertEqual(defn.tags, "")
+        self.assertEqual(
+            defn.tooltip_properties, sw_compdocs.component.TooltipProperties(key="key")
         )
         self.assertEqual(defn.logic_nodes, sw_compdocs.component.LogicNodeList())
         self.assertEqual(defn.voxel_min, sw_compdocs.component.VoxelPos())
@@ -874,6 +950,7 @@ class TestDefinitionUpdateID(unittest.TestCase):
                 ("input_key", str | None),
                 ("input_recursive", bool),
                 ("want_key", str | None),
+                ("want_tooltip_properties_key", str | None),
             ],
         )
 
@@ -882,21 +959,25 @@ class TestDefinitionUpdateID(unittest.TestCase):
                 input_key=None,
                 input_recursive=False,
                 want_key=None,
+                want_tooltip_properties_key=None,
             ),
             tt(
                 input_key="key",
                 input_recursive=False,
                 want_key="key",
+                want_tooltip_properties_key=None,
             ),
             tt(
                 input_key=None,
                 input_recursive=True,
                 want_key=None,
+                want_tooltip_properties_key=None,
             ),
             tt(
                 input_key="key",
                 input_recursive=True,
                 want_key="key",
+                want_tooltip_properties_key="key",
             ),
         ]:
             with self.subTest(tc=tc):

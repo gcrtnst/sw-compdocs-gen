@@ -127,15 +127,23 @@ class Flags(enum.Flag, boundary=enum.KEEP):
 @dataclasses.dataclass
 class TooltipProperties:
     _: dataclasses.KW_ONLY
+    key: str | None = None
     short_description: str = ""
     description: str = ""
 
     @classmethod
-    def from_xml_elem(cls, elem: lxml.etree._Element) -> typing.Self:
-        return cls(
+    def from_xml_elem(
+        cls, elem: lxml.etree._Element, *, key: str | None = None
+    ) -> typing.Self:
+        self = cls(
             short_description=elem.get("short_description", cls.short_description),
             description=elem.get("description", cls.description),
         )
+        self.update_id(key, recursive=False)
+        return self
+
+    def update_id(self, key: str | None, *, recursive: bool = True) -> None:
+        self.key = key
 
 
 @enum.unique
@@ -341,12 +349,12 @@ class Definition:
                 exc.file = file
                 raise exc from base_exc
 
-        tooltip_properties = TooltipProperties()
+        tooltip_properties = TooltipProperties(key=key)
         tooltip_properties_elem = elem.find("tooltip_properties")
         if tooltip_properties_elem is not None:
             try:
                 tooltip_properties = TooltipProperties.from_xml_elem(
-                    tooltip_properties_elem
+                    tooltip_properties_elem, key=key
                 )
             except DefinitionXMLError as exc:
                 exc.file = file
@@ -400,6 +408,8 @@ class Definition:
         return self
 
     def update_id(self, key: str | None, *, recursive: bool = True) -> None:
+        if recursive:
+            self.tooltip_properties.update_id(key, recursive=True)
         self.key = key
 
 
