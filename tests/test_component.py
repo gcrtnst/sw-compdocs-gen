@@ -866,6 +866,45 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
                 self.assertEqual(ctx.exception.xpath, tc.want_xpath)
 
 
+class TestDefinitionUpdateID(unittest.TestCase):
+    def test(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_key", str | None),
+                ("input_recursive", bool),
+                ("want_key", str | None),
+            ],
+        )
+
+        for tc in [
+            tt(
+                input_key=None,
+                input_recursive=False,
+                want_key=None,
+            ),
+            tt(
+                input_key="key",
+                input_recursive=False,
+                want_key="key",
+            ),
+            tt(
+                input_key=None,
+                input_recursive=True,
+                want_key=None,
+            ),
+            tt(
+                input_key="key",
+                input_recursive=True,
+                want_key="key",
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                defn = sw_compdocs.component.Definition()
+                defn.update_id(tc.input_key, recursive=tc.input_recursive)
+                self.assertEqual(defn.key, tc.want_key)
+
+
 class TestParseXMLFile(unittest.TestCase):
     def test_pass(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

@@ -296,6 +296,9 @@ class Definition:
         file: _types.StrOrBytesPath | None = None,
         key: str | None = None,
     ) -> typing.Self:
+        name = elem.get("name", cls.name)
+        tags = elem.get("tags", cls.tags)
+
         category = cls.category
         category_attr = elem.get("category")
         if category_attr is not None:
@@ -380,11 +383,8 @@ class Definition:
                 exc.prepend_xpath("voxel_max")
                 raise
 
-        name = elem.get("name", cls.name)
-        tags = elem.get("tags", cls.tags)
-        return cls(
+        self = cls(
             file=file,
-            key=key,
             name=name,
             category=category,
             mass=mass,
@@ -396,6 +396,11 @@ class Definition:
             voxel_min=voxel_min,
             voxel_max=voxel_max,
         )
+        self.update_id(key, recursive=False)
+        return self
+
+    def update_id(self, key: str | None, *, recursive: bool = True) -> None:
+        self.key = key
 
 
 # lxml.etree.XMLParser is generic in stub but not at runtime.
