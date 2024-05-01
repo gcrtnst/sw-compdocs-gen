@@ -1,3 +1,4 @@
+import copy
 import lxml.etree
 import os
 import pathlib
@@ -563,12 +564,137 @@ class TestLogicNodeFromXMLElem(unittest.TestCase):
                 self.assertEqual(ctx.exception.xpath, ".")
 
 
+class TestLogicNodeListInit(unittest.TestCase):
+    def test(self) -> None:
+        lst = [
+            sw_compdocs.component.LogicNode(label="a"),
+            sw_compdocs.component.LogicNode(label="b"),
+            sw_compdocs.component.LogicNode(label="c"),
+        ]
+        lns = sw_compdocs.component.LogicNodeList(lst, key="key")
+        self.assertEqual(list[sw_compdocs.component.LogicNode](lns), lst)
+        self.assertEqual(lns.key, "key")
+
+
+class TestLogicNodeListRepr(unittest.TestCase):
+    def test(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_lns", sw_compdocs.component.LogicNodeList),
+                ("want_s", str),
+            ],
+        )
+
+        for tc in [
+            tt(
+                input_lns=sw_compdocs.component.LogicNodeList([]),
+                want_s="LogicNodeList([])",
+            ),
+            tt(
+                input_lns=sw_compdocs.component.LogicNodeList([], key="key"),
+                want_s="LogicNodeList([], key='key')",
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                got_s = repr(tc.input_lns)
+                self.assertEqual(got_s, tc.want_s)
+
+
+class TestLogicNodeListEq(unittest.TestCase):
+    def test(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_self", sw_compdocs.component.LogicNodeList),
+                ("input_other", object),
+                ("want_eq", bool),
+            ],
+        )
+
+        for tc in [
+            tt(
+                input_self=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(idx=0, label="a"),
+                        sw_compdocs.component.LogicNode(idx=1, label="b"),
+                        sw_compdocs.component.LogicNode(idx=2, label="c"),
+                    ],
+                    key="key",
+                ),
+                input_other=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(idx=0, label="a"),
+                        sw_compdocs.component.LogicNode(idx=1, label="b"),
+                        sw_compdocs.component.LogicNode(idx=2, label="c"),
+                    ],
+                    key="key",
+                ),
+                want_eq=True,
+            ),
+            tt(
+                input_self=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(idx=0, label="a"),
+                        sw_compdocs.component.LogicNode(idx=1, label="b"),
+                        sw_compdocs.component.LogicNode(idx=2, label="c"),
+                    ],
+                    key="key",
+                ),
+                input_other=None,
+                want_eq=False,
+            ),
+            tt(
+                input_self=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(idx=0, label="a"),
+                        sw_compdocs.component.LogicNode(idx=1, label="b"),
+                        sw_compdocs.component.LogicNode(idx=2, label="c"),
+                    ],
+                    key="key",
+                ),
+                input_other=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(idx=0, label="a"),
+                        sw_compdocs.component.LogicNode(idx=1, label="b"),
+                        sw_compdocs.component.LogicNode(idx=2, label="d"),
+                    ],
+                    key="key",
+                ),
+                want_eq=False,
+            ),
+            tt(
+                input_self=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(idx=0, label="a"),
+                        sw_compdocs.component.LogicNode(idx=1, label="b"),
+                        sw_compdocs.component.LogicNode(idx=2, label="c"),
+                    ],
+                    key="key",
+                ),
+                input_other=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(idx=0, label="a"),
+                        sw_compdocs.component.LogicNode(idx=1, label="b"),
+                        sw_compdocs.component.LogicNode(idx=2, label="c"),
+                    ],
+                    key="",
+                ),
+                want_eq=False,
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                got_eq = tc.input_self == tc.input_other
+                self.assertEqual(got_eq, tc.want_eq)
+
+
 class TestLogicNodeListFromXMLElem(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(
             "tt",
             [
                 ("input_sub_list", list[lxml.etree._Element]),
+                ("input_key", str | None),
                 ("want_lns", sw_compdocs.component.LogicNodeList),
             ],
         )
@@ -576,6 +702,7 @@ class TestLogicNodeListFromXMLElem(unittest.TestCase):
         for tc in [
             tt(
                 input_sub_list=[],
+                input_key=None,
                 want_lns=sw_compdocs.component.LogicNodeList(),
             ),
             tt(
@@ -584,6 +711,7 @@ class TestLogicNodeListFromXMLElem(unittest.TestCase):
                     lxml.etree.Element("logic_node", label="b"),
                     lxml.etree.Element("logic_node", label="c"),
                 ],
+                input_key=None,
                 want_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(idx=0, label="a"),
@@ -598,6 +726,7 @@ class TestLogicNodeListFromXMLElem(unittest.TestCase):
                     lxml.etree.Element("dummy", label="b"),
                     lxml.etree.Element("logic_node", label="c"),
                 ],
+                input_key=None,
                 want_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(idx=0, label="a"),
@@ -605,11 +734,29 @@ class TestLogicNodeListFromXMLElem(unittest.TestCase):
                     ]
                 ),
             ),
+            tt(
+                input_sub_list=[
+                    lxml.etree.Element("logic_node", label="a"),
+                    lxml.etree.Element("logic_node", label="b"),
+                    lxml.etree.Element("logic_node", label="c"),
+                ],
+                input_key="key",
+                want_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(idx=0, label="a"),
+                        sw_compdocs.component.LogicNode(idx=1, label="b"),
+                        sw_compdocs.component.LogicNode(idx=2, label="c"),
+                    ],
+                    key="key",
+                ),
+            ),
         ]:
             with self.subTest(tc=tc):
                 input_elem = lxml.etree.Element("logic_nodes")
                 input_elem.extend(tc.input_sub_list)
-                got_lns = sw_compdocs.component.LogicNodeList.from_xml_elem(input_elem)
+                got_lns = sw_compdocs.component.LogicNodeList.from_xml_elem(
+                    input_elem, key=tc.input_key
+                )
                 self.assertEqual(got_lns, tc.want_lns)
 
     def test_exc_xml(self) -> None:
@@ -659,6 +806,50 @@ class TestLogicNodeListFromXMLElem(unittest.TestCase):
                 self.assertEqual(ctx.exception.msg, tc.want_msg)
                 self.assertEqual(ctx.exception.file, None)
                 self.assertEqual(ctx.exception.xpath, tc.want_xpath)
+
+
+class TestLogicNodeListUpdateID(unittest.TestCase):
+    def test(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_lns", sw_compdocs.component.LogicNodeList),
+                ("input_key", str | None),
+                ("input_recursive", bool),
+                ("want_lns", sw_compdocs.component.LogicNodeList),
+            ],
+        )
+
+        for tc in [
+            tt(
+                input_lns=sw_compdocs.component.LogicNodeList(key="key"),
+                input_key=None,
+                input_recursive=False,
+                want_lns=sw_compdocs.component.LogicNodeList(),
+            ),
+            tt(
+                input_lns=sw_compdocs.component.LogicNodeList(),
+                input_key="key",
+                input_recursive=False,
+                want_lns=sw_compdocs.component.LogicNodeList(key="key"),
+            ),
+            tt(
+                input_lns=sw_compdocs.component.LogicNodeList(key="key"),
+                input_key=None,
+                input_recursive=True,
+                want_lns=sw_compdocs.component.LogicNodeList(),
+            ),
+            tt(
+                input_lns=sw_compdocs.component.LogicNodeList(),
+                input_key="key",
+                input_recursive=True,
+                want_lns=sw_compdocs.component.LogicNodeList(key="key"),
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                lns = copy.deepcopy(tc.input_lns)
+                lns.update_id(tc.input_key, recursive=tc.input_recursive)
+                self.assertEqual(lns, tc.want_lns)
 
 
 class TestVoxelPosFromXMLElem(unittest.TestCase):
@@ -814,7 +1005,8 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
                         type=sw_compdocs.component.LogicNodeType.ELECTRIC,
                         description="Electrical power connection.",
                     ),
-                ]
+                ],
+                key="clock",
             ),
         )
         self.assertEqual(defn.voxel_min, sw_compdocs.component.VoxelPos(x=0, y=0, z=0))
@@ -852,7 +1044,9 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
         self.assertEqual(
             defn.tooltip_properties, sw_compdocs.component.TooltipProperties(key="key")
         )
-        self.assertEqual(defn.logic_nodes, sw_compdocs.component.LogicNodeList())
+        self.assertEqual(
+            defn.logic_nodes, sw_compdocs.component.LogicNodeList(key="key")
+        )
         self.assertEqual(defn.voxel_min, sw_compdocs.component.VoxelPos())
         self.assertEqual(defn.voxel_max, sw_compdocs.component.VoxelPos())
 
@@ -947,43 +1141,66 @@ class TestDefinitionUpdateID(unittest.TestCase):
         tt = typing.NamedTuple(
             "tt",
             [
+                ("input_defn", sw_compdocs.component.Definition),
                 ("input_key", str | None),
                 ("input_recursive", bool),
-                ("want_key", str | None),
-                ("want_tooltip_properties_key", str | None),
+                ("want_defn", sw_compdocs.component.Definition),
             ],
         )
 
         for tc in [
             tt(
+                input_defn=sw_compdocs.component.Definition(
+                    key="key",
+                    tooltip_properties=sw_compdocs.component.TooltipProperties(
+                        key="key"
+                    ),
+                    logic_nodes=sw_compdocs.component.LogicNodeList(key="key"),
+                ),
                 input_key=None,
                 input_recursive=False,
-                want_key=None,
-                want_tooltip_properties_key=None,
+                want_defn=sw_compdocs.component.Definition(
+                    tooltip_properties=sw_compdocs.component.TooltipProperties(
+                        key="key"
+                    ),
+                    logic_nodes=sw_compdocs.component.LogicNodeList(key="key"),
+                ),
             ),
             tt(
+                input_defn=sw_compdocs.component.Definition(),
                 input_key="key",
                 input_recursive=False,
-                want_key="key",
-                want_tooltip_properties_key=None,
+                want_defn=sw_compdocs.component.Definition(key="key"),
             ),
             tt(
+                input_defn=sw_compdocs.component.Definition(
+                    key="key",
+                    tooltip_properties=sw_compdocs.component.TooltipProperties(
+                        key="key"
+                    ),
+                    logic_nodes=sw_compdocs.component.LogicNodeList(key="key"),
+                ),
                 input_key=None,
                 input_recursive=True,
-                want_key=None,
-                want_tooltip_properties_key=None,
+                want_defn=sw_compdocs.component.Definition(),
             ),
             tt(
+                input_defn=sw_compdocs.component.Definition(),
                 input_key="key",
                 input_recursive=True,
-                want_key="key",
-                want_tooltip_properties_key="key",
+                want_defn=sw_compdocs.component.Definition(
+                    key="key",
+                    tooltip_properties=sw_compdocs.component.TooltipProperties(
+                        key="key"
+                    ),
+                    logic_nodes=sw_compdocs.component.LogicNodeList(key="key"),
+                ),
             ),
         ]:
             with self.subTest(tc=tc):
-                defn = sw_compdocs.component.Definition()
+                defn = copy.deepcopy(tc.input_defn)
                 defn.update_id(tc.input_key, recursive=tc.input_recursive)
-                self.assertEqual(defn.key, tc.want_key)
+                self.assertEqual(defn, tc.want_defn)
 
 
 class TestParseXMLFile(unittest.TestCase):

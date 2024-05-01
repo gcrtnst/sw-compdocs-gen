@@ -227,8 +227,33 @@ class LogicNode:
 
 
 class LogicNodeList(container.MutableSequence[LogicNode]):
+    def __init__(
+        self,
+        iterable: collections.abc.Iterable[LogicNode] = (),
+        *,
+        key: str | None = None,
+    ) -> None:
+        super().__init__(iterable)
+        self.key: str | None = key
+
+    def __repr__(self) -> str:
+        if self.key is None:
+            return f"{type(self).__name__}({self._l!r})"
+        return f"{type(self).__name__}({self._l!r}, key={self.key!r})"
+
+    def __eq__(self, other: object) -> bool:
+        if type(self) is type(other):
+            # type narrowing assertion for mypy 1.8.0
+            assert isinstance(other, type(self))
+
+            if self.key != other.key:
+                return False
+        return super().__eq__(other)
+
     @classmethod
-    def from_xml_elem(cls, elem: lxml.etree._Element) -> typing.Self:
+    def from_xml_elem(
+        cls, elem: lxml.etree._Element, *, key: str | None = None
+    ) -> typing.Self:
         def generate() -> collections.abc.Iterator[LogicNode]:
             tag = "logic_node"
             for idx, sub in enumerate(elem.findall(tag)):
@@ -239,7 +264,12 @@ class LogicNodeList(container.MutableSequence[LogicNode]):
                     raise
                 yield ln
 
-        return cls(generate())
+        self = cls(generate())
+        self.update_id(key, recursive=False)
+        return self
+
+    def update_id(self, key: str | None, *, recursive: bool = True) -> None:
+        self.key = key
 
 
 @dataclasses.dataclass
@@ -361,11 +391,11 @@ class Definition:
                 exc.prepend_xpath("tooltip_properties")
                 raise
 
-        logic_nodes = LogicNodeList()
+        logic_nodes = LogicNodeList(key=key)
         logic_nodes_elem = elem.find("logic_nodes")
         if logic_nodes_elem is not None:
             try:
-                logic_nodes = LogicNodeList.from_xml_elem(logic_nodes_elem)
+                logic_nodes = LogicNodeList.from_xml_elem(logic_nodes_elem, key=key)
             except DefinitionXMLError as exc:
                 exc.file = file
                 exc.prepend_xpath("logic_nodes")
@@ -410,6 +440,7 @@ class Definition:
     def update_id(self, key: str | None, *, recursive: bool = True) -> None:
         if recursive:
             self.tooltip_properties.update_id(key, recursive=True)
+            self.logic_nodes.update_id(key, recursive=True)
         self.key = key
 
 
