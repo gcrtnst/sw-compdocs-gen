@@ -190,6 +190,7 @@ class LogicNodeType(enum.Enum):
 @dataclasses.dataclass
 class LogicNode:
     _: dataclasses.KW_ONLY
+    key: str | None = None
     idx: int | None = None
     label: str = ""
     mode: LogicNodeMode = LogicNodeMode.OUTPUT
@@ -198,8 +199,15 @@ class LogicNode:
 
     @classmethod
     def from_xml_elem(
-        cls, elem: lxml.etree._Element, *, idx: int | None = None
+        cls,
+        elem: lxml.etree._Element,
+        *,
+        key: str | None = None,
+        idx: int | None = None,
     ) -> typing.Self:
+        label = elem.get("label", cls.label)
+        description = elem.get("description", cls.description)
+
         mode = cls.mode
         mode_attr = elem.get("mode")
         if mode_attr is not None:
@@ -220,9 +228,15 @@ class LogicNode:
                     f"invalid logic node type {typo_attr!r}"
                 ) from exc
 
-        label = elem.get("label", cls.label)
-        description = elem.get("description", cls.description)
-        return cls(idx=idx, label=label, mode=mode, type=typo, description=description)
+        self = cls(label=label, mode=mode, type=typo, description=description)
+        self.update_id(key, idx, recursive=False)
+        return self
+
+    def update_id(
+        self, key: str | None, idx: int | None, *, recursive: bool = True
+    ) -> None:
+        self.key = key
+        self.idx = idx
 
 
 class LogicNodeList(container.MutableSequence[LogicNode]):
@@ -257,7 +271,7 @@ class LogicNodeList(container.MutableSequence[LogicNode]):
             tag = "logic_node"
             for idx, sub in enumerate(elem.findall(tag)):
                 try:
-                    ln = LogicNode.from_xml_elem(sub, idx=idx)
+                    ln = LogicNode.from_xml_elem(sub, key=key, idx=idx)
                 except DefinitionXMLError as exc:
                     exc.prepend_xpath(f"{tag}[{idx + 1}]")
                     raise
@@ -268,6 +282,10 @@ class LogicNodeList(container.MutableSequence[LogicNode]):
         return self
 
     def update_id(self, key: str | None, *, recursive: bool = True) -> None:
+        if recursive:
+            for idx, ln in enumerate(self):
+                ln.update_id(key, idx)
+
         self.key = key
 
 

@@ -413,7 +413,9 @@ class TestLogicNodeFromXMLElem(unittest.TestCase):
             "tt",
             [
                 ("input_elem", lxml.etree._Element),
+                ("input_key", str | None),
                 ("input_idx", int | None),
+                ("want_key", str | None),
                 ("want_idx", int | None),
                 ("want_label", str),
                 ("want_mode", sw_compdocs.component.LogicNodeMode),
@@ -431,7 +433,9 @@ class TestLogicNodeFromXMLElem(unittest.TestCase):
                     type="2",
                     description="description",
                 ),
+                input_key="key",
                 input_idx=52149,
+                want_key="key",
                 want_idx=52149,
                 want_label="label",
                 want_mode=sw_compdocs.component.LogicNodeMode.INPUT,
@@ -445,7 +449,9 @@ class TestLogicNodeFromXMLElem(unittest.TestCase):
                     type="2",
                     description="description",
                 ),
+                input_key="key",
                 input_idx=52149,
+                want_key="key",
                 want_idx=52149,
                 want_label="",
                 want_mode=sw_compdocs.component.LogicNodeMode.INPUT,
@@ -459,7 +465,9 @@ class TestLogicNodeFromXMLElem(unittest.TestCase):
                     type="2",
                     description="description",
                 ),
+                input_key="key",
                 input_idx=52149,
+                want_key="key",
                 want_idx=52149,
                 want_label="label",
                 want_mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
@@ -473,7 +481,9 @@ class TestLogicNodeFromXMLElem(unittest.TestCase):
                     mode="1",
                     description="description",
                 ),
+                input_key="key",
                 input_idx=52149,
+                want_key="key",
                 want_idx=52149,
                 want_label="label",
                 want_mode=sw_compdocs.component.LogicNodeMode.INPUT,
@@ -487,7 +497,9 @@ class TestLogicNodeFromXMLElem(unittest.TestCase):
                     mode="1",
                     type="2",
                 ),
+                input_key="key",
                 input_idx=52149,
+                want_key="key",
                 want_idx=52149,
                 want_label="label",
                 want_mode=sw_compdocs.component.LogicNodeMode.INPUT,
@@ -502,7 +514,9 @@ class TestLogicNodeFromXMLElem(unittest.TestCase):
                     type="2",
                     description="description",
                 ),
+                input_key=None,
                 input_idx=None,
+                want_key=None,
                 want_idx=None,
                 want_label="label",
                 want_mode=sw_compdocs.component.LogicNodeMode.INPUT,
@@ -512,8 +526,9 @@ class TestLogicNodeFromXMLElem(unittest.TestCase):
         ]:
             with self.subTest(tc=tc):
                 got = sw_compdocs.component.LogicNode.from_xml_elem(
-                    tc.input_elem, idx=tc.input_idx
+                    tc.input_elem, key=tc.input_key, idx=tc.input_idx
                 )
+                self.assertEqual(got.key, tc.want_key)
                 self.assertEqual(got.idx, tc.want_idx)
                 self.assertEqual(got.label, tc.want_label)
                 self.assertEqual(got.mode, tc.want_mode)
@@ -577,6 +592,69 @@ class TestLogicNodeFromXMLElem(unittest.TestCase):
                 self.assertEqual(ctx.exception.msg, tc.want_msg)
                 self.assertEqual(ctx.exception.file, None)
                 self.assertEqual(ctx.exception.xpath, ".")
+
+
+class TestLogicNodeUpdateID(unittest.TestCase):
+    def test(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_ln", sw_compdocs.component.LogicNode),
+                ("input_key", str | None),
+                ("input_idx", int | None),
+                ("input_recursive", bool),
+                ("want_ln", sw_compdocs.component.LogicNode),
+            ],
+        )
+
+        for tc in [
+            tt(
+                input_ln=sw_compdocs.component.LogicNode(),
+                input_key="key",
+                input_idx=52149,
+                input_recursive=False,
+                want_ln=sw_compdocs.component.LogicNode(key="key", idx=52149),
+            ),
+            tt(
+                input_ln=sw_compdocs.component.LogicNode(key="key"),
+                input_key=None,
+                input_idx=52149,
+                input_recursive=False,
+                want_ln=sw_compdocs.component.LogicNode(idx=52149),
+            ),
+            tt(
+                input_ln=sw_compdocs.component.LogicNode(idx=52149),
+                input_key="key",
+                input_idx=None,
+                input_recursive=False,
+                want_ln=sw_compdocs.component.LogicNode(key="key"),
+            ),
+            tt(
+                input_ln=sw_compdocs.component.LogicNode(),
+                input_key="key",
+                input_idx=52149,
+                input_recursive=True,
+                want_ln=sw_compdocs.component.LogicNode(key="key", idx=52149),
+            ),
+            tt(
+                input_ln=sw_compdocs.component.LogicNode(key="key"),
+                input_key=None,
+                input_idx=52149,
+                input_recursive=True,
+                want_ln=sw_compdocs.component.LogicNode(idx=52149),
+            ),
+            tt(
+                input_ln=sw_compdocs.component.LogicNode(idx=52149),
+                input_key="key",
+                input_idx=None,
+                input_recursive=True,
+                want_ln=sw_compdocs.component.LogicNode(key="key"),
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                ln = copy.deepcopy(tc.input_ln)
+                ln.update_id(tc.input_key, tc.input_idx, recursive=tc.input_recursive)
+                self.assertEqual(ln, tc.want_ln)
 
 
 class TestLogicNodeListInit(unittest.TestCase):
@@ -758,9 +836,9 @@ class TestLogicNodeListFromXMLElem(unittest.TestCase):
                 input_key="key",
                 want_lns=sw_compdocs.component.LogicNodeList(
                     [
-                        sw_compdocs.component.LogicNode(idx=0, label="a"),
-                        sw_compdocs.component.LogicNode(idx=1, label="b"),
-                        sw_compdocs.component.LogicNode(idx=2, label="c"),
+                        sw_compdocs.component.LogicNode(key="key", idx=0, label="a"),
+                        sw_compdocs.component.LogicNode(key="key", idx=1, label="b"),
+                        sw_compdocs.component.LogicNode(key="key", idx=2, label="c"),
                     ],
                     key="key",
                 ),
@@ -837,28 +915,80 @@ class TestLogicNodeListUpdateID(unittest.TestCase):
 
         for tc in [
             tt(
-                input_lns=sw_compdocs.component.LogicNodeList(key="key"),
+                input_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(key="key", idx=0),
+                        sw_compdocs.component.LogicNode(key="key", idx=1),
+                        sw_compdocs.component.LogicNode(key="key", idx=2),
+                    ],
+                    key="key",
+                ),
                 input_key=None,
                 input_recursive=False,
-                want_lns=sw_compdocs.component.LogicNodeList(),
+                want_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(key="key", idx=0),
+                        sw_compdocs.component.LogicNode(key="key", idx=1),
+                        sw_compdocs.component.LogicNode(key="key", idx=2),
+                    ],
+                ),
             ),
             tt(
-                input_lns=sw_compdocs.component.LogicNodeList(),
+                input_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(),
+                        sw_compdocs.component.LogicNode(),
+                        sw_compdocs.component.LogicNode(),
+                    ],
+                ),
                 input_key="key",
                 input_recursive=False,
-                want_lns=sw_compdocs.component.LogicNodeList(key="key"),
+                want_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(),
+                        sw_compdocs.component.LogicNode(),
+                        sw_compdocs.component.LogicNode(),
+                    ],
+                    key="key",
+                ),
             ),
             tt(
-                input_lns=sw_compdocs.component.LogicNodeList(key="key"),
+                input_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(key="key", idx=0),
+                        sw_compdocs.component.LogicNode(key="key", idx=1),
+                        sw_compdocs.component.LogicNode(key="key", idx=2),
+                    ],
+                    key="key",
+                ),
                 input_key=None,
                 input_recursive=True,
-                want_lns=sw_compdocs.component.LogicNodeList(),
+                want_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(idx=0),
+                        sw_compdocs.component.LogicNode(idx=1),
+                        sw_compdocs.component.LogicNode(idx=2),
+                    ],
+                ),
             ),
             tt(
-                input_lns=sw_compdocs.component.LogicNodeList(),
+                input_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(),
+                        sw_compdocs.component.LogicNode(),
+                        sw_compdocs.component.LogicNode(),
+                    ],
+                ),
                 input_key="key",
                 input_recursive=True,
-                want_lns=sw_compdocs.component.LogicNodeList(key="key"),
+                want_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(key="key", idx=0),
+                        sw_compdocs.component.LogicNode(key="key", idx=1),
+                        sw_compdocs.component.LogicNode(key="key", idx=2),
+                    ],
+                    key="key",
+                ),
             ),
         ]:
             with self.subTest(tc=tc):
@@ -1000,6 +1130,7 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
             sw_compdocs.component.LogicNodeList(
                 [
                     sw_compdocs.component.LogicNode(
+                        key="clock",
                         idx=0,
                         label="Time",
                         mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
@@ -1007,6 +1138,7 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
                         description="The time as a factor of a day, from 0 (midnight) to 1 (midnight).",
                     ),
                     sw_compdocs.component.LogicNode(
+                        key="clock",
                         idx=1,
                         label="Backlight",
                         mode=sw_compdocs.component.LogicNodeMode.INPUT,
@@ -1014,6 +1146,7 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
                         description="Enables the backlight when receiving an on signal.",
                     ),
                     sw_compdocs.component.LogicNode(
+                        key="clock",
                         idx=2,
                         label="Electric",
                         mode=sw_compdocs.component.LogicNodeMode.INPUT,
