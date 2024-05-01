@@ -1809,8 +1809,14 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                     flags=sw_compdocs.component.Flags(8192),
                     tags="basic",
                     tooltip_properties=sw_compdocs.component.TooltipProperties(
-                        short_description="An analogue clock display that outputs a number value representing the time of day.",
-                        description="The clock has a display to visualise the time of day or night. The 12 o'clock position is the white arrow on the face of the display.",
+                        short_description=sw_compdocs.language.Text(
+                            id="def_clock_s_desc",
+                            en="An analogue clock display that outputs a number value representing the time of day.",
+                        ),
+                        description=sw_compdocs.language.Text(
+                            id="def_clock_desc",
+                            en="The clock has a display to visualise the time of day or night. The 12 o'clock position is the white arrow on the face of the display.",
+                        ),
                     ),
                     logic_nodes=sw_compdocs.component.LogicNodeList(
                         [
@@ -1957,8 +1963,14 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                     flags=sw_compdocs.component.Flags.IS_DEPRECATED,
                     tags="basic",
                     tooltip_properties=sw_compdocs.component.TooltipProperties(
-                        short_description="An analogue clock display that outputs a number value representing the time of day.",
-                        description="The clock has a display to visualise the time of day or night. The 12 o'clock position is the white arrow on the face of the display.",
+                        short_description=sw_compdocs.language.Text(
+                            id="def_clock_s_desc",
+                            en="An analogue clock display that outputs a number value representing the time of day.",
+                        ),
+                        description=sw_compdocs.language.Text(
+                            id="def_clock_desc",
+                            en="The clock has a display to visualise the time of day or night. The 12 o'clock position is the white arrow on the face of the display.",
+                        ),
                     ),
                     logic_nodes=sw_compdocs.component.LogicNodeList(
                         [
@@ -2220,8 +2232,14 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                     flags=sw_compdocs.component.Flags.IS_DEPRECATED,
                     tags="basic",
                     tooltip_properties=sw_compdocs.component.TooltipProperties(
-                        short_description="An analogue clock display that outputs a number value representing the time of day.",
-                        description="The clock has a display to visualise the time of day or night. The 12 o'clock position is the white arrow on the face of the display.",
+                        short_description=sw_compdocs.language.Text(
+                            id="def_clock_s_desc",
+                            en="An analogue clock display that outputs a number value representing the time of day.",
+                        ),
+                        description=sw_compdocs.language.Text(
+                            id="def_clock_desc",
+                            en="The clock has a display to visualise the time of day or night. The 12 o'clock position is the white arrow on the face of the display.",
+                        ),
                     ),
                     logic_nodes=sw_compdocs.component.LogicNodeList(
                         [
@@ -2455,8 +2473,14 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                     flags=sw_compdocs.component.Flags(8192),
                     tags="basic",
                     tooltip_properties=sw_compdocs.component.TooltipProperties(
-                        short_description="A button that outputs an on signal when you interact with [$[action_interact_left]]/[$[action_interact_right]], and an off signal when not interacting.",
-                        description="An external on/off signal can also be used to control whether or not the button is pressed, allowing you to chain multiple buttons together to unify their outputs.",
+                        short_description=sw_compdocs.language.Text(
+                            id="def_button_push_s_desc",
+                            en="A button that outputs an on signal when you interact with [$[action_interact_left]]/[$[action_interact_right]], and an off signal when not interacting.",
+                        ),
+                        description=sw_compdocs.language.Text(
+                            id="def_button_push_desc",
+                            en="An external on/off signal can also be used to control whether or not the button is pressed, allowing you to chain multiple buttons together to unify their outputs.",
+                        ),
                     ),
                     logic_nodes=sw_compdocs.component.LogicNodeList(
                         [
@@ -2620,8 +2644,14 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                     flags=sw_compdocs.component.Flags(0),
                     tags="basic",
                     tooltip_properties=sw_compdocs.component.TooltipProperties(
-                        short_description="Interacting with [$[action_interact_left]] or [$[action_interact_right]] again will detach that hand. The handle can be used to drag vehicles around. If a vehicle is too heavy to move, you will be detached automatically when you move outside the handle's interaction range.",
-                        description="A handle that you can attach to by interacting with [$[action_interact_left]] or [$[action_interact_right]].",
+                        short_description=sw_compdocs.language.Text(
+                            id="def_handle_s_desc",
+                            en="Interacting with [$[action_interact_left]] or [$[action_interact_right]] again will detach that hand. The handle can be used to drag vehicles around. If a vehicle is too heavy to move, you will be detached automatically when you move outside the handle's interaction range.",
+                        ),
+                        description=sw_compdocs.language.Text(
+                            id="def_handle_desc",
+                            en="A handle that you can attach to by interacting with [$[action_interact_left]] or [$[action_interact_right]].",
+                        ),
                     ),
                     logic_nodes=sw_compdocs.component.LogicNodeList(),
                     voxel_min=sw_compdocs.component.VoxelPos(x=0, y=0, z=0),
@@ -2672,8 +2702,13 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                     flags=sw_compdocs.component.Flags(8192),
                     tags="basic",
                     tooltip_properties=sw_compdocs.component.TooltipProperties(
-                        short_description="",
-                        description="The clock has a display to visualise the time of day or night. The 12 o'clock position is the white arrow on the face of the display.",
+                        short_description=sw_compdocs.language.Text(
+                            id="def_clock_s_desc", en=""
+                        ),
+                        description=sw_compdocs.language.Text(
+                            id="def_clock_desc",
+                            en="The clock has a display to visualise the time of day or night. The 12 o'clock position is the white arrow on the face of the display.",
+                        ),
                     ),
                     logic_nodes=sw_compdocs.component.LogicNodeList(
                         [
@@ -2817,8 +2852,13 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                     flags=sw_compdocs.component.Flags(8192),
                     tags="basic",
                     tooltip_properties=sw_compdocs.component.TooltipProperties(
-                        short_description="An analogue clock display that outputs a number value representing the time of day.",
-                        description="",
+                        short_description=sw_compdocs.language.Text(
+                            id="def_clock_s_desc",
+                            en="An analogue clock display that outputs a number value representing the time of day.",
+                        ),
+                        description=sw_compdocs.language.Text(
+                            id="def_clock_desc", en=""
+                        ),
                     ),
                     logic_nodes=sw_compdocs.component.LogicNodeList(
                         [
@@ -3065,8 +3105,12 @@ class TestGenerateDocumentComponentList(unittest.TestCase):
                         key="test",
                         name="Test",
                         tooltip_properties=sw_compdocs.component.TooltipProperties(
-                            short_description="Short Description",
-                            description="Description",
+                            short_description=sw_compdocs.language.Text(
+                                id="def_test_s_desc", en="Short Description"
+                            ),
+                            description=sw_compdocs.language.Text(
+                                id="def_test_desc", en="Description"
+                            ),
                         ),
                     ),
                 ],
@@ -3996,8 +4040,12 @@ class TestGenerateDocument(unittest.TestCase):
                         key="test",
                         name="Test",
                         tooltip_properties=sw_compdocs.component.TooltipProperties(
-                            short_description="Short Description",
-                            description="Description",
+                            short_description=sw_compdocs.language.Text(
+                                id="def_test_s_desc", en="Short Description"
+                            ),
+                            description=sw_compdocs.language.Text(
+                                id="def_test_desc", en="Description"
+                            ),
                         ),
                     ),
                 ],
@@ -4086,8 +4134,10 @@ class TestGenerateSheetComponent(unittest.TestCase):
                     value=2,
                     tags="tags",
                     tooltip_properties=sw_compdocs.component.TooltipProperties(
-                        short_description="short_description",
-                        description="description",
+                        short_description=sw_compdocs.language.Text(
+                            en="short_description"
+                        ),
+                        description=sw_compdocs.language.Text(en="description"),
                     ),
                     voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
                     voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
@@ -4117,8 +4167,10 @@ class TestGenerateSheetComponent(unittest.TestCase):
                     value=2,
                     tags="tags",
                     tooltip_properties=sw_compdocs.component.TooltipProperties(
-                        short_description="short_description",
-                        description="description",
+                        short_description=sw_compdocs.language.Text(
+                            en="short_description"
+                        ),
+                        description=sw_compdocs.language.Text(en="description"),
                     ),
                     voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
                     voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
@@ -4149,8 +4201,10 @@ class TestGenerateSheetComponent(unittest.TestCase):
                     value=2,
                     tags="tags",
                     tooltip_properties=sw_compdocs.component.TooltipProperties(
-                        short_description="short_description",
-                        description="description",
+                        short_description=sw_compdocs.language.Text(
+                            en="short_description"
+                        ),
+                        description=sw_compdocs.language.Text(en="description"),
                     ),
                     voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
                     voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
@@ -4182,8 +4236,10 @@ class TestGenerateSheetComponent(unittest.TestCase):
                     flags=sw_compdocs.component.Flags.IS_DEPRECATED,
                     tags="tags",
                     tooltip_properties=sw_compdocs.component.TooltipProperties(
-                        short_description="short_description",
-                        description="description",
+                        short_description=sw_compdocs.language.Text(
+                            en="short_description"
+                        ),
+                        description=sw_compdocs.language.Text(en="description"),
                     ),
                     voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
                     voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
@@ -4214,8 +4270,10 @@ class TestGenerateSheetComponent(unittest.TestCase):
                     value=2,
                     tags="tags",
                     tooltip_properties=sw_compdocs.component.TooltipProperties(
-                        short_description="short_description",
-                        description="description",
+                        short_description=sw_compdocs.language.Text(
+                            en="short_description"
+                        ),
+                        description=sw_compdocs.language.Text(en="description"),
                     ),
                     voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
                     voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
@@ -4259,8 +4317,12 @@ class TestGenerateSheetComponent(unittest.TestCase):
                     value=2,
                     tags="tags",
                     tooltip_properties=sw_compdocs.component.TooltipProperties(
-                        short_description="short_description",
-                        description="description",
+                        short_description=sw_compdocs.language.Text(
+                            id="def_test_s_desc", en="short_description"
+                        ),
+                        description=sw_compdocs.language.Text(
+                            id="def_test_desc", en="description"
+                        ),
                     ),
                     voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
                     voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
@@ -4295,8 +4357,8 @@ class TestGenerateSheetComponent(unittest.TestCase):
                     value=2,
                     tags="tags",
                     tooltip_properties=sw_compdocs.component.TooltipProperties(
-                        short_description="$[s_desc]",
-                        description="$[desc]",
+                        short_description=sw_compdocs.language.Text(en="$[s_desc]"),
+                        description=sw_compdocs.language.Text(en="$[desc]"),
                     ),
                     voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
                     voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
@@ -4344,8 +4406,10 @@ class TestGenerateSheetComponent(unittest.TestCase):
                     value=2,
                     tags="tags",
                     tooltip_properties=sw_compdocs.component.TooltipProperties(
-                        short_description="",
-                        description="",
+                        short_description=sw_compdocs.language.Text(
+                            id="def_test_s_desc"
+                        ),
+                        description=sw_compdocs.language.Text(id="def_test_desc"),
                     ),
                     voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
                     voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
@@ -4450,8 +4514,10 @@ class TestGenerateSheetComponentList(unittest.TestCase):
                         value=2,
                         tags="tags",
                         tooltip_properties=sw_compdocs.component.TooltipProperties(
-                            short_description="",
-                            description="",
+                            short_description=sw_compdocs.language.Text(
+                                id="def_test_s_desc"
+                            ),
+                            description=sw_compdocs.language.Text(id="def_test_desc"),
                         ),
                         voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
                         voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
@@ -4796,8 +4862,10 @@ class TestGenerateSheet(unittest.TestCase):
                         value=2,
                         tags="tags",
                         tooltip_properties=sw_compdocs.component.TooltipProperties(
-                            short_description="",
-                            description="",
+                            short_description=sw_compdocs.language.Text(
+                                id="def_test_s_desc"
+                            ),
+                            description=sw_compdocs.language.Text(id="def_test_desc"),
                         ),
                         voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
                         voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),

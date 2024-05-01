@@ -4,6 +4,7 @@ import os
 import pathlib
 import sw_compdocs._types
 import sw_compdocs.component
+import sw_compdocs.language
 import tempfile
 import typing
 import unittest
@@ -264,9 +265,7 @@ class TestTooltipPropertiesFromXMLElem(unittest.TestCase):
             [
                 ("input_elem", lxml.etree._Element),
                 ("input_key", str | None),
-                ("want_key", str | None),
-                ("want_short_description", str),
-                ("want_description", str),
+                ("want_prop", sw_compdocs.component.TooltipProperties),
             ],
         )
 
@@ -276,43 +275,51 @@ class TestTooltipPropertiesFromXMLElem(unittest.TestCase):
                     "tooltip_properties", short_description="a", description="b"
                 ),
                 input_key=None,
-                want_key=None,
-                want_short_description="a",
-                want_description="b",
+                want_prop=sw_compdocs.component.TooltipProperties(
+                    key=None,
+                    short_description=sw_compdocs.language.Text(en="a"),
+                    description=sw_compdocs.language.Text(en="b"),
+                ),
             ),
             tt(
                 input_elem=lxml.etree.Element("tooltip_properties", description="b"),
                 input_key=None,
-                want_key=None,
-                want_short_description="",
-                want_description="b",
+                want_prop=sw_compdocs.component.TooltipProperties(
+                    key=None,
+                    short_description=sw_compdocs.language.Text(),
+                    description=sw_compdocs.language.Text(en="b"),
+                ),
             ),
             tt(
                 input_elem=lxml.etree.Element(
                     "tooltip_properties", short_description="a"
                 ),
                 input_key=None,
-                want_key=None,
-                want_short_description="a",
-                want_description="",
+                want_prop=sw_compdocs.component.TooltipProperties(
+                    key=None,
+                    short_description=sw_compdocs.language.Text(en="a"),
+                    description=sw_compdocs.language.Text(),
+                ),
             ),
             tt(
                 input_elem=lxml.etree.Element(
                     "tooltip_properties", short_description="a", description="b"
                 ),
                 input_key="key",
-                want_key="key",
-                want_short_description="a",
-                want_description="b",
+                want_prop=sw_compdocs.component.TooltipProperties(
+                    key="key",
+                    short_description=sw_compdocs.language.Text(
+                        id="def_key_s_desc", en="a"
+                    ),
+                    description=sw_compdocs.language.Text(id="def_key_desc", en="b"),
+                ),
             ),
         ]:
             with self.subTest(tc=tc):
-                got = sw_compdocs.component.TooltipProperties.from_xml_elem(
+                got_prop = sw_compdocs.component.TooltipProperties.from_xml_elem(
                     tc.input_elem, key=tc.input_key
                 )
-                self.assertEqual(got.key, tc.want_key)
-                self.assertEqual(got.short_description, tc.want_short_description)
-                self.assertEqual(got.description, tc.want_description)
+                self.assertEqual(got_prop, tc.want_prop)
 
 
 class TestTooltipPropertiesUpdateID(unittest.TestCase):
@@ -320,38 +327,59 @@ class TestTooltipPropertiesUpdateID(unittest.TestCase):
         tt = typing.NamedTuple(
             "tt",
             [
+                ("input_prop", sw_compdocs.component.TooltipProperties),
                 ("input_key", str | None),
                 ("input_recursive", bool),
-                ("want_key", str | None),
+                ("want_prop", sw_compdocs.component.TooltipProperties),
             ],
         )
 
         for tc in [
             tt(
+                input_prop=sw_compdocs.component.TooltipProperties(
+                    key="key",
+                    short_description=sw_compdocs.language.Text(id="def_key_s_desc"),
+                    description=sw_compdocs.language.Text(id="def_key_desc"),
+                ),
                 input_key=None,
                 input_recursive=False,
-                want_key=None,
+                want_prop=sw_compdocs.component.TooltipProperties(),
             ),
             tt(
+                input_prop=sw_compdocs.component.TooltipProperties(),
                 input_key="key",
                 input_recursive=False,
-                want_key="key",
+                want_prop=sw_compdocs.component.TooltipProperties(
+                    key="key",
+                    short_description=sw_compdocs.language.Text(id="def_key_s_desc"),
+                    description=sw_compdocs.language.Text(id="def_key_desc"),
+                ),
             ),
             tt(
+                input_prop=sw_compdocs.component.TooltipProperties(
+                    key="key",
+                    short_description=sw_compdocs.language.Text(id="def_key_s_desc"),
+                    description=sw_compdocs.language.Text(id="def_key_desc"),
+                ),
                 input_key=None,
                 input_recursive=True,
-                want_key=None,
+                want_prop=sw_compdocs.component.TooltipProperties(),
             ),
             tt(
+                input_prop=sw_compdocs.component.TooltipProperties(),
                 input_key="key",
                 input_recursive=True,
-                want_key="key",
+                want_prop=sw_compdocs.component.TooltipProperties(
+                    key="key",
+                    short_description=sw_compdocs.language.Text(id="def_key_s_desc"),
+                    description=sw_compdocs.language.Text(id="def_key_desc"),
+                ),
             ),
         ]:
             with self.subTest(tc=tc):
-                tooltip_properties = sw_compdocs.component.TooltipProperties()
-                tooltip_properties.update_id(tc.input_key, recursive=tc.input_recursive)
-                self.assertEqual(tooltip_properties.key, tc.want_key)
+                prop = copy.deepcopy(tc.input_prop)
+                prop.update_id(tc.input_key, recursive=tc.input_recursive)
+                self.assertEqual(prop, tc.want_prop)
 
 
 class TestLogicNodeTypeStr(unittest.TestCase):
@@ -1121,8 +1149,14 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
             defn.tooltip_properties,
             sw_compdocs.component.TooltipProperties(
                 key="clock",
-                short_description="An analogue clock display that outputs a number value representing the time of day.",
-                description="The clock has a display to visualise the time of day or night. The 12 o'clock position is the white arrow on the face of the display.",
+                short_description=sw_compdocs.language.Text(
+                    id="def_clock_s_desc",
+                    en="An analogue clock display that outputs a number value representing the time of day.",
+                ),
+                description=sw_compdocs.language.Text(
+                    id="def_clock_desc",
+                    en="The clock has a display to visualise the time of day or night. The 12 o'clock position is the white arrow on the face of the display.",
+                ),
             ),
         )
         self.assertEqual(
@@ -1190,7 +1224,12 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
         self.assertEqual(defn.flags, sw_compdocs.component.Flags(0))
         self.assertEqual(defn.tags, "")
         self.assertEqual(
-            defn.tooltip_properties, sw_compdocs.component.TooltipProperties(key="key")
+            defn.tooltip_properties,
+            sw_compdocs.component.TooltipProperties(
+                key="key",
+                short_description=sw_compdocs.language.Text(id="def_key_s_desc"),
+                description=sw_compdocs.language.Text(id="def_key_desc"),
+            ),
         )
         self.assertEqual(
             defn.logic_nodes, sw_compdocs.component.LogicNodeList(key="key")
@@ -1301,7 +1340,11 @@ class TestDefinitionUpdateID(unittest.TestCase):
                 input_defn=sw_compdocs.component.Definition(
                     key="key",
                     tooltip_properties=sw_compdocs.component.TooltipProperties(
-                        key="key"
+                        key="key",
+                        short_description=sw_compdocs.language.Text(
+                            id="def_key_s_desc"
+                        ),
+                        description=sw_compdocs.language.Text(id="def_key_desc"),
                     ),
                     logic_nodes=sw_compdocs.component.LogicNodeList(key="key"),
                 ),
@@ -1309,7 +1352,11 @@ class TestDefinitionUpdateID(unittest.TestCase):
                 input_recursive=False,
                 want_defn=sw_compdocs.component.Definition(
                     tooltip_properties=sw_compdocs.component.TooltipProperties(
-                        key="key"
+                        key="key",
+                        short_description=sw_compdocs.language.Text(
+                            id="def_key_s_desc"
+                        ),
+                        description=sw_compdocs.language.Text(id="def_key_desc"),
                     ),
                     logic_nodes=sw_compdocs.component.LogicNodeList(key="key"),
                 ),
@@ -1324,7 +1371,11 @@ class TestDefinitionUpdateID(unittest.TestCase):
                 input_defn=sw_compdocs.component.Definition(
                     key="key",
                     tooltip_properties=sw_compdocs.component.TooltipProperties(
-                        key="key"
+                        key="key",
+                        short_description=sw_compdocs.language.Text(
+                            id="def_key_s_desc"
+                        ),
+                        description=sw_compdocs.language.Text(id="def_key_desc"),
                     ),
                     logic_nodes=sw_compdocs.component.LogicNodeList(key="key"),
                 ),
@@ -1339,7 +1390,11 @@ class TestDefinitionUpdateID(unittest.TestCase):
                 want_defn=sw_compdocs.component.Definition(
                     key="key",
                     tooltip_properties=sw_compdocs.component.TooltipProperties(
-                        key="key"
+                        key="key",
+                        short_description=sw_compdocs.language.Text(
+                            id="def_key_s_desc"
+                        ),
+                        description=sw_compdocs.language.Text(id="def_key_desc"),
                     ),
                     logic_nodes=sw_compdocs.component.LogicNodeList(key="key"),
                 ),
@@ -1376,7 +1431,9 @@ class TestParseXMLFile(unittest.TestCase):
                     self.assertEqual(defn.file, path)
                     self.assertEqual(defn.key, "test")
                     self.assertEqual(defn.name, "name")
-                    self.assertEqual(defn.tooltip_properties.description, "description")
+                    self.assertEqual(
+                        defn.tooltip_properties.description.en, "description"
+                    )
 
     def test_pass_recover(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -1407,7 +1464,9 @@ class TestParseXMLFile(unittest.TestCase):
                     self.assertEqual(defn.file, path)
                     self.assertEqual(defn.key, "test")
                     self.assertEqual(defn.name, "name")
-                    self.assertEqual(defn.tooltip_properties.description, "description")
+                    self.assertEqual(
+                        defn.tooltip_properties.description.en, "description"
+                    )
 
     def test_exc_root(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -1503,7 +1562,7 @@ class TestParseXMLStr(unittest.TestCase):
         self.assertIsNone(defn.file)
         self.assertEqual(defn.key, "key")
         self.assertEqual(defn.name, "name")
-        self.assertEqual(defn.tooltip_properties.description, "description")
+        self.assertEqual(defn.tooltip_properties.description.en, "description")
 
     def test_pass_recover(self) -> None:
         defn = sw_compdocs.component.parse_xml_str(
@@ -1523,7 +1582,7 @@ class TestParseXMLStr(unittest.TestCase):
         self.assertIsNone(defn.file)
         self.assertEqual(defn.key, "key")
         self.assertEqual(defn.name, "name")
-        self.assertEqual(defn.tooltip_properties.description, "description")
+        self.assertEqual(defn.tooltip_properties.description.en, "description")
 
     def test_exc_root(self) -> None:
         with self.assertRaises(sw_compdocs.component.DefinitionXMLError) as ctx:

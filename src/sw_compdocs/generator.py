@@ -219,16 +219,14 @@ def generate_document_component(
             )
         )
 
-    defn_s_desc_id = f"def_{defn_key}_s_desc"
-    defn_s_desc = defn.tooltip_properties.short_description
-    defn_s_desc = _lang_find_id(lang, defn_s_desc_id, defn_s_desc)
+    defn_s_desc_text = defn.tooltip_properties.short_description
+    defn_s_desc = _lang_translate(lang, defn_s_desc_text)
     defn_s_desc = _ctx_format(ctx, defn_s_desc)
     if defn_s_desc != "":
         doc.append(document.Paragraph(defn_s_desc))
 
-    defn_desc_id = f"def_{defn_key}_desc"
-    defn_desc = defn.tooltip_properties.description
-    defn_desc = _lang_find_id(lang, defn_desc_id, defn_desc)
+    defn_desc_text = defn.tooltip_properties.description
+    defn_desc = _lang_translate(lang, defn_desc_text)
     defn_desc = _ctx_format(ctx, defn_desc)
     if defn_desc != "":
         doc.append(document.Paragraph(defn_desc))
@@ -315,14 +313,12 @@ def generate_sheet_component(
         defn_file = os.fsdecode(defn.file)
         defn_file = pathlib.PurePath(defn_file).name
 
-    defn_s_desc_id = f"def_{defn_key}_s_desc"
-    defn_s_desc = defn.tooltip_properties.short_description
-    defn_s_desc = _lang_find_id(lang, defn_s_desc_id, defn_s_desc)
+    defn_s_desc_text = defn.tooltip_properties.short_description
+    defn_s_desc = _lang_translate(lang, defn_s_desc_text)
     defn_s_desc = _ctx_format(ctx, defn_s_desc)
 
-    defn_desc_id = f"def_{defn_key}_desc"
-    defn_desc = defn.tooltip_properties.description
-    defn_desc = _lang_find_id(lang, defn_desc_id, defn_desc)
+    defn_desc_text = defn.tooltip_properties.description
+    defn_desc = _lang_translate(lang, defn_desc_text)
     defn_desc = _ctx_format(ctx, defn_desc)
 
     return [

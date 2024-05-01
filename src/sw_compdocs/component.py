@@ -9,6 +9,7 @@ import typing
 
 from . import _types
 from . import container
+from . import language
 
 
 class DefinitionXMLError(Exception):
@@ -128,21 +129,23 @@ class Flags(enum.Flag, boundary=enum.KEEP):
 class TooltipProperties:
     _: dataclasses.KW_ONLY
     key: str | None = None
-    short_description: str = ""
-    description: str = ""
+    short_description: language.Text = dataclasses.field(default_factory=language.Text)
+    description: language.Text = dataclasses.field(default_factory=language.Text)
 
     @classmethod
     def from_xml_elem(
         cls, elem: lxml.etree._Element, *, key: str | None = None
     ) -> typing.Self:
-        self = cls(
-            short_description=elem.get("short_description", cls.short_description),
-            description=elem.get("description", cls.description),
-        )
+        short_description = language.Text(en=elem.get("short_description", ""))
+        description = language.Text(en=elem.get("description", ""))
+
+        self = cls(short_description=short_description, description=description)
         self.update_id(key, recursive=False)
         return self
 
     def update_id(self, key: str | None, *, recursive: bool = True) -> None:
+        self.short_description.id = f"def_{key}_s_desc" if key is not None else None
+        self.description.id = f"def_{key}_desc" if key is not None else None
         self.key = key
 
 
@@ -396,17 +399,17 @@ class Definition:
                 exc.file = file
                 raise exc from base_exc
 
-        tooltip_properties = TooltipProperties(key=key)
         tooltip_properties_elem = elem.find("tooltip_properties")
-        if tooltip_properties_elem is not None:
-            try:
-                tooltip_properties = TooltipProperties.from_xml_elem(
-                    tooltip_properties_elem, key=key
-                )
-            except DefinitionXMLError as exc:
-                exc.file = file
-                exc.prepend_xpath("tooltip_properties")
-                raise
+        if tooltip_properties_elem is None:
+            tooltip_properties_elem = lxml.etree.Element("tooltip_properties")
+        try:
+            tooltip_properties = TooltipProperties.from_xml_elem(
+                tooltip_properties_elem, key=key
+            )
+        except DefinitionXMLError as exc:
+            exc.file = file
+            exc.prepend_xpath("tooltip_properties")
+            raise
 
         logic_nodes = LogicNodeList(key=key)
         logic_nodes_elem = elem.find("logic_nodes")
