@@ -195,10 +195,10 @@ class LogicNode:
     _: dataclasses.KW_ONLY
     key: str | None = None
     idx: int | None = None
-    label: str = ""
+    label: language.Text = dataclasses.field(default_factory=language.Text)
     mode: LogicNodeMode = LogicNodeMode.OUTPUT
     type: LogicNodeType = LogicNodeType.BOOL
-    description: str = ""
+    description: language.Text = dataclasses.field(default_factory=language.Text)
 
     @classmethod
     def from_xml_elem(
@@ -208,8 +208,8 @@ class LogicNode:
         key: str | None = None,
         idx: int | None = None,
     ) -> typing.Self:
-        label = elem.get("label", cls.label)
-        description = elem.get("description", cls.description)
+        label = language.Text(en=elem.get("label", ""))
+        description = language.Text(en=elem.get("description", ""))
 
         mode = cls.mode
         mode_attr = elem.get("mode")
@@ -238,6 +238,14 @@ class LogicNode:
     def update_id(
         self, key: str | None, idx: int | None, *, recursive: bool = True
     ) -> None:
+        label_id = None
+        description_id = None
+        if key is not None and idx is not None:
+            label_id = f"def_{key}_node_{idx:d}_label"
+            description_id = f"def_{key}_node_{idx:d}_desc"
+
+        self.label.id = label_id
+        self.description.id = description_id
         self.key = key
         self.idx = idx
 
@@ -411,35 +419,35 @@ class Definition:
             exc.prepend_xpath("tooltip_properties")
             raise
 
-        logic_nodes = LogicNodeList(key=key)
         logic_nodes_elem = elem.find("logic_nodes")
-        if logic_nodes_elem is not None:
-            try:
-                logic_nodes = LogicNodeList.from_xml_elem(logic_nodes_elem, key=key)
-            except DefinitionXMLError as exc:
-                exc.file = file
-                exc.prepend_xpath("logic_nodes")
-                raise
+        if logic_nodes_elem is None:
+            logic_nodes_elem = lxml.etree.Element("logic_nodes")
+        try:
+            logic_nodes = LogicNodeList.from_xml_elem(logic_nodes_elem, key=key)
+        except DefinitionXMLError as exc:
+            exc.file = file
+            exc.prepend_xpath("logic_nodes")
+            raise
 
-        voxel_min = VoxelPos()
         voxel_min_elem = elem.find("voxel_min")
-        if voxel_min_elem is not None:
-            try:
-                voxel_min = VoxelPos.from_xml_elem(voxel_min_elem)
-            except DefinitionXMLError as exc:
-                exc.file = file
-                exc.prepend_xpath("voxel_min")
-                raise
+        if voxel_min_elem is None:
+            voxel_min_elem = lxml.etree.Element("voxel_min")
+        try:
+            voxel_min = VoxelPos.from_xml_elem(voxel_min_elem)
+        except DefinitionXMLError as exc:
+            exc.file = file
+            exc.prepend_xpath("voxel_min")
+            raise
 
-        voxel_max = VoxelPos()
         voxel_max_elem = elem.find("voxel_max")
-        if voxel_max_elem is not None:
-            try:
-                voxel_max = VoxelPos.from_xml_elem(voxel_max_elem)
-            except DefinitionXMLError as exc:
-                exc.file = file
-                exc.prepend_xpath("voxel_max")
-                raise
+        if voxel_max_elem is None:
+            voxel_max_elem = lxml.etree.Element("voxel_max")
+        try:
+            voxel_max = VoxelPos.from_xml_elem(voxel_max_elem)
+        except DefinitionXMLError as exc:
+            exc.file = file
+            exc.prepend_xpath("voxel_max")
+            raise
 
         self = cls(
             file=file,

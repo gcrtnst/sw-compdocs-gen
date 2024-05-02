@@ -642,18 +642,29 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
+                            key="test",
                             idx=0,
-                            label="label 0 $[label_0]",
+                            label=sw_compdocs.language.Text(
+                                id="def_test_node_0_label", en="label 0 $[label_0]"
+                            ),
                             type=sw_compdocs.component.LogicNodeType.BOOL,
-                            description="desc 0 $[desc_0]",
+                            description=sw_compdocs.language.Text(
+                                id="def_test_node_0_desc", en="desc 0 $[desc_0]"
+                            ),
                         ),
                         sw_compdocs.component.LogicNode(
+                            key="test",
                             idx=1,
-                            label="label 1 $[label_1]",
+                            label=sw_compdocs.language.Text(
+                                id="def_test_node_1_label", en="label 1 $[label_1]"
+                            ),
                             type=sw_compdocs.component.LogicNodeType.FLOAT,
-                            description="desc 1 $[desc_1]",
+                            description=sw_compdocs.language.Text(
+                                id="def_test_node_1_desc", en="desc 1 $[desc_1]"
+                            ),
                         ),
-                    ]
+                    ],
+                    key="test",
                 ),
                 want_tbl=sw_compdocs.document.Table(
                     sw_compdocs.document.TableData(
@@ -725,18 +736,29 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
+                            key="test",
                             idx=0,
-                            label="label 0 $[label_0]",
+                            label=sw_compdocs.language.Text(
+                                id="def_test_node_0_label", en="label 0 $[label_0]"
+                            ),
                             type=sw_compdocs.component.LogicNodeType.BOOL,
-                            description="desc 0 $[desc_0]",
+                            description=sw_compdocs.language.Text(
+                                id="def_test_node_0_desc", en="desc 0 $[desc_0]"
+                            ),
                         ),
                         sw_compdocs.component.LogicNode(
+                            key="test",
                             idx=1,
-                            label="label 1 $[label_1]",
+                            label=sw_compdocs.language.Text(
+                                id="def_test_node_1_label", en="label 1 $[label_1]"
+                            ),
                             type=sw_compdocs.component.LogicNodeType.FLOAT,
-                            description="desc 1 $[desc_1]",
+                            description=sw_compdocs.language.Text(
+                                id="def_test_node_1_desc", en="desc 1 $[desc_1]"
+                            ),
                         ),
-                    ]
+                    ],
+                    key="test",
                 ),
                 want_tbl=sw_compdocs.document.Table(
                     sw_compdocs.document.TableData(
@@ -779,18 +801,29 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
+                            key="test",
                             idx=0,
-                            label="label 0 $[label_0]",
+                            label=sw_compdocs.language.Text(
+                                id="def_test_node_0_label", en="label 0 $[label_0]"
+                            ),
                             type=sw_compdocs.component.LogicNodeType.BOOL,
-                            description="desc 0 $[desc_0]",
+                            description=sw_compdocs.language.Text(
+                                id="def_test_node_0_desc", en="desc 0 $[desc_0]"
+                            ),
                         ),
                         sw_compdocs.component.LogicNode(
+                            key="test",
                             idx=1,
-                            label="label 1 $[label_1]",
+                            label=sw_compdocs.language.Text(
+                                id="def_test_node_1_label", en="label 1 $[label_1]"
+                            ),
                             type=sw_compdocs.component.LogicNodeType.FLOAT,
-                            description="desc 1 $[desc_1]",
+                            description=sw_compdocs.language.Text(
+                                id="def_test_node_1_desc", en="desc 1 $[desc_1]"
+                            ),
                         ),
-                    ]
+                    ],
+                    key="test",
                 ),
                 want_tbl=sw_compdocs.document.Table(
                     sw_compdocs.document.TableData(
@@ -857,18 +890,29 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
+                            key="test",
                             idx=0,
-                            label="label 0 $[label_0]",
+                            label=sw_compdocs.language.Text(
+                                id="def_test_node_0_label", en="label 0 $[label_0]"
+                            ),
                             type=sw_compdocs.component.LogicNodeType.BOOL,
-                            description="desc 0 $[desc_0]",
+                            description=sw_compdocs.language.Text(
+                                id="def_test_node_0_desc", en="desc 0 $[desc_0]"
+                            ),
                         ),
                         sw_compdocs.component.LogicNode(
+                            key="test",
                             idx=1,
-                            label="label 1 $[label_1]",
+                            label=sw_compdocs.language.Text(
+                                id="def_test_node_1_label", en="label 1 $[label_1]"
+                            ),
                             type=sw_compdocs.component.LogicNodeType.FLOAT,
-                            description="desc 1 $[desc_1]",
+                            description=sw_compdocs.language.Text(
+                                id="def_test_node_1_desc", en="desc 1 $[desc_1]"
+                            ),
                         ),
-                    ]
+                    ],
+                    key="test",
                 ),
                 want_tbl=sw_compdocs.document.Table(
                     sw_compdocs.document.TableData(
@@ -940,18 +984,29 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
+                            key="test",
                             idx=3,
-                            label="label 0 $[label_0]",
+                            label=sw_compdocs.language.Text(
+                                id="def_test_node_3_label", en="label 0 $[label_0]"
+                            ),
                             type=sw_compdocs.component.LogicNodeType.BOOL,
-                            description="desc 0 $[desc_0]",
+                            description=sw_compdocs.language.Text(
+                                id="def_test_node_3_desc", en="desc 0 $[desc_0]"
+                            ),
                         ),
                         sw_compdocs.component.LogicNode(
+                            key="test",
                             idx=5,
-                            label="label 1 $[label_1]",
+                            label=sw_compdocs.language.Text(
+                                id="def_test_node_5_label", en="label 1 $[label_1]"
+                            ),
                             type=sw_compdocs.component.LogicNodeType.FLOAT,
-                            description="desc 1 $[desc_1]",
+                            description=sw_compdocs.language.Text(
+                                id="def_test_node_5_desc", en="desc 1 $[desc_1]"
+                            ),
                         ),
-                    ]
+                    ],
+                    key="test",
                 ),
                 want_tbl=sw_compdocs.document.Table(
                     sw_compdocs.document.TableData(
@@ -1000,12 +1055,18 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
+                            key="test",
                             idx=-1,
-                            label="",
+                            label=sw_compdocs.language.Text(
+                                id="def_test_node_-1_label"
+                            ),
                             type=sw_compdocs.component.LogicNodeType.BOOL,
-                            description="",
+                            description=sw_compdocs.language.Text(
+                                id="def_test_node_-1_desc"
+                            ),
                         )
-                    ]
+                    ],
+                    key="test",
                 ),
                 want_tbl=sw_compdocs.document.Table(
                     sw_compdocs.document.TableData(
@@ -1090,10 +1151,10 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
-                            label="label",
+                            label=sw_compdocs.language.Text(en="label"),
                             mode=sw_compdocs.component.LogicNodeMode.INPUT,
                             type=sw_compdocs.component.LogicNodeType.BOOL,
-                            description="desc",
+                            description=sw_compdocs.language.Text(en="desc"),
                         ),
                     ]
                 ),
@@ -1127,10 +1188,10 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
-                            label="label",
+                            label=sw_compdocs.language.Text(en="label"),
                             mode=sw_compdocs.component.LogicNodeMode.INPUT,
                             type=sw_compdocs.component.LogicNodeType.FLOAT,
-                            description="desc",
+                            description=sw_compdocs.language.Text(en="desc"),
                         ),
                     ]
                 ),
@@ -1164,10 +1225,10 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
-                            label="label",
+                            label=sw_compdocs.language.Text(en="label"),
                             mode=sw_compdocs.component.LogicNodeMode.INPUT,
                             type=sw_compdocs.component.LogicNodeType.TORQUE,
-                            description="desc",
+                            description=sw_compdocs.language.Text(en="desc"),
                         ),
                     ]
                 ),
@@ -1201,10 +1262,10 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
-                            label="label",
+                            label=sw_compdocs.language.Text(en="label"),
                             mode=sw_compdocs.component.LogicNodeMode.INPUT,
                             type=sw_compdocs.component.LogicNodeType.WATER,
-                            description="desc",
+                            description=sw_compdocs.language.Text(en="desc"),
                         ),
                     ]
                 ),
@@ -1238,10 +1299,10 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
-                            label="label",
+                            label=sw_compdocs.language.Text(en="label"),
                             mode=sw_compdocs.component.LogicNodeMode.INPUT,
                             type=sw_compdocs.component.LogicNodeType.ELECTRIC,
-                            description="desc",
+                            description=sw_compdocs.language.Text(en="desc"),
                         ),
                     ]
                 ),
@@ -1275,10 +1336,10 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
-                            label="label",
+                            label=sw_compdocs.language.Text(en="label"),
                             mode=sw_compdocs.component.LogicNodeMode.INPUT,
                             type=sw_compdocs.component.LogicNodeType.COMPOSITE,
-                            description="desc",
+                            description=sw_compdocs.language.Text(en="desc"),
                         ),
                     ]
                 ),
@@ -1312,10 +1373,10 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
-                            label="label",
+                            label=sw_compdocs.language.Text(en="label"),
                             mode=sw_compdocs.component.LogicNodeMode.INPUT,
                             type=sw_compdocs.component.LogicNodeType.VIDEO,
-                            description="desc",
+                            description=sw_compdocs.language.Text(en="desc"),
                         ),
                     ]
                 ),
@@ -1349,10 +1410,10 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
-                            label="label",
+                            label=sw_compdocs.language.Text(en="label"),
                             mode=sw_compdocs.component.LogicNodeMode.INPUT,
                             type=sw_compdocs.component.LogicNodeType.AUDIO,
-                            description="desc",
+                            description=sw_compdocs.language.Text(en="desc"),
                         ),
                     ]
                 ),
@@ -1386,10 +1447,10 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
-                            label="label",
+                            label=sw_compdocs.language.Text(en="label"),
                             mode=sw_compdocs.component.LogicNodeMode.INPUT,
                             type=sw_compdocs.component.LogicNodeType.ROPE,
-                            description="desc",
+                            description=sw_compdocs.language.Text(en="desc"),
                         ),
                     ]
                 ),
@@ -1424,10 +1485,10 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
-                            label="label",
+                            label=sw_compdocs.language.Text(en="label"),
                             mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
                             type=sw_compdocs.component.LogicNodeType.BOOL,
-                            description="desc",
+                            description=sw_compdocs.language.Text(en="desc"),
                         ),
                     ]
                 ),
@@ -1475,12 +1536,19 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
-                            label="label",
+                            key="test",
+                            idx=0,
+                            label=sw_compdocs.language.Text(
+                                id="def_test_node_0_label", en="label"
+                            ),
                             mode=sw_compdocs.component.LogicNodeMode.INPUT,
                             type=sw_compdocs.component.LogicNodeType.BOOL,
-                            description="desc",
+                            description=sw_compdocs.language.Text(
+                                id="def_test_node_0_desc", en="desc"
+                            ),
                         ),
-                    ]
+                    ],
+                    key="test",
                 ),
                 want_doc=sw_compdocs.document.Document(
                     [
@@ -1525,12 +1593,19 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
-                            label="label",
+                            key="test",
+                            idx=0,
+                            label=sw_compdocs.language.Text(
+                                id="def_test_node_0_label", en="label"
+                            ),
                             mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
                             type=sw_compdocs.component.LogicNodeType.BOOL,
-                            description="desc",
+                            description=sw_compdocs.language.Text(
+                                id="def_test_node_0_desc", en="desc"
+                            ),
                         ),
-                    ]
+                    ],
+                    key="test",
                 ),
                 want_doc=sw_compdocs.document.Document(
                     [
@@ -1573,12 +1648,19 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
-                            label="label",
+                            key="test",
+                            idx=0,
+                            label=sw_compdocs.language.Text(
+                                id="def_test_node_0_label", en="label"
+                            ),
                             mode=sw_compdocs.component.LogicNodeMode.INPUT,
                             type=sw_compdocs.component.LogicNodeType.TORQUE,
-                            description="desc",
+                            description=sw_compdocs.language.Text(
+                                id="def_test_node_0_desc", en="desc"
+                            ),
                         ),
-                    ]
+                    ],
+                    key="test",
                 ),
                 want_doc=sw_compdocs.document.Document(
                     [
@@ -1661,48 +1743,79 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
+                            key="test",
                             idx=0,
-                            label="label",
+                            label=sw_compdocs.language.Text(
+                                id="def_test_node_0_label", en="label"
+                            ),
                             mode=sw_compdocs.component.LogicNodeMode.INPUT,
                             type=sw_compdocs.component.LogicNodeType.BOOL,
-                            description="desc",
+                            description=sw_compdocs.language.Text(
+                                id="def_test_node_0_desc", en="desc"
+                            ),
                         ),
                         sw_compdocs.component.LogicNode(
+                            key="test",
                             idx=1,
-                            label="label",
+                            label=sw_compdocs.language.Text(
+                                id="def_test_node_1_label", en="label"
+                            ),
                             mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
                             type=sw_compdocs.component.LogicNodeType.BOOL,
-                            description="desc",
+                            description=sw_compdocs.language.Text(
+                                id="def_test_node_1_desc", en="desc"
+                            ),
                         ),
                         sw_compdocs.component.LogicNode(
+                            key="test",
                             idx=2,
-                            label="label",
+                            label=sw_compdocs.language.Text(
+                                id="def_test_node_2_label", en="label"
+                            ),
                             mode=sw_compdocs.component.LogicNodeMode.INPUT,
                             type=sw_compdocs.component.LogicNodeType.TORQUE,
-                            description="desc",
+                            description=sw_compdocs.language.Text(
+                                id="def_test_node_2_desc", en="desc"
+                            ),
                         ),
                         sw_compdocs.component.LogicNode(
+                            key="test",
                             idx=3,
-                            label="label",
+                            label=sw_compdocs.language.Text(
+                                id="def_test_node_3_label", en="label"
+                            ),
                             mode=sw_compdocs.component.LogicNodeMode.INPUT,
                             type=sw_compdocs.component.LogicNodeType.BOOL,
-                            description="desc",
+                            description=sw_compdocs.language.Text(
+                                id="def_test_node_3_desc", en="desc"
+                            ),
                         ),
                         sw_compdocs.component.LogicNode(
+                            key="test",
                             idx=4,
-                            label="label",
+                            label=sw_compdocs.language.Text(
+                                id="def_test_node_4_label", en="label"
+                            ),
                             mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
                             type=sw_compdocs.component.LogicNodeType.BOOL,
-                            description="desc",
+                            description=sw_compdocs.language.Text(
+                                id="def_test_node_4_desc", en="desc"
+                            ),
                         ),
                         sw_compdocs.component.LogicNode(
+                            key="test",
                             idx=5,
-                            label="label",
+                            label=sw_compdocs.language.Text(
+                                id="def_test_node_5_label", en="label"
+                            ),
                             mode=sw_compdocs.component.LogicNodeMode.INPUT,
                             type=sw_compdocs.component.LogicNodeType.TORQUE,
-                            description="desc",
+                            description=sw_compdocs.language.Text(
+                                id="def_test_node_5_desc", en="desc"
+                            ),
                         ),
-                    ]
+                    ],
+                    key="test",
                 ),
                 want_doc=sw_compdocs.document.Document(
                     [
@@ -1821,27 +1934,46 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                     logic_nodes=sw_compdocs.component.LogicNodeList(
                         [
                             sw_compdocs.component.LogicNode(
+                                key="clock",
                                 idx=0,
-                                label="Time",
+                                label=sw_compdocs.language.Text(
+                                    id="def_clock_node_0_label", en="Time"
+                                ),
                                 mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
                                 type=sw_compdocs.component.LogicNodeType.FLOAT,
-                                description="The time as a factor of a day, from 0 (midnight) to 1 (midnight).",
+                                description=sw_compdocs.language.Text(
+                                    id="def_clock_node_0_desc",
+                                    en="The time as a factor of a day, from 0 (midnight) to 1 (midnight).",
+                                ),
                             ),
                             sw_compdocs.component.LogicNode(
+                                key="clock",
                                 idx=1,
-                                label="Backlight",
+                                label=sw_compdocs.language.Text(
+                                    id="def_clock_node_1_label", en="Backlight"
+                                ),
                                 mode=sw_compdocs.component.LogicNodeMode.INPUT,
                                 type=sw_compdocs.component.LogicNodeType.BOOL,
-                                description="Enables the backlight when receiving an on signal.",
+                                description=sw_compdocs.language.Text(
+                                    id="def_clock_node_1_desc",
+                                    en="Enables the backlight when receiving an on signal.",
+                                ),
                             ),
                             sw_compdocs.component.LogicNode(
+                                key="clock",
                                 idx=2,
-                                label="Electric",
+                                label=sw_compdocs.language.Text(
+                                    id="def_clock_node_2_label", en="Electric"
+                                ),
                                 mode=sw_compdocs.component.LogicNodeMode.INPUT,
                                 type=sw_compdocs.component.LogicNodeType.ELECTRIC,
-                                description="Electrical power connection.",
+                                description=sw_compdocs.language.Text(
+                                    id="def_clock_node_2_desc",
+                                    en="Electrical power connection.",
+                                ),
                             ),
-                        ]
+                        ],
+                        key="clock",
                     ),
                     voxel_min=sw_compdocs.component.VoxelPos(x=0, y=0, z=0),
                     voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=0),
@@ -1975,27 +2107,46 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                     logic_nodes=sw_compdocs.component.LogicNodeList(
                         [
                             sw_compdocs.component.LogicNode(
+                                key="clock",
                                 idx=0,
-                                label="Time",
+                                label=sw_compdocs.language.Text(
+                                    id="def_clock_node_0_label", en="Time"
+                                ),
                                 mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
                                 type=sw_compdocs.component.LogicNodeType.FLOAT,
-                                description="The time as a factor of a day, from 0 (midnight) to 1 (midnight).",
+                                description=sw_compdocs.language.Text(
+                                    id="def_clock_node_0_desc",
+                                    en="The time as a factor of a day, from 0 (midnight) to 1 (midnight).",
+                                ),
                             ),
                             sw_compdocs.component.LogicNode(
+                                key="clock",
                                 idx=1,
-                                label="Backlight",
+                                label=sw_compdocs.language.Text(
+                                    id="def_clock_node_1_label", en="Backlight"
+                                ),
                                 mode=sw_compdocs.component.LogicNodeMode.INPUT,
                                 type=sw_compdocs.component.LogicNodeType.BOOL,
-                                description="Enables the backlight when receiving an on signal.",
+                                description=sw_compdocs.language.Text(
+                                    id="def_clock_node_1_desc",
+                                    en="Enables the backlight when receiving an on signal.",
+                                ),
                             ),
                             sw_compdocs.component.LogicNode(
+                                key="clock",
                                 idx=2,
-                                label="Electric",
+                                label=sw_compdocs.language.Text(
+                                    id="def_clock_node_2_label", en="Electric"
+                                ),
                                 mode=sw_compdocs.component.LogicNodeMode.INPUT,
                                 type=sw_compdocs.component.LogicNodeType.ELECTRIC,
-                                description="Electrical power connection.",
+                                description=sw_compdocs.language.Text(
+                                    id="def_clock_node_2_desc",
+                                    en="Electrical power connection.",
+                                ),
                             ),
-                        ]
+                        ],
+                        key="clock",
                     ),
                     voxel_min=sw_compdocs.component.VoxelPos(x=0, y=0, z=0),
                     voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=0),
@@ -2244,27 +2395,46 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                     logic_nodes=sw_compdocs.component.LogicNodeList(
                         [
                             sw_compdocs.component.LogicNode(
+                                key="clock",
                                 idx=0,
-                                label="Time",
+                                label=sw_compdocs.language.Text(
+                                    id="def_clock_node_0_label", en="Time"
+                                ),
                                 mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
                                 type=sw_compdocs.component.LogicNodeType.FLOAT,
-                                description="The time as a factor of a day, from 0 (midnight) to 1 (midnight).",
+                                description=sw_compdocs.language.Text(
+                                    id="def_clock_node_0_desc",
+                                    en="The time as a factor of a day, from 0 (midnight) to 1 (midnight).",
+                                ),
                             ),
                             sw_compdocs.component.LogicNode(
+                                key="clock",
                                 idx=1,
-                                label="Backlight",
+                                label=sw_compdocs.language.Text(
+                                    id="def_clock_node_1_label", en="Backlight"
+                                ),
                                 mode=sw_compdocs.component.LogicNodeMode.INPUT,
                                 type=sw_compdocs.component.LogicNodeType.BOOL,
-                                description="Enables the backlight when receiving an on signal.",
+                                description=sw_compdocs.language.Text(
+                                    id="def_clock_node_1_desc",
+                                    en="Enables the backlight when receiving an on signal.",
+                                ),
                             ),
                             sw_compdocs.component.LogicNode(
+                                key="clock",
                                 idx=2,
-                                label="Electric",
+                                label=sw_compdocs.language.Text(
+                                    id="def_clock_node_2_label", en="Electric"
+                                ),
                                 mode=sw_compdocs.component.LogicNodeMode.INPUT,
                                 type=sw_compdocs.component.LogicNodeType.ELECTRIC,
-                                description="Electrical power connection.",
+                                description=sw_compdocs.language.Text(
+                                    id="def_clock_node_2_desc",
+                                    en="Electrical power connection.",
+                                ),
                             ),
-                        ]
+                        ],
+                        key="clock",
                     ),
                     voxel_min=sw_compdocs.component.VoxelPos(x=0, y=0, z=0),
                     voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=0),
@@ -2485,27 +2655,47 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                     logic_nodes=sw_compdocs.component.LogicNodeList(
                         [
                             sw_compdocs.component.LogicNode(
+                                key="button_push",
                                 idx=0,
-                                label="Pressed",
+                                label=sw_compdocs.language.Text(
+                                    id="def_button_push_node_0_label", en="Pressed"
+                                ),
                                 mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
                                 type=sw_compdocs.component.LogicNodeType.BOOL,
-                                description="Outputs an on signal when you interact wtih [$[action_interact_left]]/[$[action_interact_right]], and an off signal otherwise.",
+                                description=sw_compdocs.language.Text(
+                                    id="def_button_push_node_0_desc",
+                                    en="Outputs an on signal when you interact wtih [$[action_interact_left]]/[$[action_interact_right]], and an off signal otherwise.",
+                                ),
                             ),
                             sw_compdocs.component.LogicNode(
+                                key="button_push",
                                 idx=1,
-                                label="External Input",
+                                label=sw_compdocs.language.Text(
+                                    id="def_button_push_node_1_label",
+                                    en="External Input",
+                                ),
                                 mode=sw_compdocs.component.LogicNodeMode.INPUT,
                                 type=sw_compdocs.component.LogicNodeType.BOOL,
-                                description="Allows an external on/off signal to control whether or not the button is pressed.",
+                                description=sw_compdocs.language.Text(
+                                    id="def_button_push_node_1_desc",
+                                    en="Allows an external on/off signal to control whether or not the button is pressed.",
+                                ),
                             ),
                             sw_compdocs.component.LogicNode(
+                                key="button_push",
                                 idx=2,
-                                label="Electric",
+                                label=sw_compdocs.language.Text(
+                                    id="def_button_push_node_2_label", en="Electric"
+                                ),
                                 mode=sw_compdocs.component.LogicNodeMode.INPUT,
                                 type=sw_compdocs.component.LogicNodeType.ELECTRIC,
-                                description="Electrical power connection.",
+                                description=sw_compdocs.language.Text(
+                                    id="def_button_push_node_2_desc",
+                                    en="Electrical power connection.",
+                                ),
                             ),
-                        ]
+                        ],
+                        key="button_push",
                     ),
                     voxel_min=sw_compdocs.component.VoxelPos(x=0, y=0, z=0),
                     voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=0),
@@ -2713,27 +2903,46 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                     logic_nodes=sw_compdocs.component.LogicNodeList(
                         [
                             sw_compdocs.component.LogicNode(
+                                key="clock",
                                 idx=0,
-                                label="Time",
+                                label=sw_compdocs.language.Text(
+                                    id="def_clock_node_0_label", en="Time"
+                                ),
                                 mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
                                 type=sw_compdocs.component.LogicNodeType.FLOAT,
-                                description="The time as a factor of a day, from 0 (midnight) to 1 (midnight).",
+                                description=sw_compdocs.language.Text(
+                                    id="def_clock_node_0_desc",
+                                    en="The time as a factor of a day, from 0 (midnight) to 1 (midnight).",
+                                ),
                             ),
                             sw_compdocs.component.LogicNode(
+                                key="clock",
                                 idx=1,
-                                label="Backlight",
+                                label=sw_compdocs.language.Text(
+                                    id="def_clock_node_1_label", en="Backlight"
+                                ),
                                 mode=sw_compdocs.component.LogicNodeMode.INPUT,
                                 type=sw_compdocs.component.LogicNodeType.BOOL,
-                                description="Enables the backlight when receiving an on signal.",
+                                description=sw_compdocs.language.Text(
+                                    id="def_clock_node_1_desc",
+                                    en="Enables the backlight when receiving an on signal.",
+                                ),
                             ),
                             sw_compdocs.component.LogicNode(
+                                key="clock",
                                 idx=2,
-                                label="Electric",
+                                label=sw_compdocs.language.Text(
+                                    id="def_clock_node_2_label", en="Electric"
+                                ),
                                 mode=sw_compdocs.component.LogicNodeMode.INPUT,
                                 type=sw_compdocs.component.LogicNodeType.ELECTRIC,
-                                description="Electrical power connection.",
+                                description=sw_compdocs.language.Text(
+                                    id="def_clock_node_2_desc",
+                                    en="Electrical power connection.",
+                                ),
                             ),
-                        ]
+                        ],
+                        key="clock",
                     ),
                     voxel_min=sw_compdocs.component.VoxelPos(x=0, y=0, z=0),
                     voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=0),
@@ -2863,27 +3072,46 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                     logic_nodes=sw_compdocs.component.LogicNodeList(
                         [
                             sw_compdocs.component.LogicNode(
+                                key="clock",
                                 idx=0,
-                                label="Time",
+                                label=sw_compdocs.language.Text(
+                                    id="def_clock_node_0_label", en="Time"
+                                ),
                                 mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
                                 type=sw_compdocs.component.LogicNodeType.FLOAT,
-                                description="The time as a factor of a day, from 0 (midnight) to 1 (midnight).",
+                                description=sw_compdocs.language.Text(
+                                    id="def_clock_node_0_desc",
+                                    en="The time as a factor of a day, from 0 (midnight) to 1 (midnight).",
+                                ),
                             ),
                             sw_compdocs.component.LogicNode(
+                                key="clock",
                                 idx=1,
-                                label="Backlight",
+                                label=sw_compdocs.language.Text(
+                                    id="def_clock_node_1_label", en="Backlight"
+                                ),
                                 mode=sw_compdocs.component.LogicNodeMode.INPUT,
                                 type=sw_compdocs.component.LogicNodeType.BOOL,
-                                description="Enables the backlight when receiving an on signal.",
+                                description=sw_compdocs.language.Text(
+                                    id="def_clock_node_1_desc",
+                                    en="Enables the backlight when receiving an on signal.",
+                                ),
                             ),
                             sw_compdocs.component.LogicNode(
+                                key="clock",
                                 idx=2,
-                                label="Electric",
+                                label=sw_compdocs.language.Text(
+                                    id="def_clock_node_2_label", en="Electric"
+                                ),
                                 mode=sw_compdocs.component.LogicNodeMode.INPUT,
                                 type=sw_compdocs.component.LogicNodeType.ELECTRIC,
-                                description="Electrical power connection.",
+                                description=sw_compdocs.language.Text(
+                                    id="def_clock_node_2_desc",
+                                    en="Electrical power connection.",
+                                ),
                             ),
-                        ]
+                        ],
+                        key="clock",
                     ),
                     voxel_min=sw_compdocs.component.VoxelPos(x=0, y=0, z=0),
                     voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=0),
