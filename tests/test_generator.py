@@ -1915,7 +1915,7 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                 input_defn=sw_compdocs.component.Definition(
                     file="clock.xml",
                     key="clock",
-                    name="Clock",
+                    name=sw_compdocs.language.Text(id="def_clock_name", en="Clock"),
                     category=sw_compdocs.component.Category.DISPLAYS,
                     mass=1.0,
                     value=100,
@@ -2088,7 +2088,7 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                 input_defn=sw_compdocs.component.Definition(
                     file="clock.xml",
                     key="clock",
-                    name="Clock",
+                    name=sw_compdocs.language.Text(id="def_clock_name", en="Clock"),
                     category=sw_compdocs.component.Category.DISPLAYS,
                     mass=1.0,
                     value=100,
@@ -2376,7 +2376,7 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                 input_defn=sw_compdocs.component.Definition(
                     file="clock.xml",
                     key="clock",
-                    name="Clock",
+                    name=sw_compdocs.language.Text(id="def_clock_name", en="Clock"),
                     category=sw_compdocs.component.Category.DISPLAYS,
                     mass=1.0,
                     value=100,
@@ -2636,7 +2636,9 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                 input_defn=sw_compdocs.component.Definition(
                     file="button_push.xml",
                     key="button_push",
-                    name="Push Button",
+                    name=sw_compdocs.language.Text(
+                        id="def_button_push_name", en="Push Button"
+                    ),
                     category=sw_compdocs.component.Category.MECHANICS,
                     mass=1.0,
                     value=10,
@@ -2827,7 +2829,7 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                 input_defn=sw_compdocs.component.Definition(
                     file="handle.xml",
                     key="handle",
-                    name="Handle",
+                    name=sw_compdocs.language.Text(id="def_handle_name", en="Handle"),
                     category=sw_compdocs.component.Category.BLOCKS,
                     mass=1.0,
                     value=5,
@@ -2885,7 +2887,7 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                 input_defn=sw_compdocs.component.Definition(
                     file="clock.xml",
                     key="clock",
-                    name="Clock",
+                    name=sw_compdocs.language.Text(id="def_clock_name", en="Clock"),
                     category=sw_compdocs.component.Category.DISPLAYS,
                     mass=1.0,
                     value=100,
@@ -3054,7 +3056,7 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                 input_defn=sw_compdocs.component.Definition(
                     file="clock.xml",
                     key="clock",
-                    name="Clock",
+                    name=sw_compdocs.language.Text(id="def_clock_name", en="Clock"),
                     category=sw_compdocs.component.Category.DISPLAYS,
                     mass=1.0,
                     value=100,
@@ -3258,8 +3260,12 @@ class TestGenerateDocumentComponentList(unittest.TestCase):
             ),
             tt(
                 input_defn_list=[
-                    sw_compdocs.component.Definition(name="A"),
-                    sw_compdocs.component.Definition(name="B"),
+                    sw_compdocs.component.Definition(
+                        name=sw_compdocs.language.Text(en="A")
+                    ),
+                    sw_compdocs.component.Definition(
+                        name=sw_compdocs.language.Text(en="B")
+                    ),
                 ],
                 input_label=None,
                 input_lang=None,
@@ -3331,7 +3337,7 @@ class TestGenerateDocumentComponentList(unittest.TestCase):
                 input_defn_list=[
                     sw_compdocs.component.Definition(
                         key="test",
-                        name="Test",
+                        name=sw_compdocs.language.Text(id="def_test_name", en="Test"),
                         tooltip_properties=sw_compdocs.component.TooltipProperties(
                             short_description=sw_compdocs.language.Text(
                                 id="def_test_s_desc", en="Short Description"
@@ -3428,7 +3434,8 @@ class TestGenerateDocument(unittest.TestCase):
             tt(
                 input_defn_list=[
                     sw_compdocs.component.Definition(
-                        name="Blocks_1", category=sw_compdocs.component.Category.BLOCKS
+                        name=sw_compdocs.language.Text(en="Blocks_1"),
+                        category=sw_compdocs.component.Category.BLOCKS,
                     ),
                 ],
                 input_label=None,
@@ -3474,19 +3481,19 @@ class TestGenerateDocument(unittest.TestCase):
                 input_defn_list=[
                     sw_compdocs.component.Definition(
                         key="blocks_1",
-                        name="Blocks_3",
+                        name=sw_compdocs.language.Text(en="Blocks_3"),
                         value=1,
                         category=sw_compdocs.component.Category.BLOCKS,
                     ),
                     sw_compdocs.component.Definition(
                         key="blocks_2",
-                        name="Blocks_2",
+                        name=sw_compdocs.language.Text(en="Blocks_2"),
                         value=2,
                         category=sw_compdocs.component.Category.BLOCKS,
                     ),
                     sw_compdocs.component.Definition(
                         key="blocks_3",
-                        name="Blocks_1",
+                        name=sw_compdocs.language.Text(en="Blocks_1"),
                         value=3,
                         category=sw_compdocs.component.Category.BLOCKS,
                     ),
@@ -3592,19 +3599,19 @@ class TestGenerateDocument(unittest.TestCase):
                 input_defn_list=[
                     sw_compdocs.component.Definition(
                         key="blocks_3",
-                        name="Blocks_1",
+                        name=sw_compdocs.language.Text(en="Blocks_1"),
                         value=3,
                         category=sw_compdocs.component.Category.BLOCKS,
                     ),
                     sw_compdocs.component.Definition(
                         key="blocks_2",
-                        name="Blocks_1",
+                        name=sw_compdocs.language.Text(en="Blocks_1"),
                         value=2,
                         category=sw_compdocs.component.Category.BLOCKS,
                     ),
                     sw_compdocs.component.Definition(
                         key="blocks_1",
-                        name="Blocks_1",
+                        name=sw_compdocs.language.Text(en="Blocks_1"),
                         value=1,
                         category=sw_compdocs.component.Category.BLOCKS,
                     ),
@@ -3709,67 +3716,67 @@ class TestGenerateDocument(unittest.TestCase):
             tt(
                 input_defn_list=[
                     sw_compdocs.component.Definition(
-                        name="WINDOWS_0",
+                        name=sw_compdocs.language.Text(en="WINDOWS_0"),
                         category=sw_compdocs.component.Category.WINDOWS,
                     ),
                     sw_compdocs.component.Definition(
-                        name="INDUSTRY_0",
+                        name=sw_compdocs.language.Text(en="INDUSTRY_0"),
                         category=sw_compdocs.component.Category.INDUSTRY,
                     ),
                     sw_compdocs.component.Definition(
-                        name="MODULAR_ENGINES_0",
+                        name=sw_compdocs.language.Text(en="MODULAR_ENGINES_0"),
                         category=sw_compdocs.component.Category.MODULAR_ENGINES,
                     ),
                     sw_compdocs.component.Definition(
-                        name="WEAPONS_0",
+                        name=sw_compdocs.language.Text(en="WEAPONS_0"),
                         category=sw_compdocs.component.Category.WEAPONS,
                     ),
                     sw_compdocs.component.Definition(
-                        name="JET_ENGINES_0",
+                        name=sw_compdocs.language.Text(en="JET_ENGINES_0"),
                         category=sw_compdocs.component.Category.JET_ENGINES,
                     ),
                     sw_compdocs.component.Definition(
-                        name="ELECTRIC_0",
+                        name=sw_compdocs.language.Text(en="ELECTRIC_0"),
                         category=sw_compdocs.component.Category.ELECTRIC,
                     ),
                     sw_compdocs.component.Definition(
-                        name="FLUID_0",
+                        name=sw_compdocs.language.Text(en="FLUID_0"),
                         category=sw_compdocs.component.Category.FLUID,
                     ),
                     sw_compdocs.component.Definition(
-                        name="DECORATIVE_0",
+                        name=sw_compdocs.language.Text(en="DECORATIVE_0"),
                         category=sw_compdocs.component.Category.DECORATIVE,
                     ),
                     sw_compdocs.component.Definition(
-                        name="SENSORS_0",
+                        name=sw_compdocs.language.Text(en="SENSORS_0"),
                         category=sw_compdocs.component.Category.SENSORS,
                     ),
                     sw_compdocs.component.Definition(
-                        name="DISPLAYS_0",
+                        name=sw_compdocs.language.Text(en="DISPLAYS_0"),
                         category=sw_compdocs.component.Category.DISPLAYS,
                     ),
                     sw_compdocs.component.Definition(
-                        name="LOGIC_0",
+                        name=sw_compdocs.language.Text(en="LOGIC_0"),
                         category=sw_compdocs.component.Category.LOGIC,
                     ),
                     sw_compdocs.component.Definition(
-                        name="SPECIALIST_EQUIPMENT_0",
+                        name=sw_compdocs.language.Text(en="SPECIALIST_EQUIPMENT_0"),
                         category=sw_compdocs.component.Category.SPECIALIST_EQUIPMENT,
                     ),
                     sw_compdocs.component.Definition(
-                        name="PROPULSION_0",
+                        name=sw_compdocs.language.Text(en="PROPULSION_0"),
                         category=sw_compdocs.component.Category.PROPULSION,
                     ),
                     sw_compdocs.component.Definition(
-                        name="MECHANICS_0",
+                        name=sw_compdocs.language.Text(en="MECHANICS_0"),
                         category=sw_compdocs.component.Category.MECHANICS,
                     ),
                     sw_compdocs.component.Definition(
-                        name="VEHICLE_CONTROL_0",
+                        name=sw_compdocs.language.Text(en="VEHICLE_CONTROL_0"),
                         category=sw_compdocs.component.Category.VEHICLE_CONTROL,
                     ),
                     sw_compdocs.component.Definition(
-                        name="BLOCKS_0",
+                        name=sw_compdocs.language.Text(en="BLOCKS_0"),
                         category=sw_compdocs.component.Category.BLOCKS,
                     ),
                 ],
@@ -4266,7 +4273,7 @@ class TestGenerateDocument(unittest.TestCase):
                 input_defn_list=[
                     sw_compdocs.component.Definition(
                         key="test",
-                        name="Test",
+                        name=sw_compdocs.language.Text(id="def_test_name", en="Test"),
                         tooltip_properties=sw_compdocs.component.TooltipProperties(
                             short_description=sw_compdocs.language.Text(
                                 id="def_test_s_desc", en="Short Description"
@@ -4356,7 +4363,7 @@ class TestGenerateSheetComponent(unittest.TestCase):
                 input_ctx=None,
                 input_defn=sw_compdocs.component.Definition(
                     file="test.xml",
-                    name="Name",
+                    name=sw_compdocs.language.Text(en="Name"),
                     category=sw_compdocs.component.Category.BLOCKS,
                     mass=1.0,
                     value=2,
@@ -4389,7 +4396,7 @@ class TestGenerateSheetComponent(unittest.TestCase):
                 input_lang=None,
                 input_ctx=None,
                 input_defn=sw_compdocs.component.Definition(
-                    name="Name",
+                    name=sw_compdocs.language.Text(en="Name"),
                     category=sw_compdocs.component.Category.BLOCKS,
                     mass=1.0,
                     value=2,
@@ -4423,7 +4430,7 @@ class TestGenerateSheetComponent(unittest.TestCase):
                 input_ctx=None,
                 input_defn=sw_compdocs.component.Definition(
                     file=b"path/to/test.xml",
-                    name="Name",
+                    name=sw_compdocs.language.Text(en="Name"),
                     category=sw_compdocs.component.Category.BLOCKS,
                     mass=1.0,
                     value=2,
@@ -4457,7 +4464,7 @@ class TestGenerateSheetComponent(unittest.TestCase):
                 input_ctx=None,
                 input_defn=sw_compdocs.component.Definition(
                     file="test.xml",
-                    name="Name",
+                    name=sw_compdocs.language.Text(en="Name"),
                     category=sw_compdocs.component.Category.BLOCKS,
                     mass=1.0,
                     value=2,
@@ -4492,7 +4499,7 @@ class TestGenerateSheetComponent(unittest.TestCase):
                 input_ctx=None,
                 input_defn=sw_compdocs.component.Definition(
                     file="test.xml",
-                    name="Name",
+                    name=sw_compdocs.language.Text(en="Name"),
                     category=sw_compdocs.component.Category.BLOCKS,
                     mass=0.25,
                     value=2,
@@ -4539,7 +4546,7 @@ class TestGenerateSheetComponent(unittest.TestCase):
                 input_defn=sw_compdocs.component.Definition(
                     file="test.xml",
                     key="test",
-                    name="Name",
+                    name=sw_compdocs.language.Text(id="def_test_name", en="Name"),
                     category=sw_compdocs.component.Category.BLOCKS,
                     mass=1.0,
                     value=2,
@@ -4579,7 +4586,7 @@ class TestGenerateSheetComponent(unittest.TestCase):
                 },
                 input_defn=sw_compdocs.component.Definition(
                     file="test.xml",
-                    name="$[name]",
+                    name=sw_compdocs.language.Text(en="$[name]"),
                     category=sw_compdocs.component.Category.BLOCKS,
                     mass=1.0,
                     value=2,
@@ -4628,7 +4635,7 @@ class TestGenerateSheetComponent(unittest.TestCase):
                 input_defn=sw_compdocs.component.Definition(
                     file="test.xml",
                     key="test",
-                    name="",
+                    name=sw_compdocs.language.Text(id="def_test_name"),
                     category=sw_compdocs.component.Category.BLOCKS,
                     mass=1.0,
                     value=2,
@@ -4680,9 +4687,15 @@ class TestGenerateSheetComponentList(unittest.TestCase):
         for tc in [
             tt(
                 input_defn_list=[
-                    sw_compdocs.component.Definition(name="Test 1"),
-                    sw_compdocs.component.Definition(name="Test 2"),
-                    sw_compdocs.component.Definition(name="Test 3"),
+                    sw_compdocs.component.Definition(
+                        name=sw_compdocs.language.Text(en="Test 1")
+                    ),
+                    sw_compdocs.component.Definition(
+                        name=sw_compdocs.language.Text(en="Test 2")
+                    ),
+                    sw_compdocs.component.Definition(
+                        name=sw_compdocs.language.Text(en="Test 3")
+                    ),
                 ],
                 input_lang=None,
                 input_ctx=None,
@@ -4736,7 +4749,7 @@ class TestGenerateSheetComponentList(unittest.TestCase):
                     sw_compdocs.component.Definition(
                         file="test.xml",
                         key="test",
-                        name="",
+                        name=sw_compdocs.language.Text(id="def_test_name"),
                         category=sw_compdocs.component.Category.BLOCKS,
                         mass=1.0,
                         value=2,
@@ -4813,9 +4826,15 @@ class TestGenerateSheet(unittest.TestCase):
                 input_lang=None,
                 input_ctx=None,
                 input_defn_list=[
-                    sw_compdocs.component.Definition(name="Test 1"),
-                    sw_compdocs.component.Definition(name="Test 2"),
-                    sw_compdocs.component.Definition(name="Test 3"),
+                    sw_compdocs.component.Definition(
+                        name=sw_compdocs.language.Text(en="Test 1")
+                    ),
+                    sw_compdocs.component.Definition(
+                        name=sw_compdocs.language.Text(en="Test 2")
+                    ),
+                    sw_compdocs.component.Definition(
+                        name=sw_compdocs.language.Text(en="Test 3")
+                    ),
                 ],
                 want_record_list=[
                     [
@@ -4883,25 +4902,25 @@ class TestGenerateSheet(unittest.TestCase):
                 input_defn_list=[
                     sw_compdocs.component.Definition(
                         key="a",
-                        name="Z",
+                        name=sw_compdocs.language.Text(en="Z"),
                         category=sw_compdocs.component.Category.VEHICLE_CONTROL,
                         value=1,
                     ),
                     sw_compdocs.component.Definition(
                         key="z",
-                        name="A",
+                        name=sw_compdocs.language.Text(en="A"),
                         category=sw_compdocs.component.Category.VEHICLE_CONTROL,
                         value=2,
                     ),
                     sw_compdocs.component.Definition(
                         key="a",
-                        name="A",
+                        name=sw_compdocs.language.Text(en="A"),
                         category=sw_compdocs.component.Category.VEHICLE_CONTROL,
                         value=3,
                     ),
                     sw_compdocs.component.Definition(
                         key="z",
-                        name="Z",
+                        name=sw_compdocs.language.Text(en="Z"),
                         category=sw_compdocs.component.Category.BLOCKS,
                         value=4,
                     ),
@@ -4997,9 +5016,15 @@ class TestGenerateSheet(unittest.TestCase):
                 input_lang=None,
                 input_ctx=None,
                 input_defn_list=[
-                    sw_compdocs.component.Definition(name="Test 1"),
-                    sw_compdocs.component.Definition(name="Test 2"),
-                    sw_compdocs.component.Definition(name="Test 3"),
+                    sw_compdocs.component.Definition(
+                        name=sw_compdocs.language.Text(en="Test 1")
+                    ),
+                    sw_compdocs.component.Definition(
+                        name=sw_compdocs.language.Text(en="Test 2")
+                    ),
+                    sw_compdocs.component.Definition(
+                        name=sw_compdocs.language.Text(en="Test 3")
+                    ),
                 ],
                 want_record_list=[
                     [
@@ -5084,7 +5109,7 @@ class TestGenerateSheet(unittest.TestCase):
                     sw_compdocs.component.Definition(
                         file="test.xml",
                         key="test",
-                        name="",
+                        name=sw_compdocs.language.Text(id="def_test_name"),
                         category=sw_compdocs.component.Category.BLOCKS,
                         mass=1.0,
                         value=2,

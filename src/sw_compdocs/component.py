@@ -341,7 +341,7 @@ class Definition:
     _: dataclasses.KW_ONLY
     file: _types.StrOrBytesPath | None = None
     key: str | None = None
-    name: str = ""
+    name: language.Text = dataclasses.field(default_factory=language.Text)
     category: Category = Category.BLOCKS
     mass: float = 0.0
     value: int = 0
@@ -362,7 +362,7 @@ class Definition:
         file: _types.StrOrBytesPath | None = None,
         key: str | None = None,
     ) -> typing.Self:
-        name = elem.get("name", cls.name)
+        name = language.Text(en=elem.get("name", ""))
         tags = elem.get("tags", cls.tags)
 
         category = cls.category
@@ -469,6 +469,8 @@ class Definition:
         if recursive:
             self.tooltip_properties.update_id(key, recursive=True)
             self.logic_nodes.update_id(key, recursive=True)
+
+        self.name.id = f"def_{key}_name" if key is not None else None
         self.key = key
 
 

@@ -200,11 +200,9 @@ def generate_document_component(
     lang: language.Language | None = None,
     ctx: collections.abc.Mapping[str, str] | None = None,
 ) -> document.Document:
-    defn_key = defn.key or ""
     doc = document.Document()
 
-    defn_name_id = f"def_{defn_key}_name"
-    defn_name = _lang_find_id(lang, defn_name_id, defn.name)
+    defn_name = _lang_translate(lang, defn.name)
     doc.append(document.Heading(defn_name))
 
     if component.Flags.IS_DEPRECATED in defn.flags:
@@ -265,7 +263,7 @@ def generate_document(
         return category.value
 
     def sort_key_component(defn: component.Definition) -> tuple[str, str]:
-        return defn.name, defn.key or ""
+        return defn.name.en, defn.key or ""
 
     category_defn_dict: dict[component.Category, list[component.Definition]] = {}
     for defn in defn_list:
@@ -296,13 +294,11 @@ def generate_sheet_component(
     lang: language.Language | None = None,
     ctx: collections.abc.Mapping[str, str] | None = None,
 ) -> list[str]:
-    defn_key = defn.key or ""
     dims_w = defn.voxel_max.x - defn.voxel_min.x + 1
     dims_h = defn.voxel_max.y - defn.voxel_min.y + 1
     dims_d = defn.voxel_max.z - defn.voxel_min.z + 1
 
-    defn_name_id = f"def_{defn_key}_name"
-    defn_name = _lang_find_id(lang, defn_name_id, defn.name)
+    defn_name = _lang_translate(lang, defn.name)
 
     defn_file = ""
     if defn.file is not None:
@@ -354,7 +350,7 @@ def generate_sheet(
     ctx: collections.abc.Mapping[str, str] | None = None,
 ) -> list[list[str]]:
     def sort_key(defn: component.Definition) -> tuple[int, str, str]:
-        return defn.category.value, defn.name, defn.key or ""
+        return defn.category.value, defn.name.en, defn.key or ""
 
     defn_list = list(defn_list)
     defn_list.sort(key=sort_key)

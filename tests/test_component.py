@@ -1304,7 +1304,9 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
         )
         self.assertEqual(defn.file, "clock.xml")
         self.assertEqual(defn.key, "clock")
-        self.assertEqual(defn.name, "Clock")
+        self.assertEqual(
+            defn.name, sw_compdocs.language.Text(id="def_clock_name", en="Clock")
+        )
         self.assertEqual(defn.category, sw_compdocs.component.Category.DISPLAYS)
         self.assertEqual(defn.mass, 1.0)
         self.assertEqual(defn.value, 100)
@@ -1379,7 +1381,7 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
         defn = sw_compdocs.component.Definition.from_xml_elem(elem)
         self.assertIsNone(defn.file)
         self.assertEqual(defn.key, None)
-        self.assertEqual(defn.name, "")
+        self.assertEqual(defn.name, sw_compdocs.language.Text())
         self.assertEqual(defn.category, sw_compdocs.component.Category.BLOCKS)
         self.assertEqual(defn.mass, 0.0)
         self.assertEqual(defn.value, 0)
@@ -1397,7 +1399,7 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
         defn = sw_compdocs.component.Definition.from_xml_elem(elem, key="key")
         self.assertIsNone(defn.file)
         self.assertEqual(defn.key, "key")
-        self.assertEqual(defn.name, "")
+        self.assertEqual(defn.name, sw_compdocs.language.Text(id="def_key_name"))
         self.assertEqual(defn.category, sw_compdocs.component.Category.BLOCKS)
         self.assertEqual(defn.mass, 0.0)
         self.assertEqual(defn.value, 0)
@@ -1519,6 +1521,7 @@ class TestDefinitionUpdateID(unittest.TestCase):
             tt(
                 input_defn=sw_compdocs.component.Definition(
                     key="key",
+                    name=sw_compdocs.language.Text(id="def_key_name"),
                     tooltip_properties=sw_compdocs.component.TooltipProperties(
                         key="key",
                         short_description=sw_compdocs.language.Text(
@@ -1545,11 +1548,14 @@ class TestDefinitionUpdateID(unittest.TestCase):
                 input_defn=sw_compdocs.component.Definition(),
                 input_key="key",
                 input_recursive=False,
-                want_defn=sw_compdocs.component.Definition(key="key"),
+                want_defn=sw_compdocs.component.Definition(
+                    key="key", name=sw_compdocs.language.Text(id="def_key_name")
+                ),
             ),
             tt(
                 input_defn=sw_compdocs.component.Definition(
                     key="key",
+                    name=sw_compdocs.language.Text(id="def_key_name"),
                     tooltip_properties=sw_compdocs.component.TooltipProperties(
                         key="key",
                         short_description=sw_compdocs.language.Text(
@@ -1569,6 +1575,7 @@ class TestDefinitionUpdateID(unittest.TestCase):
                 input_recursive=True,
                 want_defn=sw_compdocs.component.Definition(
                     key="key",
+                    name=sw_compdocs.language.Text(id="def_key_name"),
                     tooltip_properties=sw_compdocs.component.TooltipProperties(
                         key="key",
                         short_description=sw_compdocs.language.Text(
@@ -1610,7 +1617,7 @@ class TestParseXMLFile(unittest.TestCase):
                     defn = sw_compdocs.component.parse_xml_file(path)
                     self.assertEqual(defn.file, path)
                     self.assertEqual(defn.key, "test")
-                    self.assertEqual(defn.name, "name")
+                    self.assertEqual(defn.name.en, "name")
                     self.assertEqual(
                         defn.tooltip_properties.description.en, "description"
                     )
@@ -1643,7 +1650,7 @@ class TestParseXMLFile(unittest.TestCase):
                     defn = sw_compdocs.component.parse_xml_file(path)
                     self.assertEqual(defn.file, path)
                     self.assertEqual(defn.key, "test")
-                    self.assertEqual(defn.name, "name")
+                    self.assertEqual(defn.name.en, "name")
                     self.assertEqual(
                         defn.tooltip_properties.description.en, "description"
                     )
@@ -1741,7 +1748,7 @@ class TestParseXMLStr(unittest.TestCase):
 
         self.assertIsNone(defn.file)
         self.assertEqual(defn.key, "key")
-        self.assertEqual(defn.name, "name")
+        self.assertEqual(defn.name.en, "name")
         self.assertEqual(defn.tooltip_properties.description.en, "description")
 
     def test_pass_recover(self) -> None:
@@ -1761,7 +1768,7 @@ class TestParseXMLStr(unittest.TestCase):
 
         self.assertIsNone(defn.file)
         self.assertEqual(defn.key, "key")
-        self.assertEqual(defn.name, "name")
+        self.assertEqual(defn.name.en, "name")
         self.assertEqual(defn.tooltip_properties.description.en, "description")
 
     def test_exc_root(self) -> None:
