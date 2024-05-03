@@ -9,6 +9,7 @@ import typing
 
 from . import _types
 from . import container
+from . import language
 
 
 class DefinitionXMLError(Exception):
@@ -127,24 +128,25 @@ class Flags(enum.Flag, boundary=enum.KEEP):
 @dataclasses.dataclass
 class TooltipProperties:
     _: dataclasses.KW_ONLY
-    short_description: str = ""
-    description: str = ""
+    key: str | None = None
+    short_description: language.Text = dataclasses.field(default_factory=language.Text)
+    description: language.Text = dataclasses.field(default_factory=language.Text)
 
     @classmethod
-    def from_xml_elem(cls, elem: lxml.etree._Element) -> typing.Self:
-        return cls(
-            short_description=elem.get("short_description", cls.short_description),
-            description=elem.get("description", cls.description),
-        )
+    def from_xml_elem(
+        cls, elem: lxml.etree._Element, *, key: str | None = None
+    ) -> typing.Self:
+        short_description = language.Text(en=elem.get("short_description", ""))
+        description = language.Text(en=elem.get("description", ""))
 
-    def full_description(self) -> str:
-        if self.short_description == "" and self.description == "":
-            return ""
-        elif self.short_description == "":
-            return self.description
-        elif self.description == "":
-            return self.short_description
-        return self.short_description + " " + self.description
+        self = cls(short_description=short_description, description=description)
+        self.update_id(key, recursive=False)
+        return self
+
+    def update_id(self, key: str | None, *, recursive: bool = True) -> None:
+        self.short_description.id = f"def_{key}_s_desc" if key is not None else None
+        self.description.id = f"def_{key}_desc" if key is not None else None
+        self.key = key
 
 
 @enum.unique
@@ -191,16 +193,24 @@ class LogicNodeType(enum.Enum):
 @dataclasses.dataclass
 class LogicNode:
     _: dataclasses.KW_ONLY
-    idx: int = 0
-    label: str = ""
+    key: str | None = None
+    idx: int | None = None
+    label: language.Text = dataclasses.field(default_factory=language.Text)
     mode: LogicNodeMode = LogicNodeMode.OUTPUT
     type: LogicNodeType = LogicNodeType.BOOL
-    description: str = ""
+    description: language.Text = dataclasses.field(default_factory=language.Text)
 
     @classmethod
     def from_xml_elem(
-        cls, elem: lxml.etree._Element, *, idx: int | None = None
+        cls,
+        elem: lxml.etree._Element,
+        *,
+        key: str | None = None,
+        idx: int | None = None,
     ) -> typing.Self:
+        label = language.Text(en=elem.get("label", ""))
+        description = language.Text(en=elem.get("description", ""))
+
         mode = cls.mode
         mode_attr = elem.get("mode")
         if mode_attr is not None:
@@ -221,26 +231,73 @@ class LogicNode:
                     f"invalid logic node type {typo_attr!r}"
                 ) from exc
 
-        idx = idx if idx is not None else cls.idx
-        label = elem.get("label", cls.label)
-        description = elem.get("description", cls.description)
-        return cls(idx=idx, label=label, mode=mode, type=typo, description=description)
+        self = cls(label=label, mode=mode, type=typo, description=description)
+        self.update_id(key, idx, recursive=False)
+        return self
+
+    def update_id(
+        self, key: str | None, idx: int | None, *, recursive: bool = True
+    ) -> None:
+        label_id = None
+        description_id = None
+        if key is not None and idx is not None:
+            label_id = f"def_{key}_node_{idx:d}_label"
+            description_id = f"def_{key}_node_{idx:d}_desc"
+
+        self.label.id = label_id
+        self.description.id = description_id
+        self.key = key
+        self.idx = idx
 
 
 class LogicNodeList(container.MutableSequence[LogicNode]):
+    def __init__(
+        self,
+        iterable: collections.abc.Iterable[LogicNode] = (),
+        *,
+        key: str | None = None,
+    ) -> None:
+        super().__init__(iterable)
+        self.key: str | None = key
+
+    def __repr__(self) -> str:
+        if self.key is None:
+            return f"{type(self).__name__}({self._l!r})"
+        return f"{type(self).__name__}({self._l!r}, key={self.key!r})"
+
+    def __eq__(self, other: object) -> bool:
+        if type(self) is type(other):
+            # type narrowing assertion for mypy 1.8.0
+            assert isinstance(other, type(self))
+
+            if self.key != other.key:
+                return False
+        return super().__eq__(other)
+
     @classmethod
-    def from_xml_elem(cls, elem: lxml.etree._Element) -> typing.Self:
+    def from_xml_elem(
+        cls, elem: lxml.etree._Element, *, key: str | None = None
+    ) -> typing.Self:
         def generate() -> collections.abc.Iterator[LogicNode]:
             tag = "logic_node"
             for idx, sub in enumerate(elem.findall(tag)):
                 try:
-                    ln = LogicNode.from_xml_elem(sub, idx=idx)
+                    ln = LogicNode.from_xml_elem(sub, key=key, idx=idx)
                 except DefinitionXMLError as exc:
                     exc.prepend_xpath(f"{tag}[{idx + 1}]")
                     raise
                 yield ln
 
-        return cls(generate())
+        self = cls(generate())
+        self.update_id(key, recursive=False)
+        return self
+
+    def update_id(self, key: str | None, *, recursive: bool = True) -> None:
+        if recursive:
+            for idx, ln in enumerate(self):
+                ln.update_id(key, idx)
+
+        self.key = key
 
 
 @dataclasses.dataclass
@@ -283,8 +340,8 @@ class VoxelPos:
 class Definition:
     _: dataclasses.KW_ONLY
     file: _types.StrOrBytesPath | None = None
-    key: str = ""
-    name: str = ""
+    key: str | None = None
+    name: language.Text = dataclasses.field(default_factory=language.Text)
     category: Category = Category.BLOCKS
     mass: float = 0.0
     value: int = 0
@@ -305,6 +362,9 @@ class Definition:
         file: _types.StrOrBytesPath | None = None,
         key: str | None = None,
     ) -> typing.Self:
+        name = language.Text(en=elem.get("name", ""))
+        tags = elem.get("tags", cls.tags)
+
         category = cls.category
         category_attr = elem.get("category")
         if category_attr is not None:
@@ -347,54 +407,50 @@ class Definition:
                 exc.file = file
                 raise exc from base_exc
 
-        tooltip_properties = TooltipProperties()
         tooltip_properties_elem = elem.find("tooltip_properties")
-        if tooltip_properties_elem is not None:
-            try:
-                tooltip_properties = TooltipProperties.from_xml_elem(
-                    tooltip_properties_elem
-                )
-            except DefinitionXMLError as exc:
-                exc.file = file
-                exc.prepend_xpath("tooltip_properties")
-                raise
+        if tooltip_properties_elem is None:
+            tooltip_properties_elem = lxml.etree.Element("tooltip_properties")
+        try:
+            tooltip_properties = TooltipProperties.from_xml_elem(
+                tooltip_properties_elem, key=key
+            )
+        except DefinitionXMLError as exc:
+            exc.file = file
+            exc.prepend_xpath("tooltip_properties")
+            raise
 
-        logic_nodes = LogicNodeList()
         logic_nodes_elem = elem.find("logic_nodes")
-        if logic_nodes_elem is not None:
-            try:
-                logic_nodes = LogicNodeList.from_xml_elem(logic_nodes_elem)
-            except DefinitionXMLError as exc:
-                exc.file = file
-                exc.prepend_xpath("logic_nodes")
-                raise
+        if logic_nodes_elem is None:
+            logic_nodes_elem = lxml.etree.Element("logic_nodes")
+        try:
+            logic_nodes = LogicNodeList.from_xml_elem(logic_nodes_elem, key=key)
+        except DefinitionXMLError as exc:
+            exc.file = file
+            exc.prepend_xpath("logic_nodes")
+            raise
 
-        voxel_min = VoxelPos()
         voxel_min_elem = elem.find("voxel_min")
-        if voxel_min_elem is not None:
-            try:
-                voxel_min = VoxelPos.from_xml_elem(voxel_min_elem)
-            except DefinitionXMLError as exc:
-                exc.file = file
-                exc.prepend_xpath("voxel_min")
-                raise
+        if voxel_min_elem is None:
+            voxel_min_elem = lxml.etree.Element("voxel_min")
+        try:
+            voxel_min = VoxelPos.from_xml_elem(voxel_min_elem)
+        except DefinitionXMLError as exc:
+            exc.file = file
+            exc.prepend_xpath("voxel_min")
+            raise
 
-        voxel_max = VoxelPos()
         voxel_max_elem = elem.find("voxel_max")
-        if voxel_max_elem is not None:
-            try:
-                voxel_max = VoxelPos.from_xml_elem(voxel_max_elem)
-            except DefinitionXMLError as exc:
-                exc.file = file
-                exc.prepend_xpath("voxel_max")
-                raise
+        if voxel_max_elem is None:
+            voxel_max_elem = lxml.etree.Element("voxel_max")
+        try:
+            voxel_max = VoxelPos.from_xml_elem(voxel_max_elem)
+        except DefinitionXMLError as exc:
+            exc.file = file
+            exc.prepend_xpath("voxel_max")
+            raise
 
-        key = key if key is not None else cls.key
-        name = elem.get("name", cls.name)
-        tags = elem.get("tags", cls.tags)
-        return cls(
+        self = cls(
             file=file,
-            key=key,
             name=name,
             category=category,
             mass=mass,
@@ -406,6 +462,16 @@ class Definition:
             voxel_min=voxel_min,
             voxel_max=voxel_max,
         )
+        self.update_id(key, recursive=False)
+        return self
+
+    def update_id(self, key: str | None, *, recursive: bool = True) -> None:
+        if recursive:
+            self.tooltip_properties.update_id(key, recursive=True)
+            self.logic_nodes.update_id(key, recursive=True)
+
+        self.name.id = f"def_{key}_name" if key is not None else None
+        self.key = key
 
 
 # lxml.etree.XMLParser is generic in stub but not at runtime.

@@ -1,8 +1,10 @@
+import copy
 import lxml.etree
 import os
 import pathlib
 import sw_compdocs._types
 import sw_compdocs.component
+import sw_compdocs.language
 import tempfile
 import typing
 import unittest
@@ -262,8 +264,8 @@ class TestTooltipPropertiesFromXMLElem(unittest.TestCase):
             "tt",
             [
                 ("input_elem", lxml.etree._Element),
-                ("want_short_description", str),
-                ("want_description", str),
+                ("input_key", str | None),
+                ("want_prop", sw_compdocs.component.TooltipProperties),
             ],
         )
 
@@ -272,69 +274,112 @@ class TestTooltipPropertiesFromXMLElem(unittest.TestCase):
                 input_elem=lxml.etree.Element(
                     "tooltip_properties", short_description="a", description="b"
                 ),
-                want_short_description="a",
-                want_description="b",
+                input_key=None,
+                want_prop=sw_compdocs.component.TooltipProperties(
+                    key=None,
+                    short_description=sw_compdocs.language.Text(en="a"),
+                    description=sw_compdocs.language.Text(en="b"),
+                ),
             ),
             tt(
                 input_elem=lxml.etree.Element("tooltip_properties", description="b"),
-                want_short_description="",
-                want_description="b",
+                input_key=None,
+                want_prop=sw_compdocs.component.TooltipProperties(
+                    key=None,
+                    short_description=sw_compdocs.language.Text(),
+                    description=sw_compdocs.language.Text(en="b"),
+                ),
             ),
             tt(
                 input_elem=lxml.etree.Element(
                     "tooltip_properties", short_description="a"
                 ),
-                want_short_description="a",
-                want_description="",
+                input_key=None,
+                want_prop=sw_compdocs.component.TooltipProperties(
+                    key=None,
+                    short_description=sw_compdocs.language.Text(en="a"),
+                    description=sw_compdocs.language.Text(),
+                ),
+            ),
+            tt(
+                input_elem=lxml.etree.Element(
+                    "tooltip_properties", short_description="a", description="b"
+                ),
+                input_key="key",
+                want_prop=sw_compdocs.component.TooltipProperties(
+                    key="key",
+                    short_description=sw_compdocs.language.Text(
+                        id="def_key_s_desc", en="a"
+                    ),
+                    description=sw_compdocs.language.Text(id="def_key_desc", en="b"),
+                ),
             ),
         ]:
             with self.subTest(tc=tc):
-                got = sw_compdocs.component.TooltipProperties.from_xml_elem(
-                    tc.input_elem
+                got_prop = sw_compdocs.component.TooltipProperties.from_xml_elem(
+                    tc.input_elem, key=tc.input_key
                 )
-                self.assertEqual(got.short_description, tc.want_short_description)
-                self.assertEqual(got.description, tc.want_description)
+                self.assertEqual(got_prop, tc.want_prop)
 
 
-class TestTooltipPropertiesFullDescription(unittest.TestCase):
+class TestTooltipPropertiesUpdateID(unittest.TestCase):
     def test(self) -> None:
         tt = typing.NamedTuple(
             "tt",
             [
-                ("input_self", sw_compdocs.component.TooltipProperties),
-                ("want_s", str),
+                ("input_prop", sw_compdocs.component.TooltipProperties),
+                ("input_key", str | None),
+                ("input_recursive", bool),
+                ("want_prop", sw_compdocs.component.TooltipProperties),
             ],
         )
 
         for tc in [
             tt(
-                input_self=sw_compdocs.component.TooltipProperties(
-                    short_description="", description=""
+                input_prop=sw_compdocs.component.TooltipProperties(
+                    key="key",
+                    short_description=sw_compdocs.language.Text(id="def_key_s_desc"),
+                    description=sw_compdocs.language.Text(id="def_key_desc"),
                 ),
-                want_s="",
+                input_key=None,
+                input_recursive=False,
+                want_prop=sw_compdocs.component.TooltipProperties(),
             ),
             tt(
-                input_self=sw_compdocs.component.TooltipProperties(
-                    short_description="a", description=""
+                input_prop=sw_compdocs.component.TooltipProperties(),
+                input_key="key",
+                input_recursive=False,
+                want_prop=sw_compdocs.component.TooltipProperties(
+                    key="key",
+                    short_description=sw_compdocs.language.Text(id="def_key_s_desc"),
+                    description=sw_compdocs.language.Text(id="def_key_desc"),
                 ),
-                want_s="a",
             ),
             tt(
-                input_self=sw_compdocs.component.TooltipProperties(
-                    short_description="", description="b"
+                input_prop=sw_compdocs.component.TooltipProperties(
+                    key="key",
+                    short_description=sw_compdocs.language.Text(id="def_key_s_desc"),
+                    description=sw_compdocs.language.Text(id="def_key_desc"),
                 ),
-                want_s="b",
+                input_key=None,
+                input_recursive=True,
+                want_prop=sw_compdocs.component.TooltipProperties(),
             ),
             tt(
-                input_self=sw_compdocs.component.TooltipProperties(
-                    short_description="a", description="b"
+                input_prop=sw_compdocs.component.TooltipProperties(),
+                input_key="key",
+                input_recursive=True,
+                want_prop=sw_compdocs.component.TooltipProperties(
+                    key="key",
+                    short_description=sw_compdocs.language.Text(id="def_key_s_desc"),
+                    description=sw_compdocs.language.Text(id="def_key_desc"),
                 ),
-                want_s="a b",
             ),
         ]:
             with self.subTest(tc=tc):
-                got_s = tc.input_self.full_description()
-                self.assertEqual(got_s, tc.want_s)
+                prop = copy.deepcopy(tc.input_prop)
+                prop.update_id(tc.input_key, recursive=tc.input_recursive)
+                self.assertEqual(prop, tc.want_prop)
 
 
 class TestLogicNodeTypeStr(unittest.TestCase):
@@ -396,12 +441,9 @@ class TestLogicNodeFromXMLElem(unittest.TestCase):
             "tt",
             [
                 ("input_elem", lxml.etree._Element),
+                ("input_key", str | None),
                 ("input_idx", int | None),
-                ("want_idx", int),
-                ("want_label", str),
-                ("want_mode", sw_compdocs.component.LogicNodeMode),
-                ("want_type", sw_compdocs.component.LogicNodeType),
-                ("want_description", str),
+                ("want_ln", sw_compdocs.component.LogicNode),
             ],
         )
 
@@ -414,12 +456,20 @@ class TestLogicNodeFromXMLElem(unittest.TestCase):
                     type="2",
                     description="description",
                 ),
+                input_key="key",
                 input_idx=52149,
-                want_idx=52149,
-                want_label="label",
-                want_mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                want_type=sw_compdocs.component.LogicNodeType.TORQUE,
-                want_description="description",
+                want_ln=sw_compdocs.component.LogicNode(
+                    key="key",
+                    idx=52149,
+                    label=sw_compdocs.language.Text(
+                        id="def_key_node_52149_label", en="label"
+                    ),
+                    mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                    type=sw_compdocs.component.LogicNodeType.TORQUE,
+                    description=sw_compdocs.language.Text(
+                        id="def_key_node_52149_desc", en="description"
+                    ),
+                ),
             ),
             tt(
                 input_elem=lxml.etree.Element(
@@ -428,12 +478,18 @@ class TestLogicNodeFromXMLElem(unittest.TestCase):
                     type="2",
                     description="description",
                 ),
+                input_key="key",
                 input_idx=52149,
-                want_idx=52149,
-                want_label="",
-                want_mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                want_type=sw_compdocs.component.LogicNodeType.TORQUE,
-                want_description="description",
+                want_ln=sw_compdocs.component.LogicNode(
+                    key="key",
+                    idx=52149,
+                    label=sw_compdocs.language.Text(id="def_key_node_52149_label"),
+                    mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                    type=sw_compdocs.component.LogicNodeType.TORQUE,
+                    description=sw_compdocs.language.Text(
+                        id="def_key_node_52149_desc", en="description"
+                    ),
+                ),
             ),
             tt(
                 input_elem=lxml.etree.Element(
@@ -442,12 +498,20 @@ class TestLogicNodeFromXMLElem(unittest.TestCase):
                     type="2",
                     description="description",
                 ),
+                input_key="key",
                 input_idx=52149,
-                want_idx=52149,
-                want_label="label",
-                want_mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
-                want_type=sw_compdocs.component.LogicNodeType.TORQUE,
-                want_description="description",
+                want_ln=sw_compdocs.component.LogicNode(
+                    key="key",
+                    idx=52149,
+                    label=sw_compdocs.language.Text(
+                        id="def_key_node_52149_label", en="label"
+                    ),
+                    mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
+                    type=sw_compdocs.component.LogicNodeType.TORQUE,
+                    description=sw_compdocs.language.Text(
+                        id="def_key_node_52149_desc", en="description"
+                    ),
+                ),
             ),
             tt(
                 input_elem=lxml.etree.Element(
@@ -456,12 +520,20 @@ class TestLogicNodeFromXMLElem(unittest.TestCase):
                     mode="1",
                     description="description",
                 ),
+                input_key="key",
                 input_idx=52149,
-                want_idx=52149,
-                want_label="label",
-                want_mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                want_type=sw_compdocs.component.LogicNodeType.BOOL,
-                want_description="description",
+                want_ln=sw_compdocs.component.LogicNode(
+                    key="key",
+                    idx=52149,
+                    label=sw_compdocs.language.Text(
+                        id="def_key_node_52149_label", en="label"
+                    ),
+                    mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                    type=sw_compdocs.component.LogicNodeType.BOOL,
+                    description=sw_compdocs.language.Text(
+                        id="def_key_node_52149_desc", en="description"
+                    ),
+                ),
             ),
             tt(
                 input_elem=lxml.etree.Element(
@@ -470,23 +542,44 @@ class TestLogicNodeFromXMLElem(unittest.TestCase):
                     mode="1",
                     type="2",
                 ),
+                input_key="key",
                 input_idx=52149,
-                want_idx=52149,
-                want_label="label",
-                want_mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                want_type=sw_compdocs.component.LogicNodeType.TORQUE,
-                want_description="",
+                want_ln=sw_compdocs.component.LogicNode(
+                    key="key",
+                    idx=52149,
+                    label=sw_compdocs.language.Text(
+                        id="def_key_node_52149_label", en="label"
+                    ),
+                    mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                    type=sw_compdocs.component.LogicNodeType.TORQUE,
+                    description=sw_compdocs.language.Text(id="def_key_node_52149_desc"),
+                ),
+            ),
+            tt(
+                input_elem=lxml.etree.Element(
+                    "logic_node",
+                    label="label",
+                    mode="1",
+                    type="2",
+                    description="description",
+                ),
+                input_key=None,
+                input_idx=None,
+                want_ln=sw_compdocs.component.LogicNode(
+                    key=None,
+                    idx=None,
+                    label=sw_compdocs.language.Text(en="label"),
+                    mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                    type=sw_compdocs.component.LogicNodeType.TORQUE,
+                    description=sw_compdocs.language.Text(en="description"),
+                ),
             ),
         ]:
             with self.subTest(tc=tc):
-                got = sw_compdocs.component.LogicNode.from_xml_elem(
-                    tc.input_elem, idx=tc.input_idx
+                got_ln = sw_compdocs.component.LogicNode.from_xml_elem(
+                    tc.input_elem, key=tc.input_key, idx=tc.input_idx
                 )
-                self.assertEqual(got.idx, tc.want_idx)
-                self.assertEqual(got.label, tc.want_label)
-                self.assertEqual(got.mode, tc.want_mode)
-                self.assertEqual(got.type, tc.want_type)
-                self.assertEqual(got.description, tc.want_description)
+                self.assertEqual(got_ln, tc.want_ln)
 
     def test_exc_xml(self) -> None:
         tt = typing.NamedTuple(
@@ -547,12 +640,226 @@ class TestLogicNodeFromXMLElem(unittest.TestCase):
                 self.assertEqual(ctx.exception.xpath, ".")
 
 
+class TestLogicNodeUpdateID(unittest.TestCase):
+    def test(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_ln", sw_compdocs.component.LogicNode),
+                ("input_key", str | None),
+                ("input_idx", int | None),
+                ("input_recursive", bool),
+                ("want_ln", sw_compdocs.component.LogicNode),
+            ],
+        )
+
+        for tc in [
+            tt(
+                input_ln=sw_compdocs.component.LogicNode(),
+                input_key="key",
+                input_idx=52149,
+                input_recursive=False,
+                want_ln=sw_compdocs.component.LogicNode(
+                    key="key",
+                    idx=52149,
+                    label=sw_compdocs.language.Text(id="def_key_node_52149_label"),
+                    description=sw_compdocs.language.Text(id="def_key_node_52149_desc"),
+                ),
+            ),
+            tt(
+                input_ln=sw_compdocs.component.LogicNode(
+                    key="key",
+                    label=sw_compdocs.language.Text(id="def_key_node_52149_label"),
+                    description=sw_compdocs.language.Text(id="def_key_node_52149_desc"),
+                ),
+                input_key=None,
+                input_idx=52149,
+                input_recursive=False,
+                want_ln=sw_compdocs.component.LogicNode(idx=52149),
+            ),
+            tt(
+                input_ln=sw_compdocs.component.LogicNode(
+                    idx=52149,
+                    label=sw_compdocs.language.Text(id="def_key_node_52149_label"),
+                    description=sw_compdocs.language.Text(id="def_key_node_52149_desc"),
+                ),
+                input_key="key",
+                input_idx=None,
+                input_recursive=False,
+                want_ln=sw_compdocs.component.LogicNode(key="key"),
+            ),
+            tt(
+                input_ln=sw_compdocs.component.LogicNode(),
+                input_key="key",
+                input_idx=52149,
+                input_recursive=True,
+                want_ln=sw_compdocs.component.LogicNode(
+                    key="key",
+                    idx=52149,
+                    label=sw_compdocs.language.Text(id="def_key_node_52149_label"),
+                    description=sw_compdocs.language.Text(id="def_key_node_52149_desc"),
+                ),
+            ),
+            tt(
+                input_ln=sw_compdocs.component.LogicNode(
+                    key="key",
+                    label=sw_compdocs.language.Text(id="def_key_node_52149_label"),
+                    description=sw_compdocs.language.Text(id="def_key_node_52149_desc"),
+                ),
+                input_key=None,
+                input_idx=52149,
+                input_recursive=True,
+                want_ln=sw_compdocs.component.LogicNode(idx=52149),
+            ),
+            tt(
+                input_ln=sw_compdocs.component.LogicNode(
+                    idx=52149,
+                    label=sw_compdocs.language.Text(id="def_key_node_52149_label"),
+                    description=sw_compdocs.language.Text(id="def_key_node_52149_desc"),
+                ),
+                input_key="key",
+                input_idx=None,
+                input_recursive=True,
+                want_ln=sw_compdocs.component.LogicNode(key="key"),
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                ln = copy.deepcopy(tc.input_ln)
+                ln.update_id(tc.input_key, tc.input_idx, recursive=tc.input_recursive)
+                self.assertEqual(ln, tc.want_ln)
+
+
+class TestLogicNodeListInit(unittest.TestCase):
+    def test(self) -> None:
+        lst = [
+            sw_compdocs.component.LogicNode(idx=0),
+            sw_compdocs.component.LogicNode(idx=1),
+            sw_compdocs.component.LogicNode(idx=2),
+        ]
+        lns = sw_compdocs.component.LogicNodeList(lst, key="key")
+        self.assertEqual(list[sw_compdocs.component.LogicNode](lns), lst)
+        self.assertEqual(lns.key, "key")
+
+
+class TestLogicNodeListRepr(unittest.TestCase):
+    def test(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_lns", sw_compdocs.component.LogicNodeList),
+                ("want_s", str),
+            ],
+        )
+
+        for tc in [
+            tt(
+                input_lns=sw_compdocs.component.LogicNodeList([]),
+                want_s="LogicNodeList([])",
+            ),
+            tt(
+                input_lns=sw_compdocs.component.LogicNodeList([], key="key"),
+                want_s="LogicNodeList([], key='key')",
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                got_s = repr(tc.input_lns)
+                self.assertEqual(got_s, tc.want_s)
+
+
+class TestLogicNodeListEq(unittest.TestCase):
+    def test(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_self", sw_compdocs.component.LogicNodeList),
+                ("input_other", object),
+                ("want_eq", bool),
+            ],
+        )
+
+        for tc in [
+            tt(
+                input_self=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(idx=0),
+                        sw_compdocs.component.LogicNode(idx=1),
+                        sw_compdocs.component.LogicNode(idx=2),
+                    ],
+                    key="key",
+                ),
+                input_other=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(idx=0),
+                        sw_compdocs.component.LogicNode(idx=1),
+                        sw_compdocs.component.LogicNode(idx=2),
+                    ],
+                    key="key",
+                ),
+                want_eq=True,
+            ),
+            tt(
+                input_self=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(idx=0),
+                        sw_compdocs.component.LogicNode(idx=1),
+                        sw_compdocs.component.LogicNode(idx=2),
+                    ],
+                    key="key",
+                ),
+                input_other=None,
+                want_eq=False,
+            ),
+            tt(
+                input_self=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(idx=0),
+                        sw_compdocs.component.LogicNode(idx=1),
+                        sw_compdocs.component.LogicNode(idx=2),
+                    ],
+                    key="key",
+                ),
+                input_other=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(idx=0),
+                        sw_compdocs.component.LogicNode(idx=1),
+                        sw_compdocs.component.LogicNode(idx=3),
+                    ],
+                    key="key",
+                ),
+                want_eq=False,
+            ),
+            tt(
+                input_self=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(idx=0),
+                        sw_compdocs.component.LogicNode(idx=1),
+                        sw_compdocs.component.LogicNode(idx=2),
+                    ],
+                    key="key",
+                ),
+                input_other=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(idx=0),
+                        sw_compdocs.component.LogicNode(idx=1),
+                        sw_compdocs.component.LogicNode(idx=2),
+                    ],
+                    key="",
+                ),
+                want_eq=False,
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                got_eq = tc.input_self == tc.input_other
+                self.assertEqual(got_eq, tc.want_eq)
+
+
 class TestLogicNodeListFromXMLElem(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(
             "tt",
             [
                 ("input_sub_list", list[lxml.etree._Element]),
+                ("input_key", str | None),
                 ("want_lns", sw_compdocs.component.LogicNodeList),
             ],
         )
@@ -560,6 +867,7 @@ class TestLogicNodeListFromXMLElem(unittest.TestCase):
         for tc in [
             tt(
                 input_sub_list=[],
+                input_key=None,
                 want_lns=sw_compdocs.component.LogicNodeList(),
             ),
             tt(
@@ -568,11 +876,18 @@ class TestLogicNodeListFromXMLElem(unittest.TestCase):
                     lxml.etree.Element("logic_node", label="b"),
                     lxml.etree.Element("logic_node", label="c"),
                 ],
+                input_key=None,
                 want_lns=sw_compdocs.component.LogicNodeList(
                     [
-                        sw_compdocs.component.LogicNode(idx=0, label="a"),
-                        sw_compdocs.component.LogicNode(idx=1, label="b"),
-                        sw_compdocs.component.LogicNode(idx=2, label="c"),
+                        sw_compdocs.component.LogicNode(
+                            idx=0, label=sw_compdocs.language.Text(en="a")
+                        ),
+                        sw_compdocs.component.LogicNode(
+                            idx=1, label=sw_compdocs.language.Text(en="b")
+                        ),
+                        sw_compdocs.component.LogicNode(
+                            idx=2, label=sw_compdocs.language.Text(en="c")
+                        ),
                     ]
                 ),
             ),
@@ -582,18 +897,68 @@ class TestLogicNodeListFromXMLElem(unittest.TestCase):
                     lxml.etree.Element("dummy", label="b"),
                     lxml.etree.Element("logic_node", label="c"),
                 ],
+                input_key=None,
                 want_lns=sw_compdocs.component.LogicNodeList(
                     [
-                        sw_compdocs.component.LogicNode(idx=0, label="a"),
-                        sw_compdocs.component.LogicNode(idx=1, label="c"),
+                        sw_compdocs.component.LogicNode(
+                            idx=0, label=sw_compdocs.language.Text(en="a")
+                        ),
+                        sw_compdocs.component.LogicNode(
+                            idx=1, label=sw_compdocs.language.Text(en="c")
+                        ),
                     ]
+                ),
+            ),
+            tt(
+                input_sub_list=[
+                    lxml.etree.Element("logic_node", label="a"),
+                    lxml.etree.Element("logic_node", label="b"),
+                    lxml.etree.Element("logic_node", label="c"),
+                ],
+                input_key="key",
+                want_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(
+                            key="key",
+                            idx=0,
+                            label=sw_compdocs.language.Text(
+                                id="def_key_node_0_label", en="a"
+                            ),
+                            description=sw_compdocs.language.Text(
+                                id="def_key_node_0_desc"
+                            ),
+                        ),
+                        sw_compdocs.component.LogicNode(
+                            key="key",
+                            idx=1,
+                            label=sw_compdocs.language.Text(
+                                id="def_key_node_1_label", en="b"
+                            ),
+                            description=sw_compdocs.language.Text(
+                                id="def_key_node_1_desc"
+                            ),
+                        ),
+                        sw_compdocs.component.LogicNode(
+                            key="key",
+                            idx=2,
+                            label=sw_compdocs.language.Text(
+                                id="def_key_node_2_label", en="c"
+                            ),
+                            description=sw_compdocs.language.Text(
+                                id="def_key_node_2_desc"
+                            ),
+                        ),
+                    ],
+                    key="key",
                 ),
             ),
         ]:
             with self.subTest(tc=tc):
                 input_elem = lxml.etree.Element("logic_nodes")
                 input_elem.extend(tc.input_sub_list)
-                got_lns = sw_compdocs.component.LogicNodeList.from_xml_elem(input_elem)
+                got_lns = sw_compdocs.component.LogicNodeList.from_xml_elem(
+                    input_elem, key=tc.input_key
+                )
                 self.assertEqual(got_lns, tc.want_lns)
 
     def test_exc_xml(self) -> None:
@@ -643,6 +1008,186 @@ class TestLogicNodeListFromXMLElem(unittest.TestCase):
                 self.assertEqual(ctx.exception.msg, tc.want_msg)
                 self.assertEqual(ctx.exception.file, None)
                 self.assertEqual(ctx.exception.xpath, tc.want_xpath)
+
+
+class TestLogicNodeListUpdateID(unittest.TestCase):
+    def test(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_lns", sw_compdocs.component.LogicNodeList),
+                ("input_key", str | None),
+                ("input_recursive", bool),
+                ("want_lns", sw_compdocs.component.LogicNodeList),
+            ],
+        )
+
+        for tc in [
+            tt(
+                input_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(
+                            key="key",
+                            idx=0,
+                            label=sw_compdocs.language.Text(id="def_key_node_0_label"),
+                            description=sw_compdocs.language.Text(
+                                id="def_key_node_0_desc"
+                            ),
+                        ),
+                        sw_compdocs.component.LogicNode(
+                            key="key",
+                            idx=1,
+                            label=sw_compdocs.language.Text(id="def_key_node_1_label"),
+                            description=sw_compdocs.language.Text(
+                                id="def_key_node_1_desc"
+                            ),
+                        ),
+                        sw_compdocs.component.LogicNode(
+                            key="key",
+                            idx=2,
+                            label=sw_compdocs.language.Text(id="def_key_node_2_label"),
+                            description=sw_compdocs.language.Text(
+                                id="def_key_node_2_desc"
+                            ),
+                        ),
+                    ],
+                    key="key",
+                ),
+                input_key=None,
+                input_recursive=False,
+                want_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(
+                            key="key",
+                            idx=0,
+                            label=sw_compdocs.language.Text(id="def_key_node_0_label"),
+                            description=sw_compdocs.language.Text(
+                                id="def_key_node_0_desc"
+                            ),
+                        ),
+                        sw_compdocs.component.LogicNode(
+                            key="key",
+                            idx=1,
+                            label=sw_compdocs.language.Text(id="def_key_node_1_label"),
+                            description=sw_compdocs.language.Text(
+                                id="def_key_node_1_desc"
+                            ),
+                        ),
+                        sw_compdocs.component.LogicNode(
+                            key="key",
+                            idx=2,
+                            label=sw_compdocs.language.Text(id="def_key_node_2_label"),
+                            description=sw_compdocs.language.Text(
+                                id="def_key_node_2_desc"
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+            tt(
+                input_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(),
+                        sw_compdocs.component.LogicNode(),
+                        sw_compdocs.component.LogicNode(),
+                    ],
+                ),
+                input_key="key",
+                input_recursive=False,
+                want_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(),
+                        sw_compdocs.component.LogicNode(),
+                        sw_compdocs.component.LogicNode(),
+                    ],
+                    key="key",
+                ),
+            ),
+            tt(
+                input_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(
+                            key="key",
+                            idx=0,
+                            label=sw_compdocs.language.Text(id="def_key_node_0_label"),
+                            description=sw_compdocs.language.Text(
+                                id="def_key_node_0_desc"
+                            ),
+                        ),
+                        sw_compdocs.component.LogicNode(
+                            key="key",
+                            idx=1,
+                            label=sw_compdocs.language.Text(id="def_key_node_1_label"),
+                            description=sw_compdocs.language.Text(
+                                id="def_key_node_1_desc"
+                            ),
+                        ),
+                        sw_compdocs.component.LogicNode(
+                            key="key",
+                            idx=2,
+                            label=sw_compdocs.language.Text(id="def_key_node_2_label"),
+                            description=sw_compdocs.language.Text(
+                                id="def_key_node_2_desc"
+                            ),
+                        ),
+                    ],
+                    key="key",
+                ),
+                input_key=None,
+                input_recursive=True,
+                want_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(idx=0),
+                        sw_compdocs.component.LogicNode(idx=1),
+                        sw_compdocs.component.LogicNode(idx=2),
+                    ],
+                ),
+            ),
+            tt(
+                input_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(),
+                        sw_compdocs.component.LogicNode(),
+                        sw_compdocs.component.LogicNode(),
+                    ],
+                ),
+                input_key="key",
+                input_recursive=True,
+                want_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(
+                            key="key",
+                            idx=0,
+                            label=sw_compdocs.language.Text(id="def_key_node_0_label"),
+                            description=sw_compdocs.language.Text(
+                                id="def_key_node_0_desc"
+                            ),
+                        ),
+                        sw_compdocs.component.LogicNode(
+                            key="key",
+                            idx=1,
+                            label=sw_compdocs.language.Text(id="def_key_node_1_label"),
+                            description=sw_compdocs.language.Text(
+                                id="def_key_node_1_desc"
+                            ),
+                        ),
+                        sw_compdocs.component.LogicNode(
+                            key="key",
+                            idx=2,
+                            label=sw_compdocs.language.Text(id="def_key_node_2_label"),
+                            description=sw_compdocs.language.Text(
+                                id="def_key_node_2_desc"
+                            ),
+                        ),
+                    ],
+                    key="key",
+                ),
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                lns = copy.deepcopy(tc.input_lns)
+                lns.update_id(tc.input_key, recursive=tc.input_recursive)
+                self.assertEqual(lns, tc.want_lns)
 
 
 class TestVoxelPosFromXMLElem(unittest.TestCase):
@@ -759,7 +1304,9 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
         )
         self.assertEqual(defn.file, "clock.xml")
         self.assertEqual(defn.key, "clock")
-        self.assertEqual(defn.name, "Clock")
+        self.assertEqual(
+            defn.name, sw_compdocs.language.Text(id="def_clock_name", en="Clock")
+        )
         self.assertEqual(defn.category, sw_compdocs.component.Category.DISPLAYS)
         self.assertEqual(defn.mass, 1.0)
         self.assertEqual(defn.value, 100)
@@ -768,8 +1315,15 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
         self.assertEqual(
             defn.tooltip_properties,
             sw_compdocs.component.TooltipProperties(
-                short_description="An analogue clock display that outputs a number value representing the time of day.",
-                description="The clock has a display to visualise the time of day or night. The 12 o'clock position is the white arrow on the face of the display.",
+                key="clock",
+                short_description=sw_compdocs.language.Text(
+                    id="def_clock_s_desc",
+                    en="An analogue clock display that outputs a number value representing the time of day.",
+                ),
+                description=sw_compdocs.language.Text(
+                    id="def_clock_desc",
+                    en="The clock has a display to visualise the time of day or night. The 12 o'clock position is the white arrow on the face of the display.",
+                ),
             ),
         )
         self.assertEqual(
@@ -777,27 +1331,46 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
             sw_compdocs.component.LogicNodeList(
                 [
                     sw_compdocs.component.LogicNode(
+                        key="clock",
                         idx=0,
-                        label="Time",
+                        label=sw_compdocs.language.Text(
+                            id="def_clock_node_0_label", en="Time"
+                        ),
                         mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
                         type=sw_compdocs.component.LogicNodeType.FLOAT,
-                        description="The time as a factor of a day, from 0 (midnight) to 1 (midnight).",
+                        description=sw_compdocs.language.Text(
+                            id="def_clock_node_0_desc",
+                            en="The time as a factor of a day, from 0 (midnight) to 1 (midnight).",
+                        ),
                     ),
                     sw_compdocs.component.LogicNode(
+                        key="clock",
                         idx=1,
-                        label="Backlight",
+                        label=sw_compdocs.language.Text(
+                            id="def_clock_node_1_label", en="Backlight"
+                        ),
                         mode=sw_compdocs.component.LogicNodeMode.INPUT,
                         type=sw_compdocs.component.LogicNodeType.BOOL,
-                        description="Enables the backlight when receiving an on signal.",
+                        description=sw_compdocs.language.Text(
+                            id="def_clock_node_1_desc",
+                            en="Enables the backlight when receiving an on signal.",
+                        ),
                     ),
                     sw_compdocs.component.LogicNode(
+                        key="clock",
                         idx=2,
-                        label="Electric",
+                        label=sw_compdocs.language.Text(
+                            id="def_clock_node_2_label", en="Electric"
+                        ),
                         mode=sw_compdocs.component.LogicNodeMode.INPUT,
                         type=sw_compdocs.component.LogicNodeType.ELECTRIC,
-                        description="Electrical power connection.",
+                        description=sw_compdocs.language.Text(
+                            id="def_clock_node_2_desc",
+                            en="Electrical power connection.",
+                        ),
                     ),
-                ]
+                ],
+                key="clock",
             ),
         )
         self.assertEqual(defn.voxel_min, sw_compdocs.component.VoxelPos(x=0, y=0, z=0))
@@ -807,8 +1380,8 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
         elem = lxml.etree.Element("definition")
         defn = sw_compdocs.component.Definition.from_xml_elem(elem)
         self.assertIsNone(defn.file)
-        self.assertEqual(defn.key, "")
-        self.assertEqual(defn.name, "")
+        self.assertEqual(defn.key, None)
+        self.assertEqual(defn.name, sw_compdocs.language.Text())
         self.assertEqual(defn.category, sw_compdocs.component.Category.BLOCKS)
         self.assertEqual(defn.mass, 0.0)
         self.assertEqual(defn.value, 0)
@@ -818,6 +1391,31 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
             defn.tooltip_properties, sw_compdocs.component.TooltipProperties()
         )
         self.assertEqual(defn.logic_nodes, sw_compdocs.component.LogicNodeList())
+        self.assertEqual(defn.voxel_min, sw_compdocs.component.VoxelPos())
+        self.assertEqual(defn.voxel_max, sw_compdocs.component.VoxelPos())
+
+    def test_pass_empty_key(self) -> None:
+        elem = lxml.etree.Element("definition")
+        defn = sw_compdocs.component.Definition.from_xml_elem(elem, key="key")
+        self.assertIsNone(defn.file)
+        self.assertEqual(defn.key, "key")
+        self.assertEqual(defn.name, sw_compdocs.language.Text(id="def_key_name"))
+        self.assertEqual(defn.category, sw_compdocs.component.Category.BLOCKS)
+        self.assertEqual(defn.mass, 0.0)
+        self.assertEqual(defn.value, 0)
+        self.assertEqual(defn.flags, sw_compdocs.component.Flags(0))
+        self.assertEqual(defn.tags, "")
+        self.assertEqual(
+            defn.tooltip_properties,
+            sw_compdocs.component.TooltipProperties(
+                key="key",
+                short_description=sw_compdocs.language.Text(id="def_key_s_desc"),
+                description=sw_compdocs.language.Text(id="def_key_desc"),
+            ),
+        )
+        self.assertEqual(
+            defn.logic_nodes, sw_compdocs.component.LogicNodeList(key="key")
+        )
         self.assertEqual(defn.voxel_min, sw_compdocs.component.VoxelPos())
         self.assertEqual(defn.voxel_max, sw_compdocs.component.VoxelPos())
 
@@ -907,6 +1505,94 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
                 self.assertEqual(ctx.exception.xpath, tc.want_xpath)
 
 
+class TestDefinitionUpdateID(unittest.TestCase):
+    def test(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_defn", sw_compdocs.component.Definition),
+                ("input_key", str | None),
+                ("input_recursive", bool),
+                ("want_defn", sw_compdocs.component.Definition),
+            ],
+        )
+
+        for tc in [
+            tt(
+                input_defn=sw_compdocs.component.Definition(
+                    key="key",
+                    name=sw_compdocs.language.Text(id="def_key_name"),
+                    tooltip_properties=sw_compdocs.component.TooltipProperties(
+                        key="key",
+                        short_description=sw_compdocs.language.Text(
+                            id="def_key_s_desc"
+                        ),
+                        description=sw_compdocs.language.Text(id="def_key_desc"),
+                    ),
+                    logic_nodes=sw_compdocs.component.LogicNodeList(key="key"),
+                ),
+                input_key=None,
+                input_recursive=False,
+                want_defn=sw_compdocs.component.Definition(
+                    tooltip_properties=sw_compdocs.component.TooltipProperties(
+                        key="key",
+                        short_description=sw_compdocs.language.Text(
+                            id="def_key_s_desc"
+                        ),
+                        description=sw_compdocs.language.Text(id="def_key_desc"),
+                    ),
+                    logic_nodes=sw_compdocs.component.LogicNodeList(key="key"),
+                ),
+            ),
+            tt(
+                input_defn=sw_compdocs.component.Definition(),
+                input_key="key",
+                input_recursive=False,
+                want_defn=sw_compdocs.component.Definition(
+                    key="key", name=sw_compdocs.language.Text(id="def_key_name")
+                ),
+            ),
+            tt(
+                input_defn=sw_compdocs.component.Definition(
+                    key="key",
+                    name=sw_compdocs.language.Text(id="def_key_name"),
+                    tooltip_properties=sw_compdocs.component.TooltipProperties(
+                        key="key",
+                        short_description=sw_compdocs.language.Text(
+                            id="def_key_s_desc"
+                        ),
+                        description=sw_compdocs.language.Text(id="def_key_desc"),
+                    ),
+                    logic_nodes=sw_compdocs.component.LogicNodeList(key="key"),
+                ),
+                input_key=None,
+                input_recursive=True,
+                want_defn=sw_compdocs.component.Definition(),
+            ),
+            tt(
+                input_defn=sw_compdocs.component.Definition(),
+                input_key="key",
+                input_recursive=True,
+                want_defn=sw_compdocs.component.Definition(
+                    key="key",
+                    name=sw_compdocs.language.Text(id="def_key_name"),
+                    tooltip_properties=sw_compdocs.component.TooltipProperties(
+                        key="key",
+                        short_description=sw_compdocs.language.Text(
+                            id="def_key_s_desc"
+                        ),
+                        description=sw_compdocs.language.Text(id="def_key_desc"),
+                    ),
+                    logic_nodes=sw_compdocs.component.LogicNodeList(key="key"),
+                ),
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                defn = copy.deepcopy(tc.input_defn)
+                defn.update_id(tc.input_key, recursive=tc.input_recursive)
+                self.assertEqual(defn, tc.want_defn)
+
+
 class TestParseXMLFile(unittest.TestCase):
     def test_pass(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -931,8 +1617,10 @@ class TestParseXMLFile(unittest.TestCase):
                     defn = sw_compdocs.component.parse_xml_file(path)
                     self.assertEqual(defn.file, path)
                     self.assertEqual(defn.key, "test")
-                    self.assertEqual(defn.name, "name")
-                    self.assertEqual(defn.tooltip_properties.description, "description")
+                    self.assertEqual(defn.name.en, "name")
+                    self.assertEqual(
+                        defn.tooltip_properties.description.en, "description"
+                    )
 
     def test_pass_recover(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -962,8 +1650,10 @@ class TestParseXMLFile(unittest.TestCase):
                     defn = sw_compdocs.component.parse_xml_file(path)
                     self.assertEqual(defn.file, path)
                     self.assertEqual(defn.key, "test")
-                    self.assertEqual(defn.name, "name")
-                    self.assertEqual(defn.tooltip_properties.description, "description")
+                    self.assertEqual(defn.name.en, "name")
+                    self.assertEqual(
+                        defn.tooltip_properties.description.en, "description"
+                    )
 
     def test_exc_root(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -1058,8 +1748,8 @@ class TestParseXMLStr(unittest.TestCase):
 
         self.assertIsNone(defn.file)
         self.assertEqual(defn.key, "key")
-        self.assertEqual(defn.name, "name")
-        self.assertEqual(defn.tooltip_properties.description, "description")
+        self.assertEqual(defn.name.en, "name")
+        self.assertEqual(defn.tooltip_properties.description.en, "description")
 
     def test_pass_recover(self) -> None:
         defn = sw_compdocs.component.parse_xml_str(
@@ -1078,8 +1768,8 @@ class TestParseXMLStr(unittest.TestCase):
 
         self.assertIsNone(defn.file)
         self.assertEqual(defn.key, "key")
-        self.assertEqual(defn.name, "name")
-        self.assertEqual(defn.tooltip_properties.description, "description")
+        self.assertEqual(defn.name.en, "name")
+        self.assertEqual(defn.tooltip_properties.description.en, "description")
 
     def test_exc_root(self) -> None:
         with self.assertRaises(sw_compdocs.component.DefinitionXMLError) as ctx:

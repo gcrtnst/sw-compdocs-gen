@@ -696,3 +696,41 @@ class TestLanguageFindEn(unittest.TestCase):
         with self.assertRaises(sw_compdocs.language.LanguageFindEnError) as ctx:
             lang.find_en("en_2")
         self.assertEqual(ctx.exception.en, "en_2")
+
+
+class TestLanguageTranslate(unittest.TestCase):
+    def test(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_lang", sw_compdocs.language.Language),
+                ("input_text", sw_compdocs.language.Text),
+                ("want_local", str),
+            ],
+        )
+
+        for tc in [
+            tt(
+                input_lang=sw_compdocs.language.Language(
+                    [
+                        sw_compdocs.language.Translation("id", "", "", "local_1"),
+                        sw_compdocs.language.Translation("", "", "en", "local_2"),
+                    ]
+                ),
+                input_text=sw_compdocs.language.Text(id="id", en="en"),
+                want_local="local_1",
+            ),
+            tt(
+                input_lang=sw_compdocs.language.Language(
+                    [
+                        sw_compdocs.language.Translation("id", "", "", "local_1"),
+                        sw_compdocs.language.Translation("", "", "en", "local_2"),
+                    ]
+                ),
+                input_text=sw_compdocs.language.Text(en="en"),
+                want_local="local_2",
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                got_local = tc.input_lang.translate(tc.input_text)
+                self.assertEqual(got_local, tc.want_local)

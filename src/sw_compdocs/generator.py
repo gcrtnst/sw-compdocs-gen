@@ -27,16 +27,16 @@ def _label_get(label: collections.abc.Mapping[str, str] | None, key: str) -> str
     return key
 
 
-def _lang_find_id(lang: language.Language | None, lang_id: str, lang_en: str) -> str:
-    if lang is None:
-        return lang_en
-    return lang.find_id(lang_id).local
-
-
 def _lang_find_en(lang: language.Language | None, lang_en: str) -> str:
     if lang is None:
         return lang_en
     return lang.find_en(lang_en).local
+
+
+def _lang_translate(lang: language.Language | None, text: language.Text) -> str:
+    if lang is None:
+        return text.en
+    return lang.translate(text)
 
 
 def _ctx_format(ctx: collections.abc.Mapping[str, str] | None, s: str) -> str:
@@ -117,13 +117,10 @@ def generate_document_logic_table(
     )
     data = document.TableData(head)
     for ln in lns:
-        lang_id_label = f"def_{key}_node_{ln.idx:d}_label"
-        lang_id_desc = f"def_{key}_node_{ln.idx:d}_desc"
-
         ln_type = _lang_find_en(lang, str(ln.type))
-        ln_label = _lang_find_id(lang, lang_id_label, ln.label)
+        ln_label = _lang_translate(lang, ln.label)
         ln_label = _ctx_format(ctx, ln_label)
-        ln_desc = _lang_find_id(lang, lang_id_desc, ln.description)
+        ln_desc = _lang_translate(lang, ln.description)
         ln_desc = _ctx_format(ctx, ln_desc)
         data.append(document.TableDataRow([ln_type, ln_label, ln_desc]))
     return document.Table(data)
@@ -199,8 +196,7 @@ def generate_document_component(
 ) -> document.Document:
     doc = document.Document()
 
-    defn_name_id = f"def_{defn.key}_name"
-    defn_name = _lang_find_id(lang, defn_name_id, defn.name)
+    defn_name = _lang_translate(lang, defn.name)
     doc.append(document.Heading(defn_name))
 
     if component.Flags.IS_DEPRECATED in defn.flags:
@@ -211,16 +207,14 @@ def generate_document_component(
             )
         )
 
-    defn_s_desc_id = f"def_{defn.key}_s_desc"
-    defn_s_desc = defn.tooltip_properties.short_description
-    defn_s_desc = _lang_find_id(lang, defn_s_desc_id, defn_s_desc)
+    defn_s_desc_text = defn.tooltip_properties.short_description
+    defn_s_desc = _lang_translate(lang, defn_s_desc_text)
     defn_s_desc = _ctx_format(ctx, defn_s_desc)
     if defn_s_desc != "":
         doc.append(document.Paragraph(defn_s_desc))
 
-    defn_desc_id = f"def_{defn.key}_desc"
-    defn_desc = defn.tooltip_properties.description
-    defn_desc = _lang_find_id(lang, defn_desc_id, defn_desc)
+    defn_desc_text = defn.tooltip_properties.description
+    defn_desc = _lang_translate(lang, defn_desc_text)
     defn_desc = _ctx_format(ctx, defn_desc)
     if defn_desc != "":
         doc.append(document.Paragraph(defn_desc))
@@ -230,7 +224,7 @@ def generate_document_component(
     doc.extend(prop_doc)
 
     logic_doc = generate_document_logic(
-        defn.key, defn.logic_nodes, label=label, lang=lang, ctx=ctx
+        defn.key or "", defn.logic_nodes, label=label, lang=lang, ctx=ctx
     )
     logic_doc.shift(1)
     doc.extend(logic_doc)
@@ -263,7 +257,7 @@ def generate_document(
         return category.value
 
     def sort_key_component(defn: component.Definition) -> tuple[str, str]:
-        return defn.name, defn.key
+        return defn.name.en, defn.key or ""
 
     category_defn_dict: dict[component.Category, list[component.Definition]] = {}
     for defn in defn_list:
@@ -298,22 +292,19 @@ def generate_sheet_component(
     dims_h = defn.voxel_max.y - defn.voxel_min.y + 1
     dims_d = defn.voxel_max.z - defn.voxel_min.z + 1
 
-    defn_name_id = f"def_{defn.key}_name"
-    defn_name = _lang_find_id(lang, defn_name_id, defn.name)
+    defn_name = _lang_translate(lang, defn.name)
 
     defn_file = ""
     if defn.file is not None:
         defn_file = os.fsdecode(defn.file)
         defn_file = pathlib.PurePath(defn_file).name
 
-    defn_s_desc_id = f"def_{defn.key}_s_desc"
-    defn_s_desc = defn.tooltip_properties.short_description
-    defn_s_desc = _lang_find_id(lang, defn_s_desc_id, defn_s_desc)
+    defn_s_desc_text = defn.tooltip_properties.short_description
+    defn_s_desc = _lang_translate(lang, defn_s_desc_text)
     defn_s_desc = _ctx_format(ctx, defn_s_desc)
 
-    defn_desc_id = f"def_{defn.key}_desc"
-    defn_desc = defn.tooltip_properties.description
-    defn_desc = _lang_find_id(lang, defn_desc_id, defn_desc)
+    defn_desc_text = defn.tooltip_properties.description
+    defn_desc = _lang_translate(lang, defn_desc_text)
     defn_desc = _ctx_format(ctx, defn_desc)
 
     return [
@@ -353,7 +344,7 @@ def generate_sheet(
     ctx: collections.abc.Mapping[str, str] | None = None,
 ) -> list[list[str]]:
     def sort_key(defn: component.Definition) -> tuple[int, str, str]:
-        return defn.category.value, defn.name, defn.key
+        return defn.category.value, defn.name.en, defn.key or ""
 
     defn_list = list(defn_list)
     defn_list.sort(key=sort_key)
