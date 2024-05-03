@@ -27,12 +27,6 @@ def _label_get(label: collections.abc.Mapping[str, str] | None, key: str) -> str
     return key
 
 
-def _lang_find_id(lang: language.Language | None, lang_id: str, lang_en: str) -> str:
-    if lang is None:
-        return lang_en
-    return lang.find_id(lang_id).local
-
-
 def _lang_find_en(lang: language.Language | None, lang_en: str) -> str:
     if lang is None:
         return lang_en
