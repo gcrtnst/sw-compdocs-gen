@@ -523,7 +523,6 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
                 ("input_label", collections.abc.Mapping[str, str] | None),
                 ("input_lang", sw_compdocs.language.Language | None),
                 ("input_ctx", collections.abc.Mapping[str, str] | None),
-                ("input_key", str),
                 ("input_lns", sw_compdocs.component.LogicNodeList),
                 ("want_tbl", sw_compdocs.document.Table),
             ],
@@ -538,7 +537,6 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
                 },
                 input_lang=None,
                 input_ctx=None,
-                input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList([]),
                 want_tbl=sw_compdocs.document.Table(
                     sw_compdocs.document.TableData(
@@ -599,7 +597,6 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
                     "label_1": "label_1_fmt",
                     "desc_1": "desc_1_fmt",
                 },
-                input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
@@ -693,7 +690,6 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
                     "label_1": "label_1_fmt",
                     "desc_1": "desc_1_fmt",
                 },
-                input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
@@ -758,7 +754,6 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
                     "label_1": "label_1_fmt",
                     "desc_1": "desc_1_fmt",
                 },
-                input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
@@ -847,7 +842,6 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
                     ]
                 ),
                 input_ctx=None,
-                input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
@@ -941,7 +935,6 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
                     "label_1": "label_1_fmt",
                     "desc_1": "desc_1_fmt",
                 },
-                input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
@@ -1012,7 +1005,6 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
                     ]
                 ),
                 input_ctx=None,
-                input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
@@ -1053,7 +1045,6 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
         ]:
             with self.subTest(tc=tc):
                 got_tbl = sw_compdocs.generator.generate_document_logic_table(
-                    tc.input_key,
                     tc.input_lns,
                     label=tc.input_label,
                     lang=tc.input_lang,
@@ -1074,7 +1065,7 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
                 del label[key]
                 with self.assertRaises(sw_compdocs.generator.LabelKeyError) as ctx:
                     sw_compdocs.generator.generate_document_logic_table(
-                        "key", lns, label=label
+                        lns, label=label
                     )
                 self.assertEqual(ctx.exception.key, key)
 
