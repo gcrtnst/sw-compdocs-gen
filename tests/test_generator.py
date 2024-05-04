@@ -166,6 +166,7 @@ class TestGenerateDocumentPropertyTable(unittest.TestCase):
         )
 
         for tc in [
+            # normal
             tt(
                 input_label=None,
                 input_defn=sw_compdocs.component.Definition(
@@ -204,17 +205,10 @@ class TestGenerateDocumentPropertyTable(unittest.TestCase):
                     )
                 ),
             ),
-            # mass format
+            # empty
             tt(
                 input_label=None,
-                input_defn=sw_compdocs.component.Definition(
-                    file="file",
-                    mass=0.5,
-                    value=100,
-                    tags="tags",
-                    voxel_min=sw_compdocs.component.VoxelPos(x=0, y=-1, z=-2),
-                    voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=2),
-                ),
+                input_defn=sw_compdocs.component.Definition(),
                 want_tbl=sw_compdocs.document.Table(
                     sw_compdocs.document.TableData(
                         sw_compdocs.document.TableDataRow(
@@ -225,34 +219,28 @@ class TestGenerateDocumentPropertyTable(unittest.TestCase):
                         ),
                         [
                             sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_PROP_TABLE_MASS_LABEL", "0.5"]
+                                ["DOCUMENT_PROP_TABLE_MASS_LABEL", "0"]
                             ),
                             sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x5x3"]
+                                ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x1x1"]
                             ),
                             sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_PROP_TABLE_COST_LABEL", "100"]
+                                ["DOCUMENT_PROP_TABLE_COST_LABEL", "0"]
                             ),
                             sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_PROP_TABLE_TAGS_LABEL", "tags"]
+                                ["DOCUMENT_PROP_TABLE_TAGS_LABEL", ""]
                             ),
                             sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_PROP_TABLE_FILE_LABEL", "file"]
+                                ["DOCUMENT_PROP_TABLE_FILE_LABEL", ""]
                             ),
                         ],
                     )
                 ),
             ),
+            # mass format
             tt(
                 input_label=None,
-                input_defn=sw_compdocs.component.Definition(
-                    file="file",
-                    mass=0.25,
-                    value=100,
-                    tags="tags",
-                    voxel_min=sw_compdocs.component.VoxelPos(x=0, y=-1, z=-2),
-                    voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=2),
-                ),
+                input_defn=sw_compdocs.component.Definition(mass=0.25),
                 want_tbl=sw_compdocs.document.Table(
                     sw_compdocs.document.TableData(
                         sw_compdocs.document.TableDataRow(
@@ -266,16 +254,16 @@ class TestGenerateDocumentPropertyTable(unittest.TestCase):
                                 ["DOCUMENT_PROP_TABLE_MASS_LABEL", "0.25"]
                             ),
                             sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x5x3"]
+                                ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x1x1"]
                             ),
                             sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_PROP_TABLE_COST_LABEL", "100"]
+                                ["DOCUMENT_PROP_TABLE_COST_LABEL", "0"]
                             ),
                             sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_PROP_TABLE_TAGS_LABEL", "tags"]
+                                ["DOCUMENT_PROP_TABLE_TAGS_LABEL", ""]
                             ),
                             sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_PROP_TABLE_FILE_LABEL", "file"]
+                                ["DOCUMENT_PROP_TABLE_FILE_LABEL", ""]
                             ),
                         ],
                     )
@@ -285,12 +273,7 @@ class TestGenerateDocumentPropertyTable(unittest.TestCase):
             tt(
                 input_label=None,
                 input_defn=sw_compdocs.component.Definition(
-                    file=None,
-                    mass=10.0,
-                    value=100,
-                    tags="tags",
-                    voxel_min=sw_compdocs.component.VoxelPos(x=0, y=-1, z=-2),
-                    voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=2),
+                    file=b"path/to/definition.xml"
                 ),
                 want_tbl=sw_compdocs.document.Table(
                     sw_compdocs.document.TableData(
@@ -302,54 +285,16 @@ class TestGenerateDocumentPropertyTable(unittest.TestCase):
                         ),
                         [
                             sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_PROP_TABLE_MASS_LABEL", "10"]
+                                ["DOCUMENT_PROP_TABLE_MASS_LABEL", "0"]
                             ),
                             sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x5x3"]
+                                ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x1x1"]
                             ),
                             sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_PROP_TABLE_COST_LABEL", "100"]
+                                ["DOCUMENT_PROP_TABLE_COST_LABEL", "0"]
                             ),
                             sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_PROP_TABLE_TAGS_LABEL", "tags"]
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_PROP_TABLE_FILE_LABEL", ""]
-                            ),
-                        ],
-                    )
-                ),
-            ),
-            tt(
-                input_label=None,
-                input_defn=sw_compdocs.component.Definition(
-                    file=b"path/to/definition.xml",
-                    mass=10.0,
-                    value=100,
-                    tags="tags",
-                    voxel_min=sw_compdocs.component.VoxelPos(x=0, y=-1, z=-2),
-                    voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=2),
-                ),
-                want_tbl=sw_compdocs.document.Table(
-                    sw_compdocs.document.TableData(
-                        sw_compdocs.document.TableDataRow(
-                            [
-                                "DOCUMENT_PROP_TABLE_HEAD_LABEL",
-                                "DOCUMENT_PROP_TABLE_HEAD_VALUE",
-                            ]
-                        ),
-                        [
-                            sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_PROP_TABLE_MASS_LABEL", "10"]
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x5x3"]
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_PROP_TABLE_COST_LABEL", "100"]
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_PROP_TABLE_TAGS_LABEL", "tags"]
+                                ["DOCUMENT_PROP_TABLE_TAGS_LABEL", ""]
                             ),
                             sw_compdocs.document.TableDataRow(
                                 ["DOCUMENT_PROP_TABLE_FILE_LABEL", "definition.xml"]
@@ -369,23 +314,16 @@ class TestGenerateDocumentPropertyTable(unittest.TestCase):
                     "DOCUMENT_PROP_TABLE_TAGS_LABEL": "Tags",
                     "DOCUMENT_PROP_TABLE_FILE_LABEL": "File",
                 },
-                input_defn=sw_compdocs.component.Definition(
-                    file="file",
-                    mass=10.0,
-                    value=100,
-                    tags="tags",
-                    voxel_min=sw_compdocs.component.VoxelPos(x=0, y=-1, z=-2),
-                    voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=2),
-                ),
+                input_defn=sw_compdocs.component.Definition(),
                 want_tbl=sw_compdocs.document.Table(
                     sw_compdocs.document.TableData(
                         sw_compdocs.document.TableDataRow(["Label", "Value"]),
                         [
-                            sw_compdocs.document.TableDataRow(["Mass", "10"]),
-                            sw_compdocs.document.TableDataRow(["Dimensions", "1x5x3"]),
-                            sw_compdocs.document.TableDataRow(["Cost", "100"]),
-                            sw_compdocs.document.TableDataRow(["Tags", "tags"]),
-                            sw_compdocs.document.TableDataRow(["File", "file"]),
+                            sw_compdocs.document.TableDataRow(["Mass", "0"]),
+                            sw_compdocs.document.TableDataRow(["Dimensions", "1x1x1"]),
+                            sw_compdocs.document.TableDataRow(["Cost", "0"]),
+                            sw_compdocs.document.TableDataRow(["Tags", ""]),
+                            sw_compdocs.document.TableDataRow(["File", ""]),
                         ],
                     )
                 ),
@@ -529,225 +467,30 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
         )
 
         for tc in [
+            # empty
             tt(
-                input_label={
-                    "DOCUMENT_LOGIC_TABLE_HEAD_TYPE": "種別",
-                    "DOCUMENT_LOGIC_TABLE_HEAD_LABEL": "ラベル",
-                    "DOCUMENT_LOGIC_TABLE_HEAD_DESC": "説明",
-                },
+                input_label=None,
                 input_lang=None,
                 input_ctx=None,
                 input_ln_list=[],
                 want_tbl=sw_compdocs.document.Table(
                     sw_compdocs.document.TableData(
-                        sw_compdocs.document.TableDataRow(["種別", "ラベル", "説明"]),
+                        sw_compdocs.document.TableDataRow(
+                            [
+                                "DOCUMENT_LOGIC_TABLE_HEAD_TYPE",
+                                "DOCUMENT_LOGIC_TABLE_HEAD_LABEL",
+                                "DOCUMENT_LOGIC_TABLE_HEAD_DESC",
+                            ]
+                        ),
                         [],
                     )
                 ),
             ),
-            tt(
-                input_label={
-                    "DOCUMENT_LOGIC_TABLE_HEAD_TYPE": "種別",
-                    "DOCUMENT_LOGIC_TABLE_HEAD_LABEL": "ラベル",
-                    "DOCUMENT_LOGIC_TABLE_HEAD_DESC": "説明",
-                },
-                input_lang=sw_compdocs.language.Language(
-                    [
-                        sw_compdocs.language.Translation(
-                            "",
-                            "",
-                            "on/off",
-                            "オン/オフ",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "",
-                            "",
-                            "number",
-                            "数値",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_0_label",
-                            "",
-                            "label 0 $[label_0]",
-                            "ラベル 0 $[label_0]",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_0_desc",
-                            "",
-                            "desc 0 $[desc_0]",
-                            "説明 0 $[desc_0]",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_1_label",
-                            "",
-                            "label 1 $[label_1]",
-                            "ラベル 1 $[label_1]",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_1_desc",
-                            "",
-                            "desc 1 $[desc_1]",
-                            "説明 1 $[desc_1]",
-                        ),
-                    ]
-                ),
-                input_ctx={
-                    "label_0": "label_0_fmt",
-                    "desc_0": "desc_0_fmt",
-                    "label_1": "label_1_fmt",
-                    "desc_1": "desc_1_fmt",
-                },
-                input_ln_list=[
-                    sw_compdocs.component.LogicNode(
-                        key="test",
-                        idx=0,
-                        label=sw_compdocs.language.Text(
-                            id="def_test_node_0_label", en="label 0 $[label_0]"
-                        ),
-                        type=sw_compdocs.component.LogicNodeType.BOOL,
-                        description=sw_compdocs.language.Text(
-                            id="def_test_node_0_desc", en="desc 0 $[desc_0]"
-                        ),
-                    ),
-                    sw_compdocs.component.LogicNode(
-                        key="test",
-                        idx=1,
-                        label=sw_compdocs.language.Text(
-                            id="def_test_node_1_label", en="label 1 $[label_1]"
-                        ),
-                        type=sw_compdocs.component.LogicNodeType.FLOAT,
-                        description=sw_compdocs.language.Text(
-                            id="def_test_node_1_desc", en="desc 1 $[desc_1]"
-                        ),
-                    ),
-                ],
-                want_tbl=sw_compdocs.document.Table(
-                    sw_compdocs.document.TableData(
-                        sw_compdocs.document.TableDataRow(["種別", "ラベル", "説明"]),
-                        [
-                            sw_compdocs.document.TableDataRow(
-                                [
-                                    "オン/オフ",
-                                    "ラベル 0 label_0_fmt",
-                                    "説明 0 desc_0_fmt",
-                                ]
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                ["数値", "ラベル 1 label_1_fmt", "説明 1 desc_1_fmt"]
-                            ),
-                        ],
-                    )
-                ),
-            ),
+            # normal
             tt(
                 input_label=None,
-                input_lang=sw_compdocs.language.Language(
-                    [
-                        sw_compdocs.language.Translation(
-                            "",
-                            "",
-                            "on/off",
-                            "オン/オフ",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "",
-                            "",
-                            "number",
-                            "数値",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_0_label",
-                            "",
-                            "label 0 $[label_0]",
-                            "ラベル 0 $[label_0]",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_0_desc",
-                            "",
-                            "desc 0 $[desc_0]",
-                            "説明 0 $[desc_0]",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_1_label",
-                            "",
-                            "label 1 $[label_1]",
-                            "ラベル 1 $[label_1]",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_1_desc",
-                            "",
-                            "desc 1 $[desc_1]",
-                            "説明 1 $[desc_1]",
-                        ),
-                    ]
-                ),
-                input_ctx={
-                    "label_0": "label_0_fmt",
-                    "desc_0": "desc_0_fmt",
-                    "label_1": "label_1_fmt",
-                    "desc_1": "desc_1_fmt",
-                },
-                input_ln_list=[
-                    sw_compdocs.component.LogicNode(
-                        key="test",
-                        idx=0,
-                        label=sw_compdocs.language.Text(
-                            id="def_test_node_0_label", en="label 0 $[label_0]"
-                        ),
-                        type=sw_compdocs.component.LogicNodeType.BOOL,
-                        description=sw_compdocs.language.Text(
-                            id="def_test_node_0_desc", en="desc 0 $[desc_0]"
-                        ),
-                    ),
-                    sw_compdocs.component.LogicNode(
-                        key="test",
-                        idx=1,
-                        label=sw_compdocs.language.Text(
-                            id="def_test_node_1_label", en="label 1 $[label_1]"
-                        ),
-                        type=sw_compdocs.component.LogicNodeType.FLOAT,
-                        description=sw_compdocs.language.Text(
-                            id="def_test_node_1_desc", en="desc 1 $[desc_1]"
-                        ),
-                    ),
-                ],
-                want_tbl=sw_compdocs.document.Table(
-                    sw_compdocs.document.TableData(
-                        sw_compdocs.document.TableDataRow(
-                            [
-                                "DOCUMENT_LOGIC_TABLE_HEAD_TYPE",
-                                "DOCUMENT_LOGIC_TABLE_HEAD_LABEL",
-                                "DOCUMENT_LOGIC_TABLE_HEAD_DESC",
-                            ]
-                        ),
-                        [
-                            sw_compdocs.document.TableDataRow(
-                                [
-                                    "オン/オフ",
-                                    "ラベル 0 label_0_fmt",
-                                    "説明 0 desc_0_fmt",
-                                ]
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                ["数値", "ラベル 1 label_1_fmt", "説明 1 desc_1_fmt"]
-                            ),
-                        ],
-                    )
-                ),
-            ),
-            tt(
-                input_label={
-                    "DOCUMENT_LOGIC_TABLE_HEAD_TYPE": "種別",
-                    "DOCUMENT_LOGIC_TABLE_HEAD_LABEL": "ラベル",
-                    "DOCUMENT_LOGIC_TABLE_HEAD_DESC": "説明",
-                },
                 input_lang=None,
-                input_ctx={
-                    "label_0": "label_0_fmt",
-                    "desc_0": "desc_0_fmt",
-                    "label_1": "label_1_fmt",
-                    "desc_1": "desc_1_fmt",
-                },
+                input_ctx=None,
                 input_ln_list=[
                     sw_compdocs.component.LogicNode(
                         key="test",
@@ -774,13 +517,23 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
                 ],
                 want_tbl=sw_compdocs.document.Table(
                     sw_compdocs.document.TableData(
-                        sw_compdocs.document.TableDataRow(["種別", "ラベル", "説明"]),
+                        sw_compdocs.document.TableDataRow(
+                            [
+                                "DOCUMENT_LOGIC_TABLE_HEAD_TYPE",
+                                "DOCUMENT_LOGIC_TABLE_HEAD_LABEL",
+                                "DOCUMENT_LOGIC_TABLE_HEAD_DESC",
+                            ]
+                        ),
                         [
                             sw_compdocs.document.TableDataRow(
-                                ["on/off", "label 0 label_0_fmt", "desc 0 desc_0_fmt"]
+                                [
+                                    "on/off",
+                                    "label 0 $[label_0]",
+                                    "desc 0 $[desc_0]",
+                                ]
                             ),
                             sw_compdocs.document.TableDataRow(
-                                ["number", "label 1 label_1_fmt", "desc 1 desc_1_fmt"]
+                                ["number", "label 1 $[label_1]", "desc 1 $[desc_1]"]
                             ),
                         ],
                     )
@@ -832,7 +585,12 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
                         ),
                     ]
                 ),
-                input_ctx=None,
+                input_ctx={
+                    "label_0": "label_0_fmt",
+                    "desc_0": "desc_0_fmt",
+                    "label_1": "label_1_fmt",
+                    "desc_1": "desc_1_fmt",
+                },
                 input_ln_list=[
                     sw_compdocs.component.LogicNode(
                         key="test",
@@ -862,96 +620,6 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
                         sw_compdocs.document.TableDataRow(["種別", "ラベル", "説明"]),
                         [
                             sw_compdocs.document.TableDataRow(
-                                ["オン/オフ", "ラベル 0 $[label_0]", "説明 0 $[desc_0]"]
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                ["数値", "ラベル 1 $[label_1]", "説明 1 $[desc_1]"]
-                            ),
-                        ],
-                    )
-                ),
-            ),
-            tt(
-                input_label={
-                    "DOCUMENT_LOGIC_TABLE_HEAD_TYPE": "種別",
-                    "DOCUMENT_LOGIC_TABLE_HEAD_LABEL": "ラベル",
-                    "DOCUMENT_LOGIC_TABLE_HEAD_DESC": "説明",
-                },
-                input_lang=sw_compdocs.language.Language(
-                    [
-                        sw_compdocs.language.Translation(
-                            "",
-                            "",
-                            "on/off",
-                            "オン/オフ",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "",
-                            "",
-                            "number",
-                            "数値",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_3_label",
-                            "",
-                            "label 0 $[label_0]",
-                            "ラベル 0 $[label_0]",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_3_desc",
-                            "",
-                            "desc 0 $[desc_0]",
-                            "説明 0 $[desc_0]",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_5_label",
-                            "",
-                            "label 1 $[label_1]",
-                            "ラベル 1 $[label_1]",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_5_desc",
-                            "",
-                            "desc 1 $[desc_1]",
-                            "説明 1 $[desc_1]",
-                        ),
-                    ]
-                ),
-                input_ctx={
-                    "label_0": "label_0_fmt",
-                    "desc_0": "desc_0_fmt",
-                    "label_1": "label_1_fmt",
-                    "desc_1": "desc_1_fmt",
-                },
-                input_ln_list=[
-                    sw_compdocs.component.LogicNode(
-                        key="test",
-                        idx=3,
-                        label=sw_compdocs.language.Text(
-                            id="def_test_node_3_label", en="label 0 $[label_0]"
-                        ),
-                        type=sw_compdocs.component.LogicNodeType.BOOL,
-                        description=sw_compdocs.language.Text(
-                            id="def_test_node_3_desc", en="desc 0 $[desc_0]"
-                        ),
-                    ),
-                    sw_compdocs.component.LogicNode(
-                        key="test",
-                        idx=5,
-                        label=sw_compdocs.language.Text(
-                            id="def_test_node_5_label", en="label 1 $[label_1]"
-                        ),
-                        type=sw_compdocs.component.LogicNodeType.FLOAT,
-                        description=sw_compdocs.language.Text(
-                            id="def_test_node_5_desc", en="desc 1 $[desc_1]"
-                        ),
-                    ),
-                ],
-                want_tbl=sw_compdocs.document.Table(
-                    sw_compdocs.document.TableData(
-                        sw_compdocs.document.TableDataRow(["種別", "ラベル", "説明"]),
-                        [
-                            sw_compdocs.document.TableDataRow(
                                 [
                                     "オン/オフ",
                                     "ラベル 0 label_0_fmt",
@@ -961,63 +629,6 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
                             sw_compdocs.document.TableDataRow(
                                 ["数値", "ラベル 1 label_1_fmt", "説明 1 desc_1_fmt"]
                             ),
-                        ],
-                    )
-                ),
-            ),
-            tt(
-                input_label=None,
-                input_lang=sw_compdocs.language.Language(
-                    [
-                        sw_compdocs.language.Translation(
-                            "",
-                            "",
-                            "on/off",
-                            "オン/オフ",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_-1_label",
-                            "",
-                            "label -1",
-                            "ラベル -1",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_-1_desc",
-                            "",
-                            "desc -1",
-                            "説明 -1",
-                        ),
-                    ]
-                ),
-                input_ctx=None,
-                input_ln_list=[
-                    sw_compdocs.component.LogicNode(
-                        key="test",
-                        idx=-1,
-                        label=sw_compdocs.language.Text(id="def_test_node_-1_label"),
-                        type=sw_compdocs.component.LogicNodeType.BOOL,
-                        description=sw_compdocs.language.Text(
-                            id="def_test_node_-1_desc"
-                        ),
-                    )
-                ],
-                want_tbl=sw_compdocs.document.Table(
-                    sw_compdocs.document.TableData(
-                        sw_compdocs.document.TableDataRow(
-                            [
-                                "DOCUMENT_LOGIC_TABLE_HEAD_TYPE",
-                                "DOCUMENT_LOGIC_TABLE_HEAD_LABEL",
-                                "DOCUMENT_LOGIC_TABLE_HEAD_DESC",
-                            ]
-                        ),
-                        [
-                            sw_compdocs.document.TableDataRow(
-                                [
-                                    "オン/オフ",
-                                    "ラベル -1",
-                                    "説明 -1",
-                                ]
-                            )
                         ],
                     )
                 ),
@@ -1072,7 +683,7 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                 input_lns=sw_compdocs.component.LogicNodeList(),
                 want_doc=sw_compdocs.document.Document(),
             ),
-            # logic node type
+            # logic node mode type
             tt(
                 input_label=None,
                 input_lang=None,
@@ -1080,262 +691,54 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
-                            label=sw_compdocs.language.Text(en="label"),
+                            label=sw_compdocs.language.Text(en="BOOL"),
                             mode=sw_compdocs.component.LogicNodeMode.INPUT,
                             type=sw_compdocs.component.LogicNodeType.BOOL,
-                            description=sw_compdocs.language.Text(en="desc"),
                         ),
-                    ]
-                ),
-                want_doc=sw_compdocs.document.Document(
-                    [
-                        sw_compdocs.document.Heading("logic inputs"),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_TYPE",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_DESC",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["on/off", "label", "desc"]
-                                    )
-                                ],
-                            )
-                        ),
-                    ]
-                ),
-            ),
-            tt(
-                input_label=None,
-                input_lang=None,
-                input_ctx=None,
-                input_lns=sw_compdocs.component.LogicNodeList(
-                    [
                         sw_compdocs.component.LogicNode(
-                            label=sw_compdocs.language.Text(en="label"),
+                            label=sw_compdocs.language.Text(en="FLOAT"),
                             mode=sw_compdocs.component.LogicNodeMode.INPUT,
                             type=sw_compdocs.component.LogicNodeType.FLOAT,
-                            description=sw_compdocs.language.Text(en="desc"),
                         ),
-                    ]
-                ),
-                want_doc=sw_compdocs.document.Document(
-                    [
-                        sw_compdocs.document.Heading("logic inputs"),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_TYPE",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_DESC",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["number", "label", "desc"]
-                                    )
-                                ],
-                            )
-                        ),
-                    ]
-                ),
-            ),
-            tt(
-                input_label=None,
-                input_lang=None,
-                input_ctx=None,
-                input_lns=sw_compdocs.component.LogicNodeList(
-                    [
                         sw_compdocs.component.LogicNode(
-                            label=sw_compdocs.language.Text(en="label"),
+                            label=sw_compdocs.language.Text(en="TORQUE"),
                             mode=sw_compdocs.component.LogicNodeMode.INPUT,
                             type=sw_compdocs.component.LogicNodeType.TORQUE,
-                            description=sw_compdocs.language.Text(en="desc"),
                         ),
-                    ]
-                ),
-                want_doc=sw_compdocs.document.Document(
-                    [
-                        sw_compdocs.document.Heading("connections"),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_TYPE",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_DESC",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["power", "label", "desc"]
-                                    )
-                                ],
-                            )
-                        ),
-                    ]
-                ),
-            ),
-            tt(
-                input_label=None,
-                input_lang=None,
-                input_ctx=None,
-                input_lns=sw_compdocs.component.LogicNodeList(
-                    [
                         sw_compdocs.component.LogicNode(
-                            label=sw_compdocs.language.Text(en="label"),
+                            label=sw_compdocs.language.Text(en="WATER"),
                             mode=sw_compdocs.component.LogicNodeMode.INPUT,
                             type=sw_compdocs.component.LogicNodeType.WATER,
-                            description=sw_compdocs.language.Text(en="desc"),
                         ),
-                    ]
-                ),
-                want_doc=sw_compdocs.document.Document(
-                    [
-                        sw_compdocs.document.Heading("connections"),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_TYPE",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_DESC",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["fluid", "label", "desc"]
-                                    )
-                                ],
-                            )
-                        ),
-                    ]
-                ),
-            ),
-            tt(
-                input_label=None,
-                input_lang=None,
-                input_ctx=None,
-                input_lns=sw_compdocs.component.LogicNodeList(
-                    [
                         sw_compdocs.component.LogicNode(
-                            label=sw_compdocs.language.Text(en="label"),
+                            label=sw_compdocs.language.Text(en="ELECTRIC"),
                             mode=sw_compdocs.component.LogicNodeMode.INPUT,
                             type=sw_compdocs.component.LogicNodeType.ELECTRIC,
-                            description=sw_compdocs.language.Text(en="desc"),
                         ),
-                    ]
-                ),
-                want_doc=sw_compdocs.document.Document(
-                    [
-                        sw_compdocs.document.Heading("connections"),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_TYPE",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_DESC",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["electric", "label", "desc"]
-                                    )
-                                ],
-                            )
-                        ),
-                    ]
-                ),
-            ),
-            tt(
-                input_label=None,
-                input_lang=None,
-                input_ctx=None,
-                input_lns=sw_compdocs.component.LogicNodeList(
-                    [
                         sw_compdocs.component.LogicNode(
-                            label=sw_compdocs.language.Text(en="label"),
+                            label=sw_compdocs.language.Text(en="COMPOSITE"),
                             mode=sw_compdocs.component.LogicNodeMode.INPUT,
                             type=sw_compdocs.component.LogicNodeType.COMPOSITE,
-                            description=sw_compdocs.language.Text(en="desc"),
                         ),
-                    ]
-                ),
-                want_doc=sw_compdocs.document.Document(
-                    [
-                        sw_compdocs.document.Heading("logic inputs"),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_TYPE",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_DESC",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["composite", "label", "desc"]
-                                    )
-                                ],
-                            )
-                        ),
-                    ]
-                ),
-            ),
-            tt(
-                input_label=None,
-                input_lang=None,
-                input_ctx=None,
-                input_lns=sw_compdocs.component.LogicNodeList(
-                    [
                         sw_compdocs.component.LogicNode(
-                            label=sw_compdocs.language.Text(en="label"),
+                            label=sw_compdocs.language.Text(en="VIDEO"),
                             mode=sw_compdocs.component.LogicNodeMode.INPUT,
                             type=sw_compdocs.component.LogicNodeType.VIDEO,
-                            description=sw_compdocs.language.Text(en="desc"),
                         ),
-                    ]
-                ),
-                want_doc=sw_compdocs.document.Document(
-                    [
-                        sw_compdocs.document.Heading("logic inputs"),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_TYPE",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_DESC",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["video", "label", "desc"]
-                                    )
-                                ],
-                            )
-                        ),
-                    ]
-                ),
-            ),
-            tt(
-                input_label=None,
-                input_lang=None,
-                input_ctx=None,
-                input_lns=sw_compdocs.component.LogicNodeList(
-                    [
                         sw_compdocs.component.LogicNode(
-                            label=sw_compdocs.language.Text(en="label"),
+                            label=sw_compdocs.language.Text(en="AUDIO"),
                             mode=sw_compdocs.component.LogicNodeMode.INPUT,
                             type=sw_compdocs.component.LogicNodeType.AUDIO,
-                            description=sw_compdocs.language.Text(en="desc"),
+                        ),
+                        sw_compdocs.component.LogicNode(
+                            label=sw_compdocs.language.Text(en="ROPE"),
+                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                            type=sw_compdocs.component.LogicNodeType.ROPE,
+                        ),
+                        sw_compdocs.component.LogicNode(
+                            label=sw_compdocs.language.Text(en="OUTPUT"),
+                            mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
+                            type=sw_compdocs.component.LogicNodeType.BOOL,
                         ),
                     ]
                 ),
@@ -1353,67 +756,23 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["audio", "label", "desc"]
-                                    )
-                                ],
-                            )
-                        ),
-                    ]
-                ),
-            ),
-            tt(
-                input_label=None,
-                input_lang=None,
-                input_ctx=None,
-                input_lns=sw_compdocs.component.LogicNodeList(
-                    [
-                        sw_compdocs.component.LogicNode(
-                            label=sw_compdocs.language.Text(en="label"),
-                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                            type=sw_compdocs.component.LogicNodeType.ROPE,
-                            description=sw_compdocs.language.Text(en="desc"),
-                        ),
-                    ]
-                ),
-                want_doc=sw_compdocs.document.Document(
-                    [
-                        sw_compdocs.document.Heading("connections"),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_TYPE",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_DESC",
-                                    ]
-                                ),
-                                [
+                                        ["on/off", "BOOL", ""]
+                                    ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["rope", "label", "desc"]
-                                    )
+                                        ["number", "FLOAT", ""]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["composite", "COMPOSITE", ""]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["video", "VIDEO", ""]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["audio", "AUDIO", ""]
+                                    ),
                                 ],
                             )
                         ),
-                    ]
-                ),
-            ),
-            # logic node mode
-            tt(
-                input_label=None,
-                input_lang=None,
-                input_ctx=None,
-                input_lns=sw_compdocs.component.LogicNodeList(
-                    [
-                        sw_compdocs.component.LogicNode(
-                            label=sw_compdocs.language.Text(en="label"),
-                            mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
-                            type=sw_compdocs.component.LogicNodeType.BOOL,
-                            description=sw_compdocs.language.Text(en="desc"),
-                        ),
-                    ]
-                ),
-                want_doc=sw_compdocs.document.Document(
-                    [
                         sw_compdocs.document.Heading("logic outputs"),
                         sw_compdocs.document.Table(
                             sw_compdocs.document.TableData(
@@ -1426,8 +785,34 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["on/off", "label", "desc"]
-                                    )
+                                        ["on/off", "OUTPUT", ""]
+                                    ),
+                                ],
+                            )
+                        ),
+                        sw_compdocs.document.Heading("connections"),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    [
+                                        "DOCUMENT_LOGIC_TABLE_HEAD_TYPE",
+                                        "DOCUMENT_LOGIC_TABLE_HEAD_LABEL",
+                                        "DOCUMENT_LOGIC_TABLE_HEAD_DESC",
+                                    ]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["power", "TORQUE", ""]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["fluid", "WATER", ""]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["electric", "ELECTRIC", ""]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["rope", "ROPE", ""]
+                                    ),
                                 ],
                             )
                         ),
@@ -1442,12 +827,29 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                         sw_compdocs.language.Translation(
                             "", "", "logic inputs", "ロジック入力"
                         ),
-                        sw_compdocs.language.Translation("", "", "on/off", "オン/オフ"),
                         sw_compdocs.language.Translation(
-                            "def_test_node_0_label", "", "", "ラベル"
+                            "", "", "logic outputs", "ロジック出力"
+                        ),
+                        sw_compdocs.language.Translation("", "", "connections", "接続"),
+                        sw_compdocs.language.Translation("", "", "on/off", "オン/オフ"),
+                        sw_compdocs.language.Translation("", "", "power", "動力"),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_0_label", "", "", "IN"
                         ),
                         sw_compdocs.language.Translation(
-                            "def_test_node_0_desc", "", "", "説明"
+                            "def_test_node_0_desc", "", "", ""
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_1_label", "", "", "OUT"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_1_desc", "", "", ""
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_2_label", "", "", "CONN"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_node_2_desc", "", "", ""
                         ),
                     ]
                 ),
@@ -1457,13 +859,31 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                         sw_compdocs.component.LogicNode(
                             key="test",
                             idx=0,
-                            label=sw_compdocs.language.Text(
-                                id="def_test_node_0_label", en="label"
-                            ),
+                            label=sw_compdocs.language.Text(id="def_test_node_0_label"),
                             mode=sw_compdocs.component.LogicNodeMode.INPUT,
                             type=sw_compdocs.component.LogicNodeType.BOOL,
                             description=sw_compdocs.language.Text(
-                                id="def_test_node_0_desc", en="desc"
+                                id="def_test_node_0_desc"
+                            ),
+                        ),
+                        sw_compdocs.component.LogicNode(
+                            key="test",
+                            idx=1,
+                            label=sw_compdocs.language.Text(id="def_test_node_1_label"),
+                            mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
+                            type=sw_compdocs.component.LogicNodeType.BOOL,
+                            description=sw_compdocs.language.Text(
+                                id="def_test_node_1_desc"
+                            ),
+                        ),
+                        sw_compdocs.component.LogicNode(
+                            key="test",
+                            idx=2,
+                            label=sw_compdocs.language.Text(id="def_test_node_2_label"),
+                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                            type=sw_compdocs.component.LogicNodeType.TORQUE,
+                            description=sw_compdocs.language.Text(
+                                id="def_test_node_2_desc"
                             ),
                         ),
                     ],
@@ -1483,50 +903,11 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["オン/オフ", "ラベル", "説明"]
+                                        ["オン/オフ", "IN", ""]
                                     )
                                 ],
                             )
                         ),
-                    ]
-                ),
-            ),
-            tt(
-                input_label=None,
-                input_lang=sw_compdocs.language.Language(
-                    [
-                        sw_compdocs.language.Translation(
-                            "", "", "logic outputs", "ロジック出力"
-                        ),
-                        sw_compdocs.language.Translation("", "", "on/off", "オン/オフ"),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_0_label", "", "", "ラベル"
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_0_desc", "", "", "説明"
-                        ),
-                    ]
-                ),
-                input_ctx=None,
-                input_lns=sw_compdocs.component.LogicNodeList(
-                    [
-                        sw_compdocs.component.LogicNode(
-                            key="test",
-                            idx=0,
-                            label=sw_compdocs.language.Text(
-                                id="def_test_node_0_label", en="label"
-                            ),
-                            mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
-                            type=sw_compdocs.component.LogicNodeType.BOOL,
-                            description=sw_compdocs.language.Text(
-                                id="def_test_node_0_desc", en="desc"
-                            ),
-                        ),
-                    ],
-                    key="test",
-                ),
-                want_doc=sw_compdocs.document.Document(
-                    [
                         sw_compdocs.document.Heading("ロジック出力"),
                         sw_compdocs.document.Table(
                             sw_compdocs.document.TableData(
@@ -1539,48 +920,11 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["オン/オフ", "ラベル", "説明"]
+                                        ["オン/オフ", "OUT", ""]
                                     )
                                 ],
                             )
                         ),
-                    ]
-                ),
-            ),
-            tt(
-                input_label=None,
-                input_lang=sw_compdocs.language.Language(
-                    [
-                        sw_compdocs.language.Translation("", "", "connections", "接続"),
-                        sw_compdocs.language.Translation("", "", "power", "動力"),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_0_label", "", "", "ラベル"
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_0_desc", "", "", "説明"
-                        ),
-                    ]
-                ),
-                input_ctx=None,
-                input_lns=sw_compdocs.component.LogicNodeList(
-                    [
-                        sw_compdocs.component.LogicNode(
-                            key="test",
-                            idx=0,
-                            label=sw_compdocs.language.Text(
-                                id="def_test_node_0_label", en="label"
-                            ),
-                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                            type=sw_compdocs.component.LogicNodeType.TORQUE,
-                            description=sw_compdocs.language.Text(
-                                id="def_test_node_0_desc", en="desc"
-                            ),
-                        ),
-                    ],
-                    key="test",
-                ),
-                want_doc=sw_compdocs.document.Document(
-                    [
                         sw_compdocs.document.Heading("接続"),
                         sw_compdocs.document.Table(
                             sw_compdocs.document.TableData(
@@ -1593,205 +937,8 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["動力", "ラベル", "説明"]
+                                        ["動力", "CONN", ""]
                                     )
-                                ],
-                            )
-                        ),
-                    ]
-                ),
-            ),
-            # logic idx
-            tt(
-                input_label=None,
-                input_lang=sw_compdocs.language.Language(
-                    [
-                        sw_compdocs.language.Translation(
-                            "", "", "logic inputs", "logic inputs"
-                        ),
-                        sw_compdocs.language.Translation(
-                            "", "", "logic outputs", "logic outputs"
-                        ),
-                        sw_compdocs.language.Translation(
-                            "", "", "connections", "connections"
-                        ),
-                        sw_compdocs.language.Translation("", "", "on/off", "on/off"),
-                        sw_compdocs.language.Translation("", "", "power", "power"),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_0_label", "", "", "label 0"
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_0_desc", "", "", "desc 0"
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_1_label", "", "", "label 1"
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_1_desc", "", "", "desc 1"
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_2_label", "", "", "label 2"
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_2_desc", "", "", "desc 2"
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_3_label", "", "", "label 3"
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_3_desc", "", "", "desc 3"
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_4_label", "", "", "label 4"
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_4_desc", "", "", "desc 4"
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_5_label", "", "", "label 5"
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_node_5_desc", "", "", "desc 5"
-                        ),
-                    ]
-                ),
-                input_ctx=None,
-                input_lns=sw_compdocs.component.LogicNodeList(
-                    [
-                        sw_compdocs.component.LogicNode(
-                            key="test",
-                            idx=0,
-                            label=sw_compdocs.language.Text(
-                                id="def_test_node_0_label", en="label"
-                            ),
-                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                            type=sw_compdocs.component.LogicNodeType.BOOL,
-                            description=sw_compdocs.language.Text(
-                                id="def_test_node_0_desc", en="desc"
-                            ),
-                        ),
-                        sw_compdocs.component.LogicNode(
-                            key="test",
-                            idx=1,
-                            label=sw_compdocs.language.Text(
-                                id="def_test_node_1_label", en="label"
-                            ),
-                            mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
-                            type=sw_compdocs.component.LogicNodeType.BOOL,
-                            description=sw_compdocs.language.Text(
-                                id="def_test_node_1_desc", en="desc"
-                            ),
-                        ),
-                        sw_compdocs.component.LogicNode(
-                            key="test",
-                            idx=2,
-                            label=sw_compdocs.language.Text(
-                                id="def_test_node_2_label", en="label"
-                            ),
-                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                            type=sw_compdocs.component.LogicNodeType.TORQUE,
-                            description=sw_compdocs.language.Text(
-                                id="def_test_node_2_desc", en="desc"
-                            ),
-                        ),
-                        sw_compdocs.component.LogicNode(
-                            key="test",
-                            idx=3,
-                            label=sw_compdocs.language.Text(
-                                id="def_test_node_3_label", en="label"
-                            ),
-                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                            type=sw_compdocs.component.LogicNodeType.BOOL,
-                            description=sw_compdocs.language.Text(
-                                id="def_test_node_3_desc", en="desc"
-                            ),
-                        ),
-                        sw_compdocs.component.LogicNode(
-                            key="test",
-                            idx=4,
-                            label=sw_compdocs.language.Text(
-                                id="def_test_node_4_label", en="label"
-                            ),
-                            mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
-                            type=sw_compdocs.component.LogicNodeType.BOOL,
-                            description=sw_compdocs.language.Text(
-                                id="def_test_node_4_desc", en="desc"
-                            ),
-                        ),
-                        sw_compdocs.component.LogicNode(
-                            key="test",
-                            idx=5,
-                            label=sw_compdocs.language.Text(
-                                id="def_test_node_5_label", en="label"
-                            ),
-                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                            type=sw_compdocs.component.LogicNodeType.TORQUE,
-                            description=sw_compdocs.language.Text(
-                                id="def_test_node_5_desc", en="desc"
-                            ),
-                        ),
-                    ],
-                    key="test",
-                ),
-                want_doc=sw_compdocs.document.Document(
-                    [
-                        sw_compdocs.document.Heading("logic inputs"),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_TYPE",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_DESC",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["on/off", "label 0", "desc 0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["on/off", "label 3", "desc 3"]
-                                    ),
-                                ],
-                            )
-                        ),
-                        sw_compdocs.document.Heading("logic outputs"),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_TYPE",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_DESC",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["on/off", "label 1", "desc 1"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["on/off", "label 4", "desc 4"]
-                                    ),
-                                ],
-                            )
-                        ),
-                        sw_compdocs.document.Heading("connections"),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_TYPE",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_DESC",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["power", "label 2", "desc 2"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["power", "label 5", "desc 5"]
-                                    ),
                                 ],
                             )
                         ),
@@ -1823,85 +970,15 @@ class TestGenerateDocumentComponent(unittest.TestCase):
         )
 
         for tc in [
-            tt(  # normal
+            # empty
+            tt(
                 input_label=None,
                 input_lang=None,
                 input_ctx=None,
-                input_defn=sw_compdocs.component.Definition(
-                    file="clock.xml",
-                    key="clock",
-                    name=sw_compdocs.language.Text(id="def_clock_name", en="Clock"),
-                    category=sw_compdocs.component.Category.DISPLAYS,
-                    mass=1.0,
-                    value=100,
-                    flags=sw_compdocs.component.Flags(8192),
-                    tags="basic",
-                    tooltip_properties=sw_compdocs.component.TooltipProperties(
-                        short_description=sw_compdocs.language.Text(
-                            id="def_clock_s_desc",
-                            en="An analogue clock display that outputs a number value representing the time of day.",
-                        ),
-                        description=sw_compdocs.language.Text(
-                            id="def_clock_desc",
-                            en="The clock has a display to visualise the time of day or night. The 12 o'clock position is the white arrow on the face of the display.",
-                        ),
-                    ),
-                    logic_nodes=sw_compdocs.component.LogicNodeList(
-                        [
-                            sw_compdocs.component.LogicNode(
-                                key="clock",
-                                idx=0,
-                                label=sw_compdocs.language.Text(
-                                    id="def_clock_node_0_label", en="Time"
-                                ),
-                                mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
-                                type=sw_compdocs.component.LogicNodeType.FLOAT,
-                                description=sw_compdocs.language.Text(
-                                    id="def_clock_node_0_desc",
-                                    en="The time as a factor of a day, from 0 (midnight) to 1 (midnight).",
-                                ),
-                            ),
-                            sw_compdocs.component.LogicNode(
-                                key="clock",
-                                idx=1,
-                                label=sw_compdocs.language.Text(
-                                    id="def_clock_node_1_label", en="Backlight"
-                                ),
-                                mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                                type=sw_compdocs.component.LogicNodeType.BOOL,
-                                description=sw_compdocs.language.Text(
-                                    id="def_clock_node_1_desc",
-                                    en="Enables the backlight when receiving an on signal.",
-                                ),
-                            ),
-                            sw_compdocs.component.LogicNode(
-                                key="clock",
-                                idx=2,
-                                label=sw_compdocs.language.Text(
-                                    id="def_clock_node_2_label", en="Electric"
-                                ),
-                                mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                                type=sw_compdocs.component.LogicNodeType.ELECTRIC,
-                                description=sw_compdocs.language.Text(
-                                    id="def_clock_node_2_desc",
-                                    en="Electrical power connection.",
-                                ),
-                            ),
-                        ],
-                        key="clock",
-                    ),
-                    voxel_min=sw_compdocs.component.VoxelPos(x=0, y=0, z=0),
-                    voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=0),
-                ),
+                input_defn=sw_compdocs.component.Definition(),
                 want_doc=sw_compdocs.document.Document(
                     [
-                        sw_compdocs.document.Heading("Clock"),
-                        sw_compdocs.document.Paragraph(
-                            "An analogue clock display that outputs a number value representing the time of day."
-                        ),
-                        sw_compdocs.document.Paragraph(
-                            "The clock has a display to visualise the time of day or night. The 12 o'clock position is the white arrow on the face of the display."
-                        ),
+                        sw_compdocs.document.Heading(""),
                         sw_compdocs.document.Heading("PROPERTIES", level=2),
                         sw_compdocs.document.Table(
                             sw_compdocs.document.TableData(
@@ -1913,172 +990,41 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_MASS_LABEL", "1"]
+                                        ["DOCUMENT_PROP_TABLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x1x2"]
+                                        ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x1x1"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_COST_LABEL", "100"]
+                                        ["DOCUMENT_PROP_TABLE_COST_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_TAGS_LABEL", "basic"]
+                                        ["DOCUMENT_PROP_TABLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_FILE_LABEL", "clock.xml"]
+                                        ["DOCUMENT_PROP_TABLE_FILE_LABEL", ""]
                                     ),
-                                ],
-                            )
-                        ),
-                        sw_compdocs.document.Heading("logic inputs", level=2),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_TYPE",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_DESC",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "on/off",
-                                            "Backlight",
-                                            "Enables the backlight when receiving an on signal.",
-                                        ]
-                                    )
-                                ],
-                            )
-                        ),
-                        sw_compdocs.document.Heading("logic outputs", level=2),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_TYPE",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_DESC",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "number",
-                                            "Time",
-                                            "The time as a factor of a day, from 0 (midnight) to 1 (midnight).",
-                                        ]
-                                    )
-                                ],
-                            )
-                        ),
-                        sw_compdocs.document.Heading("connections", level=2),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_TYPE",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_DESC",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "electric",
-                                            "Electric",
-                                            "Electrical power connection.",
-                                        ]
-                                    )
                                 ],
                             )
                         ),
                     ]
                 ),
             ),
-            tt(  # deprecated
+            # deprecated
+            tt(
                 input_label=None,
                 input_lang=None,
                 input_ctx=None,
                 input_defn=sw_compdocs.component.Definition(
-                    file="clock.xml",
-                    key="clock",
-                    name=sw_compdocs.language.Text(id="def_clock_name", en="Clock"),
-                    category=sw_compdocs.component.Category.DISPLAYS,
-                    mass=1.0,
-                    value=100,
-                    flags=sw_compdocs.component.Flags.IS_DEPRECATED,
-                    tags="basic",
-                    tooltip_properties=sw_compdocs.component.TooltipProperties(
-                        short_description=sw_compdocs.language.Text(
-                            id="def_clock_s_desc",
-                            en="An analogue clock display that outputs a number value representing the time of day.",
-                        ),
-                        description=sw_compdocs.language.Text(
-                            id="def_clock_desc",
-                            en="The clock has a display to visualise the time of day or night. The 12 o'clock position is the white arrow on the face of the display.",
-                        ),
-                    ),
-                    logic_nodes=sw_compdocs.component.LogicNodeList(
-                        [
-                            sw_compdocs.component.LogicNode(
-                                key="clock",
-                                idx=0,
-                                label=sw_compdocs.language.Text(
-                                    id="def_clock_node_0_label", en="Time"
-                                ),
-                                mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
-                                type=sw_compdocs.component.LogicNodeType.FLOAT,
-                                description=sw_compdocs.language.Text(
-                                    id="def_clock_node_0_desc",
-                                    en="The time as a factor of a day, from 0 (midnight) to 1 (midnight).",
-                                ),
-                            ),
-                            sw_compdocs.component.LogicNode(
-                                key="clock",
-                                idx=1,
-                                label=sw_compdocs.language.Text(
-                                    id="def_clock_node_1_label", en="Backlight"
-                                ),
-                                mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                                type=sw_compdocs.component.LogicNodeType.BOOL,
-                                description=sw_compdocs.language.Text(
-                                    id="def_clock_node_1_desc",
-                                    en="Enables the backlight when receiving an on signal.",
-                                ),
-                            ),
-                            sw_compdocs.component.LogicNode(
-                                key="clock",
-                                idx=2,
-                                label=sw_compdocs.language.Text(
-                                    id="def_clock_node_2_label", en="Electric"
-                                ),
-                                mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                                type=sw_compdocs.component.LogicNodeType.ELECTRIC,
-                                description=sw_compdocs.language.Text(
-                                    id="def_clock_node_2_desc",
-                                    en="Electrical power connection.",
-                                ),
-                            ),
-                        ],
-                        key="clock",
-                    ),
-                    voxel_min=sw_compdocs.component.VoxelPos(x=0, y=0, z=0),
-                    voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=0),
+                    flags=sw_compdocs.component.Flags.IS_DEPRECATED
                 ),
                 want_doc=sw_compdocs.document.Document(
                     [
-                        sw_compdocs.document.Heading("Clock"),
+                        sw_compdocs.document.Heading(""),
                         sw_compdocs.document.Callout(
                             "DOCUMENT_DEPRECATED_TEXT",
                             kind=sw_compdocs.document.CalloutKind.WARNING,
                         ),
-                        sw_compdocs.document.Paragraph(
-                            "An analogue clock display that outputs a number value representing the time of day."
-                        ),
-                        sw_compdocs.document.Paragraph(
-                            "The clock has a display to visualise the time of day or night. The 12 o'clock position is the white arrow on the face of the display."
-                        ),
                         sw_compdocs.document.Heading("PROPERTIES", level=2),
                         sw_compdocs.document.Table(
                             sw_compdocs.document.TableData(
@@ -2090,19 +1036,81 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_MASS_LABEL", "1"]
+                                        ["DOCUMENT_PROP_TABLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x1x2"]
+                                        ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x1x1"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_COST_LABEL", "100"]
+                                        ["DOCUMENT_PROP_TABLE_COST_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_TAGS_LABEL", "basic"]
+                                        ["DOCUMENT_PROP_TABLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_FILE_LABEL", "clock.xml"]
+                                        ["DOCUMENT_PROP_TABLE_FILE_LABEL", ""]
+                                    ),
+                                ],
+                            )
+                        ),
+                    ]
+                ),
+            ),
+            # text
+            tt(
+                input_label=None,
+                input_lang=None,
+                input_ctx=None,
+                input_defn=sw_compdocs.component.Definition(
+                    name=sw_compdocs.language.Text(en="Name"),
+                    tooltip_properties=sw_compdocs.component.TooltipProperties(
+                        short_description=sw_compdocs.language.Text(
+                            en="Short Description"
+                        ),
+                        description=sw_compdocs.language.Text(en="Description"),
+                    ),
+                    logic_nodes=sw_compdocs.component.LogicNodeList(
+                        [
+                            sw_compdocs.component.LogicNode(
+                                label=sw_compdocs.language.Text(en="Node Label"),
+                                mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                                type=sw_compdocs.component.LogicNodeType.BOOL,
+                                description=sw_compdocs.language.Text(
+                                    en="Node Description"
+                                ),
+                            ),
+                        ],
+                    ),
+                ),
+                want_doc=sw_compdocs.document.Document(
+                    [
+                        sw_compdocs.document.Heading("Name"),
+                        sw_compdocs.document.Paragraph("Short Description"),
+                        sw_compdocs.document.Paragraph("Description"),
+                        sw_compdocs.document.Heading("PROPERTIES", level=2),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    [
+                                        "DOCUMENT_PROP_TABLE_HEAD_LABEL",
+                                        "DOCUMENT_PROP_TABLE_HEAD_VALUE",
+                                    ]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["DOCUMENT_PROP_TABLE_MASS_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["DOCUMENT_PROP_TABLE_COST_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["DOCUMENT_PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["DOCUMENT_PROP_TABLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -2119,53 +1127,7 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        [
-                                            "on/off",
-                                            "Backlight",
-                                            "Enables the backlight when receiving an on signal.",
-                                        ]
-                                    )
-                                ],
-                            )
-                        ),
-                        sw_compdocs.document.Heading("logic outputs", level=2),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_TYPE",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_DESC",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "number",
-                                            "Time",
-                                            "The time as a factor of a day, from 0 (midnight) to 1 (midnight).",
-                                        ]
-                                    )
-                                ],
-                            )
-                        ),
-                        sw_compdocs.document.Heading("connections", level=2),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_TYPE",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_DESC",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "electric",
-                                            "Electric",
-                                            "Electrical power connection.",
-                                        ]
+                                        ["on/off", "Node Label", "Node Description"]
                                     )
                                 ],
                             )
@@ -2173,7 +1135,8 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                     ]
                 ),
             ),
-            tt(  # label, lang
+            # label, lang, template
+            tt(
                 input_label={
                     "DOCUMENT_DEPRECATED_TEXT": "この部品は非推奨です。",
                     "DOCUMENT_PROP_TABLE_HEAD_LABEL": "ラベル",
@@ -2198,18 +1161,6 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                         sw_compdocs.language.Translation(
                             "",
                             "",
-                            "logic outputs",
-                            "ロジック出力",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "",
-                            "",
-                            "connections",
-                            "接続",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "",
-                            "",
                             "PROPERTIES",
                             "プロパティ",
                         ),
@@ -2220,169 +1171,88 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                             "オン/オフ",
                         ),
                         sw_compdocs.language.Translation(
+                            "def_dummy_name",
                             "",
                             "",
-                            "number",
-                            "数値",
+                            "部品名",
                         ),
                         sw_compdocs.language.Translation(
+                            "def_dummy_desc",
                             "",
                             "",
-                            "electric",
-                            "電力",
+                            "$[def_dummy_desc_placeholder]",
                         ),
                         sw_compdocs.language.Translation(
-                            "def_clock_name",
+                            "def_dummy_s_desc",
                             "",
-                            "Clock",
-                            "時計",
+                            "",
+                            "$[def_dummy_s_desc_placeholder]",
                         ),
                         sw_compdocs.language.Translation(
-                            "def_clock_desc",
+                            "def_dummy_node_0_label",
                             "",
-                            "The clock has a display to visualise the time of day or night. The 12 o'clock position is the white arrow on the face of the display.",
-                            "時計に表示されている青い矢印が12時の方向です.",
+                            "",
+                            "$[def_dummy_node_0_label_placeholder]",
                         ),
                         sw_compdocs.language.Translation(
-                            "def_clock_s_desc",
+                            "def_dummy_node_0_desc",
                             "",
-                            "An analogue clock display that outputs a number value representing the time of day.",
-                            "ゲーム内の時刻に対応した数値信号を出力するアナログ時計です.",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_clock_node_0_label",
                             "",
-                            "Time",
-                            "ゲーム内の時刻",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_clock_node_0_desc",
-                            "",
-                            "The time as a factor of a day, from 0 (midnight) to 1 (midnight).",
-                            "ゲーム内の時刻に対応した数値を0 (0:00) から1 (24:00) の範囲で出力します.",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_clock_node_1_label",
-                            "",
-                            "Backlight",
-                            "バックライト",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_clock_node_1_desc",
-                            "",
-                            "Enables the backlight when receiving an on signal.",
-                            "オン信号を受け取るとバックライトが点灯します.",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_clock_node_2_label",
-                            "",
-                            "Electric",
-                            "電力",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_clock_node_2_desc",
-                            "",
-                            "Electrical power connection.",
-                            "電力網から電力を供給します.",
+                            "$[def_dummy_node_0_desc_placeholder]",
                         ),
                     ]
                 ),
-                input_ctx={},
+                input_ctx={
+                    "def_dummy_desc_placeholder": "説明",
+                    "def_dummy_s_desc_placeholder": "短い説明",
+                    "def_dummy_node_0_label_placeholder": "ノードラベル",
+                    "def_dummy_node_0_desc_placeholder": "ノード説明",
+                },
                 input_defn=sw_compdocs.component.Definition(
-                    file="clock.xml",
-                    key="clock",
-                    name=sw_compdocs.language.Text(id="def_clock_name", en="Clock"),
-                    category=sw_compdocs.component.Category.DISPLAYS,
-                    mass=1.0,
-                    value=100,
-                    flags=sw_compdocs.component.Flags.IS_DEPRECATED,
-                    tags="basic",
+                    key="dummy",
+                    name=sw_compdocs.language.Text(id="def_dummy_name"),
                     tooltip_properties=sw_compdocs.component.TooltipProperties(
+                        key="dummy",
                         short_description=sw_compdocs.language.Text(
-                            id="def_clock_s_desc",
-                            en="An analogue clock display that outputs a number value representing the time of day.",
+                            id="def_dummy_s_desc"
                         ),
-                        description=sw_compdocs.language.Text(
-                            id="def_clock_desc",
-                            en="The clock has a display to visualise the time of day or night. The 12 o'clock position is the white arrow on the face of the display.",
-                        ),
+                        description=sw_compdocs.language.Text(id="def_dummy_desc"),
                     ),
                     logic_nodes=sw_compdocs.component.LogicNodeList(
                         [
                             sw_compdocs.component.LogicNode(
-                                key="clock",
+                                key="dummy",
                                 idx=0,
                                 label=sw_compdocs.language.Text(
-                                    id="def_clock_node_0_label", en="Time"
-                                ),
-                                mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
-                                type=sw_compdocs.component.LogicNodeType.FLOAT,
-                                description=sw_compdocs.language.Text(
-                                    id="def_clock_node_0_desc",
-                                    en="The time as a factor of a day, from 0 (midnight) to 1 (midnight).",
-                                ),
-                            ),
-                            sw_compdocs.component.LogicNode(
-                                key="clock",
-                                idx=1,
-                                label=sw_compdocs.language.Text(
-                                    id="def_clock_node_1_label", en="Backlight"
+                                    id="def_dummy_node_0_label"
                                 ),
                                 mode=sw_compdocs.component.LogicNodeMode.INPUT,
                                 type=sw_compdocs.component.LogicNodeType.BOOL,
                                 description=sw_compdocs.language.Text(
-                                    id="def_clock_node_1_desc",
-                                    en="Enables the backlight when receiving an on signal.",
-                                ),
-                            ),
-                            sw_compdocs.component.LogicNode(
-                                key="clock",
-                                idx=2,
-                                label=sw_compdocs.language.Text(
-                                    id="def_clock_node_2_label", en="Electric"
-                                ),
-                                mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                                type=sw_compdocs.component.LogicNodeType.ELECTRIC,
-                                description=sw_compdocs.language.Text(
-                                    id="def_clock_node_2_desc",
-                                    en="Electrical power connection.",
+                                    id="def_dummy_node_0_desc"
                                 ),
                             ),
                         ],
-                        key="clock",
+                        key="dummy",
                     ),
-                    voxel_min=sw_compdocs.component.VoxelPos(x=0, y=0, z=0),
-                    voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=0),
                 ),
                 want_doc=sw_compdocs.document.Document(
                     [
-                        sw_compdocs.document.Heading("時計"),
-                        sw_compdocs.document.Callout(
-                            "この部品は非推奨です。",
-                            kind=sw_compdocs.document.CalloutKind.WARNING,
-                        ),
-                        sw_compdocs.document.Paragraph(
-                            "ゲーム内の時刻に対応した数値信号を出力するアナログ時計です."
-                        ),
-                        sw_compdocs.document.Paragraph(
-                            "時計に表示されている青い矢印が12時の方向です."
-                        ),
+                        sw_compdocs.document.Heading("部品名"),
+                        sw_compdocs.document.Paragraph("短い説明"),
+                        sw_compdocs.document.Paragraph("説明"),
                         sw_compdocs.document.Heading("プロパティ", level=2),
                         sw_compdocs.document.Table(
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(["ラベル", "値"]),
                                 [
-                                    sw_compdocs.document.TableDataRow(["重量", "1"]),
+                                    sw_compdocs.document.TableDataRow(["重量", "0"]),
                                     sw_compdocs.document.TableDataRow(
-                                        ["サイズ(WxDxH)", "1x1x2"]
+                                        ["サイズ(WxDxH)", "1x1x1"]
                                     ),
-                                    sw_compdocs.document.TableDataRow(["値段", "100"]),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["タグ", "basic"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["ファイル", "clock.xml"]
-                                    ),
+                                    sw_compdocs.document.TableDataRow(["値段", "0"]),
+                                    sw_compdocs.document.TableDataRow(["タグ", ""]),
+                                    sw_compdocs.document.TableDataRow(["ファイル", ""]),
                                 ],
                             )
                         ),
@@ -2394,45 +1264,7 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        [
-                                            "オン/オフ",
-                                            "バックライト",
-                                            "オン信号を受け取るとバックライトが点灯します.",
-                                        ]
-                                    )
-                                ],
-                            )
-                        ),
-                        sw_compdocs.document.Heading("ロジック出力", level=2),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    ["型", "ラベル", "説明"]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "数値",
-                                            "ゲーム内の時刻",
-                                            "ゲーム内の時刻に対応した数値を0 (0:00) から1 (24:00) の範囲で出力します.",
-                                        ]
-                                    )
-                                ],
-                            )
-                        ),
-                        sw_compdocs.document.Heading("接続", level=2),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    ["型", "ラベル", "説明"]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "電力",
-                                            "電力",
-                                            "電力網から電力を供給します.",
-                                        ]
+                                        ["オン/オフ", "ノードラベル", "ノード説明"]
                                     )
                                 ],
                             )
@@ -2440,7 +1272,8 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                     ]
                 ),
             ),
-            tt(  # label, lang, template
+            # button_push
+            tt(
                 input_label={
                     "DOCUMENT_PROP_TABLE_HEAD_LABEL": "ラベル",
                     "DOCUMENT_PROP_TABLE_HEAD_VALUE": "値",
@@ -2691,440 +1524,6 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                                             "電力",
                                             "電力",
                                             "電力網から電力を供給します.",
-                                        ]
-                                    )
-                                ],
-                            )
-                        ),
-                    ]
-                ),
-            ),
-            tt(  # label, lang, template
-                input_label={
-                    "DOCUMENT_PROP_TABLE_HEAD_LABEL": "ラベル",
-                    "DOCUMENT_PROP_TABLE_HEAD_VALUE": "値",
-                    "DOCUMENT_PROP_TABLE_MASS_LABEL": "重量",
-                    "DOCUMENT_PROP_TABLE_DIMS_LABEL": "サイズ(WxDxH)",
-                    "DOCUMENT_PROP_TABLE_COST_LABEL": "値段",
-                    "DOCUMENT_PROP_TABLE_TAGS_LABEL": "タグ",
-                    "DOCUMENT_PROP_TABLE_FILE_LABEL": "ファイル",
-                    "DOCUMENT_LOGIC_TABLE_HEAD_TYPE": "型",
-                    "DOCUMENT_LOGIC_TABLE_HEAD_LABEL": "ラベル",
-                    "DOCUMENT_LOGIC_TABLE_HEAD_DESC": "説明",
-                },
-                input_lang=sw_compdocs.language.Language(
-                    [
-                        sw_compdocs.language.Translation(
-                            "",
-                            "",
-                            "PROPERTIES",
-                            "プロパティ",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_handle_name",
-                            "",
-                            "Handle",
-                            "取っ手",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_handle_desc",
-                            "",
-                            "Interacting with [$[action_interact_left]] or [$[action_interact_right]] again will detach that hand. The handle can be used to drag vehicles around. If a vehicle is too heavy to move, you will be detached automatically when you move outside the handle's interaction range.",
-                            "取っ手を掴んでいる時に [$[action_interact_left]]/[$[action_interact_right]] を押すと離すことができます. 軽い乗り物は取っ手を掴んでそのまま動かすことができます. プレイヤーが取っ手の範囲外まで移動した場合は自動的に手を離します.",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_handle_s_desc",
-                            "",
-                            "A handle that you can attach to by interacting with [$[action_interact_left]] or [$[action_interact_right]].",
-                            "[$[action_interact_left]] や [$[action_interact_right]] を押して掴むことができる取っ手です.",
-                        ),
-                    ]
-                ),
-                input_ctx={"action_interact_left": "q", "action_interact_right": "e"},
-                input_defn=sw_compdocs.component.Definition(
-                    file="handle.xml",
-                    key="handle",
-                    name=sw_compdocs.language.Text(id="def_handle_name", en="Handle"),
-                    category=sw_compdocs.component.Category.BLOCKS,
-                    mass=1.0,
-                    value=5,
-                    flags=sw_compdocs.component.Flags(0),
-                    tags="basic",
-                    tooltip_properties=sw_compdocs.component.TooltipProperties(
-                        short_description=sw_compdocs.language.Text(
-                            id="def_handle_s_desc",
-                            en="Interacting with [$[action_interact_left]] or [$[action_interact_right]] again will detach that hand. The handle can be used to drag vehicles around. If a vehicle is too heavy to move, you will be detached automatically when you move outside the handle's interaction range.",
-                        ),
-                        description=sw_compdocs.language.Text(
-                            id="def_handle_desc",
-                            en="A handle that you can attach to by interacting with [$[action_interact_left]] or [$[action_interact_right]].",
-                        ),
-                    ),
-                    logic_nodes=sw_compdocs.component.LogicNodeList(),
-                    voxel_min=sw_compdocs.component.VoxelPos(x=0, y=0, z=0),
-                    voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=0),
-                ),
-                want_doc=sw_compdocs.document.Document(
-                    [
-                        sw_compdocs.document.Heading("取っ手"),
-                        sw_compdocs.document.Paragraph(
-                            "[q] や [e] を押して掴むことができる取っ手です."
-                        ),
-                        sw_compdocs.document.Paragraph(
-                            "取っ手を掴んでいる時に [q]/[e] を押すと離すことができます. 軽い乗り物は取っ手を掴んでそのまま動かすことができます. プレイヤーが取っ手の範囲外まで移動した場合は自動的に手を離します."
-                        ),
-                        sw_compdocs.document.Heading("プロパティ", level=2),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(["ラベル", "値"]),
-                                [
-                                    sw_compdocs.document.TableDataRow(["重量", "1"]),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["サイズ(WxDxH)", "1x1x2"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(["値段", "5"]),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["タグ", "basic"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["ファイル", "handle.xml"]
-                                    ),
-                                ],
-                            )
-                        ),
-                    ]
-                ),
-            ),
-            tt(  # omit short_description
-                input_label=None,
-                input_lang=None,
-                input_ctx=None,
-                input_defn=sw_compdocs.component.Definition(
-                    file="clock.xml",
-                    key="clock",
-                    name=sw_compdocs.language.Text(id="def_clock_name", en="Clock"),
-                    category=sw_compdocs.component.Category.DISPLAYS,
-                    mass=1.0,
-                    value=100,
-                    flags=sw_compdocs.component.Flags(8192),
-                    tags="basic",
-                    tooltip_properties=sw_compdocs.component.TooltipProperties(
-                        short_description=sw_compdocs.language.Text(
-                            id="def_clock_s_desc", en=""
-                        ),
-                        description=sw_compdocs.language.Text(
-                            id="def_clock_desc",
-                            en="The clock has a display to visualise the time of day or night. The 12 o'clock position is the white arrow on the face of the display.",
-                        ),
-                    ),
-                    logic_nodes=sw_compdocs.component.LogicNodeList(
-                        [
-                            sw_compdocs.component.LogicNode(
-                                key="clock",
-                                idx=0,
-                                label=sw_compdocs.language.Text(
-                                    id="def_clock_node_0_label", en="Time"
-                                ),
-                                mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
-                                type=sw_compdocs.component.LogicNodeType.FLOAT,
-                                description=sw_compdocs.language.Text(
-                                    id="def_clock_node_0_desc",
-                                    en="The time as a factor of a day, from 0 (midnight) to 1 (midnight).",
-                                ),
-                            ),
-                            sw_compdocs.component.LogicNode(
-                                key="clock",
-                                idx=1,
-                                label=sw_compdocs.language.Text(
-                                    id="def_clock_node_1_label", en="Backlight"
-                                ),
-                                mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                                type=sw_compdocs.component.LogicNodeType.BOOL,
-                                description=sw_compdocs.language.Text(
-                                    id="def_clock_node_1_desc",
-                                    en="Enables the backlight when receiving an on signal.",
-                                ),
-                            ),
-                            sw_compdocs.component.LogicNode(
-                                key="clock",
-                                idx=2,
-                                label=sw_compdocs.language.Text(
-                                    id="def_clock_node_2_label", en="Electric"
-                                ),
-                                mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                                type=sw_compdocs.component.LogicNodeType.ELECTRIC,
-                                description=sw_compdocs.language.Text(
-                                    id="def_clock_node_2_desc",
-                                    en="Electrical power connection.",
-                                ),
-                            ),
-                        ],
-                        key="clock",
-                    ),
-                    voxel_min=sw_compdocs.component.VoxelPos(x=0, y=0, z=0),
-                    voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=0),
-                ),
-                want_doc=sw_compdocs.document.Document(
-                    [
-                        sw_compdocs.document.Heading("Clock"),
-                        sw_compdocs.document.Paragraph(
-                            "The clock has a display to visualise the time of day or night. The 12 o'clock position is the white arrow on the face of the display."
-                        ),
-                        sw_compdocs.document.Heading("PROPERTIES", level=2),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_PROP_TABLE_HEAD_VALUE",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_MASS_LABEL", "1"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x1x2"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_COST_LABEL", "100"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_TAGS_LABEL", "basic"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_FILE_LABEL", "clock.xml"]
-                                    ),
-                                ],
-                            )
-                        ),
-                        sw_compdocs.document.Heading("logic inputs", level=2),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_TYPE",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_DESC",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "on/off",
-                                            "Backlight",
-                                            "Enables the backlight when receiving an on signal.",
-                                        ]
-                                    )
-                                ],
-                            )
-                        ),
-                        sw_compdocs.document.Heading("logic outputs", level=2),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_TYPE",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_DESC",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "number",
-                                            "Time",
-                                            "The time as a factor of a day, from 0 (midnight) to 1 (midnight).",
-                                        ]
-                                    )
-                                ],
-                            )
-                        ),
-                        sw_compdocs.document.Heading("connections", level=2),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_TYPE",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_DESC",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "electric",
-                                            "Electric",
-                                            "Electrical power connection.",
-                                        ]
-                                    )
-                                ],
-                            )
-                        ),
-                    ]
-                ),
-            ),
-            tt(  # omit description
-                input_label=None,
-                input_lang=None,
-                input_ctx=None,
-                input_defn=sw_compdocs.component.Definition(
-                    file="clock.xml",
-                    key="clock",
-                    name=sw_compdocs.language.Text(id="def_clock_name", en="Clock"),
-                    category=sw_compdocs.component.Category.DISPLAYS,
-                    mass=1.0,
-                    value=100,
-                    flags=sw_compdocs.component.Flags(8192),
-                    tags="basic",
-                    tooltip_properties=sw_compdocs.component.TooltipProperties(
-                        short_description=sw_compdocs.language.Text(
-                            id="def_clock_s_desc",
-                            en="An analogue clock display that outputs a number value representing the time of day.",
-                        ),
-                        description=sw_compdocs.language.Text(
-                            id="def_clock_desc", en=""
-                        ),
-                    ),
-                    logic_nodes=sw_compdocs.component.LogicNodeList(
-                        [
-                            sw_compdocs.component.LogicNode(
-                                key="clock",
-                                idx=0,
-                                label=sw_compdocs.language.Text(
-                                    id="def_clock_node_0_label", en="Time"
-                                ),
-                                mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
-                                type=sw_compdocs.component.LogicNodeType.FLOAT,
-                                description=sw_compdocs.language.Text(
-                                    id="def_clock_node_0_desc",
-                                    en="The time as a factor of a day, from 0 (midnight) to 1 (midnight).",
-                                ),
-                            ),
-                            sw_compdocs.component.LogicNode(
-                                key="clock",
-                                idx=1,
-                                label=sw_compdocs.language.Text(
-                                    id="def_clock_node_1_label", en="Backlight"
-                                ),
-                                mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                                type=sw_compdocs.component.LogicNodeType.BOOL,
-                                description=sw_compdocs.language.Text(
-                                    id="def_clock_node_1_desc",
-                                    en="Enables the backlight when receiving an on signal.",
-                                ),
-                            ),
-                            sw_compdocs.component.LogicNode(
-                                key="clock",
-                                idx=2,
-                                label=sw_compdocs.language.Text(
-                                    id="def_clock_node_2_label", en="Electric"
-                                ),
-                                mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                                type=sw_compdocs.component.LogicNodeType.ELECTRIC,
-                                description=sw_compdocs.language.Text(
-                                    id="def_clock_node_2_desc",
-                                    en="Electrical power connection.",
-                                ),
-                            ),
-                        ],
-                        key="clock",
-                    ),
-                    voxel_min=sw_compdocs.component.VoxelPos(x=0, y=0, z=0),
-                    voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=0),
-                ),
-                want_doc=sw_compdocs.document.Document(
-                    [
-                        sw_compdocs.document.Heading("Clock"),
-                        sw_compdocs.document.Paragraph(
-                            "An analogue clock display that outputs a number value representing the time of day."
-                        ),
-                        sw_compdocs.document.Heading("PROPERTIES", level=2),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_PROP_TABLE_HEAD_VALUE",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_MASS_LABEL", "1"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x1x2"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_COST_LABEL", "100"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_TAGS_LABEL", "basic"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_FILE_LABEL", "clock.xml"]
-                                    ),
-                                ],
-                            )
-                        ),
-                        sw_compdocs.document.Heading("logic inputs", level=2),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_TYPE",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_DESC",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "on/off",
-                                            "Backlight",
-                                            "Enables the backlight when receiving an on signal.",
-                                        ]
-                                    )
-                                ],
-                            )
-                        ),
-                        sw_compdocs.document.Heading("logic outputs", level=2),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_TYPE",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_DESC",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "number",
-                                            "Time",
-                                            "The time as a factor of a day, from 0 (midnight) to 1 (midnight).",
-                                        ]
-                                    )
-                                ],
-                            )
-                        ),
-                        sw_compdocs.document.Heading("connections", level=2),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_TYPE",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_DESC",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "electric",
-                                            "Electric",
-                                            "Electrical power connection.",
                                         ]
                                     )
                                 ],
@@ -4273,143 +2672,26 @@ class TestGenerateSheetComponent(unittest.TestCase):
         )
 
         for tc in [
-            tt(  # normal
+            tt(  # empty
                 input_lang=None,
                 input_ctx=None,
-                input_defn=sw_compdocs.component.Definition(
-                    file="test.xml",
-                    name=sw_compdocs.language.Text(en="Name"),
-                    category=sw_compdocs.component.Category.BLOCKS,
-                    mass=1.0,
-                    value=2,
-                    tags="tags",
-                    tooltip_properties=sw_compdocs.component.TooltipProperties(
-                        short_description=sw_compdocs.language.Text(
-                            en="short_description"
-                        ),
-                        description=sw_compdocs.language.Text(en="description"),
-                    ),
-                    voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
-                    voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
-                ),
+                input_defn=sw_compdocs.component.Definition(),
                 want_record=[
-                    "Name",
-                    "test.xml",
-                    "Blocks",
-                    "tags",
-                    "FALSE",
-                    "1",
-                    "2",
-                    "3",
-                    "7",
-                    "5",
-                    "short_description",
-                    "description",
-                ],
-            ),
-            tt(  # file none
-                input_lang=None,
-                input_ctx=None,
-                input_defn=sw_compdocs.component.Definition(
-                    name=sw_compdocs.language.Text(en="Name"),
-                    category=sw_compdocs.component.Category.BLOCKS,
-                    mass=1.0,
-                    value=2,
-                    tags="tags",
-                    tooltip_properties=sw_compdocs.component.TooltipProperties(
-                        short_description=sw_compdocs.language.Text(
-                            en="short_description"
-                        ),
-                        description=sw_compdocs.language.Text(en="description"),
-                    ),
-                    voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
-                    voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
-                ),
-                want_record=[
-                    "Name",
+                    "",
                     "",
                     "Blocks",
-                    "tags",
+                    "",
                     "FALSE",
+                    "0",
+                    "0",
                     "1",
-                    "2",
-                    "3",
-                    "7",
-                    "5",
-                    "short_description",
-                    "description",
+                    "1",
+                    "1",
+                    "",
+                    "",
                 ],
             ),
-            tt(  # file
-                input_lang=None,
-                input_ctx=None,
-                input_defn=sw_compdocs.component.Definition(
-                    file=b"path/to/test.xml",
-                    name=sw_compdocs.language.Text(en="Name"),
-                    category=sw_compdocs.component.Category.BLOCKS,
-                    mass=1.0,
-                    value=2,
-                    tags="tags",
-                    tooltip_properties=sw_compdocs.component.TooltipProperties(
-                        short_description=sw_compdocs.language.Text(
-                            en="short_description"
-                        ),
-                        description=sw_compdocs.language.Text(en="description"),
-                    ),
-                    voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
-                    voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
-                ),
-                want_record=[
-                    "Name",
-                    "test.xml",
-                    "Blocks",
-                    "tags",
-                    "FALSE",
-                    "1",
-                    "2",
-                    "3",
-                    "7",
-                    "5",
-                    "short_description",
-                    "description",
-                ],
-            ),
-            tt(  # deprecated
-                input_lang=None,
-                input_ctx=None,
-                input_defn=sw_compdocs.component.Definition(
-                    file="test.xml",
-                    name=sw_compdocs.language.Text(en="Name"),
-                    category=sw_compdocs.component.Category.BLOCKS,
-                    mass=1.0,
-                    value=2,
-                    flags=sw_compdocs.component.Flags.IS_DEPRECATED,
-                    tags="tags",
-                    tooltip_properties=sw_compdocs.component.TooltipProperties(
-                        short_description=sw_compdocs.language.Text(
-                            en="short_description"
-                        ),
-                        description=sw_compdocs.language.Text(en="description"),
-                    ),
-                    voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
-                    voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
-                ),
-                want_record=[
-                    "Name",
-                    "test.xml",
-                    "Blocks",
-                    "tags",
-                    "TRUE",
-                    "1",
-                    "2",
-                    "3",
-                    "7",
-                    "5",
-                    "short_description",
-                    "description",
-                ],
-            ),
-            tt(  # mass
+            tt(  # normal
                 input_lang=None,
                 input_ctx=None,
                 input_defn=sw_compdocs.component.Definition(
@@ -4443,89 +2725,44 @@ class TestGenerateSheetComponent(unittest.TestCase):
                     "description",
                 ],
             ),
-            tt(  # lang
-                input_lang=sw_compdocs.language.Language(
-                    [
-                        sw_compdocs.language.Translation(
-                            "def_test_name", "", "", "名前"
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_s_desc", "", "", "短い説明"
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_desc", "", "", "説明"
-                        ),
-                    ]
-                ),
+            tt(  # file
+                input_lang=None,
                 input_ctx=None,
-                input_defn=sw_compdocs.component.Definition(
-                    file="test.xml",
-                    key="test",
-                    name=sw_compdocs.language.Text(id="def_test_name", en="Name"),
-                    category=sw_compdocs.component.Category.BLOCKS,
-                    mass=1.0,
-                    value=2,
-                    tags="tags",
-                    tooltip_properties=sw_compdocs.component.TooltipProperties(
-                        short_description=sw_compdocs.language.Text(
-                            id="def_test_s_desc", en="short_description"
-                        ),
-                        description=sw_compdocs.language.Text(
-                            id="def_test_desc", en="description"
-                        ),
-                    ),
-                    voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
-                    voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
-                ),
+                input_defn=sw_compdocs.component.Definition(file=b"path/to/test.xml"),
                 want_record=[
-                    "名前",
+                    "",
                     "test.xml",
                     "Blocks",
-                    "tags",
+                    "",
                     "FALSE",
+                    "0",
+                    "0",
                     "1",
-                    "2",
-                    "3",
-                    "7",
-                    "5",
-                    "短い説明",
-                    "説明",
+                    "1",
+                    "1",
+                    "",
+                    "",
                 ],
             ),
-            tt(  # template
+            tt(  # deprecated
                 input_lang=None,
-                input_ctx={
-                    "name": "Name",
-                    "s_desc": "short_description",
-                    "desc": "description",
-                },
+                input_ctx=None,
                 input_defn=sw_compdocs.component.Definition(
-                    file="test.xml",
-                    name=sw_compdocs.language.Text(en="$[name]"),
-                    category=sw_compdocs.component.Category.BLOCKS,
-                    mass=1.0,
-                    value=2,
-                    tags="tags",
-                    tooltip_properties=sw_compdocs.component.TooltipProperties(
-                        short_description=sw_compdocs.language.Text(en="$[s_desc]"),
-                        description=sw_compdocs.language.Text(en="$[desc]"),
-                    ),
-                    voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
-                    voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
+                    flags=sw_compdocs.component.Flags.IS_DEPRECATED
                 ),
                 want_record=[
-                    "$[name]",
-                    "test.xml",
+                    "",
+                    "",
                     "Blocks",
-                    "tags",
-                    "FALSE",
+                    "",
+                    "TRUE",
+                    "0",
+                    "0",
                     "1",
-                    "2",
-                    "3",
-                    "7",
-                    "5",
-                    "short_description",
-                    "description",
+                    "1",
+                    "1",
+                    "",
+                    "",
                 ],
             ),
             tt(  # lang, template
@@ -4548,33 +2785,26 @@ class TestGenerateSheetComponent(unittest.TestCase):
                     "desc": "description",
                 },
                 input_defn=sw_compdocs.component.Definition(
-                    file="test.xml",
                     key="test",
                     name=sw_compdocs.language.Text(id="def_test_name"),
-                    category=sw_compdocs.component.Category.BLOCKS,
-                    mass=1.0,
-                    value=2,
-                    tags="tags",
                     tooltip_properties=sw_compdocs.component.TooltipProperties(
                         short_description=sw_compdocs.language.Text(
                             id="def_test_s_desc"
                         ),
                         description=sw_compdocs.language.Text(id="def_test_desc"),
                     ),
-                    voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
-                    voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
                 ),
                 want_record=[
                     "$[name]",
-                    "test.xml",
+                    "",
                     "Blocks",
-                    "tags",
+                    "",
                     "FALSE",
+                    "0",
+                    "0",
                     "1",
-                    "2",
-                    "3",
-                    "7",
-                    "5",
+                    "1",
+                    "1",
                     "short_description",
                     "description",
                 ],
@@ -4736,80 +2966,6 @@ class TestGenerateSheet(unittest.TestCase):
         )
 
         for tc in [
-            tt(  # normal
-                input_label=None,
-                input_lang=None,
-                input_ctx=None,
-                input_defn_list=[
-                    sw_compdocs.component.Definition(
-                        name=sw_compdocs.language.Text(en="Test 1")
-                    ),
-                    sw_compdocs.component.Definition(
-                        name=sw_compdocs.language.Text(en="Test 2")
-                    ),
-                    sw_compdocs.component.Definition(
-                        name=sw_compdocs.language.Text(en="Test 3")
-                    ),
-                ],
-                want_record_list=[
-                    [
-                        "SHEET_HEAD_NAME",
-                        "SHEET_HEAD_FILE",
-                        "SHEET_HEAD_CATEGORY",
-                        "SHEET_HEAD_TAGS",
-                        "SHEET_HEAD_DEPRECATED",
-                        "SHEET_HEAD_MASS",
-                        "SHEET_HEAD_COST",
-                        "SHEET_HEAD_WIDTH",
-                        "SHEET_HEAD_DEPTH",
-                        "SHEET_HEAD_HEIGHT",
-                        "SHEET_HEAD_SDESC",
-                        "SHEET_HEAD_DESC",
-                    ],
-                    [
-                        "Test 1",
-                        "",
-                        "Blocks",
-                        "",
-                        "FALSE",
-                        "0",
-                        "0",
-                        "1",
-                        "1",
-                        "1",
-                        "",
-                        "",
-                    ],
-                    [
-                        "Test 2",
-                        "",
-                        "Blocks",
-                        "",
-                        "FALSE",
-                        "0",
-                        "0",
-                        "1",
-                        "1",
-                        "1",
-                        "",
-                        "",
-                    ],
-                    [
-                        "Test 3",
-                        "",
-                        "Blocks",
-                        "",
-                        "FALSE",
-                        "0",
-                        "0",
-                        "1",
-                        "1",
-                        "1",
-                        "",
-                        "",
-                    ],
-                ],
-            ),
             tt(  # sort
                 input_label=None,
                 input_lang=None,
@@ -4913,7 +3069,7 @@ class TestGenerateSheet(unittest.TestCase):
                     ],
                 ],
             ),
-            tt(  # label
+            tt(  # label, lang, ctx
                 input_label={
                     "SHEET_HEAD_NAME": "Name",
                     "SHEET_HEAD_FILE": "File",
@@ -4928,80 +3084,6 @@ class TestGenerateSheet(unittest.TestCase):
                     "SHEET_HEAD_SDESC": "Short Description",
                     "SHEET_HEAD_DESC": "Description",
                 },
-                input_lang=None,
-                input_ctx=None,
-                input_defn_list=[
-                    sw_compdocs.component.Definition(
-                        name=sw_compdocs.language.Text(en="Test 1")
-                    ),
-                    sw_compdocs.component.Definition(
-                        name=sw_compdocs.language.Text(en="Test 2")
-                    ),
-                    sw_compdocs.component.Definition(
-                        name=sw_compdocs.language.Text(en="Test 3")
-                    ),
-                ],
-                want_record_list=[
-                    [
-                        "Name",
-                        "File",
-                        "Category",
-                        "Tags",
-                        "Deprecated",
-                        "Mass",
-                        "Cost",
-                        "Width",
-                        "Depth",
-                        "Height",
-                        "Short Description",
-                        "Description",
-                    ],
-                    [
-                        "Test 1",
-                        "",
-                        "Blocks",
-                        "",
-                        "FALSE",
-                        "0",
-                        "0",
-                        "1",
-                        "1",
-                        "1",
-                        "",
-                        "",
-                    ],
-                    [
-                        "Test 2",
-                        "",
-                        "Blocks",
-                        "",
-                        "FALSE",
-                        "0",
-                        "0",
-                        "1",
-                        "1",
-                        "1",
-                        "",
-                        "",
-                    ],
-                    [
-                        "Test 3",
-                        "",
-                        "Blocks",
-                        "",
-                        "FALSE",
-                        "0",
-                        "0",
-                        "1",
-                        "1",
-                        "1",
-                        "",
-                        "",
-                    ],
-                ],
-            ),
-            tt(
-                input_label=None,
                 input_lang=sw_compdocs.language.Language(
                     [
                         sw_compdocs.language.Translation(
@@ -5041,18 +3123,18 @@ class TestGenerateSheet(unittest.TestCase):
                 ],
                 want_record_list=[
                     [
-                        "SHEET_HEAD_NAME",
-                        "SHEET_HEAD_FILE",
-                        "SHEET_HEAD_CATEGORY",
-                        "SHEET_HEAD_TAGS",
-                        "SHEET_HEAD_DEPRECATED",
-                        "SHEET_HEAD_MASS",
-                        "SHEET_HEAD_COST",
-                        "SHEET_HEAD_WIDTH",
-                        "SHEET_HEAD_DEPTH",
-                        "SHEET_HEAD_HEIGHT",
-                        "SHEET_HEAD_SDESC",
-                        "SHEET_HEAD_DESC",
+                        "Name",
+                        "File",
+                        "Category",
+                        "Tags",
+                        "Deprecated",
+                        "Mass",
+                        "Cost",
+                        "Width",
+                        "Depth",
+                        "Height",
+                        "Short Description",
+                        "Description",
                     ],
                     [
                         "$[name]",
