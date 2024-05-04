@@ -2966,80 +2966,6 @@ class TestGenerateSheet(unittest.TestCase):
         )
 
         for tc in [
-            tt(  # normal
-                input_label=None,
-                input_lang=None,
-                input_ctx=None,
-                input_defn_list=[
-                    sw_compdocs.component.Definition(
-                        name=sw_compdocs.language.Text(en="Test 1")
-                    ),
-                    sw_compdocs.component.Definition(
-                        name=sw_compdocs.language.Text(en="Test 2")
-                    ),
-                    sw_compdocs.component.Definition(
-                        name=sw_compdocs.language.Text(en="Test 3")
-                    ),
-                ],
-                want_record_list=[
-                    [
-                        "SHEET_HEAD_NAME",
-                        "SHEET_HEAD_FILE",
-                        "SHEET_HEAD_CATEGORY",
-                        "SHEET_HEAD_TAGS",
-                        "SHEET_HEAD_DEPRECATED",
-                        "SHEET_HEAD_MASS",
-                        "SHEET_HEAD_COST",
-                        "SHEET_HEAD_WIDTH",
-                        "SHEET_HEAD_DEPTH",
-                        "SHEET_HEAD_HEIGHT",
-                        "SHEET_HEAD_SDESC",
-                        "SHEET_HEAD_DESC",
-                    ],
-                    [
-                        "Test 1",
-                        "",
-                        "Blocks",
-                        "",
-                        "FALSE",
-                        "0",
-                        "0",
-                        "1",
-                        "1",
-                        "1",
-                        "",
-                        "",
-                    ],
-                    [
-                        "Test 2",
-                        "",
-                        "Blocks",
-                        "",
-                        "FALSE",
-                        "0",
-                        "0",
-                        "1",
-                        "1",
-                        "1",
-                        "",
-                        "",
-                    ],
-                    [
-                        "Test 3",
-                        "",
-                        "Blocks",
-                        "",
-                        "FALSE",
-                        "0",
-                        "0",
-                        "1",
-                        "1",
-                        "1",
-                        "",
-                        "",
-                    ],
-                ],
-            ),
             tt(  # sort
                 input_label=None,
                 input_lang=None,
@@ -3143,7 +3069,7 @@ class TestGenerateSheet(unittest.TestCase):
                     ],
                 ],
             ),
-            tt(  # label
+            tt(  # label, lang, ctx
                 input_label={
                     "SHEET_HEAD_NAME": "Name",
                     "SHEET_HEAD_FILE": "File",
@@ -3158,80 +3084,6 @@ class TestGenerateSheet(unittest.TestCase):
                     "SHEET_HEAD_SDESC": "Short Description",
                     "SHEET_HEAD_DESC": "Description",
                 },
-                input_lang=None,
-                input_ctx=None,
-                input_defn_list=[
-                    sw_compdocs.component.Definition(
-                        name=sw_compdocs.language.Text(en="Test 1")
-                    ),
-                    sw_compdocs.component.Definition(
-                        name=sw_compdocs.language.Text(en="Test 2")
-                    ),
-                    sw_compdocs.component.Definition(
-                        name=sw_compdocs.language.Text(en="Test 3")
-                    ),
-                ],
-                want_record_list=[
-                    [
-                        "Name",
-                        "File",
-                        "Category",
-                        "Tags",
-                        "Deprecated",
-                        "Mass",
-                        "Cost",
-                        "Width",
-                        "Depth",
-                        "Height",
-                        "Short Description",
-                        "Description",
-                    ],
-                    [
-                        "Test 1",
-                        "",
-                        "Blocks",
-                        "",
-                        "FALSE",
-                        "0",
-                        "0",
-                        "1",
-                        "1",
-                        "1",
-                        "",
-                        "",
-                    ],
-                    [
-                        "Test 2",
-                        "",
-                        "Blocks",
-                        "",
-                        "FALSE",
-                        "0",
-                        "0",
-                        "1",
-                        "1",
-                        "1",
-                        "",
-                        "",
-                    ],
-                    [
-                        "Test 3",
-                        "",
-                        "Blocks",
-                        "",
-                        "FALSE",
-                        "0",
-                        "0",
-                        "1",
-                        "1",
-                        "1",
-                        "",
-                        "",
-                    ],
-                ],
-            ),
-            tt(
-                input_label=None,
                 input_lang=sw_compdocs.language.Language(
                     [
                         sw_compdocs.language.Translation(
@@ -3271,18 +3123,18 @@ class TestGenerateSheet(unittest.TestCase):
                 ],
                 want_record_list=[
                     [
-                        "SHEET_HEAD_NAME",
-                        "SHEET_HEAD_FILE",
-                        "SHEET_HEAD_CATEGORY",
-                        "SHEET_HEAD_TAGS",
-                        "SHEET_HEAD_DEPRECATED",
-                        "SHEET_HEAD_MASS",
-                        "SHEET_HEAD_COST",
-                        "SHEET_HEAD_WIDTH",
-                        "SHEET_HEAD_DEPTH",
-                        "SHEET_HEAD_HEIGHT",
-                        "SHEET_HEAD_SDESC",
-                        "SHEET_HEAD_DESC",
+                        "Name",
+                        "File",
+                        "Category",
+                        "Tags",
+                        "Deprecated",
+                        "Mass",
+                        "Cost",
+                        "Width",
+                        "Depth",
+                        "Height",
+                        "Short Description",
+                        "Description",
                     ],
                     [
                         "$[name]",
