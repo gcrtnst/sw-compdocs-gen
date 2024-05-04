@@ -1078,7 +1078,6 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                 ("input_label", collections.abc.Mapping[str, str] | None),
                 ("input_lang", sw_compdocs.language.Language | None),
                 ("input_ctx", collections.abc.Mapping[str, str] | None),
-                ("input_key", str),
                 ("input_lns", sw_compdocs.component.LogicNodeList),
                 ("want_doc", sw_compdocs.document.Document),
             ],
@@ -1090,7 +1089,6 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                 input_label=None,
                 input_lang=None,
                 input_ctx=None,
-                input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(),
                 want_doc=sw_compdocs.document.Document(),
             ),
@@ -1099,7 +1097,6 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                 input_label=None,
                 input_lang=None,
                 input_ctx=None,
-                input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
@@ -1136,7 +1133,6 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                 input_label=None,
                 input_lang=None,
                 input_ctx=None,
-                input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
@@ -1173,7 +1169,6 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                 input_label=None,
                 input_lang=None,
                 input_ctx=None,
-                input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
@@ -1210,7 +1205,6 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                 input_label=None,
                 input_lang=None,
                 input_ctx=None,
-                input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
@@ -1247,7 +1241,6 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                 input_label=None,
                 input_lang=None,
                 input_ctx=None,
-                input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
@@ -1284,7 +1277,6 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                 input_label=None,
                 input_lang=None,
                 input_ctx=None,
-                input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
@@ -1321,7 +1313,6 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                 input_label=None,
                 input_lang=None,
                 input_ctx=None,
-                input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
@@ -1358,7 +1349,6 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                 input_label=None,
                 input_lang=None,
                 input_ctx=None,
-                input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
@@ -1395,7 +1385,6 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                 input_label=None,
                 input_lang=None,
                 input_ctx=None,
-                input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
@@ -1433,7 +1422,6 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                 input_label=None,
                 input_lang=None,
                 input_ctx=None,
-                input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
@@ -1484,7 +1472,6 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                     ]
                 ),
                 input_ctx=None,
-                input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
@@ -1541,7 +1528,6 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                     ]
                 ),
                 input_ctx=None,
-                input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
@@ -1596,7 +1582,6 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                     ]
                 ),
                 input_ctx=None,
-                input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
@@ -1691,7 +1676,6 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                     ]
                 ),
                 input_ctx=None,
-                input_key="test",
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
@@ -1837,7 +1821,6 @@ class TestGenerateDocumentLogic(unittest.TestCase):
         ]:
             with self.subTest(tc=tc):
                 got_doc = sw_compdocs.generator.generate_document_logic(
-                    tc.input_key,
                     tc.input_lns,
                     label=tc.input_label,
                     lang=tc.input_lang,
