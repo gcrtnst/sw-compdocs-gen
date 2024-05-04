@@ -2672,143 +2672,26 @@ class TestGenerateSheetComponent(unittest.TestCase):
         )
 
         for tc in [
-            tt(  # normal
+            tt(  # empty
                 input_lang=None,
                 input_ctx=None,
-                input_defn=sw_compdocs.component.Definition(
-                    file="test.xml",
-                    name=sw_compdocs.language.Text(en="Name"),
-                    category=sw_compdocs.component.Category.BLOCKS,
-                    mass=1.0,
-                    value=2,
-                    tags="tags",
-                    tooltip_properties=sw_compdocs.component.TooltipProperties(
-                        short_description=sw_compdocs.language.Text(
-                            en="short_description"
-                        ),
-                        description=sw_compdocs.language.Text(en="description"),
-                    ),
-                    voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
-                    voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
-                ),
+                input_defn=sw_compdocs.component.Definition(),
                 want_record=[
-                    "Name",
-                    "test.xml",
-                    "Blocks",
-                    "tags",
-                    "FALSE",
-                    "1",
-                    "2",
-                    "3",
-                    "7",
-                    "5",
-                    "short_description",
-                    "description",
-                ],
-            ),
-            tt(  # file none
-                input_lang=None,
-                input_ctx=None,
-                input_defn=sw_compdocs.component.Definition(
-                    name=sw_compdocs.language.Text(en="Name"),
-                    category=sw_compdocs.component.Category.BLOCKS,
-                    mass=1.0,
-                    value=2,
-                    tags="tags",
-                    tooltip_properties=sw_compdocs.component.TooltipProperties(
-                        short_description=sw_compdocs.language.Text(
-                            en="short_description"
-                        ),
-                        description=sw_compdocs.language.Text(en="description"),
-                    ),
-                    voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
-                    voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
-                ),
-                want_record=[
-                    "Name",
+                    "",
                     "",
                     "Blocks",
-                    "tags",
+                    "",
                     "FALSE",
+                    "0",
+                    "0",
                     "1",
-                    "2",
-                    "3",
-                    "7",
-                    "5",
-                    "short_description",
-                    "description",
+                    "1",
+                    "1",
+                    "",
+                    "",
                 ],
             ),
-            tt(  # file
-                input_lang=None,
-                input_ctx=None,
-                input_defn=sw_compdocs.component.Definition(
-                    file=b"path/to/test.xml",
-                    name=sw_compdocs.language.Text(en="Name"),
-                    category=sw_compdocs.component.Category.BLOCKS,
-                    mass=1.0,
-                    value=2,
-                    tags="tags",
-                    tooltip_properties=sw_compdocs.component.TooltipProperties(
-                        short_description=sw_compdocs.language.Text(
-                            en="short_description"
-                        ),
-                        description=sw_compdocs.language.Text(en="description"),
-                    ),
-                    voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
-                    voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
-                ),
-                want_record=[
-                    "Name",
-                    "test.xml",
-                    "Blocks",
-                    "tags",
-                    "FALSE",
-                    "1",
-                    "2",
-                    "3",
-                    "7",
-                    "5",
-                    "short_description",
-                    "description",
-                ],
-            ),
-            tt(  # deprecated
-                input_lang=None,
-                input_ctx=None,
-                input_defn=sw_compdocs.component.Definition(
-                    file="test.xml",
-                    name=sw_compdocs.language.Text(en="Name"),
-                    category=sw_compdocs.component.Category.BLOCKS,
-                    mass=1.0,
-                    value=2,
-                    flags=sw_compdocs.component.Flags.IS_DEPRECATED,
-                    tags="tags",
-                    tooltip_properties=sw_compdocs.component.TooltipProperties(
-                        short_description=sw_compdocs.language.Text(
-                            en="short_description"
-                        ),
-                        description=sw_compdocs.language.Text(en="description"),
-                    ),
-                    voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
-                    voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
-                ),
-                want_record=[
-                    "Name",
-                    "test.xml",
-                    "Blocks",
-                    "tags",
-                    "TRUE",
-                    "1",
-                    "2",
-                    "3",
-                    "7",
-                    "5",
-                    "short_description",
-                    "description",
-                ],
-            ),
-            tt(  # mass
+            tt(  # normal
                 input_lang=None,
                 input_ctx=None,
                 input_defn=sw_compdocs.component.Definition(
@@ -2842,89 +2725,44 @@ class TestGenerateSheetComponent(unittest.TestCase):
                     "description",
                 ],
             ),
-            tt(  # lang
-                input_lang=sw_compdocs.language.Language(
-                    [
-                        sw_compdocs.language.Translation(
-                            "def_test_name", "", "", "名前"
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_s_desc", "", "", "短い説明"
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_test_desc", "", "", "説明"
-                        ),
-                    ]
-                ),
+            tt(  # file
+                input_lang=None,
                 input_ctx=None,
-                input_defn=sw_compdocs.component.Definition(
-                    file="test.xml",
-                    key="test",
-                    name=sw_compdocs.language.Text(id="def_test_name", en="Name"),
-                    category=sw_compdocs.component.Category.BLOCKS,
-                    mass=1.0,
-                    value=2,
-                    tags="tags",
-                    tooltip_properties=sw_compdocs.component.TooltipProperties(
-                        short_description=sw_compdocs.language.Text(
-                            id="def_test_s_desc", en="short_description"
-                        ),
-                        description=sw_compdocs.language.Text(
-                            id="def_test_desc", en="description"
-                        ),
-                    ),
-                    voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
-                    voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
-                ),
+                input_defn=sw_compdocs.component.Definition(file=b"path/to/test.xml"),
                 want_record=[
-                    "名前",
+                    "",
                     "test.xml",
                     "Blocks",
-                    "tags",
+                    "",
                     "FALSE",
+                    "0",
+                    "0",
                     "1",
-                    "2",
-                    "3",
-                    "7",
-                    "5",
-                    "短い説明",
-                    "説明",
+                    "1",
+                    "1",
+                    "",
+                    "",
                 ],
             ),
-            tt(  # template
+            tt(  # deprecated
                 input_lang=None,
-                input_ctx={
-                    "name": "Name",
-                    "s_desc": "short_description",
-                    "desc": "description",
-                },
+                input_ctx=None,
                 input_defn=sw_compdocs.component.Definition(
-                    file="test.xml",
-                    name=sw_compdocs.language.Text(en="$[name]"),
-                    category=sw_compdocs.component.Category.BLOCKS,
-                    mass=1.0,
-                    value=2,
-                    tags="tags",
-                    tooltip_properties=sw_compdocs.component.TooltipProperties(
-                        short_description=sw_compdocs.language.Text(en="$[s_desc]"),
-                        description=sw_compdocs.language.Text(en="$[desc]"),
-                    ),
-                    voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
-                    voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
+                    flags=sw_compdocs.component.Flags.IS_DEPRECATED
                 ),
                 want_record=[
-                    "$[name]",
-                    "test.xml",
+                    "",
+                    "",
                     "Blocks",
-                    "tags",
-                    "FALSE",
+                    "",
+                    "TRUE",
+                    "0",
+                    "0",
                     "1",
-                    "2",
-                    "3",
-                    "7",
-                    "5",
-                    "short_description",
-                    "description",
+                    "1",
+                    "1",
+                    "",
+                    "",
                 ],
             ),
             tt(  # lang, template
@@ -2947,33 +2785,26 @@ class TestGenerateSheetComponent(unittest.TestCase):
                     "desc": "description",
                 },
                 input_defn=sw_compdocs.component.Definition(
-                    file="test.xml",
                     key="test",
                     name=sw_compdocs.language.Text(id="def_test_name"),
-                    category=sw_compdocs.component.Category.BLOCKS,
-                    mass=1.0,
-                    value=2,
-                    tags="tags",
                     tooltip_properties=sw_compdocs.component.TooltipProperties(
                         short_description=sw_compdocs.language.Text(
                             id="def_test_s_desc"
                         ),
                         description=sw_compdocs.language.Text(id="def_test_desc"),
                     ),
-                    voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
-                    voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
                 ),
                 want_record=[
                     "$[name]",
-                    "test.xml",
+                    "",
                     "Blocks",
-                    "tags",
+                    "",
                     "FALSE",
+                    "0",
+                    "0",
                     "1",
-                    "2",
-                    "3",
-                    "7",
-                    "5",
+                    "1",
+                    "1",
                     "short_description",
                     "description",
                 ],
