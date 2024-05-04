@@ -970,85 +970,15 @@ class TestGenerateDocumentComponent(unittest.TestCase):
         )
 
         for tc in [
-            tt(  # normal
+            # empty
+            tt(
                 input_label=None,
                 input_lang=None,
                 input_ctx=None,
-                input_defn=sw_compdocs.component.Definition(
-                    file="clock.xml",
-                    key="clock",
-                    name=sw_compdocs.language.Text(id="def_clock_name", en="Clock"),
-                    category=sw_compdocs.component.Category.DISPLAYS,
-                    mass=1.0,
-                    value=100,
-                    flags=sw_compdocs.component.Flags(8192),
-                    tags="basic",
-                    tooltip_properties=sw_compdocs.component.TooltipProperties(
-                        short_description=sw_compdocs.language.Text(
-                            id="def_clock_s_desc",
-                            en="An analogue clock display that outputs a number value representing the time of day.",
-                        ),
-                        description=sw_compdocs.language.Text(
-                            id="def_clock_desc",
-                            en="The clock has a display to visualise the time of day or night. The 12 o'clock position is the white arrow on the face of the display.",
-                        ),
-                    ),
-                    logic_nodes=sw_compdocs.component.LogicNodeList(
-                        [
-                            sw_compdocs.component.LogicNode(
-                                key="clock",
-                                idx=0,
-                                label=sw_compdocs.language.Text(
-                                    id="def_clock_node_0_label", en="Time"
-                                ),
-                                mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
-                                type=sw_compdocs.component.LogicNodeType.FLOAT,
-                                description=sw_compdocs.language.Text(
-                                    id="def_clock_node_0_desc",
-                                    en="The time as a factor of a day, from 0 (midnight) to 1 (midnight).",
-                                ),
-                            ),
-                            sw_compdocs.component.LogicNode(
-                                key="clock",
-                                idx=1,
-                                label=sw_compdocs.language.Text(
-                                    id="def_clock_node_1_label", en="Backlight"
-                                ),
-                                mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                                type=sw_compdocs.component.LogicNodeType.BOOL,
-                                description=sw_compdocs.language.Text(
-                                    id="def_clock_node_1_desc",
-                                    en="Enables the backlight when receiving an on signal.",
-                                ),
-                            ),
-                            sw_compdocs.component.LogicNode(
-                                key="clock",
-                                idx=2,
-                                label=sw_compdocs.language.Text(
-                                    id="def_clock_node_2_label", en="Electric"
-                                ),
-                                mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                                type=sw_compdocs.component.LogicNodeType.ELECTRIC,
-                                description=sw_compdocs.language.Text(
-                                    id="def_clock_node_2_desc",
-                                    en="Electrical power connection.",
-                                ),
-                            ),
-                        ],
-                        key="clock",
-                    ),
-                    voxel_min=sw_compdocs.component.VoxelPos(x=0, y=0, z=0),
-                    voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=0),
-                ),
+                input_defn=sw_compdocs.component.Definition(),
                 want_doc=sw_compdocs.document.Document(
                     [
-                        sw_compdocs.document.Heading("Clock"),
-                        sw_compdocs.document.Paragraph(
-                            "An analogue clock display that outputs a number value representing the time of day."
-                        ),
-                        sw_compdocs.document.Paragraph(
-                            "The clock has a display to visualise the time of day or night. The 12 o'clock position is the white arrow on the face of the display."
-                        ),
+                        sw_compdocs.document.Heading(""),
                         sw_compdocs.document.Heading("PROPERTIES", level=2),
                         sw_compdocs.document.Table(
                             sw_compdocs.document.TableData(
@@ -1060,172 +990,41 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_MASS_LABEL", "1"]
+                                        ["DOCUMENT_PROP_TABLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x1x2"]
+                                        ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x1x1"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_COST_LABEL", "100"]
+                                        ["DOCUMENT_PROP_TABLE_COST_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_TAGS_LABEL", "basic"]
+                                        ["DOCUMENT_PROP_TABLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_FILE_LABEL", "clock.xml"]
+                                        ["DOCUMENT_PROP_TABLE_FILE_LABEL", ""]
                                     ),
-                                ],
-                            )
-                        ),
-                        sw_compdocs.document.Heading("logic inputs", level=2),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_TYPE",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_DESC",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "on/off",
-                                            "Backlight",
-                                            "Enables the backlight when receiving an on signal.",
-                                        ]
-                                    )
-                                ],
-                            )
-                        ),
-                        sw_compdocs.document.Heading("logic outputs", level=2),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_TYPE",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_DESC",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "number",
-                                            "Time",
-                                            "The time as a factor of a day, from 0 (midnight) to 1 (midnight).",
-                                        ]
-                                    )
-                                ],
-                            )
-                        ),
-                        sw_compdocs.document.Heading("connections", level=2),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_TYPE",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_DESC",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "electric",
-                                            "Electric",
-                                            "Electrical power connection.",
-                                        ]
-                                    )
                                 ],
                             )
                         ),
                     ]
                 ),
             ),
-            tt(  # deprecated
+            # deprecated
+            tt(
                 input_label=None,
                 input_lang=None,
                 input_ctx=None,
                 input_defn=sw_compdocs.component.Definition(
-                    file="clock.xml",
-                    key="clock",
-                    name=sw_compdocs.language.Text(id="def_clock_name", en="Clock"),
-                    category=sw_compdocs.component.Category.DISPLAYS,
-                    mass=1.0,
-                    value=100,
-                    flags=sw_compdocs.component.Flags.IS_DEPRECATED,
-                    tags="basic",
-                    tooltip_properties=sw_compdocs.component.TooltipProperties(
-                        short_description=sw_compdocs.language.Text(
-                            id="def_clock_s_desc",
-                            en="An analogue clock display that outputs a number value representing the time of day.",
-                        ),
-                        description=sw_compdocs.language.Text(
-                            id="def_clock_desc",
-                            en="The clock has a display to visualise the time of day or night. The 12 o'clock position is the white arrow on the face of the display.",
-                        ),
-                    ),
-                    logic_nodes=sw_compdocs.component.LogicNodeList(
-                        [
-                            sw_compdocs.component.LogicNode(
-                                key="clock",
-                                idx=0,
-                                label=sw_compdocs.language.Text(
-                                    id="def_clock_node_0_label", en="Time"
-                                ),
-                                mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
-                                type=sw_compdocs.component.LogicNodeType.FLOAT,
-                                description=sw_compdocs.language.Text(
-                                    id="def_clock_node_0_desc",
-                                    en="The time as a factor of a day, from 0 (midnight) to 1 (midnight).",
-                                ),
-                            ),
-                            sw_compdocs.component.LogicNode(
-                                key="clock",
-                                idx=1,
-                                label=sw_compdocs.language.Text(
-                                    id="def_clock_node_1_label", en="Backlight"
-                                ),
-                                mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                                type=sw_compdocs.component.LogicNodeType.BOOL,
-                                description=sw_compdocs.language.Text(
-                                    id="def_clock_node_1_desc",
-                                    en="Enables the backlight when receiving an on signal.",
-                                ),
-                            ),
-                            sw_compdocs.component.LogicNode(
-                                key="clock",
-                                idx=2,
-                                label=sw_compdocs.language.Text(
-                                    id="def_clock_node_2_label", en="Electric"
-                                ),
-                                mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                                type=sw_compdocs.component.LogicNodeType.ELECTRIC,
-                                description=sw_compdocs.language.Text(
-                                    id="def_clock_node_2_desc",
-                                    en="Electrical power connection.",
-                                ),
-                            ),
-                        ],
-                        key="clock",
-                    ),
-                    voxel_min=sw_compdocs.component.VoxelPos(x=0, y=0, z=0),
-                    voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=0),
+                    flags=sw_compdocs.component.Flags.IS_DEPRECATED
                 ),
                 want_doc=sw_compdocs.document.Document(
                     [
-                        sw_compdocs.document.Heading("Clock"),
+                        sw_compdocs.document.Heading(""),
                         sw_compdocs.document.Callout(
                             "DOCUMENT_DEPRECATED_TEXT",
                             kind=sw_compdocs.document.CalloutKind.WARNING,
                         ),
-                        sw_compdocs.document.Paragraph(
-                            "An analogue clock display that outputs a number value representing the time of day."
-                        ),
-                        sw_compdocs.document.Paragraph(
-                            "The clock has a display to visualise the time of day or night. The 12 o'clock position is the white arrow on the face of the display."
-                        ),
                         sw_compdocs.document.Heading("PROPERTIES", level=2),
                         sw_compdocs.document.Table(
                             sw_compdocs.document.TableData(
@@ -1237,19 +1036,81 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_MASS_LABEL", "1"]
+                                        ["DOCUMENT_PROP_TABLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x1x2"]
+                                        ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x1x1"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_COST_LABEL", "100"]
+                                        ["DOCUMENT_PROP_TABLE_COST_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_TAGS_LABEL", "basic"]
+                                        ["DOCUMENT_PROP_TABLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_FILE_LABEL", "clock.xml"]
+                                        ["DOCUMENT_PROP_TABLE_FILE_LABEL", ""]
+                                    ),
+                                ],
+                            )
+                        ),
+                    ]
+                ),
+            ),
+            # text
+            tt(
+                input_label=None,
+                input_lang=None,
+                input_ctx=None,
+                input_defn=sw_compdocs.component.Definition(
+                    name=sw_compdocs.language.Text(en="Name"),
+                    tooltip_properties=sw_compdocs.component.TooltipProperties(
+                        short_description=sw_compdocs.language.Text(
+                            en="Short Description"
+                        ),
+                        description=sw_compdocs.language.Text(en="Description"),
+                    ),
+                    logic_nodes=sw_compdocs.component.LogicNodeList(
+                        [
+                            sw_compdocs.component.LogicNode(
+                                label=sw_compdocs.language.Text(en="Node Label"),
+                                mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                                type=sw_compdocs.component.LogicNodeType.BOOL,
+                                description=sw_compdocs.language.Text(
+                                    en="Node Description"
+                                ),
+                            ),
+                        ],
+                    ),
+                ),
+                want_doc=sw_compdocs.document.Document(
+                    [
+                        sw_compdocs.document.Heading("Name"),
+                        sw_compdocs.document.Paragraph("Short Description"),
+                        sw_compdocs.document.Paragraph("Description"),
+                        sw_compdocs.document.Heading("PROPERTIES", level=2),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    [
+                                        "DOCUMENT_PROP_TABLE_HEAD_LABEL",
+                                        "DOCUMENT_PROP_TABLE_HEAD_VALUE",
+                                    ]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["DOCUMENT_PROP_TABLE_MASS_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["DOCUMENT_PROP_TABLE_COST_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["DOCUMENT_PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["DOCUMENT_PROP_TABLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -1266,53 +1127,7 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        [
-                                            "on/off",
-                                            "Backlight",
-                                            "Enables the backlight when receiving an on signal.",
-                                        ]
-                                    )
-                                ],
-                            )
-                        ),
-                        sw_compdocs.document.Heading("logic outputs", level=2),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_TYPE",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_DESC",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "number",
-                                            "Time",
-                                            "The time as a factor of a day, from 0 (midnight) to 1 (midnight).",
-                                        ]
-                                    )
-                                ],
-                            )
-                        ),
-                        sw_compdocs.document.Heading("connections", level=2),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_TYPE",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_DESC",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "electric",
-                                            "Electric",
-                                            "Electrical power connection.",
-                                        ]
+                                        ["on/off", "Node Label", "Node Description"]
                                     )
                                 ],
                             )
@@ -1320,7 +1135,8 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                     ]
                 ),
             ),
-            tt(  # label, lang
+            # label, lang, template
+            tt(
                 input_label={
                     "DOCUMENT_DEPRECATED_TEXT": "この部品は非推奨です。",
                     "DOCUMENT_PROP_TABLE_HEAD_LABEL": "ラベル",
@@ -1345,18 +1161,6 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                         sw_compdocs.language.Translation(
                             "",
                             "",
-                            "logic outputs",
-                            "ロジック出力",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "",
-                            "",
-                            "connections",
-                            "接続",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "",
-                            "",
                             "PROPERTIES",
                             "プロパティ",
                         ),
@@ -1367,169 +1171,88 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                             "オン/オフ",
                         ),
                         sw_compdocs.language.Translation(
+                            "def_dummy_name",
                             "",
                             "",
-                            "number",
-                            "数値",
+                            "部品名",
                         ),
                         sw_compdocs.language.Translation(
+                            "def_dummy_desc",
                             "",
                             "",
-                            "electric",
-                            "電力",
+                            "$[def_dummy_desc_placeholder]",
                         ),
                         sw_compdocs.language.Translation(
-                            "def_clock_name",
+                            "def_dummy_s_desc",
                             "",
-                            "Clock",
-                            "時計",
+                            "",
+                            "$[def_dummy_s_desc_placeholder]",
                         ),
                         sw_compdocs.language.Translation(
-                            "def_clock_desc",
+                            "def_dummy_node_0_label",
                             "",
-                            "The clock has a display to visualise the time of day or night. The 12 o'clock position is the white arrow on the face of the display.",
-                            "時計に表示されている青い矢印が12時の方向です.",
+                            "",
+                            "$[def_dummy_node_0_label_placeholder]",
                         ),
                         sw_compdocs.language.Translation(
-                            "def_clock_s_desc",
+                            "def_dummy_node_0_desc",
                             "",
-                            "An analogue clock display that outputs a number value representing the time of day.",
-                            "ゲーム内の時刻に対応した数値信号を出力するアナログ時計です.",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_clock_node_0_label",
                             "",
-                            "Time",
-                            "ゲーム内の時刻",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_clock_node_0_desc",
-                            "",
-                            "The time as a factor of a day, from 0 (midnight) to 1 (midnight).",
-                            "ゲーム内の時刻に対応した数値を0 (0:00) から1 (24:00) の範囲で出力します.",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_clock_node_1_label",
-                            "",
-                            "Backlight",
-                            "バックライト",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_clock_node_1_desc",
-                            "",
-                            "Enables the backlight when receiving an on signal.",
-                            "オン信号を受け取るとバックライトが点灯します.",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_clock_node_2_label",
-                            "",
-                            "Electric",
-                            "電力",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_clock_node_2_desc",
-                            "",
-                            "Electrical power connection.",
-                            "電力網から電力を供給します.",
+                            "$[def_dummy_node_0_desc_placeholder]",
                         ),
                     ]
                 ),
-                input_ctx={},
+                input_ctx={
+                    "def_dummy_desc_placeholder": "説明",
+                    "def_dummy_s_desc_placeholder": "短い説明",
+                    "def_dummy_node_0_label_placeholder": "ノードラベル",
+                    "def_dummy_node_0_desc_placeholder": "ノード説明",
+                },
                 input_defn=sw_compdocs.component.Definition(
-                    file="clock.xml",
-                    key="clock",
-                    name=sw_compdocs.language.Text(id="def_clock_name", en="Clock"),
-                    category=sw_compdocs.component.Category.DISPLAYS,
-                    mass=1.0,
-                    value=100,
-                    flags=sw_compdocs.component.Flags.IS_DEPRECATED,
-                    tags="basic",
+                    key="dummy",
+                    name=sw_compdocs.language.Text(id="def_dummy_name"),
                     tooltip_properties=sw_compdocs.component.TooltipProperties(
+                        key="dummy",
                         short_description=sw_compdocs.language.Text(
-                            id="def_clock_s_desc",
-                            en="An analogue clock display that outputs a number value representing the time of day.",
+                            id="def_dummy_s_desc"
                         ),
-                        description=sw_compdocs.language.Text(
-                            id="def_clock_desc",
-                            en="The clock has a display to visualise the time of day or night. The 12 o'clock position is the white arrow on the face of the display.",
-                        ),
+                        description=sw_compdocs.language.Text(id="def_dummy_desc"),
                     ),
                     logic_nodes=sw_compdocs.component.LogicNodeList(
                         [
                             sw_compdocs.component.LogicNode(
-                                key="clock",
+                                key="dummy",
                                 idx=0,
                                 label=sw_compdocs.language.Text(
-                                    id="def_clock_node_0_label", en="Time"
-                                ),
-                                mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
-                                type=sw_compdocs.component.LogicNodeType.FLOAT,
-                                description=sw_compdocs.language.Text(
-                                    id="def_clock_node_0_desc",
-                                    en="The time as a factor of a day, from 0 (midnight) to 1 (midnight).",
-                                ),
-                            ),
-                            sw_compdocs.component.LogicNode(
-                                key="clock",
-                                idx=1,
-                                label=sw_compdocs.language.Text(
-                                    id="def_clock_node_1_label", en="Backlight"
+                                    id="def_dummy_node_0_label"
                                 ),
                                 mode=sw_compdocs.component.LogicNodeMode.INPUT,
                                 type=sw_compdocs.component.LogicNodeType.BOOL,
                                 description=sw_compdocs.language.Text(
-                                    id="def_clock_node_1_desc",
-                                    en="Enables the backlight when receiving an on signal.",
-                                ),
-                            ),
-                            sw_compdocs.component.LogicNode(
-                                key="clock",
-                                idx=2,
-                                label=sw_compdocs.language.Text(
-                                    id="def_clock_node_2_label", en="Electric"
-                                ),
-                                mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                                type=sw_compdocs.component.LogicNodeType.ELECTRIC,
-                                description=sw_compdocs.language.Text(
-                                    id="def_clock_node_2_desc",
-                                    en="Electrical power connection.",
+                                    id="def_dummy_node_0_desc"
                                 ),
                             ),
                         ],
-                        key="clock",
+                        key="dummy",
                     ),
-                    voxel_min=sw_compdocs.component.VoxelPos(x=0, y=0, z=0),
-                    voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=0),
                 ),
                 want_doc=sw_compdocs.document.Document(
                     [
-                        sw_compdocs.document.Heading("時計"),
-                        sw_compdocs.document.Callout(
-                            "この部品は非推奨です。",
-                            kind=sw_compdocs.document.CalloutKind.WARNING,
-                        ),
-                        sw_compdocs.document.Paragraph(
-                            "ゲーム内の時刻に対応した数値信号を出力するアナログ時計です."
-                        ),
-                        sw_compdocs.document.Paragraph(
-                            "時計に表示されている青い矢印が12時の方向です."
-                        ),
+                        sw_compdocs.document.Heading("部品名"),
+                        sw_compdocs.document.Paragraph("短い説明"),
+                        sw_compdocs.document.Paragraph("説明"),
                         sw_compdocs.document.Heading("プロパティ", level=2),
                         sw_compdocs.document.Table(
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(["ラベル", "値"]),
                                 [
-                                    sw_compdocs.document.TableDataRow(["重量", "1"]),
+                                    sw_compdocs.document.TableDataRow(["重量", "0"]),
                                     sw_compdocs.document.TableDataRow(
-                                        ["サイズ(WxDxH)", "1x1x2"]
+                                        ["サイズ(WxDxH)", "1x1x1"]
                                     ),
-                                    sw_compdocs.document.TableDataRow(["値段", "100"]),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["タグ", "basic"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["ファイル", "clock.xml"]
-                                    ),
+                                    sw_compdocs.document.TableDataRow(["値段", "0"]),
+                                    sw_compdocs.document.TableDataRow(["タグ", ""]),
+                                    sw_compdocs.document.TableDataRow(["ファイル", ""]),
                                 ],
                             )
                         ),
@@ -1541,45 +1264,7 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        [
-                                            "オン/オフ",
-                                            "バックライト",
-                                            "オン信号を受け取るとバックライトが点灯します.",
-                                        ]
-                                    )
-                                ],
-                            )
-                        ),
-                        sw_compdocs.document.Heading("ロジック出力", level=2),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    ["型", "ラベル", "説明"]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "数値",
-                                            "ゲーム内の時刻",
-                                            "ゲーム内の時刻に対応した数値を0 (0:00) から1 (24:00) の範囲で出力します.",
-                                        ]
-                                    )
-                                ],
-                            )
-                        ),
-                        sw_compdocs.document.Heading("接続", level=2),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    ["型", "ラベル", "説明"]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "電力",
-                                            "電力",
-                                            "電力網から電力を供給します.",
-                                        ]
+                                        ["オン/オフ", "ノードラベル", "ノード説明"]
                                     )
                                 ],
                             )
@@ -1587,7 +1272,8 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                     ]
                 ),
             ),
-            tt(  # label, lang, template
+            # button_push
+            tt(
                 input_label={
                     "DOCUMENT_PROP_TABLE_HEAD_LABEL": "ラベル",
                     "DOCUMENT_PROP_TABLE_HEAD_VALUE": "値",
@@ -1838,440 +1524,6 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                                             "電力",
                                             "電力",
                                             "電力網から電力を供給します.",
-                                        ]
-                                    )
-                                ],
-                            )
-                        ),
-                    ]
-                ),
-            ),
-            tt(  # label, lang, template
-                input_label={
-                    "DOCUMENT_PROP_TABLE_HEAD_LABEL": "ラベル",
-                    "DOCUMENT_PROP_TABLE_HEAD_VALUE": "値",
-                    "DOCUMENT_PROP_TABLE_MASS_LABEL": "重量",
-                    "DOCUMENT_PROP_TABLE_DIMS_LABEL": "サイズ(WxDxH)",
-                    "DOCUMENT_PROP_TABLE_COST_LABEL": "値段",
-                    "DOCUMENT_PROP_TABLE_TAGS_LABEL": "タグ",
-                    "DOCUMENT_PROP_TABLE_FILE_LABEL": "ファイル",
-                    "DOCUMENT_LOGIC_TABLE_HEAD_TYPE": "型",
-                    "DOCUMENT_LOGIC_TABLE_HEAD_LABEL": "ラベル",
-                    "DOCUMENT_LOGIC_TABLE_HEAD_DESC": "説明",
-                },
-                input_lang=sw_compdocs.language.Language(
-                    [
-                        sw_compdocs.language.Translation(
-                            "",
-                            "",
-                            "PROPERTIES",
-                            "プロパティ",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_handle_name",
-                            "",
-                            "Handle",
-                            "取っ手",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_handle_desc",
-                            "",
-                            "Interacting with [$[action_interact_left]] or [$[action_interact_right]] again will detach that hand. The handle can be used to drag vehicles around. If a vehicle is too heavy to move, you will be detached automatically when you move outside the handle's interaction range.",
-                            "取っ手を掴んでいる時に [$[action_interact_left]]/[$[action_interact_right]] を押すと離すことができます. 軽い乗り物は取っ手を掴んでそのまま動かすことができます. プレイヤーが取っ手の範囲外まで移動した場合は自動的に手を離します.",
-                        ),
-                        sw_compdocs.language.Translation(
-                            "def_handle_s_desc",
-                            "",
-                            "A handle that you can attach to by interacting with [$[action_interact_left]] or [$[action_interact_right]].",
-                            "[$[action_interact_left]] や [$[action_interact_right]] を押して掴むことができる取っ手です.",
-                        ),
-                    ]
-                ),
-                input_ctx={"action_interact_left": "q", "action_interact_right": "e"},
-                input_defn=sw_compdocs.component.Definition(
-                    file="handle.xml",
-                    key="handle",
-                    name=sw_compdocs.language.Text(id="def_handle_name", en="Handle"),
-                    category=sw_compdocs.component.Category.BLOCKS,
-                    mass=1.0,
-                    value=5,
-                    flags=sw_compdocs.component.Flags(0),
-                    tags="basic",
-                    tooltip_properties=sw_compdocs.component.TooltipProperties(
-                        short_description=sw_compdocs.language.Text(
-                            id="def_handle_s_desc",
-                            en="Interacting with [$[action_interact_left]] or [$[action_interact_right]] again will detach that hand. The handle can be used to drag vehicles around. If a vehicle is too heavy to move, you will be detached automatically when you move outside the handle's interaction range.",
-                        ),
-                        description=sw_compdocs.language.Text(
-                            id="def_handle_desc",
-                            en="A handle that you can attach to by interacting with [$[action_interact_left]] or [$[action_interact_right]].",
-                        ),
-                    ),
-                    logic_nodes=sw_compdocs.component.LogicNodeList(),
-                    voxel_min=sw_compdocs.component.VoxelPos(x=0, y=0, z=0),
-                    voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=0),
-                ),
-                want_doc=sw_compdocs.document.Document(
-                    [
-                        sw_compdocs.document.Heading("取っ手"),
-                        sw_compdocs.document.Paragraph(
-                            "[q] や [e] を押して掴むことができる取っ手です."
-                        ),
-                        sw_compdocs.document.Paragraph(
-                            "取っ手を掴んでいる時に [q]/[e] を押すと離すことができます. 軽い乗り物は取っ手を掴んでそのまま動かすことができます. プレイヤーが取っ手の範囲外まで移動した場合は自動的に手を離します."
-                        ),
-                        sw_compdocs.document.Heading("プロパティ", level=2),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(["ラベル", "値"]),
-                                [
-                                    sw_compdocs.document.TableDataRow(["重量", "1"]),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["サイズ(WxDxH)", "1x1x2"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(["値段", "5"]),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["タグ", "basic"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["ファイル", "handle.xml"]
-                                    ),
-                                ],
-                            )
-                        ),
-                    ]
-                ),
-            ),
-            tt(  # omit short_description
-                input_label=None,
-                input_lang=None,
-                input_ctx=None,
-                input_defn=sw_compdocs.component.Definition(
-                    file="clock.xml",
-                    key="clock",
-                    name=sw_compdocs.language.Text(id="def_clock_name", en="Clock"),
-                    category=sw_compdocs.component.Category.DISPLAYS,
-                    mass=1.0,
-                    value=100,
-                    flags=sw_compdocs.component.Flags(8192),
-                    tags="basic",
-                    tooltip_properties=sw_compdocs.component.TooltipProperties(
-                        short_description=sw_compdocs.language.Text(
-                            id="def_clock_s_desc", en=""
-                        ),
-                        description=sw_compdocs.language.Text(
-                            id="def_clock_desc",
-                            en="The clock has a display to visualise the time of day or night. The 12 o'clock position is the white arrow on the face of the display.",
-                        ),
-                    ),
-                    logic_nodes=sw_compdocs.component.LogicNodeList(
-                        [
-                            sw_compdocs.component.LogicNode(
-                                key="clock",
-                                idx=0,
-                                label=sw_compdocs.language.Text(
-                                    id="def_clock_node_0_label", en="Time"
-                                ),
-                                mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
-                                type=sw_compdocs.component.LogicNodeType.FLOAT,
-                                description=sw_compdocs.language.Text(
-                                    id="def_clock_node_0_desc",
-                                    en="The time as a factor of a day, from 0 (midnight) to 1 (midnight).",
-                                ),
-                            ),
-                            sw_compdocs.component.LogicNode(
-                                key="clock",
-                                idx=1,
-                                label=sw_compdocs.language.Text(
-                                    id="def_clock_node_1_label", en="Backlight"
-                                ),
-                                mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                                type=sw_compdocs.component.LogicNodeType.BOOL,
-                                description=sw_compdocs.language.Text(
-                                    id="def_clock_node_1_desc",
-                                    en="Enables the backlight when receiving an on signal.",
-                                ),
-                            ),
-                            sw_compdocs.component.LogicNode(
-                                key="clock",
-                                idx=2,
-                                label=sw_compdocs.language.Text(
-                                    id="def_clock_node_2_label", en="Electric"
-                                ),
-                                mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                                type=sw_compdocs.component.LogicNodeType.ELECTRIC,
-                                description=sw_compdocs.language.Text(
-                                    id="def_clock_node_2_desc",
-                                    en="Electrical power connection.",
-                                ),
-                            ),
-                        ],
-                        key="clock",
-                    ),
-                    voxel_min=sw_compdocs.component.VoxelPos(x=0, y=0, z=0),
-                    voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=0),
-                ),
-                want_doc=sw_compdocs.document.Document(
-                    [
-                        sw_compdocs.document.Heading("Clock"),
-                        sw_compdocs.document.Paragraph(
-                            "The clock has a display to visualise the time of day or night. The 12 o'clock position is the white arrow on the face of the display."
-                        ),
-                        sw_compdocs.document.Heading("PROPERTIES", level=2),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_PROP_TABLE_HEAD_VALUE",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_MASS_LABEL", "1"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x1x2"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_COST_LABEL", "100"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_TAGS_LABEL", "basic"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_FILE_LABEL", "clock.xml"]
-                                    ),
-                                ],
-                            )
-                        ),
-                        sw_compdocs.document.Heading("logic inputs", level=2),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_TYPE",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_DESC",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "on/off",
-                                            "Backlight",
-                                            "Enables the backlight when receiving an on signal.",
-                                        ]
-                                    )
-                                ],
-                            )
-                        ),
-                        sw_compdocs.document.Heading("logic outputs", level=2),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_TYPE",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_DESC",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "number",
-                                            "Time",
-                                            "The time as a factor of a day, from 0 (midnight) to 1 (midnight).",
-                                        ]
-                                    )
-                                ],
-                            )
-                        ),
-                        sw_compdocs.document.Heading("connections", level=2),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_TYPE",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_DESC",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "electric",
-                                            "Electric",
-                                            "Electrical power connection.",
-                                        ]
-                                    )
-                                ],
-                            )
-                        ),
-                    ]
-                ),
-            ),
-            tt(  # omit description
-                input_label=None,
-                input_lang=None,
-                input_ctx=None,
-                input_defn=sw_compdocs.component.Definition(
-                    file="clock.xml",
-                    key="clock",
-                    name=sw_compdocs.language.Text(id="def_clock_name", en="Clock"),
-                    category=sw_compdocs.component.Category.DISPLAYS,
-                    mass=1.0,
-                    value=100,
-                    flags=sw_compdocs.component.Flags(8192),
-                    tags="basic",
-                    tooltip_properties=sw_compdocs.component.TooltipProperties(
-                        short_description=sw_compdocs.language.Text(
-                            id="def_clock_s_desc",
-                            en="An analogue clock display that outputs a number value representing the time of day.",
-                        ),
-                        description=sw_compdocs.language.Text(
-                            id="def_clock_desc", en=""
-                        ),
-                    ),
-                    logic_nodes=sw_compdocs.component.LogicNodeList(
-                        [
-                            sw_compdocs.component.LogicNode(
-                                key="clock",
-                                idx=0,
-                                label=sw_compdocs.language.Text(
-                                    id="def_clock_node_0_label", en="Time"
-                                ),
-                                mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
-                                type=sw_compdocs.component.LogicNodeType.FLOAT,
-                                description=sw_compdocs.language.Text(
-                                    id="def_clock_node_0_desc",
-                                    en="The time as a factor of a day, from 0 (midnight) to 1 (midnight).",
-                                ),
-                            ),
-                            sw_compdocs.component.LogicNode(
-                                key="clock",
-                                idx=1,
-                                label=sw_compdocs.language.Text(
-                                    id="def_clock_node_1_label", en="Backlight"
-                                ),
-                                mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                                type=sw_compdocs.component.LogicNodeType.BOOL,
-                                description=sw_compdocs.language.Text(
-                                    id="def_clock_node_1_desc",
-                                    en="Enables the backlight when receiving an on signal.",
-                                ),
-                            ),
-                            sw_compdocs.component.LogicNode(
-                                key="clock",
-                                idx=2,
-                                label=sw_compdocs.language.Text(
-                                    id="def_clock_node_2_label", en="Electric"
-                                ),
-                                mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                                type=sw_compdocs.component.LogicNodeType.ELECTRIC,
-                                description=sw_compdocs.language.Text(
-                                    id="def_clock_node_2_desc",
-                                    en="Electrical power connection.",
-                                ),
-                            ),
-                        ],
-                        key="clock",
-                    ),
-                    voxel_min=sw_compdocs.component.VoxelPos(x=0, y=0, z=0),
-                    voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=0),
-                ),
-                want_doc=sw_compdocs.document.Document(
-                    [
-                        sw_compdocs.document.Heading("Clock"),
-                        sw_compdocs.document.Paragraph(
-                            "An analogue clock display that outputs a number value representing the time of day."
-                        ),
-                        sw_compdocs.document.Heading("PROPERTIES", level=2),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_PROP_TABLE_HEAD_VALUE",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_MASS_LABEL", "1"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x1x2"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_COST_LABEL", "100"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_TAGS_LABEL", "basic"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_FILE_LABEL", "clock.xml"]
-                                    ),
-                                ],
-                            )
-                        ),
-                        sw_compdocs.document.Heading("logic inputs", level=2),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_TYPE",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_DESC",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "on/off",
-                                            "Backlight",
-                                            "Enables the backlight when receiving an on signal.",
-                                        ]
-                                    )
-                                ],
-                            )
-                        ),
-                        sw_compdocs.document.Heading("logic outputs", level=2),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_TYPE",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_DESC",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "number",
-                                            "Time",
-                                            "The time as a factor of a day, from 0 (midnight) to 1 (midnight).",
-                                        ]
-                                    )
-                                ],
-                            )
-                        ),
-                        sw_compdocs.document.Heading("connections", level=2),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_TYPE",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_DESC",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "electric",
-                                            "Electric",
-                                            "Electrical power connection.",
                                         ]
                                     )
                                 ],
