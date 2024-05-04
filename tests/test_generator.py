@@ -523,7 +523,7 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
                 ("input_label", collections.abc.Mapping[str, str] | None),
                 ("input_lang", sw_compdocs.language.Language | None),
                 ("input_ctx", collections.abc.Mapping[str, str] | None),
-                ("input_lns", sw_compdocs.component.LogicNodeList),
+                ("input_ln_list", list[sw_compdocs.component.LogicNode]),
                 ("want_tbl", sw_compdocs.document.Table),
             ],
         )
@@ -537,7 +537,7 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
                 },
                 input_lang=None,
                 input_ctx=None,
-                input_lns=sw_compdocs.component.LogicNodeList([]),
+                input_ln_list=[],
                 want_tbl=sw_compdocs.document.Table(
                     sw_compdocs.document.TableData(
                         sw_compdocs.document.TableDataRow(["種別", "ラベル", "説明"]),
@@ -597,33 +597,30 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
                     "label_1": "label_1_fmt",
                     "desc_1": "desc_1_fmt",
                 },
-                input_lns=sw_compdocs.component.LogicNodeList(
-                    [
-                        sw_compdocs.component.LogicNode(
-                            key="test",
-                            idx=0,
-                            label=sw_compdocs.language.Text(
-                                id="def_test_node_0_label", en="label 0 $[label_0]"
-                            ),
-                            type=sw_compdocs.component.LogicNodeType.BOOL,
-                            description=sw_compdocs.language.Text(
-                                id="def_test_node_0_desc", en="desc 0 $[desc_0]"
-                            ),
+                input_ln_list=[
+                    sw_compdocs.component.LogicNode(
+                        key="test",
+                        idx=0,
+                        label=sw_compdocs.language.Text(
+                            id="def_test_node_0_label", en="label 0 $[label_0]"
                         ),
-                        sw_compdocs.component.LogicNode(
-                            key="test",
-                            idx=1,
-                            label=sw_compdocs.language.Text(
-                                id="def_test_node_1_label", en="label 1 $[label_1]"
-                            ),
-                            type=sw_compdocs.component.LogicNodeType.FLOAT,
-                            description=sw_compdocs.language.Text(
-                                id="def_test_node_1_desc", en="desc 1 $[desc_1]"
-                            ),
+                        type=sw_compdocs.component.LogicNodeType.BOOL,
+                        description=sw_compdocs.language.Text(
+                            id="def_test_node_0_desc", en="desc 0 $[desc_0]"
                         ),
-                    ],
-                    key="test",
-                ),
+                    ),
+                    sw_compdocs.component.LogicNode(
+                        key="test",
+                        idx=1,
+                        label=sw_compdocs.language.Text(
+                            id="def_test_node_1_label", en="label 1 $[label_1]"
+                        ),
+                        type=sw_compdocs.component.LogicNodeType.FLOAT,
+                        description=sw_compdocs.language.Text(
+                            id="def_test_node_1_desc", en="desc 1 $[desc_1]"
+                        ),
+                    ),
+                ],
                 want_tbl=sw_compdocs.document.Table(
                     sw_compdocs.document.TableData(
                         sw_compdocs.document.TableDataRow(["種別", "ラベル", "説明"]),
@@ -690,33 +687,30 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
                     "label_1": "label_1_fmt",
                     "desc_1": "desc_1_fmt",
                 },
-                input_lns=sw_compdocs.component.LogicNodeList(
-                    [
-                        sw_compdocs.component.LogicNode(
-                            key="test",
-                            idx=0,
-                            label=sw_compdocs.language.Text(
-                                id="def_test_node_0_label", en="label 0 $[label_0]"
-                            ),
-                            type=sw_compdocs.component.LogicNodeType.BOOL,
-                            description=sw_compdocs.language.Text(
-                                id="def_test_node_0_desc", en="desc 0 $[desc_0]"
-                            ),
+                input_ln_list=[
+                    sw_compdocs.component.LogicNode(
+                        key="test",
+                        idx=0,
+                        label=sw_compdocs.language.Text(
+                            id="def_test_node_0_label", en="label 0 $[label_0]"
                         ),
-                        sw_compdocs.component.LogicNode(
-                            key="test",
-                            idx=1,
-                            label=sw_compdocs.language.Text(
-                                id="def_test_node_1_label", en="label 1 $[label_1]"
-                            ),
-                            type=sw_compdocs.component.LogicNodeType.FLOAT,
-                            description=sw_compdocs.language.Text(
-                                id="def_test_node_1_desc", en="desc 1 $[desc_1]"
-                            ),
+                        type=sw_compdocs.component.LogicNodeType.BOOL,
+                        description=sw_compdocs.language.Text(
+                            id="def_test_node_0_desc", en="desc 0 $[desc_0]"
                         ),
-                    ],
-                    key="test",
-                ),
+                    ),
+                    sw_compdocs.component.LogicNode(
+                        key="test",
+                        idx=1,
+                        label=sw_compdocs.language.Text(
+                            id="def_test_node_1_label", en="label 1 $[label_1]"
+                        ),
+                        type=sw_compdocs.component.LogicNodeType.FLOAT,
+                        description=sw_compdocs.language.Text(
+                            id="def_test_node_1_desc", en="desc 1 $[desc_1]"
+                        ),
+                    ),
+                ],
                 want_tbl=sw_compdocs.document.Table(
                     sw_compdocs.document.TableData(
                         sw_compdocs.document.TableDataRow(
@@ -754,33 +748,30 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
                     "label_1": "label_1_fmt",
                     "desc_1": "desc_1_fmt",
                 },
-                input_lns=sw_compdocs.component.LogicNodeList(
-                    [
-                        sw_compdocs.component.LogicNode(
-                            key="test",
-                            idx=0,
-                            label=sw_compdocs.language.Text(
-                                id="def_test_node_0_label", en="label 0 $[label_0]"
-                            ),
-                            type=sw_compdocs.component.LogicNodeType.BOOL,
-                            description=sw_compdocs.language.Text(
-                                id="def_test_node_0_desc", en="desc 0 $[desc_0]"
-                            ),
+                input_ln_list=[
+                    sw_compdocs.component.LogicNode(
+                        key="test",
+                        idx=0,
+                        label=sw_compdocs.language.Text(
+                            id="def_test_node_0_label", en="label 0 $[label_0]"
                         ),
-                        sw_compdocs.component.LogicNode(
-                            key="test",
-                            idx=1,
-                            label=sw_compdocs.language.Text(
-                                id="def_test_node_1_label", en="label 1 $[label_1]"
-                            ),
-                            type=sw_compdocs.component.LogicNodeType.FLOAT,
-                            description=sw_compdocs.language.Text(
-                                id="def_test_node_1_desc", en="desc 1 $[desc_1]"
-                            ),
+                        type=sw_compdocs.component.LogicNodeType.BOOL,
+                        description=sw_compdocs.language.Text(
+                            id="def_test_node_0_desc", en="desc 0 $[desc_0]"
                         ),
-                    ],
-                    key="test",
-                ),
+                    ),
+                    sw_compdocs.component.LogicNode(
+                        key="test",
+                        idx=1,
+                        label=sw_compdocs.language.Text(
+                            id="def_test_node_1_label", en="label 1 $[label_1]"
+                        ),
+                        type=sw_compdocs.component.LogicNodeType.FLOAT,
+                        description=sw_compdocs.language.Text(
+                            id="def_test_node_1_desc", en="desc 1 $[desc_1]"
+                        ),
+                    ),
+                ],
                 want_tbl=sw_compdocs.document.Table(
                     sw_compdocs.document.TableData(
                         sw_compdocs.document.TableDataRow(["種別", "ラベル", "説明"]),
@@ -842,33 +833,30 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
                     ]
                 ),
                 input_ctx=None,
-                input_lns=sw_compdocs.component.LogicNodeList(
-                    [
-                        sw_compdocs.component.LogicNode(
-                            key="test",
-                            idx=0,
-                            label=sw_compdocs.language.Text(
-                                id="def_test_node_0_label", en="label 0 $[label_0]"
-                            ),
-                            type=sw_compdocs.component.LogicNodeType.BOOL,
-                            description=sw_compdocs.language.Text(
-                                id="def_test_node_0_desc", en="desc 0 $[desc_0]"
-                            ),
+                input_ln_list=[
+                    sw_compdocs.component.LogicNode(
+                        key="test",
+                        idx=0,
+                        label=sw_compdocs.language.Text(
+                            id="def_test_node_0_label", en="label 0 $[label_0]"
                         ),
-                        sw_compdocs.component.LogicNode(
-                            key="test",
-                            idx=1,
-                            label=sw_compdocs.language.Text(
-                                id="def_test_node_1_label", en="label 1 $[label_1]"
-                            ),
-                            type=sw_compdocs.component.LogicNodeType.FLOAT,
-                            description=sw_compdocs.language.Text(
-                                id="def_test_node_1_desc", en="desc 1 $[desc_1]"
-                            ),
+                        type=sw_compdocs.component.LogicNodeType.BOOL,
+                        description=sw_compdocs.language.Text(
+                            id="def_test_node_0_desc", en="desc 0 $[desc_0]"
                         ),
-                    ],
-                    key="test",
-                ),
+                    ),
+                    sw_compdocs.component.LogicNode(
+                        key="test",
+                        idx=1,
+                        label=sw_compdocs.language.Text(
+                            id="def_test_node_1_label", en="label 1 $[label_1]"
+                        ),
+                        type=sw_compdocs.component.LogicNodeType.FLOAT,
+                        description=sw_compdocs.language.Text(
+                            id="def_test_node_1_desc", en="desc 1 $[desc_1]"
+                        ),
+                    ),
+                ],
                 want_tbl=sw_compdocs.document.Table(
                     sw_compdocs.document.TableData(
                         sw_compdocs.document.TableDataRow(["種別", "ラベル", "説明"]),
@@ -935,33 +923,30 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
                     "label_1": "label_1_fmt",
                     "desc_1": "desc_1_fmt",
                 },
-                input_lns=sw_compdocs.component.LogicNodeList(
-                    [
-                        sw_compdocs.component.LogicNode(
-                            key="test",
-                            idx=3,
-                            label=sw_compdocs.language.Text(
-                                id="def_test_node_3_label", en="label 0 $[label_0]"
-                            ),
-                            type=sw_compdocs.component.LogicNodeType.BOOL,
-                            description=sw_compdocs.language.Text(
-                                id="def_test_node_3_desc", en="desc 0 $[desc_0]"
-                            ),
+                input_ln_list=[
+                    sw_compdocs.component.LogicNode(
+                        key="test",
+                        idx=3,
+                        label=sw_compdocs.language.Text(
+                            id="def_test_node_3_label", en="label 0 $[label_0]"
                         ),
-                        sw_compdocs.component.LogicNode(
-                            key="test",
-                            idx=5,
-                            label=sw_compdocs.language.Text(
-                                id="def_test_node_5_label", en="label 1 $[label_1]"
-                            ),
-                            type=sw_compdocs.component.LogicNodeType.FLOAT,
-                            description=sw_compdocs.language.Text(
-                                id="def_test_node_5_desc", en="desc 1 $[desc_1]"
-                            ),
+                        type=sw_compdocs.component.LogicNodeType.BOOL,
+                        description=sw_compdocs.language.Text(
+                            id="def_test_node_3_desc", en="desc 0 $[desc_0]"
                         ),
-                    ],
-                    key="test",
-                ),
+                    ),
+                    sw_compdocs.component.LogicNode(
+                        key="test",
+                        idx=5,
+                        label=sw_compdocs.language.Text(
+                            id="def_test_node_5_label", en="label 1 $[label_1]"
+                        ),
+                        type=sw_compdocs.component.LogicNodeType.FLOAT,
+                        description=sw_compdocs.language.Text(
+                            id="def_test_node_5_desc", en="desc 1 $[desc_1]"
+                        ),
+                    ),
+                ],
                 want_tbl=sw_compdocs.document.Table(
                     sw_compdocs.document.TableData(
                         sw_compdocs.document.TableDataRow(["種別", "ラベル", "説明"]),
@@ -1005,22 +990,17 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
                     ]
                 ),
                 input_ctx=None,
-                input_lns=sw_compdocs.component.LogicNodeList(
-                    [
-                        sw_compdocs.component.LogicNode(
-                            key="test",
-                            idx=-1,
-                            label=sw_compdocs.language.Text(
-                                id="def_test_node_-1_label"
-                            ),
-                            type=sw_compdocs.component.LogicNodeType.BOOL,
-                            description=sw_compdocs.language.Text(
-                                id="def_test_node_-1_desc"
-                            ),
-                        )
-                    ],
-                    key="test",
-                ),
+                input_ln_list=[
+                    sw_compdocs.component.LogicNode(
+                        key="test",
+                        idx=-1,
+                        label=sw_compdocs.language.Text(id="def_test_node_-1_label"),
+                        type=sw_compdocs.component.LogicNodeType.BOOL,
+                        description=sw_compdocs.language.Text(
+                            id="def_test_node_-1_desc"
+                        ),
+                    )
+                ],
                 want_tbl=sw_compdocs.document.Table(
                     sw_compdocs.document.TableData(
                         sw_compdocs.document.TableDataRow(
@@ -1045,7 +1025,7 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
         ]:
             with self.subTest(tc=tc):
                 got_tbl = sw_compdocs.generator.generate_document_logic_table(
-                    tc.input_lns,
+                    tc.input_ln_list,
                     label=tc.input_label,
                     lang=tc.input_lang,
                     ctx=tc.input_ctx,

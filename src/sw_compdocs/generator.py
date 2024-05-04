@@ -101,7 +101,7 @@ def generate_document_property(
 
 
 def generate_document_logic_table(
-    lns: component.LogicNodeList,
+    ln_list: collections.abc.Iterable[component.LogicNode],
     *,
     label: collections.abc.Mapping[str, str] | None = None,
     lang: language.Language | None = None,
@@ -115,7 +115,7 @@ def generate_document_logic_table(
         ]
     )
     data = document.TableData(head)
-    for ln in lns:
+    for ln in ln_list:
         ln_type = _lang_find_en(lang, str(ln.type))
         ln_label = _lang_translate(lang, ln.label)
         ln_label = _ctx_format(ctx, ln_label)
@@ -132,9 +132,9 @@ def generate_document_logic(
     lang: language.Language | None = None,
     ctx: collections.abc.Mapping[str, str] | None = None,
 ) -> document.Document:
-    in_lns = component.LogicNodeList()
-    out_lns = component.LogicNodeList()
-    conn_lns = component.LogicNodeList()
+    in_list = []
+    out_list = []
+    conn_list = []
     for ln in lns:
         if (
             ln.type is component.LogicNodeType.BOOL
@@ -144,10 +144,10 @@ def generate_document_logic(
             or ln.type is component.LogicNodeType.AUDIO
         ):
             if ln.mode is component.LogicNodeMode.INPUT:
-                in_lns.append(ln)
+                in_list.append(ln)
                 continue
             if ln.mode is component.LogicNodeMode.OUTPUT:
-                out_lns.append(ln)
+                out_list.append(ln)
                 continue
             typing.assert_never(ln.mode)
         if (
@@ -156,27 +156,27 @@ def generate_document_logic(
             or ln.type is component.LogicNodeType.ELECTRIC
             or ln.type is component.LogicNodeType.ROPE
         ):
-            conn_lns.append(ln)
+            conn_list.append(ln)
             continue
         typing.assert_never(ln.type)
 
     doc = document.Document()
-    if len(in_lns) > 0:
+    if len(in_list) > 0:
         in_head = document.Heading(_lang_find_en(lang, "logic inputs"))
-        in_tbl = generate_document_logic_table(in_lns, label=label, lang=lang, ctx=ctx)
+        in_tbl = generate_document_logic_table(in_list, label=label, lang=lang, ctx=ctx)
         doc.append(in_head)
         doc.append(in_tbl)
-    if len(out_lns) > 0:
+    if len(out_list) > 0:
         out_head = document.Heading(_lang_find_en(lang, "logic outputs"))
         out_tbl = generate_document_logic_table(
-            out_lns, label=label, lang=lang, ctx=ctx
+            out_list, label=label, lang=lang, ctx=ctx
         )
         doc.append(out_head)
         doc.append(out_tbl)
-    if len(conn_lns) > 0:
+    if len(conn_list) > 0:
         conn_head = document.Heading(_lang_find_en(lang, "connections"))
         conn_tbl = generate_document_logic_table(
-            conn_lns, label=label, lang=lang, ctx=ctx
+            conn_list, label=label, lang=lang, ctx=ctx
         )
         doc.append(conn_head)
         doc.append(conn_tbl)
