@@ -166,6 +166,7 @@ class TestGenerateDocumentPropertyTable(unittest.TestCase):
         )
 
         for tc in [
+            # normal
             tt(
                 input_label=None,
                 input_defn=sw_compdocs.component.Definition(
@@ -204,17 +205,10 @@ class TestGenerateDocumentPropertyTable(unittest.TestCase):
                     )
                 ),
             ),
-            # mass format
+            # empty
             tt(
                 input_label=None,
-                input_defn=sw_compdocs.component.Definition(
-                    file="file",
-                    mass=0.5,
-                    value=100,
-                    tags="tags",
-                    voxel_min=sw_compdocs.component.VoxelPos(x=0, y=-1, z=-2),
-                    voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=2),
-                ),
+                input_defn=sw_compdocs.component.Definition(),
                 want_tbl=sw_compdocs.document.Table(
                     sw_compdocs.document.TableData(
                         sw_compdocs.document.TableDataRow(
@@ -225,34 +219,28 @@ class TestGenerateDocumentPropertyTable(unittest.TestCase):
                         ),
                         [
                             sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_PROP_TABLE_MASS_LABEL", "0.5"]
+                                ["DOCUMENT_PROP_TABLE_MASS_LABEL", "0"]
                             ),
                             sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x5x3"]
+                                ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x1x1"]
                             ),
                             sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_PROP_TABLE_COST_LABEL", "100"]
+                                ["DOCUMENT_PROP_TABLE_COST_LABEL", "0"]
                             ),
                             sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_PROP_TABLE_TAGS_LABEL", "tags"]
+                                ["DOCUMENT_PROP_TABLE_TAGS_LABEL", ""]
                             ),
                             sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_PROP_TABLE_FILE_LABEL", "file"]
+                                ["DOCUMENT_PROP_TABLE_FILE_LABEL", ""]
                             ),
                         ],
                     )
                 ),
             ),
+            # mass format
             tt(
                 input_label=None,
-                input_defn=sw_compdocs.component.Definition(
-                    file="file",
-                    mass=0.25,
-                    value=100,
-                    tags="tags",
-                    voxel_min=sw_compdocs.component.VoxelPos(x=0, y=-1, z=-2),
-                    voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=2),
-                ),
+                input_defn=sw_compdocs.component.Definition(mass=0.25),
                 want_tbl=sw_compdocs.document.Table(
                     sw_compdocs.document.TableData(
                         sw_compdocs.document.TableDataRow(
@@ -266,16 +254,16 @@ class TestGenerateDocumentPropertyTable(unittest.TestCase):
                                 ["DOCUMENT_PROP_TABLE_MASS_LABEL", "0.25"]
                             ),
                             sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x5x3"]
+                                ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x1x1"]
                             ),
                             sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_PROP_TABLE_COST_LABEL", "100"]
+                                ["DOCUMENT_PROP_TABLE_COST_LABEL", "0"]
                             ),
                             sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_PROP_TABLE_TAGS_LABEL", "tags"]
+                                ["DOCUMENT_PROP_TABLE_TAGS_LABEL", ""]
                             ),
                             sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_PROP_TABLE_FILE_LABEL", "file"]
+                                ["DOCUMENT_PROP_TABLE_FILE_LABEL", ""]
                             ),
                         ],
                     )
@@ -285,12 +273,7 @@ class TestGenerateDocumentPropertyTable(unittest.TestCase):
             tt(
                 input_label=None,
                 input_defn=sw_compdocs.component.Definition(
-                    file=None,
-                    mass=10.0,
-                    value=100,
-                    tags="tags",
-                    voxel_min=sw_compdocs.component.VoxelPos(x=0, y=-1, z=-2),
-                    voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=2),
+                    file=b"path/to/definition.xml"
                 ),
                 want_tbl=sw_compdocs.document.Table(
                     sw_compdocs.document.TableData(
@@ -302,54 +285,16 @@ class TestGenerateDocumentPropertyTable(unittest.TestCase):
                         ),
                         [
                             sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_PROP_TABLE_MASS_LABEL", "10"]
+                                ["DOCUMENT_PROP_TABLE_MASS_LABEL", "0"]
                             ),
                             sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x5x3"]
+                                ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x1x1"]
                             ),
                             sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_PROP_TABLE_COST_LABEL", "100"]
+                                ["DOCUMENT_PROP_TABLE_COST_LABEL", "0"]
                             ),
                             sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_PROP_TABLE_TAGS_LABEL", "tags"]
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_PROP_TABLE_FILE_LABEL", ""]
-                            ),
-                        ],
-                    )
-                ),
-            ),
-            tt(
-                input_label=None,
-                input_defn=sw_compdocs.component.Definition(
-                    file=b"path/to/definition.xml",
-                    mass=10.0,
-                    value=100,
-                    tags="tags",
-                    voxel_min=sw_compdocs.component.VoxelPos(x=0, y=-1, z=-2),
-                    voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=2),
-                ),
-                want_tbl=sw_compdocs.document.Table(
-                    sw_compdocs.document.TableData(
-                        sw_compdocs.document.TableDataRow(
-                            [
-                                "DOCUMENT_PROP_TABLE_HEAD_LABEL",
-                                "DOCUMENT_PROP_TABLE_HEAD_VALUE",
-                            ]
-                        ),
-                        [
-                            sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_PROP_TABLE_MASS_LABEL", "10"]
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x5x3"]
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_PROP_TABLE_COST_LABEL", "100"]
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_PROP_TABLE_TAGS_LABEL", "tags"]
+                                ["DOCUMENT_PROP_TABLE_TAGS_LABEL", ""]
                             ),
                             sw_compdocs.document.TableDataRow(
                                 ["DOCUMENT_PROP_TABLE_FILE_LABEL", "definition.xml"]
@@ -369,23 +314,16 @@ class TestGenerateDocumentPropertyTable(unittest.TestCase):
                     "DOCUMENT_PROP_TABLE_TAGS_LABEL": "Tags",
                     "DOCUMENT_PROP_TABLE_FILE_LABEL": "File",
                 },
-                input_defn=sw_compdocs.component.Definition(
-                    file="file",
-                    mass=10.0,
-                    value=100,
-                    tags="tags",
-                    voxel_min=sw_compdocs.component.VoxelPos(x=0, y=-1, z=-2),
-                    voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=2),
-                ),
+                input_defn=sw_compdocs.component.Definition(),
                 want_tbl=sw_compdocs.document.Table(
                     sw_compdocs.document.TableData(
                         sw_compdocs.document.TableDataRow(["Label", "Value"]),
                         [
-                            sw_compdocs.document.TableDataRow(["Mass", "10"]),
-                            sw_compdocs.document.TableDataRow(["Dimensions", "1x5x3"]),
-                            sw_compdocs.document.TableDataRow(["Cost", "100"]),
-                            sw_compdocs.document.TableDataRow(["Tags", "tags"]),
-                            sw_compdocs.document.TableDataRow(["File", "file"]),
+                            sw_compdocs.document.TableDataRow(["Mass", "0"]),
+                            sw_compdocs.document.TableDataRow(["Dimensions", "1x1x1"]),
+                            sw_compdocs.document.TableDataRow(["Cost", "0"]),
+                            sw_compdocs.document.TableDataRow(["Tags", ""]),
+                            sw_compdocs.document.TableDataRow(["File", ""]),
                         ],
                     )
                 ),
