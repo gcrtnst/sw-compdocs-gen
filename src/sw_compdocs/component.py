@@ -574,3 +574,8 @@ def load_defn_dict(defn_dir: _types.StrOrBytesPath) -> dict[str, Definition]:
         assert defn.key is not None
         defn_dict[defn.key] = defn
     return defn_dict
+
+
+def load_comp_list(defn_dir: _types.StrOrBytesPath) -> list[Component]:
+    defn_dict = load_defn_dict(defn_dir)
+    return [Component(defn=defn) for defn in defn_dict.values()]

@@ -1987,3 +1987,66 @@ class TestLoadDefnDict(unittest.TestCase):
                 with self.subTest(path=path):
                     got_defn_dict = sw_compdocs.component.load_defn_dict(path)
                     self.assertEqual(got_defn_dict, want_defn_dict)
+
+
+class TestLoadCompList(unittest.TestCase):
+    def test_empty(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path_list: list[sw_compdocs._types.StrOrBytesPath] = [
+                os.fsdecode(temp_dir),
+                os.fsencode(temp_dir),
+                pathlib.Path(temp_dir),
+            ]
+            for path in path_list:
+                with self.subTest(path=path):
+                    comp_list = sw_compdocs.component.load_comp_list(path)
+                    self.assertEqual(comp_list, list[sw_compdocs.component.Component]())
+
+    def test_normal(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            dmy1_file = pathlib.Path(temp_dir, "dmy1.xml")
+            with open(dmy1_file, mode="xt", encoding="utf-8", newline="\r\n") as f:
+                f.write(
+                    """\
+<?xml version="1.0" encoding="UTF-8"?>
+<definition name="Dummy 1"/>
+"""
+                )
+
+            dmy2_file = pathlib.Path(temp_dir, "dmy2.xml")
+            with open(dmy2_file, mode="xt", encoding="utf-8", newline="\r\n") as f:
+                f.write(
+                    """\
+<?xml version="1.0" encoding="UTF-8"?>
+<definition name="Dummy 2"/>
+"""
+                )
+
+            want_comp_list = [
+                sw_compdocs.component.Component(
+                    defn=sw_compdocs.component.Definition(
+                        key="dmy1",
+                        file=dmy1_file,
+                        name=sw_compdocs.language.Text(en="Dummy 1"),
+                    )
+                ),
+                sw_compdocs.component.Component(
+                    defn=sw_compdocs.component.Definition(
+                        key="dmy2",
+                        file=dmy2_file,
+                        name=sw_compdocs.language.Text(en="Dummy 2"),
+                    )
+                ),
+            ]
+            for comp in want_comp_list:
+                comp.defn.update_id(comp.defn.key)
+
+            path_list: list[sw_compdocs._types.StrOrBytesPath] = [
+                os.fsdecode(temp_dir),
+                os.fsencode(temp_dir),
+                pathlib.Path(temp_dir),
+            ]
+            for path in path_list:
+                with self.subTest(path=path):
+                    got_comp_list = sw_compdocs.component.load_comp_list(path)
+                    self.assertEqual(got_comp_list, want_comp_list)
