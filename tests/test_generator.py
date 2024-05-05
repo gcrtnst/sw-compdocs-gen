@@ -364,7 +364,7 @@ class TestGenerateDocumentProperty(unittest.TestCase):
             [
                 ("input_label", collections.abc.Mapping[str, str] | None),
                 ("input_lang", sw_compdocs.language.Language | None),
-                ("input_defn", sw_compdocs.component.Definition),
+                ("input_comp", sw_compdocs.component.Component),
                 ("want_doc", sw_compdocs.document.Document),
             ],
         )
@@ -373,7 +373,9 @@ class TestGenerateDocumentProperty(unittest.TestCase):
             tt(
                 input_label=None,
                 input_lang=None,
-                input_defn=sw_compdocs.component.Definition(),
+                input_comp=sw_compdocs.component.Component(
+                    defn=sw_compdocs.component.Definition()
+                ),
                 want_doc=sw_compdocs.document.Document(
                     [
                         sw_compdocs.document.Heading("PROPERTIES"),
@@ -424,7 +426,9 @@ class TestGenerateDocumentProperty(unittest.TestCase):
                         )
                     ]
                 ),
-                input_defn=sw_compdocs.component.Definition(),
+                input_comp=sw_compdocs.component.Component(
+                    defn=sw_compdocs.component.Definition()
+                ),
                 want_doc=sw_compdocs.document.Document(
                     [
                         sw_compdocs.document.Heading("プロパティ"),
@@ -448,7 +452,7 @@ class TestGenerateDocumentProperty(unittest.TestCase):
         ]:
             with self.subTest(tc=tc):
                 got_doc = sw_compdocs.generator.generate_document_property(
-                    tc.input_defn, label=tc.input_label, lang=tc.input_lang
+                    tc.input_comp, label=tc.input_label, lang=tc.input_lang
                 )
                 self.assertEqual(got_doc, tc.want_doc)
 

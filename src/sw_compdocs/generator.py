@@ -87,7 +87,7 @@ def generate_document_property_table(
 
 
 def generate_document_property(
-    defn: component.Definition,
+    comp: component.Component,
     *,
     label: collections.abc.Mapping[str, str] | None = None,
     lang: language.Language | None = None,
@@ -95,7 +95,7 @@ def generate_document_property(
     return document.Document(
         [
             document.Heading(_lang_find_en(lang, "PROPERTIES")),
-            generate_document_property_table(defn, label=label),
+            generate_document_property_table(comp.defn, label=label),
         ]
     )
 
@@ -215,7 +215,7 @@ def generate_document_component(
     if comp_desc != "":
         doc.append(document.Paragraph(comp_desc))
 
-    prop_doc = generate_document_property(comp.defn, label=label, lang=lang)
+    prop_doc = generate_document_property(comp, label=label, lang=lang)
     prop_doc.shift(1)
     doc.extend(prop_doc)
 
