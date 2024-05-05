@@ -964,7 +964,7 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                 ("input_label", collections.abc.Mapping[str, str] | None),
                 ("input_lang", sw_compdocs.language.Language | None),
                 ("input_ctx", collections.abc.Mapping[str, str] | None),
-                ("input_defn", sw_compdocs.component.Definition),
+                ("input_comp", sw_compdocs.component.Component),
                 ("want_doc", sw_compdocs.document.Document),
             ],
         )
@@ -975,7 +975,9 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                 input_label=None,
                 input_lang=None,
                 input_ctx=None,
-                input_defn=sw_compdocs.component.Definition(),
+                input_comp=sw_compdocs.component.Component(
+                    defn=sw_compdocs.component.Definition()
+                ),
                 want_doc=sw_compdocs.document.Document(
                     [
                         sw_compdocs.document.Heading(""),
@@ -1015,8 +1017,10 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                 input_label=None,
                 input_lang=None,
                 input_ctx=None,
-                input_defn=sw_compdocs.component.Definition(
-                    flags=sw_compdocs.component.Flags.IS_DEPRECATED
+                input_comp=sw_compdocs.component.Component(
+                    defn=sw_compdocs.component.Definition(
+                        flags=sw_compdocs.component.Flags.IS_DEPRECATED
+                    )
                 ),
                 want_doc=sw_compdocs.document.Document(
                     [
@@ -1061,26 +1065,28 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                 input_label=None,
                 input_lang=None,
                 input_ctx=None,
-                input_defn=sw_compdocs.component.Definition(
-                    name=sw_compdocs.language.Text(en="Name"),
-                    tooltip_properties=sw_compdocs.component.TooltipProperties(
-                        short_description=sw_compdocs.language.Text(
-                            en="Short Description"
-                        ),
-                        description=sw_compdocs.language.Text(en="Description"),
-                    ),
-                    logic_nodes=sw_compdocs.component.LogicNodeList(
-                        [
-                            sw_compdocs.component.LogicNode(
-                                label=sw_compdocs.language.Text(en="Node Label"),
-                                mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                                type=sw_compdocs.component.LogicNodeType.BOOL,
-                                description=sw_compdocs.language.Text(
-                                    en="Node Description"
-                                ),
+                input_comp=sw_compdocs.component.Component(
+                    defn=sw_compdocs.component.Definition(
+                        name=sw_compdocs.language.Text(en="Name"),
+                        tooltip_properties=sw_compdocs.component.TooltipProperties(
+                            short_description=sw_compdocs.language.Text(
+                                en="Short Description"
                             ),
-                        ],
-                    ),
+                            description=sw_compdocs.language.Text(en="Description"),
+                        ),
+                        logic_nodes=sw_compdocs.component.LogicNodeList(
+                            [
+                                sw_compdocs.component.LogicNode(
+                                    label=sw_compdocs.language.Text(en="Node Label"),
+                                    mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                                    type=sw_compdocs.component.LogicNodeType.BOOL,
+                                    description=sw_compdocs.language.Text(
+                                        en="Node Description"
+                                    ),
+                                ),
+                            ],
+                        ),
+                    )
                 ),
                 want_doc=sw_compdocs.document.Document(
                     [
@@ -1208,33 +1214,35 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                     "def_dummy_node_0_label_placeholder": "ノードラベル",
                     "def_dummy_node_0_desc_placeholder": "ノード説明",
                 },
-                input_defn=sw_compdocs.component.Definition(
-                    key="dummy",
-                    name=sw_compdocs.language.Text(id="def_dummy_name"),
-                    tooltip_properties=sw_compdocs.component.TooltipProperties(
+                input_comp=sw_compdocs.component.Component(
+                    defn=sw_compdocs.component.Definition(
                         key="dummy",
-                        short_description=sw_compdocs.language.Text(
-                            id="def_dummy_s_desc"
-                        ),
-                        description=sw_compdocs.language.Text(id="def_dummy_desc"),
-                    ),
-                    logic_nodes=sw_compdocs.component.LogicNodeList(
-                        [
-                            sw_compdocs.component.LogicNode(
-                                key="dummy",
-                                idx=0,
-                                label=sw_compdocs.language.Text(
-                                    id="def_dummy_node_0_label"
-                                ),
-                                mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                                type=sw_compdocs.component.LogicNodeType.BOOL,
-                                description=sw_compdocs.language.Text(
-                                    id="def_dummy_node_0_desc"
-                                ),
+                        name=sw_compdocs.language.Text(id="def_dummy_name"),
+                        tooltip_properties=sw_compdocs.component.TooltipProperties(
+                            key="dummy",
+                            short_description=sw_compdocs.language.Text(
+                                id="def_dummy_s_desc"
                             ),
-                        ],
-                        key="dummy",
-                    ),
+                            description=sw_compdocs.language.Text(id="def_dummy_desc"),
+                        ),
+                        logic_nodes=sw_compdocs.component.LogicNodeList(
+                            [
+                                sw_compdocs.component.LogicNode(
+                                    key="dummy",
+                                    idx=0,
+                                    label=sw_compdocs.language.Text(
+                                        id="def_dummy_node_0_label"
+                                    ),
+                                    mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                                    type=sw_compdocs.component.LogicNodeType.BOOL,
+                                    description=sw_compdocs.language.Text(
+                                        id="def_dummy_node_0_desc"
+                                    ),
+                                ),
+                            ],
+                            key="dummy",
+                        ),
+                    )
                 ),
                 want_doc=sw_compdocs.document.Document(
                     [
@@ -1381,74 +1389,76 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                     ]
                 ),
                 input_ctx={"action_interact_left": "q", "action_interact_right": "e"},
-                input_defn=sw_compdocs.component.Definition(
-                    file="button_push.xml",
-                    key="button_push",
-                    name=sw_compdocs.language.Text(
-                        id="def_button_push_name", en="Push Button"
-                    ),
-                    category=sw_compdocs.component.Category.MECHANICS,
-                    mass=1.0,
-                    value=10,
-                    flags=sw_compdocs.component.Flags(8192),
-                    tags="basic",
-                    tooltip_properties=sw_compdocs.component.TooltipProperties(
-                        short_description=sw_compdocs.language.Text(
-                            id="def_button_push_s_desc",
-                            en="A button that outputs an on signal when you interact with [$[action_interact_left]]/[$[action_interact_right]], and an off signal when not interacting.",
-                        ),
-                        description=sw_compdocs.language.Text(
-                            id="def_button_push_desc",
-                            en="An external on/off signal can also be used to control whether or not the button is pressed, allowing you to chain multiple buttons together to unify their outputs.",
-                        ),
-                    ),
-                    logic_nodes=sw_compdocs.component.LogicNodeList(
-                        [
-                            sw_compdocs.component.LogicNode(
-                                key="button_push",
-                                idx=0,
-                                label=sw_compdocs.language.Text(
-                                    id="def_button_push_node_0_label", en="Pressed"
-                                ),
-                                mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
-                                type=sw_compdocs.component.LogicNodeType.BOOL,
-                                description=sw_compdocs.language.Text(
-                                    id="def_button_push_node_0_desc",
-                                    en="Outputs an on signal when you interact wtih [$[action_interact_left]]/[$[action_interact_right]], and an off signal otherwise.",
-                                ),
-                            ),
-                            sw_compdocs.component.LogicNode(
-                                key="button_push",
-                                idx=1,
-                                label=sw_compdocs.language.Text(
-                                    id="def_button_push_node_1_label",
-                                    en="External Input",
-                                ),
-                                mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                                type=sw_compdocs.component.LogicNodeType.BOOL,
-                                description=sw_compdocs.language.Text(
-                                    id="def_button_push_node_1_desc",
-                                    en="Allows an external on/off signal to control whether or not the button is pressed.",
-                                ),
-                            ),
-                            sw_compdocs.component.LogicNode(
-                                key="button_push",
-                                idx=2,
-                                label=sw_compdocs.language.Text(
-                                    id="def_button_push_node_2_label", en="Electric"
-                                ),
-                                mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                                type=sw_compdocs.component.LogicNodeType.ELECTRIC,
-                                description=sw_compdocs.language.Text(
-                                    id="def_button_push_node_2_desc",
-                                    en="Electrical power connection.",
-                                ),
-                            ),
-                        ],
+                input_comp=sw_compdocs.component.Component(
+                    defn=sw_compdocs.component.Definition(
+                        file="button_push.xml",
                         key="button_push",
-                    ),
-                    voxel_min=sw_compdocs.component.VoxelPos(x=0, y=0, z=0),
-                    voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=0),
+                        name=sw_compdocs.language.Text(
+                            id="def_button_push_name", en="Push Button"
+                        ),
+                        category=sw_compdocs.component.Category.MECHANICS,
+                        mass=1.0,
+                        value=10,
+                        flags=sw_compdocs.component.Flags(8192),
+                        tags="basic",
+                        tooltip_properties=sw_compdocs.component.TooltipProperties(
+                            short_description=sw_compdocs.language.Text(
+                                id="def_button_push_s_desc",
+                                en="A button that outputs an on signal when you interact with [$[action_interact_left]]/[$[action_interact_right]], and an off signal when not interacting.",
+                            ),
+                            description=sw_compdocs.language.Text(
+                                id="def_button_push_desc",
+                                en="An external on/off signal can also be used to control whether or not the button is pressed, allowing you to chain multiple buttons together to unify their outputs.",
+                            ),
+                        ),
+                        logic_nodes=sw_compdocs.component.LogicNodeList(
+                            [
+                                sw_compdocs.component.LogicNode(
+                                    key="button_push",
+                                    idx=0,
+                                    label=sw_compdocs.language.Text(
+                                        id="def_button_push_node_0_label", en="Pressed"
+                                    ),
+                                    mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
+                                    type=sw_compdocs.component.LogicNodeType.BOOL,
+                                    description=sw_compdocs.language.Text(
+                                        id="def_button_push_node_0_desc",
+                                        en="Outputs an on signal when you interact wtih [$[action_interact_left]]/[$[action_interact_right]], and an off signal otherwise.",
+                                    ),
+                                ),
+                                sw_compdocs.component.LogicNode(
+                                    key="button_push",
+                                    idx=1,
+                                    label=sw_compdocs.language.Text(
+                                        id="def_button_push_node_1_label",
+                                        en="External Input",
+                                    ),
+                                    mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                                    type=sw_compdocs.component.LogicNodeType.BOOL,
+                                    description=sw_compdocs.language.Text(
+                                        id="def_button_push_node_1_desc",
+                                        en="Allows an external on/off signal to control whether or not the button is pressed.",
+                                    ),
+                                ),
+                                sw_compdocs.component.LogicNode(
+                                    key="button_push",
+                                    idx=2,
+                                    label=sw_compdocs.language.Text(
+                                        id="def_button_push_node_2_label", en="Electric"
+                                    ),
+                                    mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                                    type=sw_compdocs.component.LogicNodeType.ELECTRIC,
+                                    description=sw_compdocs.language.Text(
+                                        id="def_button_push_node_2_desc",
+                                        en="Electrical power connection.",
+                                    ),
+                                ),
+                            ],
+                            key="button_push",
+                        ),
+                        voxel_min=sw_compdocs.component.VoxelPos(x=0, y=0, z=0),
+                        voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=0),
+                    )
                 ),
                 want_doc=sw_compdocs.document.Document(
                     [
@@ -1535,7 +1545,7 @@ class TestGenerateDocumentComponent(unittest.TestCase):
         ]:
             with self.subTest(tc=tc):
                 got_doc = sw_compdocs.generator.generate_document_component(
-                    tc.input_defn,
+                    tc.input_comp,
                     label=tc.input_label,
                     lang=tc.input_lang,
                     ctx=tc.input_ctx,
@@ -1543,11 +1553,13 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                 self.assertEqual(got_doc, tc.want_doc)
 
     def test_exc_label(self) -> None:
-        defn = sw_compdocs.component.Definition(
-            flags=sw_compdocs.component.Flags.IS_DEPRECATED
+        comp = sw_compdocs.component.Component(
+            defn=sw_compdocs.component.Definition(
+                flags=sw_compdocs.component.Flags.IS_DEPRECATED
+            )
         )
         with self.assertRaises(sw_compdocs.generator.LabelKeyError) as ctx:
-            sw_compdocs.generator.generate_document_component(defn, label={})
+            sw_compdocs.generator.generate_document_component(comp, label={})
         self.assertEqual(ctx.exception.key, "DOCUMENT_DEPRECATED_TEXT")
 
 

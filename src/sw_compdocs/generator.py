@@ -184,7 +184,7 @@ def generate_document_logic(
 
 
 def generate_document_component(
-    defn: component.Definition,
+    comp: component.Component,
     *,
     label: collections.abc.Mapping[str, str] | None = None,
     lang: language.Language | None = None,
@@ -192,10 +192,10 @@ def generate_document_component(
 ) -> document.Document:
     doc = document.Document()
 
-    defn_name = _lang_translate(lang, defn.name)
-    doc.append(document.Heading(defn_name))
+    comp_name = _lang_translate(lang, comp.name())
+    doc.append(document.Heading(comp_name))
 
-    if component.Flags.IS_DEPRECATED in defn.flags:
+    if component.Flags.IS_DEPRECATED in comp.defn.flags:
         doc.append(
             document.Callout(
                 _label_get(label, "DOCUMENT_DEPRECATED_TEXT"),
@@ -203,24 +203,24 @@ def generate_document_component(
             )
         )
 
-    defn_s_desc_text = defn.tooltip_properties.short_description
-    defn_s_desc = _lang_translate(lang, defn_s_desc_text)
-    defn_s_desc = _ctx_format(ctx, defn_s_desc)
-    if defn_s_desc != "":
-        doc.append(document.Paragraph(defn_s_desc))
+    comp_s_desc_text = comp.short_description()
+    comp_s_desc = _lang_translate(lang, comp_s_desc_text)
+    comp_s_desc = _ctx_format(ctx, comp_s_desc)
+    if comp_s_desc != "":
+        doc.append(document.Paragraph(comp_s_desc))
 
-    defn_desc_text = defn.tooltip_properties.description
-    defn_desc = _lang_translate(lang, defn_desc_text)
-    defn_desc = _ctx_format(ctx, defn_desc)
-    if defn_desc != "":
-        doc.append(document.Paragraph(defn_desc))
+    comp_desc_text = comp.description()
+    comp_desc = _lang_translate(lang, comp_desc_text)
+    comp_desc = _ctx_format(ctx, comp_desc)
+    if comp_desc != "":
+        doc.append(document.Paragraph(comp_desc))
 
-    prop_doc = generate_document_property(defn, label=label, lang=lang)
+    prop_doc = generate_document_property(comp.defn, label=label, lang=lang)
     prop_doc.shift(1)
     doc.extend(prop_doc)
 
     logic_doc = generate_document_logic(
-        defn.logic_nodes, label=label, lang=lang, ctx=ctx
+        comp.defn.logic_nodes, label=label, lang=lang, ctx=ctx
     )
     logic_doc.shift(1)
     doc.extend(logic_doc)
@@ -237,9 +237,7 @@ def generate_document_component_list(
 ) -> document.Document:
     doc = document.Document()
     for comp in comp_list:
-        comp_doc = generate_document_component(
-            comp.defn, label=label, lang=lang, ctx=ctx
-        )
+        comp_doc = generate_document_component(comp, label=label, lang=lang, ctx=ctx)
         doc.extend(comp_doc)
     return doc
 
