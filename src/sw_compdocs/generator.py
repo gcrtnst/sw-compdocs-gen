@@ -320,14 +320,14 @@ def generate_sheet_component(
 
 
 def generate_sheet_component_list(
-    defn_list: collections.abc.Iterable[component.Definition],
+    comp_list: collections.abc.Iterable[component.Component],
     *,
     lang: language.Language | None = None,
     ctx: collections.abc.Mapping[str, str] | None = None,
 ) -> list[list[str]]:
     record_list = []
-    for defn in defn_list:
-        record = generate_sheet_component(defn, lang=lang, ctx=ctx)
+    for comp in comp_list:
+        record = generate_sheet_component(comp.defn, lang=lang, ctx=ctx)
         record_list.append(record)
     return record_list
 
@@ -349,7 +349,6 @@ def generate_sheet(
 
     comp_list = list(comp_list)
     comp_list.sort(key=sort_key)
-    defn_list = [comp.defn for comp in comp_list]
 
     header = [
         _label_get(label, "SHEET_HEAD_NAME"),
@@ -366,5 +365,5 @@ def generate_sheet(
         _label_get(label, "SHEET_HEAD_DESC"),
     ]
     record_list = [header]
-    record_list.extend(generate_sheet_component_list(defn_list, lang=lang, ctx=ctx))
+    record_list.extend(generate_sheet_component_list(comp_list, lang=lang, ctx=ctx))
     return record_list

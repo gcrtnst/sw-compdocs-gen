@@ -2822,7 +2822,7 @@ class TestGenerateSheetComponentList(unittest.TestCase):
         tt = typing.NamedTuple(
             "tt",
             [
-                ("input_defn_list", list[sw_compdocs.component.Definition]),
+                ("input_comp_list", list[sw_compdocs.component.Component]),
                 ("input_lang", sw_compdocs.language.Language | None),
                 ("input_ctx", collections.abc.Mapping[str, str] | None),
                 ("want_record_list", list[list[str]]),
@@ -2831,15 +2831,21 @@ class TestGenerateSheetComponentList(unittest.TestCase):
 
         for tc in [
             tt(
-                input_defn_list=[
-                    sw_compdocs.component.Definition(
-                        name=sw_compdocs.language.Text(en="Test 1")
+                input_comp_list=[
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(
+                            name=sw_compdocs.language.Text(en="Test 1")
+                        )
                     ),
-                    sw_compdocs.component.Definition(
-                        name=sw_compdocs.language.Text(en="Test 2")
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(
+                            name=sw_compdocs.language.Text(en="Test 2")
+                        )
                     ),
-                    sw_compdocs.component.Definition(
-                        name=sw_compdocs.language.Text(en="Test 3")
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(
+                            name=sw_compdocs.language.Text(en="Test 3")
+                        )
                     ),
                 ],
                 input_lang=None,
@@ -2890,23 +2896,27 @@ class TestGenerateSheetComponentList(unittest.TestCase):
                 ],
             ),
             tt(
-                input_defn_list=[
-                    sw_compdocs.component.Definition(
-                        file="test.xml",
-                        key="test",
-                        name=sw_compdocs.language.Text(id="def_test_name"),
-                        category=sw_compdocs.component.Category.BLOCKS,
-                        mass=1.0,
-                        value=2,
-                        tags="tags",
-                        tooltip_properties=sw_compdocs.component.TooltipProperties(
-                            short_description=sw_compdocs.language.Text(
-                                id="def_test_s_desc"
+                input_comp_list=[
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(
+                            file="test.xml",
+                            key="test",
+                            name=sw_compdocs.language.Text(id="def_test_name"),
+                            category=sw_compdocs.component.Category.BLOCKS,
+                            mass=1.0,
+                            value=2,
+                            tags="tags",
+                            tooltip_properties=sw_compdocs.component.TooltipProperties(
+                                short_description=sw_compdocs.language.Text(
+                                    id="def_test_s_desc"
+                                ),
+                                description=sw_compdocs.language.Text(
+                                    id="def_test_desc"
+                                ),
                             ),
-                            description=sw_compdocs.language.Text(id="def_test_desc"),
-                        ),
-                        voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
-                        voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
+                            voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
+                            voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
+                        )
                     )
                 ],
                 input_lang=sw_compdocs.language.Language(
@@ -2947,7 +2957,7 @@ class TestGenerateSheetComponentList(unittest.TestCase):
         ]:
             with self.subTest(tc=tc):
                 got_record_list = sw_compdocs.generator.generate_sheet_component_list(
-                    tc.input_defn_list, lang=tc.input_lang, ctx=tc.input_ctx
+                    tc.input_comp_list, lang=tc.input_lang, ctx=tc.input_ctx
                 )
                 self.assertEqual(got_record_list, tc.want_record_list)
 
