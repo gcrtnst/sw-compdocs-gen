@@ -20,13 +20,14 @@ from . import wraperr
 def generate_document(
     *,
     out_file: _types.StrOrBytesPath,
-    defn_list: collections.abc.Iterable[component.Definition],
+    comp_list: collections.abc.Iterable[component.Component],
     label: collections.abc.Mapping[str, str] | None,
     lang: language.Language | None,
     ctx: collections.abc.Mapping[str, str] | None,
     out_encoding: str | None = None,
     out_newline: str | None = None,
 ) -> None:
+    defn_list = [comp.defn for comp in comp_list]
     doc = generator.generate_document(defn_list, label=label, lang=lang, ctx=ctx)
     md = renderer.render_markdown(doc)
 
@@ -44,7 +45,7 @@ def generate_document(
 def generate_sheet(
     *,
     out_file: _types.StrOrBytesPath,
-    defn_list: collections.abc.Iterable[component.Definition],
+    comp_list: collections.abc.Iterable[component.Component],
     label: collections.abc.Mapping[str, str] | None,
     lang: language.Language | None,
     ctx: collections.abc.Mapping[str, str] | None,
@@ -54,6 +55,7 @@ def generate_sheet(
     if out_newline is None:
         out_newline = os.linesep
 
+    defn_list = [comp.defn for comp in comp_list]
     record_list = generator.generate_sheet(defn_list, label=label, lang=lang, ctx=ctx)
     with wraperr.wrap_unicode_error(out_file):
         with open(
@@ -86,13 +88,12 @@ def run(
     if template_file is not None:
         ctx = resource.load_toml_table(template_file, "template")
 
-    defn_dict = component.load_defn_dict(defn_dir)
-    defn_list = defn_dict.values()
+    comp_list = component.load_comp_list(defn_dir)
 
     if out_mode == "document":
         generate_document(
             out_file=out_file,
-            defn_list=defn_list,
+            comp_list=comp_list,
             label=label,
             lang=lang,
             ctx=ctx,
@@ -103,7 +104,7 @@ def run(
     if out_mode == "sheet":
         generate_sheet(
             out_file=out_file,
-            defn_list=defn_list,
+            comp_list=comp_list,
             label=label,
             lang=lang,
             ctx=ctx,
