@@ -1593,6 +1593,126 @@ class TestDefinitionUpdateID(unittest.TestCase):
                 self.assertEqual(defn, tc.want_defn)
 
 
+class TestComponentName(unittest.TestCase):
+    def test(self) -> None:
+        comp = sw_compdocs.component.Component(
+            defn=sw_compdocs.component.Definition(
+                name=sw_compdocs.language.Text(id="id", en="en")
+            )
+        )
+
+        name = comp.name()
+        self.assertEqual(name, sw_compdocs.language.Text(id="id", en="en"))
+
+        name.id = ""
+        self.assertEqual(comp.name().id, "id")
+        self.assertEqual(comp.defn.name.id, "id")
+
+
+class TestComponentShortDescription(unittest.TestCase):
+    def test(self) -> None:
+        comp = sw_compdocs.component.Component(
+            defn=sw_compdocs.component.Definition(
+                tooltip_properties=sw_compdocs.component.TooltipProperties(
+                    short_description=sw_compdocs.language.Text(id="id", en="en")
+                )
+            )
+        )
+
+        short_description = comp.short_description()
+        self.assertEqual(short_description, sw_compdocs.language.Text(id="id", en="en"))
+
+        short_description.id = ""
+        self.assertEqual(comp.short_description().id, "id")
+        self.assertEqual(comp.defn.tooltip_properties.short_description.id, "id")
+
+
+class TestComponentDescription(unittest.TestCase):
+    def test(self) -> None:
+        comp = sw_compdocs.component.Component(
+            defn=sw_compdocs.component.Definition(
+                tooltip_properties=sw_compdocs.component.TooltipProperties(
+                    description=sw_compdocs.language.Text(id="id", en="en")
+                )
+            )
+        )
+
+        description = comp.description()
+        self.assertEqual(description, sw_compdocs.language.Text(id="id", en="en"))
+
+        description.id = ""
+        self.assertEqual(comp.description().id, "id")
+        self.assertEqual(comp.defn.tooltip_properties.description.id, "id")
+
+
+class TestComponentCategory(unittest.TestCase):
+    def test(self) -> None:
+        comp = sw_compdocs.component.Component(
+            defn=sw_compdocs.component.Definition(
+                category=sw_compdocs.component.Category.VEHICLE_CONTROL
+            )
+        )
+        self.assertEqual(
+            comp.category(), sw_compdocs.component.Category.VEHICLE_CONTROL
+        )
+
+
+class TestComponentMass(unittest.TestCase):
+    def test(self) -> None:
+        comp = sw_compdocs.component.Component(
+            defn=sw_compdocs.component.Definition(mass=0.25)
+        )
+        self.assertEqual(comp.mass(), 0.25)
+
+
+class TestComponentValue(unittest.TestCase):
+    def test(self) -> None:
+        comp = sw_compdocs.component.Component(
+            defn=sw_compdocs.component.Definition(value=100)
+        )
+        self.assertEqual(comp.value(), 100)
+
+
+class TestComponentTags(unittest.TestCase):
+    def test(self) -> None:
+        comp = sw_compdocs.component.Component(
+            defn=sw_compdocs.component.Definition(tags="tags")
+        )
+        self.assertEqual(comp.tags(), "tags")
+
+
+class TestComponentVoxelMin(unittest.TestCase):
+    def test(self) -> None:
+        comp = sw_compdocs.component.Component(
+            defn=sw_compdocs.component.Definition(
+                voxel_min=sw_compdocs.component.VoxelPos(x=1, y=2, z=3)
+            )
+        )
+
+        voxel_min = comp.voxel_min()
+        self.assertEqual(voxel_min, sw_compdocs.component.VoxelPos(x=1, y=2, z=3))
+
+        voxel_min.x = 0
+        self.assertEqual(comp.voxel_min().x, 1)
+        self.assertEqual(comp.defn.voxel_min.x, 1)
+
+
+class TestComponentVoxelMax(unittest.TestCase):
+    def test(self) -> None:
+        comp = sw_compdocs.component.Component(
+            defn=sw_compdocs.component.Definition(
+                voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3)
+            )
+        )
+
+        voxel_max = comp.voxel_max()
+        self.assertEqual(voxel_max, sw_compdocs.component.VoxelPos(x=1, y=2, z=3))
+
+        voxel_max.x = 0
+        self.assertEqual(comp.voxel_max().x, 1)
+        self.assertEqual(comp.defn.voxel_max.x, 1)
+
+
 class TestParseXMLFile(unittest.TestCase):
     def test_pass(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

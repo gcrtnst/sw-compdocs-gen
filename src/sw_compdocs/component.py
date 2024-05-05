@@ -474,6 +474,39 @@ class Definition:
         self.key = key
 
 
+@dataclasses.dataclass
+class Component:
+    _: dataclasses.KW_ONLY
+    defn: Definition
+
+    def name(self) -> language.Text:
+        return dataclasses.replace(self.defn.name)
+
+    def short_description(self) -> language.Text:
+        return dataclasses.replace(self.defn.tooltip_properties.short_description)
+
+    def description(self) -> language.Text:
+        return dataclasses.replace(self.defn.tooltip_properties.description)
+
+    def category(self) -> Category:
+        return self.defn.category
+
+    def mass(self) -> float:
+        return self.defn.mass
+
+    def value(self) -> int:
+        return self.defn.value
+
+    def tags(self) -> str:
+        return self.defn.tags
+
+    def voxel_min(self) -> VoxelPos:
+        return dataclasses.replace(self.defn.voxel_min)
+
+    def voxel_max(self) -> VoxelPos:
+        return dataclasses.replace(self.defn.voxel_max)
+
+
 # lxml.etree.XMLParser is generic in stub but not at runtime.
 # To avoid errors, we use string literal annotation.
 def _new_xml_parser() -> "lxml.etree.XMLParser[lxml.etree._Element]":
