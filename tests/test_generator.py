@@ -160,7 +160,7 @@ class TestGenerateDocumentPropertyTable(unittest.TestCase):
             "tt",
             [
                 ("input_label", collections.abc.Mapping[str, str] | None),
-                ("input_defn", sw_compdocs.component.Definition),
+                ("input_comp", sw_compdocs.component.Component),
                 ("want_tbl", sw_compdocs.document.Table),
             ],
         )
@@ -169,13 +169,15 @@ class TestGenerateDocumentPropertyTable(unittest.TestCase):
             # normal
             tt(
                 input_label=None,
-                input_defn=sw_compdocs.component.Definition(
-                    file="file",
-                    mass=10.0,
-                    value=100,
-                    tags="tags",
-                    voxel_min=sw_compdocs.component.VoxelPos(x=0, y=-1, z=-2),
-                    voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=2),
+                input_comp=sw_compdocs.component.Component(
+                    defn=sw_compdocs.component.Definition(
+                        file="file",
+                        mass=10.0,
+                        value=100,
+                        tags="tags",
+                        voxel_min=sw_compdocs.component.VoxelPos(x=0, y=-1, z=-2),
+                        voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=2),
+                    )
                 ),
                 want_tbl=sw_compdocs.document.Table(
                     sw_compdocs.document.TableData(
@@ -208,7 +210,9 @@ class TestGenerateDocumentPropertyTable(unittest.TestCase):
             # empty
             tt(
                 input_label=None,
-                input_defn=sw_compdocs.component.Definition(),
+                input_comp=sw_compdocs.component.Component(
+                    defn=sw_compdocs.component.Definition()
+                ),
                 want_tbl=sw_compdocs.document.Table(
                     sw_compdocs.document.TableData(
                         sw_compdocs.document.TableDataRow(
@@ -240,7 +244,9 @@ class TestGenerateDocumentPropertyTable(unittest.TestCase):
             # mass format
             tt(
                 input_label=None,
-                input_defn=sw_compdocs.component.Definition(mass=0.25),
+                input_comp=sw_compdocs.component.Component(
+                    defn=sw_compdocs.component.Definition(mass=0.25)
+                ),
                 want_tbl=sw_compdocs.document.Table(
                     sw_compdocs.document.TableData(
                         sw_compdocs.document.TableDataRow(
@@ -272,8 +278,10 @@ class TestGenerateDocumentPropertyTable(unittest.TestCase):
             # file format
             tt(
                 input_label=None,
-                input_defn=sw_compdocs.component.Definition(
-                    file=b"path/to/definition.xml"
+                input_comp=sw_compdocs.component.Component(
+                    defn=sw_compdocs.component.Definition(
+                        file=b"path/to/definition.xml"
+                    )
                 ),
                 want_tbl=sw_compdocs.document.Table(
                     sw_compdocs.document.TableData(
@@ -314,7 +322,9 @@ class TestGenerateDocumentPropertyTable(unittest.TestCase):
                     "DOCUMENT_PROP_TABLE_TAGS_LABEL": "Tags",
                     "DOCUMENT_PROP_TABLE_FILE_LABEL": "File",
                 },
-                input_defn=sw_compdocs.component.Definition(),
+                input_comp=sw_compdocs.component.Component(
+                    defn=sw_compdocs.component.Definition()
+                ),
                 want_tbl=sw_compdocs.document.Table(
                     sw_compdocs.document.TableData(
                         sw_compdocs.document.TableDataRow(["Label", "Value"]),
@@ -331,12 +341,12 @@ class TestGenerateDocumentPropertyTable(unittest.TestCase):
         ]:
             with self.subTest(tc=tc):
                 got_tbl = sw_compdocs.generator.generate_document_property_table(
-                    tc.input_defn, label=tc.input_label
+                    tc.input_comp, label=tc.input_label
                 )
                 self.assertEqual(got_tbl, tc.want_tbl)
 
     def test_exc_label(self) -> None:
-        defn = sw_compdocs.component.Definition()
+        comp = sw_compdocs.component.Component(defn=sw_compdocs.component.Definition())
         label_all = {
             "DOCUMENT_PROP_TABLE_HEAD_LABEL": "Label",
             "DOCUMENT_PROP_TABLE_HEAD_VALUE": "Value",
@@ -352,7 +362,7 @@ class TestGenerateDocumentPropertyTable(unittest.TestCase):
                 del label[key]
                 with self.assertRaises(sw_compdocs.generator.LabelKeyError) as ctx:
                     sw_compdocs.generator.generate_document_property_table(
-                        defn, label=label
+                        comp, label=label
                     )
                 self.assertEqual(ctx.exception.key, key)
 
