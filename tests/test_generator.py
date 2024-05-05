@@ -2960,7 +2960,7 @@ class TestGenerateSheet(unittest.TestCase):
                 ("input_label", collections.abc.Mapping[str, str] | None),
                 ("input_lang", sw_compdocs.language.Language | None),
                 ("input_ctx", collections.abc.Mapping[str, str] | None),
-                ("input_defn_list", list[sw_compdocs.component.Definition]),
+                ("input_comp_list", list[sw_compdocs.component.Component]),
                 ("want_record_list", list[list[str]]),
             ],
         )
@@ -2970,30 +2970,46 @@ class TestGenerateSheet(unittest.TestCase):
                 input_label=None,
                 input_lang=None,
                 input_ctx=None,
-                input_defn_list=[
-                    sw_compdocs.component.Definition(
-                        key="a",
-                        name=sw_compdocs.language.Text(en="Z"),
-                        category=sw_compdocs.component.Category.VEHICLE_CONTROL,
-                        value=1,
+                input_comp_list=[
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(
+                            key="a",
+                            name=sw_compdocs.language.Text(en="Z"),
+                            category=sw_compdocs.component.Category.VEHICLE_CONTROL,
+                            value=1,
+                        )
                     ),
-                    sw_compdocs.component.Definition(
-                        key="z",
-                        name=sw_compdocs.language.Text(en="A"),
-                        category=sw_compdocs.component.Category.VEHICLE_CONTROL,
-                        value=2,
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(
+                            key=None,
+                            name=sw_compdocs.language.Text(en="A"),
+                            category=sw_compdocs.component.Category.VEHICLE_CONTROL,
+                            value=2,
+                        )
                     ),
-                    sw_compdocs.component.Definition(
-                        key="a",
-                        name=sw_compdocs.language.Text(en="A"),
-                        category=sw_compdocs.component.Category.VEHICLE_CONTROL,
-                        value=3,
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(
+                            key="z",
+                            name=sw_compdocs.language.Text(en="A"),
+                            category=sw_compdocs.component.Category.VEHICLE_CONTROL,
+                            value=3,
+                        )
                     ),
-                    sw_compdocs.component.Definition(
-                        key="z",
-                        name=sw_compdocs.language.Text(en="Z"),
-                        category=sw_compdocs.component.Category.BLOCKS,
-                        value=4,
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(
+                            key="a",
+                            name=sw_compdocs.language.Text(en="A"),
+                            category=sw_compdocs.component.Category.VEHICLE_CONTROL,
+                            value=4,
+                        )
+                    ),
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(
+                            key="z",
+                            name=sw_compdocs.language.Text(en="Z"),
+                            category=sw_compdocs.component.Category.BLOCKS,
+                            value=5,
+                        )
                     ),
                 ],
                 want_record_list=[
@@ -3015,6 +3031,20 @@ class TestGenerateSheet(unittest.TestCase):
                         "Z",
                         "",
                         "Blocks",
+                        "",
+                        "FALSE",
+                        "0",
+                        "5",
+                        "1",
+                        "1",
+                        "1",
+                        "",
+                        "",
+                    ],
+                    [
+                        "A",
+                        "",
+                        "Vehicle Control",
                         "",
                         "FALSE",
                         "0",
@@ -3102,23 +3132,27 @@ class TestGenerateSheet(unittest.TestCase):
                     "s_desc": "short_description",
                     "desc": "description",
                 },
-                input_defn_list=[
-                    sw_compdocs.component.Definition(
-                        file="test.xml",
-                        key="test",
-                        name=sw_compdocs.language.Text(id="def_test_name"),
-                        category=sw_compdocs.component.Category.BLOCKS,
-                        mass=1.0,
-                        value=2,
-                        tags="tags",
-                        tooltip_properties=sw_compdocs.component.TooltipProperties(
-                            short_description=sw_compdocs.language.Text(
-                                id="def_test_s_desc"
+                input_comp_list=[
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(
+                            file="test.xml",
+                            key="test",
+                            name=sw_compdocs.language.Text(id="def_test_name"),
+                            category=sw_compdocs.component.Category.BLOCKS,
+                            mass=1.0,
+                            value=2,
+                            tags="tags",
+                            tooltip_properties=sw_compdocs.component.TooltipProperties(
+                                short_description=sw_compdocs.language.Text(
+                                    id="def_test_s_desc"
+                                ),
+                                description=sw_compdocs.language.Text(
+                                    id="def_test_desc"
+                                ),
                             ),
-                            description=sw_compdocs.language.Text(id="def_test_desc"),
-                        ),
-                        voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
-                        voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
+                            voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
+                            voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
+                        )
                     )
                 ],
                 want_record_list=[
@@ -3155,7 +3189,7 @@ class TestGenerateSheet(unittest.TestCase):
         ]:
             with self.subTest(tc=tc):
                 got_record_list = sw_compdocs.generator.generate_sheet(
-                    tc.input_defn_list,
+                    tc.input_comp_list,
                     label=tc.input_label,
                     lang=tc.input_lang,
                     ctx=tc.input_ctx,

@@ -333,17 +333,23 @@ def generate_sheet_component_list(
 
 
 def generate_sheet(
-    defn_list: collections.abc.Iterable[component.Definition],
+    comp_list: collections.abc.Iterable[component.Component],
     *,
     label: collections.abc.Mapping[str, str] | None = None,
     lang: language.Language | None = None,
     ctx: collections.abc.Mapping[str, str] | None = None,
 ) -> list[list[str]]:
-    def sort_key(defn: component.Definition) -> tuple[int, str, str]:
-        return defn.category.value, defn.name.en, defn.key or ""
+    def sort_key(comp: component.Component) -> tuple[int, str, bool, str]:
+        return (
+            comp.category().value,
+            comp.name().en,
+            comp.defn.key is None,
+            comp.defn.key or "",
+        )
 
-    defn_list = list(defn_list)
-    defn_list.sort(key=sort_key)
+    comp_list = list(comp_list)
+    comp_list.sort(key=sort_key)
+    defn_list = [comp.defn for comp in comp_list]
 
     header = [
         _label_get(label, "SHEET_HEAD_NAME"),

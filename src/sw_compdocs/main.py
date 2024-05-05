@@ -55,8 +55,7 @@ def generate_sheet(
     if out_newline is None:
         out_newline = os.linesep
 
-    defn_list = [comp.defn for comp in comp_list]
-    record_list = generator.generate_sheet(defn_list, label=label, lang=lang, ctx=ctx)
+    record_list = generator.generate_sheet(comp_list, label=label, lang=lang, ctx=ctx)
     with wraperr.wrap_unicode_error(out_file):
         with open(
             out_file, mode="w", encoding=out_encoding, errors="strict", newline=""
