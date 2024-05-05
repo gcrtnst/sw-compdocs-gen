@@ -17,8 +17,7 @@ class Text:
     en: str = ""
 
 
-@dataclasses.dataclass(frozen=True)
-class Translation:
+class Translation(typing.NamedTuple):
     id: str
     description: str
     en: str
