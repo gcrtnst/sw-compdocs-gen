@@ -279,43 +279,45 @@ def generate_document(
 
 
 def generate_sheet_component(
-    defn: component.Definition,
+    comp: component.Component,
     *,
     lang: language.Language | None = None,
     ctx: collections.abc.Mapping[str, str] | None = None,
 ) -> list[str]:
-    dims_w = defn.voxel_max.x - defn.voxel_min.x + 1
-    dims_h = defn.voxel_max.y - defn.voxel_min.y + 1
-    dims_d = defn.voxel_max.z - defn.voxel_min.z + 1
+    comp_voxel_min = comp.voxel_min()
+    comp_voxel_max = comp.voxel_max()
+    dims_w = comp_voxel_max.x - comp_voxel_min.x + 1
+    dims_h = comp_voxel_max.y - comp_voxel_min.y + 1
+    dims_d = comp_voxel_max.z - comp_voxel_min.z + 1
 
-    defn_name = _lang_translate(lang, defn.name)
+    comp_name = _lang_translate(lang, comp.name())
 
-    defn_file = ""
-    if defn.file is not None:
-        defn_file = os.fsdecode(defn.file)
-        defn_file = pathlib.PurePath(defn_file).name
+    comp_file = ""
+    if comp.defn.file is not None:
+        comp_file = os.fsdecode(comp.defn.file)
+        comp_file = pathlib.PurePath(comp_file).name
 
-    defn_s_desc_text = defn.tooltip_properties.short_description
-    defn_s_desc = _lang_translate(lang, defn_s_desc_text)
-    defn_s_desc = _ctx_format(ctx, defn_s_desc)
+    comp_s_desc_text = comp.short_description()
+    comp_s_desc = _lang_translate(lang, comp_s_desc_text)
+    comp_s_desc = _ctx_format(ctx, comp_s_desc)
 
-    defn_desc_text = defn.tooltip_properties.description
-    defn_desc = _lang_translate(lang, defn_desc_text)
-    defn_desc = _ctx_format(ctx, defn_desc)
+    comp_desc_text = comp.description()
+    comp_desc = _lang_translate(lang, comp_desc_text)
+    comp_desc = _ctx_format(ctx, comp_desc)
 
     return [
-        defn_name,
-        defn_file,
-        str(defn.category),
-        defn.tags,
-        "TRUE" if component.Flags.IS_DEPRECATED in defn.flags else "FALSE",
-        f"{defn.mass:g}",
-        f"{defn.value:d}",
+        comp_name,
+        comp_file,
+        str(comp.category()),
+        comp.tags(),
+        "TRUE" if component.Flags.IS_DEPRECATED in comp.defn.flags else "FALSE",
+        f"{comp.mass():g}",
+        f"{comp.value():d}",
         f"{dims_w:d}",
         f"{dims_d:d}",
         f"{dims_h:d}",
-        defn_s_desc,
-        defn_desc,
+        comp_s_desc,
+        comp_desc,
     ]
 
 
@@ -327,7 +329,7 @@ def generate_sheet_component_list(
 ) -> list[list[str]]:
     record_list = []
     for comp in comp_list:
-        record = generate_sheet_component(comp.defn, lang=lang, ctx=ctx)
+        record = generate_sheet_component(comp, lang=lang, ctx=ctx)
         record_list.append(record)
     return record_list
 

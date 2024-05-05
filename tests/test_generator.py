@@ -2666,7 +2666,7 @@ class TestGenerateSheetComponent(unittest.TestCase):
             [
                 ("input_lang", sw_compdocs.language.Language | None),
                 ("input_ctx", collections.abc.Mapping[str, str] | None),
-                ("input_defn", sw_compdocs.component.Definition),
+                ("input_comp", sw_compdocs.component.Component),
                 ("want_record", list[str]),
             ],
         )
@@ -2675,7 +2675,9 @@ class TestGenerateSheetComponent(unittest.TestCase):
             tt(  # empty
                 input_lang=None,
                 input_ctx=None,
-                input_defn=sw_compdocs.component.Definition(),
+                input_comp=sw_compdocs.component.Component(
+                    defn=sw_compdocs.component.Definition()
+                ),
                 want_record=[
                     "",
                     "",
@@ -2694,21 +2696,23 @@ class TestGenerateSheetComponent(unittest.TestCase):
             tt(  # normal
                 input_lang=None,
                 input_ctx=None,
-                input_defn=sw_compdocs.component.Definition(
-                    file="test.xml",
-                    name=sw_compdocs.language.Text(en="Name"),
-                    category=sw_compdocs.component.Category.BLOCKS,
-                    mass=0.25,
-                    value=2,
-                    tags="tags",
-                    tooltip_properties=sw_compdocs.component.TooltipProperties(
-                        short_description=sw_compdocs.language.Text(
-                            en="short_description"
+                input_comp=sw_compdocs.component.Component(
+                    defn=sw_compdocs.component.Definition(
+                        file="test.xml",
+                        name=sw_compdocs.language.Text(en="Name"),
+                        category=sw_compdocs.component.Category.BLOCKS,
+                        mass=0.25,
+                        value=2,
+                        tags="tags",
+                        tooltip_properties=sw_compdocs.component.TooltipProperties(
+                            short_description=sw_compdocs.language.Text(
+                                en="short_description"
+                            ),
+                            description=sw_compdocs.language.Text(en="description"),
                         ),
-                        description=sw_compdocs.language.Text(en="description"),
-                    ),
-                    voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
-                    voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
+                        voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
+                        voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
+                    )
                 ),
                 want_record=[
                     "Name",
@@ -2728,7 +2732,9 @@ class TestGenerateSheetComponent(unittest.TestCase):
             tt(  # file
                 input_lang=None,
                 input_ctx=None,
-                input_defn=sw_compdocs.component.Definition(file=b"path/to/test.xml"),
+                input_comp=sw_compdocs.component.Component(
+                    defn=sw_compdocs.component.Definition(file=b"path/to/test.xml")
+                ),
                 want_record=[
                     "",
                     "test.xml",
@@ -2747,8 +2753,10 @@ class TestGenerateSheetComponent(unittest.TestCase):
             tt(  # deprecated
                 input_lang=None,
                 input_ctx=None,
-                input_defn=sw_compdocs.component.Definition(
-                    flags=sw_compdocs.component.Flags.IS_DEPRECATED
+                input_comp=sw_compdocs.component.Component(
+                    defn=sw_compdocs.component.Definition(
+                        flags=sw_compdocs.component.Flags.IS_DEPRECATED
+                    )
                 ),
                 want_record=[
                     "",
@@ -2784,15 +2792,17 @@ class TestGenerateSheetComponent(unittest.TestCase):
                     "s_desc": "short_description",
                     "desc": "description",
                 },
-                input_defn=sw_compdocs.component.Definition(
-                    key="test",
-                    name=sw_compdocs.language.Text(id="def_test_name"),
-                    tooltip_properties=sw_compdocs.component.TooltipProperties(
-                        short_description=sw_compdocs.language.Text(
-                            id="def_test_s_desc"
+                input_comp=sw_compdocs.component.Component(
+                    defn=sw_compdocs.component.Definition(
+                        key="test",
+                        name=sw_compdocs.language.Text(id="def_test_name"),
+                        tooltip_properties=sw_compdocs.component.TooltipProperties(
+                            short_description=sw_compdocs.language.Text(
+                                id="def_test_s_desc"
+                            ),
+                            description=sw_compdocs.language.Text(id="def_test_desc"),
                         ),
-                        description=sw_compdocs.language.Text(id="def_test_desc"),
-                    ),
+                    )
                 ),
                 want_record=[
                     "$[name]",
@@ -2812,7 +2822,7 @@ class TestGenerateSheetComponent(unittest.TestCase):
         ]:
             with self.subTest(tc=tc):
                 got_record = sw_compdocs.generator.generate_sheet_component(
-                    tc.input_defn, lang=tc.input_lang, ctx=tc.input_ctx
+                    tc.input_comp, lang=tc.input_lang, ctx=tc.input_ctx
                 )
                 self.assertEqual(got_record, tc.want_record)
 
