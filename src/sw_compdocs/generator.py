@@ -229,16 +229,18 @@ def generate_document_component(
 
 
 def generate_document_component_list(
-    defn_list: collections.abc.Iterable[component.Definition],
+    comp_list: collections.abc.Iterable[component.Component],
     *,
     label: collections.abc.Mapping[str, str] | None = None,
     lang: language.Language | None = None,
     ctx: collections.abc.Mapping[str, str] | None = None,
 ) -> document.Document:
     doc = document.Document()
-    for defn in defn_list:
-        defn_doc = generate_document_component(defn, label=label, lang=lang, ctx=ctx)
-        doc.extend(defn_doc)
+    for comp in comp_list:
+        comp_doc = generate_document_component(
+            comp.defn, label=label, lang=lang, ctx=ctx
+        )
+        doc.extend(comp_doc)
     return doc
 
 
@@ -268,9 +270,8 @@ def generate_document(
     for category in category_list:
         category_comp_list = category_comp_dict[category]
         category_comp_list.sort(key=sort_key_component)
-        category_defn_list = [comp.defn for comp in category_comp_list]
         category_comp_list_doc = generate_document_component_list(
-            category_defn_list, label=label, lang=lang, ctx=ctx
+            category_comp_list, label=label, lang=lang, ctx=ctx
         )
         category_comp_list_doc.shift(1)
 

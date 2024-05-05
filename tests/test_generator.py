@@ -1556,7 +1556,7 @@ class TestGenerateDocumentComponentList(unittest.TestCase):
         tt = typing.NamedTuple(
             "tt",
             [
-                ("input_defn_list", list[sw_compdocs.component.Definition]),
+                ("input_comp_list", list[sw_compdocs.component.Component]),
                 ("input_label", collections.abc.Mapping[str, str] | None),
                 ("input_lang", sw_compdocs.language.Language | None),
                 ("input_ctx", collections.abc.Mapping[str, str] | None),
@@ -1566,19 +1566,23 @@ class TestGenerateDocumentComponentList(unittest.TestCase):
 
         for tc in [
             tt(
-                input_defn_list=[],
+                input_comp_list=[],
                 input_label=None,
                 input_lang=None,
                 input_ctx=None,
                 want_doc=sw_compdocs.document.Document(),
             ),
             tt(
-                input_defn_list=[
-                    sw_compdocs.component.Definition(
-                        name=sw_compdocs.language.Text(en="A")
+                input_comp_list=[
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(
+                            name=sw_compdocs.language.Text(en="A")
+                        )
                     ),
-                    sw_compdocs.component.Definition(
-                        name=sw_compdocs.language.Text(en="B")
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(
+                            name=sw_compdocs.language.Text(en="B")
+                        )
                     ),
                 ],
                 input_label=None,
@@ -1648,18 +1652,22 @@ class TestGenerateDocumentComponentList(unittest.TestCase):
                 ),
             ),
             tt(
-                input_defn_list=[
-                    sw_compdocs.component.Definition(
-                        key="test",
-                        name=sw_compdocs.language.Text(id="def_test_name", en="Test"),
-                        tooltip_properties=sw_compdocs.component.TooltipProperties(
-                            short_description=sw_compdocs.language.Text(
-                                id="def_test_s_desc", en="Short Description"
+                input_comp_list=[
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(
+                            key="test",
+                            name=sw_compdocs.language.Text(
+                                id="def_test_name", en="Test"
                             ),
-                            description=sw_compdocs.language.Text(
-                                id="def_test_desc", en="Description"
+                            tooltip_properties=sw_compdocs.component.TooltipProperties(
+                                short_description=sw_compdocs.language.Text(
+                                    id="def_test_s_desc", en="Short Description"
+                                ),
+                                description=sw_compdocs.language.Text(
+                                    id="def_test_desc", en="Description"
+                                ),
                             ),
-                        ),
+                        )
                     ),
                 ],
                 input_label={
@@ -1714,7 +1722,7 @@ class TestGenerateDocumentComponentList(unittest.TestCase):
         ]:
             with self.subTest(tc=tc):
                 got_doc = sw_compdocs.generator.generate_document_component_list(
-                    tc.input_defn_list,
+                    tc.input_comp_list,
                     label=tc.input_label,
                     lang=tc.input_lang,
                     ctx=tc.input_ctx,
