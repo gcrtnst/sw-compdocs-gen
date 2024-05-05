@@ -243,7 +243,7 @@ def generate_document_component_list(
 
 
 def generate_document(
-    defn_list: collections.abc.Iterable[component.Definition],
+    comp_list: collections.abc.Iterable[component.Component],
     *,
     label: collections.abc.Mapping[str, str] | None = None,
     lang: language.Language | None = None,
@@ -252,29 +252,30 @@ def generate_document(
     def sort_key_category(category: component.Category) -> int:
         return category.value
 
-    def sort_key_component(defn: component.Definition) -> tuple[str, str]:
-        return defn.name.en, defn.key or ""
+    def sort_key_component(comp: component.Component) -> tuple[str, bool, str]:
+        return comp.name().en, comp.defn.key is None, comp.defn.key or ""
 
-    category_defn_dict: dict[component.Category, list[component.Definition]] = {}
-    for defn in defn_list:
-        category_defn_list = category_defn_dict.setdefault(defn.category, [])
-        category_defn_list.append(defn)
+    category_comp_dict: dict[component.Category, list[component.Component]] = {}
+    for comp in comp_list:
+        category_comp_list = category_comp_dict.setdefault(comp.category(), [])
+        category_comp_list.append(comp)
 
     category_list: collections.abc.Iterable[component.Category]
-    category_list = category_defn_dict.keys()
+    category_list = category_comp_dict.keys()
     category_list = sorted(category_list, key=sort_key_category)
 
     doc = document.Document()
     for category in category_list:
-        category_defn_list = category_defn_dict[category]
-        category_defn_list.sort(key=sort_key_component)
-        category_defn_list_doc = generate_document_component_list(
+        category_comp_list = category_comp_dict[category]
+        category_comp_list.sort(key=sort_key_component)
+        category_defn_list = [comp.defn for comp in category_comp_list]
+        category_comp_list_doc = generate_document_component_list(
             category_defn_list, label=label, lang=lang, ctx=ctx
         )
-        category_defn_list_doc.shift(1)
+        category_comp_list_doc.shift(1)
 
         doc.append(document.Heading(str(category)))
-        doc.extend(category_defn_list_doc)
+        doc.extend(category_comp_list_doc)
     return doc
 
 

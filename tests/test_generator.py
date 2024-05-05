@@ -1727,7 +1727,7 @@ class TestGenerateDocument(unittest.TestCase):
         tt = typing.NamedTuple(
             "tt",
             [
-                ("input_defn_list", list[sw_compdocs.component.Definition]),
+                ("input_comp_list", list[sw_compdocs.component.Component]),
                 ("input_label", collections.abc.Mapping[str, str] | None),
                 ("input_lang", sw_compdocs.language.Language | None),
                 ("input_ctx", collections.abc.Mapping[str, str] | None),
@@ -1738,7 +1738,7 @@ class TestGenerateDocument(unittest.TestCase):
         for tc in [
             # empty
             tt(
-                input_defn_list=[],
+                input_comp_list=[],
                 input_label=None,
                 input_lang=None,
                 input_ctx=None,
@@ -1746,10 +1746,12 @@ class TestGenerateDocument(unittest.TestCase):
             ),
             # single
             tt(
-                input_defn_list=[
-                    sw_compdocs.component.Definition(
-                        name=sw_compdocs.language.Text(en="Blocks_1"),
-                        category=sw_compdocs.component.Category.BLOCKS,
+                input_comp_list=[
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(
+                            name=sw_compdocs.language.Text(en="Blocks_1"),
+                            category=sw_compdocs.component.Category.BLOCKS,
+                        )
                     ),
                 ],
                 input_label=None,
@@ -1792,24 +1794,30 @@ class TestGenerateDocument(unittest.TestCase):
             ),
             # sort defn_list name
             tt(
-                input_defn_list=[
-                    sw_compdocs.component.Definition(
-                        key="blocks_1",
-                        name=sw_compdocs.language.Text(en="Blocks_3"),
-                        value=1,
-                        category=sw_compdocs.component.Category.BLOCKS,
+                input_comp_list=[
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(
+                            key="blocks_1",
+                            name=sw_compdocs.language.Text(en="Blocks_3"),
+                            value=1,
+                            category=sw_compdocs.component.Category.BLOCKS,
+                        )
                     ),
-                    sw_compdocs.component.Definition(
-                        key="blocks_2",
-                        name=sw_compdocs.language.Text(en="Blocks_2"),
-                        value=2,
-                        category=sw_compdocs.component.Category.BLOCKS,
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(
+                            key="blocks_2",
+                            name=sw_compdocs.language.Text(en="Blocks_2"),
+                            value=2,
+                            category=sw_compdocs.component.Category.BLOCKS,
+                        )
                     ),
-                    sw_compdocs.component.Definition(
-                        key="blocks_3",
-                        name=sw_compdocs.language.Text(en="Blocks_1"),
-                        value=3,
-                        category=sw_compdocs.component.Category.BLOCKS,
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(
+                            key="blocks_3",
+                            name=sw_compdocs.language.Text(en="Blocks_1"),
+                            value=3,
+                            category=sw_compdocs.component.Category.BLOCKS,
+                        )
                     ),
                 ],
                 input_label=None,
@@ -1910,24 +1918,38 @@ class TestGenerateDocument(unittest.TestCase):
             ),
             # sort defn_list key
             tt(
-                input_defn_list=[
-                    sw_compdocs.component.Definition(
-                        key="blocks_3",
-                        name=sw_compdocs.language.Text(en="Blocks_1"),
-                        value=3,
-                        category=sw_compdocs.component.Category.BLOCKS,
+                input_comp_list=[
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(
+                            key=None,
+                            name=sw_compdocs.language.Text(en="Blocks_1"),
+                            value=4,
+                            category=sw_compdocs.component.Category.BLOCKS,
+                        )
                     ),
-                    sw_compdocs.component.Definition(
-                        key="blocks_2",
-                        name=sw_compdocs.language.Text(en="Blocks_1"),
-                        value=2,
-                        category=sw_compdocs.component.Category.BLOCKS,
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(
+                            key="blocks_3",
+                            name=sw_compdocs.language.Text(en="Blocks_1"),
+                            value=3,
+                            category=sw_compdocs.component.Category.BLOCKS,
+                        )
                     ),
-                    sw_compdocs.component.Definition(
-                        key="blocks_1",
-                        name=sw_compdocs.language.Text(en="Blocks_1"),
-                        value=1,
-                        category=sw_compdocs.component.Category.BLOCKS,
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(
+                            key="blocks_2",
+                            name=sw_compdocs.language.Text(en="Blocks_1"),
+                            value=2,
+                            category=sw_compdocs.component.Category.BLOCKS,
+                        )
+                    ),
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(
+                            key="blocks_1",
+                            name=sw_compdocs.language.Text(en="Blocks_1"),
+                            value=1,
+                            category=sw_compdocs.component.Category.BLOCKS,
+                        )
                     ),
                 ],
                 input_label=None,
@@ -2023,75 +2045,136 @@ class TestGenerateDocument(unittest.TestCase):
                                 ],
                             )
                         ),
+                        sw_compdocs.document.Heading("Blocks_1", level=2),
+                        sw_compdocs.document.Heading("PROPERTIES", level=3),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    [
+                                        "DOCUMENT_PROP_TABLE_HEAD_LABEL",
+                                        "DOCUMENT_PROP_TABLE_HEAD_VALUE",
+                                    ]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["DOCUMENT_PROP_TABLE_MASS_LABEL", "0"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["DOCUMENT_PROP_TABLE_COST_LABEL", "4"]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["DOCUMENT_PROP_TABLE_TAGS_LABEL", ""]
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["DOCUMENT_PROP_TABLE_FILE_LABEL", ""]
+                                    ),
+                                ],
+                            )
+                        ),
                     ],
                 ),
             ),
             # sort category
             tt(
-                input_defn_list=[
-                    sw_compdocs.component.Definition(
-                        name=sw_compdocs.language.Text(en="WINDOWS_0"),
-                        category=sw_compdocs.component.Category.WINDOWS,
+                input_comp_list=[
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(
+                            name=sw_compdocs.language.Text(en="WINDOWS_0"),
+                            category=sw_compdocs.component.Category.WINDOWS,
+                        )
                     ),
-                    sw_compdocs.component.Definition(
-                        name=sw_compdocs.language.Text(en="INDUSTRY_0"),
-                        category=sw_compdocs.component.Category.INDUSTRY,
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(
+                            name=sw_compdocs.language.Text(en="INDUSTRY_0"),
+                            category=sw_compdocs.component.Category.INDUSTRY,
+                        )
                     ),
-                    sw_compdocs.component.Definition(
-                        name=sw_compdocs.language.Text(en="MODULAR_ENGINES_0"),
-                        category=sw_compdocs.component.Category.MODULAR_ENGINES,
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(
+                            name=sw_compdocs.language.Text(en="MODULAR_ENGINES_0"),
+                            category=sw_compdocs.component.Category.MODULAR_ENGINES,
+                        )
                     ),
-                    sw_compdocs.component.Definition(
-                        name=sw_compdocs.language.Text(en="WEAPONS_0"),
-                        category=sw_compdocs.component.Category.WEAPONS,
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(
+                            name=sw_compdocs.language.Text(en="WEAPONS_0"),
+                            category=sw_compdocs.component.Category.WEAPONS,
+                        )
                     ),
-                    sw_compdocs.component.Definition(
-                        name=sw_compdocs.language.Text(en="JET_ENGINES_0"),
-                        category=sw_compdocs.component.Category.JET_ENGINES,
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(
+                            name=sw_compdocs.language.Text(en="JET_ENGINES_0"),
+                            category=sw_compdocs.component.Category.JET_ENGINES,
+                        )
                     ),
-                    sw_compdocs.component.Definition(
-                        name=sw_compdocs.language.Text(en="ELECTRIC_0"),
-                        category=sw_compdocs.component.Category.ELECTRIC,
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(
+                            name=sw_compdocs.language.Text(en="ELECTRIC_0"),
+                            category=sw_compdocs.component.Category.ELECTRIC,
+                        )
                     ),
-                    sw_compdocs.component.Definition(
-                        name=sw_compdocs.language.Text(en="FLUID_0"),
-                        category=sw_compdocs.component.Category.FLUID,
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(
+                            name=sw_compdocs.language.Text(en="FLUID_0"),
+                            category=sw_compdocs.component.Category.FLUID,
+                        )
                     ),
-                    sw_compdocs.component.Definition(
-                        name=sw_compdocs.language.Text(en="DECORATIVE_0"),
-                        category=sw_compdocs.component.Category.DECORATIVE,
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(
+                            name=sw_compdocs.language.Text(en="DECORATIVE_0"),
+                            category=sw_compdocs.component.Category.DECORATIVE,
+                        )
                     ),
-                    sw_compdocs.component.Definition(
-                        name=sw_compdocs.language.Text(en="SENSORS_0"),
-                        category=sw_compdocs.component.Category.SENSORS,
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(
+                            name=sw_compdocs.language.Text(en="SENSORS_0"),
+                            category=sw_compdocs.component.Category.SENSORS,
+                        )
                     ),
-                    sw_compdocs.component.Definition(
-                        name=sw_compdocs.language.Text(en="DISPLAYS_0"),
-                        category=sw_compdocs.component.Category.DISPLAYS,
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(
+                            name=sw_compdocs.language.Text(en="DISPLAYS_0"),
+                            category=sw_compdocs.component.Category.DISPLAYS,
+                        )
                     ),
-                    sw_compdocs.component.Definition(
-                        name=sw_compdocs.language.Text(en="LOGIC_0"),
-                        category=sw_compdocs.component.Category.LOGIC,
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(
+                            name=sw_compdocs.language.Text(en="LOGIC_0"),
+                            category=sw_compdocs.component.Category.LOGIC,
+                        )
                     ),
-                    sw_compdocs.component.Definition(
-                        name=sw_compdocs.language.Text(en="SPECIALIST_EQUIPMENT_0"),
-                        category=sw_compdocs.component.Category.SPECIALIST_EQUIPMENT,
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(
+                            name=sw_compdocs.language.Text(en="SPECIALIST_EQUIPMENT_0"),
+                            category=sw_compdocs.component.Category.SPECIALIST_EQUIPMENT,
+                        )
                     ),
-                    sw_compdocs.component.Definition(
-                        name=sw_compdocs.language.Text(en="PROPULSION_0"),
-                        category=sw_compdocs.component.Category.PROPULSION,
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(
+                            name=sw_compdocs.language.Text(en="PROPULSION_0"),
+                            category=sw_compdocs.component.Category.PROPULSION,
+                        )
                     ),
-                    sw_compdocs.component.Definition(
-                        name=sw_compdocs.language.Text(en="MECHANICS_0"),
-                        category=sw_compdocs.component.Category.MECHANICS,
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(
+                            name=sw_compdocs.language.Text(en="MECHANICS_0"),
+                            category=sw_compdocs.component.Category.MECHANICS,
+                        )
                     ),
-                    sw_compdocs.component.Definition(
-                        name=sw_compdocs.language.Text(en="VEHICLE_CONTROL_0"),
-                        category=sw_compdocs.component.Category.VEHICLE_CONTROL,
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(
+                            name=sw_compdocs.language.Text(en="VEHICLE_CONTROL_0"),
+                            category=sw_compdocs.component.Category.VEHICLE_CONTROL,
+                        )
                     ),
-                    sw_compdocs.component.Definition(
-                        name=sw_compdocs.language.Text(en="BLOCKS_0"),
-                        category=sw_compdocs.component.Category.BLOCKS,
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(
+                            name=sw_compdocs.language.Text(en="BLOCKS_0"),
+                            category=sw_compdocs.component.Category.BLOCKS,
+                        )
                     ),
                 ],
                 input_label=None,
@@ -2584,18 +2667,22 @@ class TestGenerateDocument(unittest.TestCase):
             ),
             # label, lang, template
             tt(
-                input_defn_list=[
-                    sw_compdocs.component.Definition(
-                        key="test",
-                        name=sw_compdocs.language.Text(id="def_test_name", en="Test"),
-                        tooltip_properties=sw_compdocs.component.TooltipProperties(
-                            short_description=sw_compdocs.language.Text(
-                                id="def_test_s_desc", en="Short Description"
+                input_comp_list=[
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(
+                            key="test",
+                            name=sw_compdocs.language.Text(
+                                id="def_test_name", en="Test"
                             ),
-                            description=sw_compdocs.language.Text(
-                                id="def_test_desc", en="Description"
+                            tooltip_properties=sw_compdocs.component.TooltipProperties(
+                                short_description=sw_compdocs.language.Text(
+                                    id="def_test_s_desc", en="Short Description"
+                                ),
+                                description=sw_compdocs.language.Text(
+                                    id="def_test_desc", en="Description"
+                                ),
                             ),
-                        ),
+                        )
                     ),
                 ],
                 input_label={
@@ -2651,7 +2738,7 @@ class TestGenerateDocument(unittest.TestCase):
         ]:
             with self.subTest(tc=tc):
                 got_doc = sw_compdocs.generator.generate_document(
-                    tc.input_defn_list,
+                    tc.input_comp_list,
                     label=tc.input_label,
                     lang=tc.input_lang,
                     ctx=tc.input_ctx,
