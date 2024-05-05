@@ -3,7 +3,6 @@ import collections.abc
 import csv
 import lxml.etree
 import os
-import pathlib
 import sys
 import typing
 
@@ -87,13 +86,8 @@ def run(
     if template_file is not None:
         ctx = resource.load_toml_table(template_file, "template")
 
-    defn_list = []
-    defn_dir = pathlib.Path(os.fsdecode(defn_dir))
-    for defn_file in defn_dir.iterdir():
-        if not defn_file.is_file():
-            continue
-        defn = component.parse_xml_file(defn_file)
-        defn_list.append(defn)
+    defn_dict = component.load_defn_dict(defn_dir)
+    defn_list = defn_dict.values()
 
     if out_mode == "document":
         generate_document(
