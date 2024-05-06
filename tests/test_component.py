@@ -1782,6 +1782,145 @@ class TestComponentVoxelMax(unittest.TestCase):
         self.assertEqual(comp.defn.voxel_max.x, 1)
 
 
+class TestMultibodyMass(unittest.TestCase):
+    def test(self) -> None:
+        comp = sw_compdocs.component.Multibody(
+            defn=sw_compdocs.component.Definition(mass=9.0),
+            child=sw_compdocs.component.Definition(mass=1.0),
+        )
+        self.assertEqual(comp.mass(), 10.0)
+
+
+class TestMultibodyVoxelMin(unittest.TestCase):
+    def test(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_comp", sw_compdocs.component.Multibody),
+                ("want_voxel_min", sw_compdocs.component.VoxelPos),
+            ],
+        )
+
+        for tc in [
+            tt(
+                input_comp=sw_compdocs.component.Multibody(
+                    defn=sw_compdocs.component.Definition(
+                        voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
+                        voxel_location_child=sw_compdocs.component.VoxelPos(
+                            x=1, y=2, z=3
+                        ),
+                    ),
+                    child=sw_compdocs.component.Definition(),
+                ),
+                want_voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
+            ),
+            tt(
+                input_comp=sw_compdocs.component.Multibody(
+                    defn=sw_compdocs.component.Definition(
+                        voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
+                        voxel_location_child=sw_compdocs.component.VoxelPos(x=-4),
+                    ),
+                    child=sw_compdocs.component.Definition(
+                        voxel_min=sw_compdocs.component.VoxelPos(x=-5),
+                    ),
+                ),
+                want_voxel_min=sw_compdocs.component.VoxelPos(x=-9, y=-2, z=-3),
+            ),
+            tt(
+                input_comp=sw_compdocs.component.Multibody(
+                    defn=sw_compdocs.component.Definition(
+                        voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
+                        voxel_location_child=sw_compdocs.component.VoxelPos(y=-4),
+                    ),
+                    child=sw_compdocs.component.Definition(
+                        voxel_min=sw_compdocs.component.VoxelPos(y=-5),
+                    ),
+                ),
+                want_voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-9, z=-3),
+            ),
+            tt(
+                input_comp=sw_compdocs.component.Multibody(
+                    defn=sw_compdocs.component.Definition(
+                        voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
+                        voxel_location_child=sw_compdocs.component.VoxelPos(z=-4),
+                    ),
+                    child=sw_compdocs.component.Definition(
+                        voxel_min=sw_compdocs.component.VoxelPos(z=-5),
+                    ),
+                ),
+                want_voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-9),
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                got_voxel_min = tc.input_comp.voxel_min()
+                self.assertEqual(got_voxel_min, tc.want_voxel_min)
+
+
+class TestMultibodyVoxelMax(unittest.TestCase):
+    def test(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_comp", sw_compdocs.component.Multibody),
+                ("want_voxel_max", sw_compdocs.component.VoxelPos),
+            ],
+        )
+
+        for tc in [
+            tt(
+                input_comp=sw_compdocs.component.Multibody(
+                    defn=sw_compdocs.component.Definition(
+                        voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
+                        voxel_location_child=sw_compdocs.component.VoxelPos(
+                            x=-1, y=-2, z=-3
+                        ),
+                    ),
+                    child=sw_compdocs.component.Definition(),
+                ),
+                want_voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
+            ),
+            tt(
+                input_comp=sw_compdocs.component.Multibody(
+                    defn=sw_compdocs.component.Definition(
+                        voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
+                        voxel_location_child=sw_compdocs.component.VoxelPos(x=4),
+                    ),
+                    child=sw_compdocs.component.Definition(
+                        voxel_max=sw_compdocs.component.VoxelPos(x=5),
+                    ),
+                ),
+                want_voxel_max=sw_compdocs.component.VoxelPos(x=9, y=2, z=3),
+            ),
+            tt(
+                input_comp=sw_compdocs.component.Multibody(
+                    defn=sw_compdocs.component.Definition(
+                        voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
+                        voxel_location_child=sw_compdocs.component.VoxelPos(y=4),
+                    ),
+                    child=sw_compdocs.component.Definition(
+                        voxel_max=sw_compdocs.component.VoxelPos(y=5),
+                    ),
+                ),
+                want_voxel_max=sw_compdocs.component.VoxelPos(x=1, y=9, z=3),
+            ),
+            tt(
+                input_comp=sw_compdocs.component.Multibody(
+                    defn=sw_compdocs.component.Definition(
+                        voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
+                        voxel_location_child=sw_compdocs.component.VoxelPos(z=4),
+                    ),
+                    child=sw_compdocs.component.Definition(
+                        voxel_max=sw_compdocs.component.VoxelPos(z=5),
+                    ),
+                ),
+                want_voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=9),
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                got_voxel_max = tc.input_comp.voxel_max()
+                self.assertEqual(got_voxel_max, tc.want_voxel_max)
+
+
 class TestParseXMLFile(unittest.TestCase):
     def test_pass(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

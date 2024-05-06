@@ -524,6 +524,46 @@ class Component:
         return dataclasses.replace(self.defn.voxel_max)
 
 
+@dataclasses.dataclass
+class Multibody(Component):
+    child: Definition
+
+    def mass(self) -> float:
+        return self.defn.mass + self.child.mass
+
+    def voxel_min(self) -> VoxelPos:
+        return VoxelPos(
+            x=min(
+                self.defn.voxel_min.x,
+                self.defn.voxel_location_child.x + self.child.voxel_min.x,
+            ),
+            y=min(
+                self.defn.voxel_min.y,
+                self.defn.voxel_location_child.y + self.child.voxel_min.y,
+            ),
+            z=min(
+                self.defn.voxel_min.z,
+                self.defn.voxel_location_child.z + self.child.voxel_min.z,
+            ),
+        )
+
+    def voxel_max(self) -> VoxelPos:
+        return VoxelPos(
+            x=max(
+                self.defn.voxel_max.x,
+                self.defn.voxel_location_child.x + self.child.voxel_max.x,
+            ),
+            y=max(
+                self.defn.voxel_max.y,
+                self.defn.voxel_location_child.y + self.child.voxel_max.y,
+            ),
+            z=max(
+                self.defn.voxel_max.z,
+                self.defn.voxel_location_child.z + self.child.voxel_max.z,
+            ),
+        )
+
+
 # lxml.etree.XMLParser is generic in stub but not at runtime.
 # To avoid errors, we use string literal annotation.
 def _new_xml_parser() -> "lxml.etree.XMLParser[lxml.etree._Element]":
