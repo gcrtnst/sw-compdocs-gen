@@ -51,6 +51,26 @@ class DefinitionXMLError(Exception):
         raise ValueError
 
 
+class MultibodyLinkError(Exception):
+    def __init__(self, parent_key: str, child_key: str) -> None:
+        super().__init__(parent_key, child_key)
+        self.parent_key: typing.Final[str] = parent_key
+        self.child_key: typing.Final[str] = child_key
+
+    def __str__(self) -> str:
+        return f"failed to link parent component {self.parent_key!r} and child component {self.child_key!r}"
+
+
+class MultibodyChildNotFoundError(MultibodyLinkError):
+    def __str__(self) -> str:
+        return f"missing child component {self.child_key!r} for parent component {self.parent_key!r}"
+
+
+class MultibodyChildFlagNotSetError(MultibodyLinkError):
+    def __str__(self) -> str:
+        return f"multibody child flag is not set for child component {self.child_key!r} of parent component {self.parent_key!r}"
+
+
 def generate_key(file: _types.StrOrBytesPath) -> str:
     if not isinstance(file, pathlib.PurePath):
         file = os.fsdecode(file)

@@ -128,6 +128,46 @@ class TestDefinitionXMLErrorPrependXPath(unittest.TestCase):
                     exc.prepend_xpath(s)
 
 
+class TestMultibodyLinkErrorInit(unittest.TestCase):
+    def test(self) -> None:
+        exc = sw_compdocs.component.MultibodyLinkError("parent_key", "child_key")
+        exc_args: tuple[object, ...] = exc.args
+        self.assertEqual(exc_args, ("parent_key", "child_key"))
+        self.assertEqual(exc.parent_key, "parent_key")
+        self.assertEqual(exc.child_key, "child_key")
+
+
+class TestMultibodyLinkErrorStr(unittest.TestCase):
+    def test(self) -> None:
+        exc = sw_compdocs.component.MultibodyLinkError("parent_key", "child_key")
+        self.assertEqual(
+            str(exc),
+            "failed to link parent component 'parent_key' and child component 'child_key'",
+        )
+
+
+class TestMultibodyChildNotFoundErrorStr(unittest.TestCase):
+    def test(self) -> None:
+        exc = sw_compdocs.component.MultibodyChildNotFoundError(
+            "parent_key", "child_key"
+        )
+        self.assertEqual(
+            str(exc),
+            "missing child component 'child_key' for parent component 'parent_key'",
+        )
+
+
+class TestMultibodyChildFlagNotSetErrorStr(unittest.TestCase):
+    def test(self) -> None:
+        exc = sw_compdocs.component.MultibodyChildFlagNotSetError(
+            "parent_key", "child_key"
+        )
+        self.assertEqual(
+            str(exc),
+            "multibody child flag is not set for child component 'child_key' of parent component 'parent_key'",
+        )
+
+
 class TestGenerateKey(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(

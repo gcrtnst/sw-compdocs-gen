@@ -798,6 +798,12 @@ class TestMain(unittest.TestCase):
                 want_stderr="sw_compdocs: error: message\n",
             ),
             tt(
+                input_exc=sw_compdocs.component.MultibodyLinkError(
+                    "parent_key", "child_key"
+                ),
+                want_stderr="sw_compdocs: error: failed to link parent component 'parent_key' and child component 'child_key'\n",
+            ),
+            tt(
                 input_exc=sw_compdocs.generator.LabelKeyError("key"),
                 want_stderr="sw_compdocs: error: missing label text for key 'key'\n",
             ),

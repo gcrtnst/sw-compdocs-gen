@@ -274,6 +274,8 @@ def main(
         )
     except component.DefinitionXMLError as exc:
         error(exc)
+    except component.MultibodyLinkError as exc:
+        error(exc)
     except generator.LabelKeyError as exc:
         error(exc)
     except language.LanguageTSVError as exc:
