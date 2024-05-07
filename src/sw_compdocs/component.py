@@ -653,6 +653,44 @@ def load_defn_dict(defn_dir: _types.StrOrBytesPath) -> dict[str, Definition]:
     return defn_dict
 
 
+def build_comp_list(defn_dict: dict[str, Definition]) -> list[Component]:
+    comp: Component
+    comp_list: list[Component]
+
+    comp_list = []
+    pend_key_set = {key for key in defn_dict.keys()}
+    for key, defn in defn_dict.items():
+        if (
+            Flags.MULTIBODY_CHILD in defn.flags
+            or Flags.MULTIBODY_PARENT not in defn.flags
+        ):
+            continue
+
+        child_key = defn.child_name
+        try:
+            child = defn_dict[child_key]
+        except KeyError as exc:
+            raise MultibodyChildNotFoundError(key, child_key) from exc
+        if Flags.MULTIBODY_CHILD not in child.flags:
+            raise MultibodyChildFlagNotSetError(key, child_key)
+
+        comp = Multibody(defn=defn, child=child)
+        comp_list.append(comp)
+        pend_key_set.discard(key)
+        pend_key_set.discard(child_key)
+
+    for key in pend_key_set:
+        defn = defn_dict[key]
+        comp = Component(defn=defn)
+        comp_list.append(comp)
+
+    def sort_key(comp: Component) -> tuple[bool, str]:
+        return comp.defn.key is None, comp.defn.key or ""
+
+    comp_list.sort(key=sort_key)
+    return comp_list
+
+
 def load_comp_list(defn_dir: _types.StrOrBytesPath) -> list[Component]:
     defn_dict = load_defn_dict(defn_dir)
     return [Component(defn=defn) for defn in defn_dict.values()]

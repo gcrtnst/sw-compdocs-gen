@@ -2237,6 +2237,150 @@ class TestLoadDefnDict(unittest.TestCase):
                     self.assertEqual(got_defn_dict, want_defn_dict)
 
 
+class TestBuildCompList(unittest.TestCase):
+    def test_pass(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_defn_dict", dict[str, sw_compdocs.component.Definition]),
+                ("want_comp_list", list[sw_compdocs.component.Component]),
+            ],
+        )
+
+        for tc in [
+            # empty
+            tt(
+                input_defn_dict={},
+                want_comp_list=[],
+            ),
+            # normal
+            tt(
+                input_defn_dict={
+                    "key": sw_compdocs.component.Definition(key="key"),
+                },
+                want_comp_list=[
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(key="key"),
+                    ),
+                ],
+            ),
+            # multibody
+            tt(
+                input_defn_dict={
+                    "multibody_a": sw_compdocs.component.Definition(
+                        key="multibody_a",
+                        flags=sw_compdocs.component.Flags.MULTIBODY_PARENT,
+                        child_name="multibody_b",
+                    ),
+                    "multibody_b": sw_compdocs.component.Definition(
+                        key="multibody_b",
+                        flags=sw_compdocs.component.Flags.MULTIBODY_CHILD,
+                    ),
+                },
+                want_comp_list=[
+                    sw_compdocs.component.Multibody(
+                        defn=sw_compdocs.component.Definition(
+                            key="multibody_a",
+                            flags=sw_compdocs.component.Flags.MULTIBODY_PARENT,
+                            child_name="multibody_b",
+                        ),
+                        child=sw_compdocs.component.Definition(
+                            key="multibody_b",
+                            flags=sw_compdocs.component.Flags.MULTIBODY_CHILD,
+                        ),
+                    ),
+                ],
+            ),
+            # orphan
+            tt(
+                input_defn_dict={
+                    "multibody_b": sw_compdocs.component.Definition(
+                        key="multibody_b",
+                        flags=sw_compdocs.component.Flags.MULTIBODY_CHILD,
+                    ),
+                },
+                want_comp_list=[
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(
+                            key="multibody_b",
+                            flags=sw_compdocs.component.Flags.MULTIBODY_CHILD,
+                        ),
+                    ),
+                ],
+            ),
+            # sort
+            tt(
+                input_defn_dict={
+                    "": sw_compdocs.component.Definition(),
+                    "block_c": sw_compdocs.component.Definition(key="block_c"),
+                    "block_b": sw_compdocs.component.Definition(key="block_b"),
+                    "block_a": sw_compdocs.component.Definition(key="block_a"),
+                },
+                want_comp_list=[
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(key="block_a"),
+                    ),
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(key="block_b"),
+                    ),
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(key="block_c"),
+                    ),
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(),
+                    ),
+                ],
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                got_comp_list = sw_compdocs.component.build_comp_list(
+                    tc.input_defn_dict
+                )
+                self.assertEqual(got_comp_list, tc.want_comp_list)
+
+    def test_exc(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_defn_dict", dict[str, sw_compdocs.component.Definition]),
+                ("want_exc_type", type[sw_compdocs.component.MultibodyLinkError]),
+                ("want_exc_parent_key", str),
+                ("want_exc_child_key", str),
+            ],
+        )
+
+        for tc in [
+            tt(
+                input_defn_dict={
+                    "multibody_a": sw_compdocs.component.Definition(
+                        flags=sw_compdocs.component.Flags.MULTIBODY_PARENT,
+                        child_name="multibody_b",
+                    ),
+                },
+                want_exc_type=sw_compdocs.component.MultibodyChildNotFoundError,
+                want_exc_parent_key="multibody_a",
+                want_exc_child_key="multibody_b",
+            ),
+            tt(
+                input_defn_dict={
+                    "multibody_a": sw_compdocs.component.Definition(
+                        flags=sw_compdocs.component.Flags.MULTIBODY_PARENT,
+                        child_name="multibody_b",
+                    ),
+                    "multibody_b": sw_compdocs.component.Definition(),
+                },
+                want_exc_type=sw_compdocs.component.MultibodyChildFlagNotSetError,
+                want_exc_parent_key="multibody_a",
+                want_exc_child_key="multibody_b",
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                with self.assertRaises(tc.want_exc_type) as ctx:
+                    sw_compdocs.component.build_comp_list(tc.input_defn_dict)
+                self.assertEqual(ctx.exception.parent_key, tc.want_exc_parent_key)
+                self.assertEqual(ctx.exception.child_key, tc.want_exc_child_key)
+
+
 class TestLoadCompList(unittest.TestCase):
     def test_empty(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
