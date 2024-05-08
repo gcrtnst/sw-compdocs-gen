@@ -183,25 +183,25 @@ class TestGenerateDocumentPropertyTable(unittest.TestCase):
                     sw_compdocs.document.TableData(
                         sw_compdocs.document.TableDataRow(
                             [
-                                "DOCUMENT_PROP_TABLE_HEAD_LABEL",
-                                "DOCUMENT_PROP_TABLE_HEAD_VALUE",
+                                "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
+                                "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
                             ]
                         ),
                         [
                             sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_PROP_TABLE_MASS_LABEL", "10"]
+                                ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "10"]
                             ),
                             sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x5x3"]
+                                ["DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL", "1x5x3"]
                             ),
                             sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_PROP_TABLE_COST_LABEL", "100"]
+                                ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "100"]
                             ),
                             sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_PROP_TABLE_TAGS_LABEL", "tags"]
+                                ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", "tags"]
                             ),
                             sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_PROP_TABLE_FILE_LABEL", "file"]
+                                ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", "file"]
                             ),
                         ],
                     )
@@ -217,25 +217,25 @@ class TestGenerateDocumentPropertyTable(unittest.TestCase):
                     sw_compdocs.document.TableData(
                         sw_compdocs.document.TableDataRow(
                             [
-                                "DOCUMENT_PROP_TABLE_HEAD_LABEL",
-                                "DOCUMENT_PROP_TABLE_HEAD_VALUE",
+                                "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
+                                "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
                             ]
                         ),
                         [
                             sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_PROP_TABLE_MASS_LABEL", "0"]
+                                ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
                             ),
                             sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                ["DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL", "1x1x1"]
                             ),
                             sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_PROP_TABLE_COST_LABEL", "0"]
+                                ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "0"]
                             ),
                             sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_PROP_TABLE_TAGS_LABEL", ""]
+                                ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
                             ),
                             sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_PROP_TABLE_FILE_LABEL", ""]
+                                ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
                             ),
                         ],
                     )
@@ -251,25 +251,25 @@ class TestGenerateDocumentPropertyTable(unittest.TestCase):
                     sw_compdocs.document.TableData(
                         sw_compdocs.document.TableDataRow(
                             [
-                                "DOCUMENT_PROP_TABLE_HEAD_LABEL",
-                                "DOCUMENT_PROP_TABLE_HEAD_VALUE",
+                                "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
+                                "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
                             ]
                         ),
                         [
                             sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_PROP_TABLE_MASS_LABEL", "0.25"]
+                                ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0.25"]
                             ),
                             sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                ["DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL", "1x1x1"]
                             ),
                             sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_PROP_TABLE_COST_LABEL", "0"]
+                                ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "0"]
                             ),
                             sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_PROP_TABLE_TAGS_LABEL", ""]
+                                ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
                             ),
                             sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_PROP_TABLE_FILE_LABEL", ""]
+                                ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
                             ),
                         ],
                     )
@@ -287,25 +287,28 @@ class TestGenerateDocumentPropertyTable(unittest.TestCase):
                     sw_compdocs.document.TableData(
                         sw_compdocs.document.TableDataRow(
                             [
-                                "DOCUMENT_PROP_TABLE_HEAD_LABEL",
-                                "DOCUMENT_PROP_TABLE_HEAD_VALUE",
+                                "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
+                                "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
                             ]
                         ),
                         [
                             sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_PROP_TABLE_MASS_LABEL", "0"]
+                                ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
                             ),
                             sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                ["DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL", "1x1x1"]
                             ),
                             sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_PROP_TABLE_COST_LABEL", "0"]
+                                ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "0"]
                             ),
                             sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_PROP_TABLE_TAGS_LABEL", ""]
+                                ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
                             ),
                             sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_PROP_TABLE_FILE_LABEL", "definition.xml"]
+                                [
+                                    "DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL",
+                                    "definition.xml",
+                                ]
                             ),
                         ],
                     )
@@ -314,13 +317,13 @@ class TestGenerateDocumentPropertyTable(unittest.TestCase):
             # label
             tt(
                 input_label={
-                    "DOCUMENT_PROP_TABLE_HEAD_LABEL": "Label",
-                    "DOCUMENT_PROP_TABLE_HEAD_VALUE": "Value",
-                    "DOCUMENT_PROP_TABLE_MASS_LABEL": "Mass",
-                    "DOCUMENT_PROP_TABLE_DIMS_LABEL": "Dimensions",
-                    "DOCUMENT_PROP_TABLE_COST_LABEL": "Cost",
-                    "DOCUMENT_PROP_TABLE_TAGS_LABEL": "Tags",
-                    "DOCUMENT_PROP_TABLE_FILE_LABEL": "File",
+                    "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL": "Label",
+                    "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE": "Value",
+                    "DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL": "Mass",
+                    "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL": "Dimensions",
+                    "DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL": "Cost",
+                    "DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL": "Tags",
+                    "DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL": "File",
                 },
                 input_comp=sw_compdocs.component.Component(
                     defn=sw_compdocs.component.Definition()
@@ -348,13 +351,13 @@ class TestGenerateDocumentPropertyTable(unittest.TestCase):
     def test_exc_label(self) -> None:
         comp = sw_compdocs.component.Component(defn=sw_compdocs.component.Definition())
         label_all = {
-            "DOCUMENT_PROP_TABLE_HEAD_LABEL": "Label",
-            "DOCUMENT_PROP_TABLE_HEAD_VALUE": "Value",
-            "DOCUMENT_PROP_TABLE_MASS_LABEL": "Mass",
-            "DOCUMENT_PROP_TABLE_DIMS_LABEL": "Dimensions",
-            "DOCUMENT_PROP_TABLE_COST_LABEL": "Cost",
-            "DOCUMENT_PROP_TABLE_TAGS_LABEL": "Tags",
-            "DOCUMENT_PROP_TABLE_FILE_LABEL": "File",
+            "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL": "Label",
+            "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE": "Value",
+            "DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL": "Mass",
+            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL": "Dimensions",
+            "DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL": "Cost",
+            "DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL": "Tags",
+            "DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL": "File",
         }
         for key in label_all.keys():
             with self.subTest(label_key=key):
@@ -393,25 +396,28 @@ class TestGenerateDocumentProperty(unittest.TestCase):
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
                                     [
-                                        "DOCUMENT_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_PROP_TABLE_HEAD_VALUE",
+                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
+                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
                                     ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_MASS_LABEL", "0"]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                        [
+                                            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL",
+                                            "1x1x1",
+                                        ]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_COST_LABEL", "0"]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_TAGS_LABEL", ""]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_FILE_LABEL", ""]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -421,13 +427,13 @@ class TestGenerateDocumentProperty(unittest.TestCase):
             ),
             tt(
                 input_label={
-                    "DOCUMENT_PROP_TABLE_HEAD_LABEL": "ラベル",
-                    "DOCUMENT_PROP_TABLE_HEAD_VALUE": "値",
-                    "DOCUMENT_PROP_TABLE_MASS_LABEL": "重量",
-                    "DOCUMENT_PROP_TABLE_DIMS_LABEL": "サイズ",
-                    "DOCUMENT_PROP_TABLE_COST_LABEL": "値段",
-                    "DOCUMENT_PROP_TABLE_TAGS_LABEL": "タグ",
-                    "DOCUMENT_PROP_TABLE_FILE_LABEL": "ファイル",
+                    "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL": "ラベル",
+                    "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE": "値",
+                    "DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL": "重量",
+                    "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL": "サイズ",
+                    "DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL": "値段",
+                    "DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL": "タグ",
+                    "DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL": "ファイル",
                 },
                 input_lang=sw_compdocs.language.Language(
                     [
@@ -491,9 +497,9 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
                     sw_compdocs.document.TableData(
                         sw_compdocs.document.TableDataRow(
                             [
-                                "DOCUMENT_LOGIC_TABLE_HEAD_TYPE",
-                                "DOCUMENT_LOGIC_TABLE_HEAD_LABEL",
-                                "DOCUMENT_LOGIC_TABLE_HEAD_DESC",
+                                "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_TYPE",
+                                "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_LABEL",
+                                "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_DESC",
                             ]
                         ),
                         [],
@@ -533,9 +539,9 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
                     sw_compdocs.document.TableData(
                         sw_compdocs.document.TableDataRow(
                             [
-                                "DOCUMENT_LOGIC_TABLE_HEAD_TYPE",
-                                "DOCUMENT_LOGIC_TABLE_HEAD_LABEL",
-                                "DOCUMENT_LOGIC_TABLE_HEAD_DESC",
+                                "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_TYPE",
+                                "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_LABEL",
+                                "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_DESC",
                             ]
                         ),
                         [
@@ -555,9 +561,9 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
             ),
             tt(
                 input_label={
-                    "DOCUMENT_LOGIC_TABLE_HEAD_TYPE": "種別",
-                    "DOCUMENT_LOGIC_TABLE_HEAD_LABEL": "ラベル",
-                    "DOCUMENT_LOGIC_TABLE_HEAD_DESC": "説明",
+                    "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_TYPE": "種別",
+                    "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_LABEL": "ラベル",
+                    "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_DESC": "説明",
                 },
                 input_lang=sw_compdocs.language.Language(
                     [
@@ -660,9 +666,9 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
     def test_exc_label(self) -> None:
         lns = sw_compdocs.component.LogicNodeList()
         label_all = {
-            "DOCUMENT_LOGIC_TABLE_HEAD_TYPE": "種別",
-            "DOCUMENT_LOGIC_TABLE_HEAD_LABEL": "ラベル",
-            "DOCUMENT_LOGIC_TABLE_HEAD_DESC": "説明",
+            "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_TYPE": "種別",
+            "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_LABEL": "ラベル",
+            "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_DESC": "説明",
         }
         for key in label_all.keys():
             with self.subTest(label_key=key):
@@ -763,9 +769,9 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
                                     [
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_TYPE",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_DESC",
+                                        "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_TYPE",
+                                        "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_LABEL",
+                                        "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_DESC",
                                     ]
                                 ),
                                 [
@@ -792,9 +798,9 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
                                     [
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_TYPE",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_DESC",
+                                        "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_TYPE",
+                                        "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_LABEL",
+                                        "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_DESC",
                                     ]
                                 ),
                                 [
@@ -809,9 +815,9 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
                                     [
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_TYPE",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_DESC",
+                                        "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_TYPE",
+                                        "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_LABEL",
+                                        "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_DESC",
                                     ]
                                 ),
                                 [
@@ -910,9 +916,9 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
                                     [
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_TYPE",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_DESC",
+                                        "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_TYPE",
+                                        "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_LABEL",
+                                        "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_DESC",
                                     ]
                                 ),
                                 [
@@ -927,9 +933,9 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
                                     [
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_TYPE",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_DESC",
+                                        "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_TYPE",
+                                        "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_LABEL",
+                                        "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_DESC",
                                     ]
                                 ),
                                 [
@@ -944,9 +950,9 @@ class TestGenerateDocumentLogic(unittest.TestCase):
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
                                     [
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_TYPE",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_DESC",
+                                        "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_TYPE",
+                                        "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_LABEL",
+                                        "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_DESC",
                                     ]
                                 ),
                                 [
@@ -1000,25 +1006,28 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
                                     [
-                                        "DOCUMENT_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_PROP_TABLE_HEAD_VALUE",
+                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
+                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
                                     ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_MASS_LABEL", "0"]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                        [
+                                            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL",
+                                            "1x1x1",
+                                        ]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_COST_LABEL", "0"]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_TAGS_LABEL", ""]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_FILE_LABEL", ""]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -1040,7 +1049,7 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                     [
                         sw_compdocs.document.Heading(""),
                         sw_compdocs.document.Callout(
-                            "DOCUMENT_DEPRECATED_TEXT",
+                            "DOCUMENT_COMMON_DEPRECATED_TEXT",
                             kind=sw_compdocs.document.CalloutKind.WARNING,
                         ),
                         sw_compdocs.document.Heading("PROPERTIES", level=2),
@@ -1048,25 +1057,28 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
                                     [
-                                        "DOCUMENT_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_PROP_TABLE_HEAD_VALUE",
+                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
+                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
                                     ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_MASS_LABEL", "0"]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                        [
+                                            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL",
+                                            "1x1x1",
+                                        ]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_COST_LABEL", "0"]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_TAGS_LABEL", ""]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_FILE_LABEL", ""]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -1112,25 +1124,28 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
                                     [
-                                        "DOCUMENT_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_PROP_TABLE_HEAD_VALUE",
+                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
+                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
                                     ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_MASS_LABEL", "0"]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                        [
+                                            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL",
+                                            "1x1x1",
+                                        ]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_COST_LABEL", "0"]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_TAGS_LABEL", ""]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_FILE_LABEL", ""]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -1140,9 +1155,9 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
                                     [
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_TYPE",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_LOGIC_TABLE_HEAD_DESC",
+                                        "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_TYPE",
+                                        "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_LABEL",
+                                        "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_DESC",
                                     ]
                                 ),
                                 [
@@ -1158,17 +1173,17 @@ class TestGenerateDocumentComponent(unittest.TestCase):
             # label, lang, template
             tt(
                 input_label={
-                    "DOCUMENT_DEPRECATED_TEXT": "この部品は非推奨です。",
-                    "DOCUMENT_PROP_TABLE_HEAD_LABEL": "ラベル",
-                    "DOCUMENT_PROP_TABLE_HEAD_VALUE": "値",
-                    "DOCUMENT_PROP_TABLE_MASS_LABEL": "重量",
-                    "DOCUMENT_PROP_TABLE_DIMS_LABEL": "サイズ(WxDxH)",
-                    "DOCUMENT_PROP_TABLE_COST_LABEL": "値段",
-                    "DOCUMENT_PROP_TABLE_TAGS_LABEL": "タグ",
-                    "DOCUMENT_PROP_TABLE_FILE_LABEL": "ファイル",
-                    "DOCUMENT_LOGIC_TABLE_HEAD_TYPE": "型",
-                    "DOCUMENT_LOGIC_TABLE_HEAD_LABEL": "ラベル",
-                    "DOCUMENT_LOGIC_TABLE_HEAD_DESC": "説明",
+                    "DOCUMENT_COMMON_DEPRECATED_TEXT": "この部品は非推奨です。",
+                    "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL": "ラベル",
+                    "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE": "値",
+                    "DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL": "重量",
+                    "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL": "サイズ(WxDxH)",
+                    "DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL": "値段",
+                    "DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL": "タグ",
+                    "DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL": "ファイル",
+                    "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_TYPE": "型",
+                    "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_LABEL": "ラベル",
+                    "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_DESC": "説明",
                 },
                 input_lang=sw_compdocs.language.Language(
                     [
@@ -1297,16 +1312,16 @@ class TestGenerateDocumentComponent(unittest.TestCase):
             # button_push
             tt(
                 input_label={
-                    "DOCUMENT_PROP_TABLE_HEAD_LABEL": "ラベル",
-                    "DOCUMENT_PROP_TABLE_HEAD_VALUE": "値",
-                    "DOCUMENT_PROP_TABLE_MASS_LABEL": "重量",
-                    "DOCUMENT_PROP_TABLE_DIMS_LABEL": "サイズ(WxDxH)",
-                    "DOCUMENT_PROP_TABLE_COST_LABEL": "値段",
-                    "DOCUMENT_PROP_TABLE_TAGS_LABEL": "タグ",
-                    "DOCUMENT_PROP_TABLE_FILE_LABEL": "ファイル",
-                    "DOCUMENT_LOGIC_TABLE_HEAD_TYPE": "型",
-                    "DOCUMENT_LOGIC_TABLE_HEAD_LABEL": "ラベル",
-                    "DOCUMENT_LOGIC_TABLE_HEAD_DESC": "説明",
+                    "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL": "ラベル",
+                    "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE": "値",
+                    "DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL": "重量",
+                    "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL": "サイズ(WxDxH)",
+                    "DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL": "値段",
+                    "DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL": "タグ",
+                    "DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL": "ファイル",
+                    "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_TYPE": "型",
+                    "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_LABEL": "ラベル",
+                    "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_DESC": "説明",
                 },
                 input_lang=sw_compdocs.language.Language(
                     [
@@ -1574,7 +1589,7 @@ class TestGenerateDocumentComponent(unittest.TestCase):
         )
         with self.assertRaises(sw_compdocs.generator.LabelKeyError) as ctx:
             sw_compdocs.generator.generate_document_component(comp, label={})
-        self.assertEqual(ctx.exception.key, "DOCUMENT_DEPRECATED_TEXT")
+        self.assertEqual(ctx.exception.key, "DOCUMENT_COMMON_DEPRECATED_TEXT")
 
 
 class TestGenerateDocumentComponentList(unittest.TestCase):
@@ -1622,25 +1637,28 @@ class TestGenerateDocumentComponentList(unittest.TestCase):
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
                                     [
-                                        "DOCUMENT_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_PROP_TABLE_HEAD_VALUE",
+                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
+                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
                                     ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_MASS_LABEL", "0"]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                        [
+                                            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL",
+                                            "1x1x1",
+                                        ]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_COST_LABEL", "0"]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_TAGS_LABEL", ""]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_FILE_LABEL", ""]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -1651,25 +1669,28 @@ class TestGenerateDocumentComponentList(unittest.TestCase):
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
                                     [
-                                        "DOCUMENT_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_PROP_TABLE_HEAD_VALUE",
+                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
+                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
                                     ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_MASS_LABEL", "0"]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                        [
+                                            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL",
+                                            "1x1x1",
+                                        ]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_COST_LABEL", "0"]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_TAGS_LABEL", ""]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_FILE_LABEL", ""]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -1697,13 +1718,13 @@ class TestGenerateDocumentComponentList(unittest.TestCase):
                     ),
                 ],
                 input_label={
-                    "DOCUMENT_PROP_TABLE_HEAD_LABEL": "Label",
-                    "DOCUMENT_PROP_TABLE_HEAD_VALUE": "Value",
-                    "DOCUMENT_PROP_TABLE_MASS_LABEL": "Mass",
-                    "DOCUMENT_PROP_TABLE_DIMS_LABEL": "Dimensions (WxDxH)",
-                    "DOCUMENT_PROP_TABLE_COST_LABEL": "Cost",
-                    "DOCUMENT_PROP_TABLE_TAGS_LABEL": "Tags",
-                    "DOCUMENT_PROP_TABLE_FILE_LABEL": "File",
+                    "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL": "Label",
+                    "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE": "Value",
+                    "DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL": "Mass",
+                    "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL": "Dimensions (WxDxH)",
+                    "DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL": "Cost",
+                    "DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL": "Tags",
+                    "DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL": "File",
                 },
                 input_lang=sw_compdocs.language.Language(
                     [
@@ -1800,25 +1821,28 @@ class TestGenerateDocument(unittest.TestCase):
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
                                     [
-                                        "DOCUMENT_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_PROP_TABLE_HEAD_VALUE",
+                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
+                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
                                     ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_MASS_LABEL", "0"]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                        [
+                                            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL",
+                                            "1x1x1",
+                                        ]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_COST_LABEL", "0"]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_TAGS_LABEL", ""]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_FILE_LABEL", ""]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -1866,25 +1890,28 @@ class TestGenerateDocument(unittest.TestCase):
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
                                     [
-                                        "DOCUMENT_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_PROP_TABLE_HEAD_VALUE",
+                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
+                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
                                     ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_MASS_LABEL", "0"]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                        [
+                                            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL",
+                                            "1x1x1",
+                                        ]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_COST_LABEL", "3"]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "3"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_TAGS_LABEL", ""]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_FILE_LABEL", ""]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -1895,25 +1922,28 @@ class TestGenerateDocument(unittest.TestCase):
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
                                     [
-                                        "DOCUMENT_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_PROP_TABLE_HEAD_VALUE",
+                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
+                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
                                     ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_MASS_LABEL", "0"]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                        [
+                                            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL",
+                                            "1x1x1",
+                                        ]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_COST_LABEL", "2"]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "2"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_TAGS_LABEL", ""]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_FILE_LABEL", ""]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -1924,25 +1954,28 @@ class TestGenerateDocument(unittest.TestCase):
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
                                     [
-                                        "DOCUMENT_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_PROP_TABLE_HEAD_VALUE",
+                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
+                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
                                     ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_MASS_LABEL", "0"]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                        [
+                                            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL",
+                                            "1x1x1",
+                                        ]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_COST_LABEL", "1"]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "1"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_TAGS_LABEL", ""]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_FILE_LABEL", ""]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -1998,25 +2031,28 @@ class TestGenerateDocument(unittest.TestCase):
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
                                     [
-                                        "DOCUMENT_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_PROP_TABLE_HEAD_VALUE",
+                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
+                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
                                     ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_MASS_LABEL", "0"]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                        [
+                                            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL",
+                                            "1x1x1",
+                                        ]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_COST_LABEL", "1"]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "1"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_TAGS_LABEL", ""]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_FILE_LABEL", ""]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -2027,25 +2063,28 @@ class TestGenerateDocument(unittest.TestCase):
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
                                     [
-                                        "DOCUMENT_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_PROP_TABLE_HEAD_VALUE",
+                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
+                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
                                     ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_MASS_LABEL", "0"]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                        [
+                                            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL",
+                                            "1x1x1",
+                                        ]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_COST_LABEL", "2"]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "2"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_TAGS_LABEL", ""]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_FILE_LABEL", ""]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -2056,25 +2095,28 @@ class TestGenerateDocument(unittest.TestCase):
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
                                     [
-                                        "DOCUMENT_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_PROP_TABLE_HEAD_VALUE",
+                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
+                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
                                     ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_MASS_LABEL", "0"]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                        [
+                                            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL",
+                                            "1x1x1",
+                                        ]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_COST_LABEL", "3"]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "3"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_TAGS_LABEL", ""]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_FILE_LABEL", ""]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -2085,25 +2127,28 @@ class TestGenerateDocument(unittest.TestCase):
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
                                     [
-                                        "DOCUMENT_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_PROP_TABLE_HEAD_VALUE",
+                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
+                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
                                     ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_MASS_LABEL", "0"]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                        [
+                                            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL",
+                                            "1x1x1",
+                                        ]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_COST_LABEL", "4"]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "4"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_TAGS_LABEL", ""]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_FILE_LABEL", ""]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -2223,25 +2268,28 @@ class TestGenerateDocument(unittest.TestCase):
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
                                     [
-                                        "DOCUMENT_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_PROP_TABLE_HEAD_VALUE",
+                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
+                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
                                     ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_MASS_LABEL", "0"]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                        [
+                                            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL",
+                                            "1x1x1",
+                                        ]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_COST_LABEL", "0"]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_TAGS_LABEL", ""]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_FILE_LABEL", ""]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -2253,25 +2301,28 @@ class TestGenerateDocument(unittest.TestCase):
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
                                     [
-                                        "DOCUMENT_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_PROP_TABLE_HEAD_VALUE",
+                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
+                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
                                     ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_MASS_LABEL", "0"]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                        [
+                                            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL",
+                                            "1x1x1",
+                                        ]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_COST_LABEL", "0"]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_TAGS_LABEL", ""]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_FILE_LABEL", ""]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -2283,25 +2334,28 @@ class TestGenerateDocument(unittest.TestCase):
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
                                     [
-                                        "DOCUMENT_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_PROP_TABLE_HEAD_VALUE",
+                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
+                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
                                     ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_MASS_LABEL", "0"]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                        [
+                                            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL",
+                                            "1x1x1",
+                                        ]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_COST_LABEL", "0"]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_TAGS_LABEL", ""]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_FILE_LABEL", ""]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -2313,25 +2367,28 @@ class TestGenerateDocument(unittest.TestCase):
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
                                     [
-                                        "DOCUMENT_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_PROP_TABLE_HEAD_VALUE",
+                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
+                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
                                     ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_MASS_LABEL", "0"]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                        [
+                                            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL",
+                                            "1x1x1",
+                                        ]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_COST_LABEL", "0"]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_TAGS_LABEL", ""]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_FILE_LABEL", ""]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -2343,25 +2400,28 @@ class TestGenerateDocument(unittest.TestCase):
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
                                     [
-                                        "DOCUMENT_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_PROP_TABLE_HEAD_VALUE",
+                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
+                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
                                     ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_MASS_LABEL", "0"]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                        [
+                                            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL",
+                                            "1x1x1",
+                                        ]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_COST_LABEL", "0"]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_TAGS_LABEL", ""]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_FILE_LABEL", ""]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -2373,25 +2433,28 @@ class TestGenerateDocument(unittest.TestCase):
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
                                     [
-                                        "DOCUMENT_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_PROP_TABLE_HEAD_VALUE",
+                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
+                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
                                     ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_MASS_LABEL", "0"]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                        [
+                                            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL",
+                                            "1x1x1",
+                                        ]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_COST_LABEL", "0"]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_TAGS_LABEL", ""]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_FILE_LABEL", ""]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -2403,25 +2466,28 @@ class TestGenerateDocument(unittest.TestCase):
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
                                     [
-                                        "DOCUMENT_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_PROP_TABLE_HEAD_VALUE",
+                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
+                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
                                     ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_MASS_LABEL", "0"]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                        [
+                                            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL",
+                                            "1x1x1",
+                                        ]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_COST_LABEL", "0"]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_TAGS_LABEL", ""]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_FILE_LABEL", ""]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -2433,25 +2499,28 @@ class TestGenerateDocument(unittest.TestCase):
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
                                     [
-                                        "DOCUMENT_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_PROP_TABLE_HEAD_VALUE",
+                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
+                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
                                     ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_MASS_LABEL", "0"]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                        [
+                                            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL",
+                                            "1x1x1",
+                                        ]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_COST_LABEL", "0"]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_TAGS_LABEL", ""]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_FILE_LABEL", ""]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -2463,25 +2532,28 @@ class TestGenerateDocument(unittest.TestCase):
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
                                     [
-                                        "DOCUMENT_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_PROP_TABLE_HEAD_VALUE",
+                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
+                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
                                     ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_MASS_LABEL", "0"]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                        [
+                                            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL",
+                                            "1x1x1",
+                                        ]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_COST_LABEL", "0"]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_TAGS_LABEL", ""]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_FILE_LABEL", ""]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -2493,25 +2565,28 @@ class TestGenerateDocument(unittest.TestCase):
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
                                     [
-                                        "DOCUMENT_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_PROP_TABLE_HEAD_VALUE",
+                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
+                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
                                     ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_MASS_LABEL", "0"]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                        [
+                                            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL",
+                                            "1x1x1",
+                                        ]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_COST_LABEL", "0"]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_TAGS_LABEL", ""]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_FILE_LABEL", ""]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -2523,25 +2598,28 @@ class TestGenerateDocument(unittest.TestCase):
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
                                     [
-                                        "DOCUMENT_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_PROP_TABLE_HEAD_VALUE",
+                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
+                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
                                     ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_MASS_LABEL", "0"]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                        [
+                                            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL",
+                                            "1x1x1",
+                                        ]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_COST_LABEL", "0"]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_TAGS_LABEL", ""]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_FILE_LABEL", ""]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -2553,25 +2631,28 @@ class TestGenerateDocument(unittest.TestCase):
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
                                     [
-                                        "DOCUMENT_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_PROP_TABLE_HEAD_VALUE",
+                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
+                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
                                     ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_MASS_LABEL", "0"]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                        [
+                                            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL",
+                                            "1x1x1",
+                                        ]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_COST_LABEL", "0"]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_TAGS_LABEL", ""]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_FILE_LABEL", ""]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -2583,25 +2664,28 @@ class TestGenerateDocument(unittest.TestCase):
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
                                     [
-                                        "DOCUMENT_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_PROP_TABLE_HEAD_VALUE",
+                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
+                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
                                     ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_MASS_LABEL", "0"]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                        [
+                                            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL",
+                                            "1x1x1",
+                                        ]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_COST_LABEL", "0"]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_TAGS_LABEL", ""]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_FILE_LABEL", ""]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -2613,25 +2697,28 @@ class TestGenerateDocument(unittest.TestCase):
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
                                     [
-                                        "DOCUMENT_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_PROP_TABLE_HEAD_VALUE",
+                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
+                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
                                     ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_MASS_LABEL", "0"]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                        [
+                                            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL",
+                                            "1x1x1",
+                                        ]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_COST_LABEL", "0"]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_TAGS_LABEL", ""]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_FILE_LABEL", ""]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -2643,25 +2730,28 @@ class TestGenerateDocument(unittest.TestCase):
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
                                     [
-                                        "DOCUMENT_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_PROP_TABLE_HEAD_VALUE",
+                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
+                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
                                     ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_MASS_LABEL", "0"]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                        [
+                                            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL",
+                                            "1x1x1",
+                                        ]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_COST_LABEL", "0"]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_TAGS_LABEL", ""]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_FILE_LABEL", ""]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -2673,25 +2763,28 @@ class TestGenerateDocument(unittest.TestCase):
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
                                     [
-                                        "DOCUMENT_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_PROP_TABLE_HEAD_VALUE",
+                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
+                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
                                     ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_MASS_LABEL", "0"]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_DIMS_LABEL", "1x1x1"]
+                                        [
+                                            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL",
+                                            "1x1x1",
+                                        ]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_COST_LABEL", "0"]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "0"]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_TAGS_LABEL", ""]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
                                     ),
                                     sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_PROP_TABLE_FILE_LABEL", ""]
+                                        ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
                                     ),
                                 ],
                             )
@@ -2720,13 +2813,13 @@ class TestGenerateDocument(unittest.TestCase):
                     ),
                 ],
                 input_label={
-                    "DOCUMENT_PROP_TABLE_HEAD_LABEL": "Label",
-                    "DOCUMENT_PROP_TABLE_HEAD_VALUE": "Value",
-                    "DOCUMENT_PROP_TABLE_MASS_LABEL": "Mass",
-                    "DOCUMENT_PROP_TABLE_DIMS_LABEL": "Dimensions (WxDxH)",
-                    "DOCUMENT_PROP_TABLE_COST_LABEL": "Cost",
-                    "DOCUMENT_PROP_TABLE_TAGS_LABEL": "Tags",
-                    "DOCUMENT_PROP_TABLE_FILE_LABEL": "File",
+                    "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL": "Label",
+                    "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE": "Value",
+                    "DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL": "Mass",
+                    "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL": "Dimensions (WxDxH)",
+                    "DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL": "Cost",
+                    "DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL": "Tags",
+                    "DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL": "File",
                 },
                 input_lang=sw_compdocs.language.Language(
                     [
