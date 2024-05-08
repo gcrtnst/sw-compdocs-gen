@@ -692,5 +692,4 @@ def build_comp_list(defn_dict: dict[str, Definition]) -> list[Component]:
 
 
 def load_comp_list(defn_dir: _types.StrOrBytesPath) -> list[Component]:
-    defn_dict = load_defn_dict(defn_dir)
-    return [Component(defn=defn) for defn in defn_dict.values()]
+    return build_comp_list(load_defn_dict(defn_dir))

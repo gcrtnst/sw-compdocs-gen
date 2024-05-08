@@ -2442,3 +2442,52 @@ class TestLoadCompList(unittest.TestCase):
                 with self.subTest(path=path):
                     got_comp_list = sw_compdocs.component.load_comp_list(path)
                     self.assertEqual(got_comp_list, want_comp_list)
+
+    def test_multibody(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            dmy1_file = pathlib.Path(temp_dir, "dmy1.xml")
+            with open(dmy1_file, mode="xt", encoding="utf-8", newline="\r\n") as f:
+                f.write(
+                    """\
+<?xml version="1.0" encoding="UTF-8"?>
+<definition flags="64" child_name="dmy2"/>
+"""
+                )
+
+            dmy2_file = pathlib.Path(temp_dir, "dmy2.xml")
+            with open(dmy2_file, mode="xt", encoding="utf-8", newline="\r\n") as f:
+                f.write(
+                    """\
+<?xml version="1.0" encoding="UTF-8"?>
+<definition flags="128"/>
+"""
+                )
+
+            want_comp_list = [
+                sw_compdocs.component.Multibody(
+                    defn=sw_compdocs.component.Definition(
+                        key="dmy1",
+                        file=dmy1_file,
+                        flags=sw_compdocs.component.Flags.MULTIBODY_PARENT,
+                        child_name="dmy2",
+                    ),
+                    child=sw_compdocs.component.Definition(
+                        key="dmy2",
+                        file=dmy2_file,
+                        flags=sw_compdocs.component.Flags.MULTIBODY_CHILD,
+                    ),
+                ),
+            ]
+            for comp in want_comp_list:
+                comp.defn.update_id(comp.defn.key)
+                comp.child.update_id(comp.child.key)
+
+            path_list: list[sw_compdocs._types.StrOrBytesPath] = [
+                os.fsdecode(temp_dir),
+                os.fsencode(temp_dir),
+                pathlib.Path(temp_dir),
+            ]
+            for path in path_list:
+                with self.subTest(path=path):
+                    got_comp_list = sw_compdocs.component.load_comp_list(path)
+                    self.assertEqual(got_comp_list, want_comp_list)
