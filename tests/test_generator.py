@@ -154,7 +154,7 @@ class TestCtxFormat(unittest.TestCase):
                 self.assertEqual(got_s, tc.want_s)
 
 
-class TestGenerateDocumentPropertyTable(unittest.TestCase):
+class TestGenerateDocumentPropertyTableNormal(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(
             "tt",
@@ -343,7 +343,7 @@ class TestGenerateDocumentPropertyTable(unittest.TestCase):
             ),
         ]:
             with self.subTest(tc=tc):
-                got_tbl = sw_compdocs.generator.generate_document_property_table(
+                got_tbl = sw_compdocs.generator.generate_document_property_table_normal(
                     tc.input_comp, label=tc.input_label
                 )
                 self.assertEqual(got_tbl, tc.want_tbl)
@@ -364,7 +364,7 @@ class TestGenerateDocumentPropertyTable(unittest.TestCase):
                 label = label_all.copy()
                 del label[key]
                 with self.assertRaises(sw_compdocs.generator.LabelKeyError) as ctx:
-                    sw_compdocs.generator.generate_document_property_table(
+                    sw_compdocs.generator.generate_document_property_table_normal(
                         comp, label=label
                     )
                 self.assertEqual(ctx.exception.key, key)

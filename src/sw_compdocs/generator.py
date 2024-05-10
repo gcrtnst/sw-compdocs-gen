@@ -45,7 +45,7 @@ def _ctx_format(ctx: collections.abc.Mapping[str, str] | None, s: str) -> str:
     return s
 
 
-def generate_document_property_table(
+def generate_document_property_table_normal(
     comp: component.Component,
     *,
     label: collections.abc.Mapping[str, str] | None = None,
@@ -97,7 +97,7 @@ def generate_document_property(
     return document.Document(
         [
             document.Heading(_lang_find_en(lang, "PROPERTIES")),
-            generate_document_property_table(comp, label=label),
+            generate_document_property_table_normal(comp, label=label),
         ]
     )
 
