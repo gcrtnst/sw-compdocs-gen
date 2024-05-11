@@ -3,6 +3,7 @@ import os
 import pathlib
 import typing
 
+from . import _types
 from . import component
 from . import document
 from . import language
@@ -84,6 +85,98 @@ def generate_document_property_table_normal(
         file_value = os.fsdecode(comp.defn.file)
         file_value = pathlib.PurePath(file_value).name
     data.append(document.TableDataRow([file_label, file_value]))
+
+    return document.Table(data)
+
+
+def generate_document_property_table_multibody(
+    comp: component.Multibody,
+    *,
+    label: collections.abc.Mapping[str, str] | None = None,
+) -> document.Table:
+    def file_fn(file: _types.StrOrBytesPath | None) -> str:
+        if file is None:
+            return ""
+        file = os.fsdecode(file)
+        file = pathlib.PurePath(file)
+        return file.name
+
+    data = document.TableData(
+        document.TableDataRow(
+            [
+                _label_get(label, "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_LABEL"),
+                _label_get(label, "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_PARENT"),
+                _label_get(label, "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_CHILD"),
+                _label_get(label, "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_TOTAL"),
+            ]
+        )
+    )
+
+    data.append(
+        document.TableDataRow(
+            [
+                _label_get(label, "DOCUMENT_MULTIBODY_PROP_TABLE_MASS_LABEL"),
+                f"{comp.defn.mass:g}",
+                f"{comp.child.mass:g}",
+                f"{comp.mass():g}",
+            ]
+        )
+    )
+
+    comp_total_voxel_max = comp.voxel_max()
+    comp_total_voxel_min = comp.voxel_min()
+    dims_parent_w = comp.defn.voxel_max.x - comp.defn.voxel_min.x + 1
+    dims_parent_h = comp.defn.voxel_max.y - comp.defn.voxel_min.y + 1
+    dims_parent_d = comp.defn.voxel_max.z - comp.defn.voxel_min.z + 1
+    dims_child_w = comp.child.voxel_max.x - comp.child.voxel_min.x + 1
+    dims_child_h = comp.child.voxel_max.y - comp.child.voxel_min.y + 1
+    dims_child_d = comp.child.voxel_max.z - comp.child.voxel_min.z + 1
+    dims_total_w = comp_total_voxel_max.x - comp_total_voxel_min.x + 1
+    dims_total_h = comp_total_voxel_max.y - comp_total_voxel_min.y + 1
+    dims_total_d = comp_total_voxel_max.z - comp_total_voxel_min.z + 1
+    data.append(
+        document.TableDataRow(
+            [
+                _label_get(label, "DOCUMENT_MULTIBODY_PROP_TABLE_DIMS_LABEL"),
+                f"{dims_parent_w:d}x{dims_parent_d:d}x{dims_parent_h:d}",
+                f"{dims_child_w:d}x{dims_child_d:d}x{dims_child_h:d}",
+                f"{dims_total_w:d}x{dims_total_d:d}x{dims_total_h:d}",
+            ]
+        )
+    )
+
+    data.append(
+        document.TableDataRow(
+            [
+                _label_get(label, "DOCUMENT_MULTIBODY_PROP_TABLE_COST_LABEL"),
+                f"{comp.defn.value:d}",
+                _label_get(label, "DOCUMENT_MULTIBODY_PROP_TABLE_COST_CHILD"),
+                _label_get(label, "DOCUMENT_MULTIBODY_PROP_TABLE_COST_TOTAL"),
+            ]
+        )
+    )
+
+    data.append(
+        document.TableDataRow(
+            [
+                _label_get(label, "DOCUMENT_MULTIBODY_PROP_TABLE_TAGS_LABEL"),
+                comp.defn.tags,
+                _label_get(label, "DOCUMENT_MULTIBODY_PROP_TABLE_TAGS_CHILD"),
+                _label_get(label, "DOCUMENT_MULTIBODY_PROP_TABLE_TAGS_TOTAL"),
+            ]
+        )
+    )
+
+    data.append(
+        document.TableDataRow(
+            [
+                _label_get(label, "DOCUMENT_MULTIBODY_PROP_TABLE_FILE_LABEL"),
+                file_fn(comp.defn.file),
+                file_fn(comp.child.file),
+                _label_get(label, "DOCUMENT_MULTIBODY_PROP_TABLE_FILE_TOTAL"),
+            ]
+        )
+    )
 
     return document.Table(data)
 

@@ -370,6 +370,375 @@ class TestGenerateDocumentPropertyTableNormal(unittest.TestCase):
                 self.assertEqual(ctx.exception.key, key)
 
 
+class TestGenerateDocumentPropertyTableMultibody(unittest.TestCase):
+    def test_pass(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_comp", sw_compdocs.component.Multibody),
+                ("input_label", collections.abc.Mapping[str, str] | None),
+                ("want_tbl", sw_compdocs.document.Table),
+            ],
+        )
+
+        for tc in [
+            # normal
+            tt(
+                input_comp=sw_compdocs.component.Multibody(
+                    defn=sw_compdocs.component.Definition(
+                        file="multibody_a.xml",
+                        mass=9.0,
+                        value=100,
+                        tags="parent",
+                        voxel_min=sw_compdocs.component.VoxelPos(x=0, y=-1, z=-2),
+                        voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=2),
+                        voxel_location_child=sw_compdocs.component.VoxelPos(
+                            x=-5, y=0, z=0
+                        ),
+                    ),
+                    child=sw_compdocs.component.Definition(
+                        file="multibody_b.xml",
+                        mass=1.0,
+                        value=200,
+                        tags="child",
+                        voxel_min=sw_compdocs.component.VoxelPos(x=0, y=-3, z=-4),
+                        voxel_max=sw_compdocs.component.VoxelPos(x=0, y=3, z=4),
+                    ),
+                ),
+                input_label=None,
+                want_tbl=sw_compdocs.document.Table(
+                    sw_compdocs.document.TableData(
+                        sw_compdocs.document.TableDataRow(
+                            [
+                                "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_LABEL",
+                                "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_PARENT",
+                                "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_CHILD",
+                                "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_TOTAL",
+                            ]
+                        ),
+                        [
+                            sw_compdocs.document.TableDataRow(
+                                [
+                                    "DOCUMENT_MULTIBODY_PROP_TABLE_MASS_LABEL",
+                                    "9",
+                                    "1",
+                                    "10",
+                                ],
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                [
+                                    "DOCUMENT_MULTIBODY_PROP_TABLE_DIMS_LABEL",
+                                    "1x5x3",
+                                    "1x9x7",
+                                    "6x9x7",
+                                ],
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                [
+                                    "DOCUMENT_MULTIBODY_PROP_TABLE_COST_LABEL",
+                                    "100",
+                                    "DOCUMENT_MULTIBODY_PROP_TABLE_COST_CHILD",
+                                    "DOCUMENT_MULTIBODY_PROP_TABLE_COST_TOTAL",
+                                ],
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                [
+                                    "DOCUMENT_MULTIBODY_PROP_TABLE_TAGS_LABEL",
+                                    "parent",
+                                    "DOCUMENT_MULTIBODY_PROP_TABLE_TAGS_CHILD",
+                                    "DOCUMENT_MULTIBODY_PROP_TABLE_TAGS_TOTAL",
+                                ],
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                [
+                                    "DOCUMENT_MULTIBODY_PROP_TABLE_FILE_LABEL",
+                                    "multibody_a.xml",
+                                    "multibody_b.xml",
+                                    "DOCUMENT_MULTIBODY_PROP_TABLE_FILE_TOTAL",
+                                ],
+                            ),
+                        ],
+                    )
+                ),
+            ),
+            # empty
+            tt(
+                input_comp=sw_compdocs.component.Multibody(
+                    defn=sw_compdocs.component.Definition(),
+                    child=sw_compdocs.component.Definition(),
+                ),
+                input_label=None,
+                want_tbl=sw_compdocs.document.Table(
+                    sw_compdocs.document.TableData(
+                        sw_compdocs.document.TableDataRow(
+                            [
+                                "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_LABEL",
+                                "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_PARENT",
+                                "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_CHILD",
+                                "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_TOTAL",
+                            ]
+                        ),
+                        [
+                            sw_compdocs.document.TableDataRow(
+                                [
+                                    "DOCUMENT_MULTIBODY_PROP_TABLE_MASS_LABEL",
+                                    "0",
+                                    "0",
+                                    "0",
+                                ],
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                [
+                                    "DOCUMENT_MULTIBODY_PROP_TABLE_DIMS_LABEL",
+                                    "1x1x1",
+                                    "1x1x1",
+                                    "1x1x1",
+                                ],
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                [
+                                    "DOCUMENT_MULTIBODY_PROP_TABLE_COST_LABEL",
+                                    "0",
+                                    "DOCUMENT_MULTIBODY_PROP_TABLE_COST_CHILD",
+                                    "DOCUMENT_MULTIBODY_PROP_TABLE_COST_TOTAL",
+                                ],
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                [
+                                    "DOCUMENT_MULTIBODY_PROP_TABLE_TAGS_LABEL",
+                                    "",
+                                    "DOCUMENT_MULTIBODY_PROP_TABLE_TAGS_CHILD",
+                                    "DOCUMENT_MULTIBODY_PROP_TABLE_TAGS_TOTAL",
+                                ],
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                [
+                                    "DOCUMENT_MULTIBODY_PROP_TABLE_FILE_LABEL",
+                                    "",
+                                    "",
+                                    "DOCUMENT_MULTIBODY_PROP_TABLE_FILE_TOTAL",
+                                ],
+                            ),
+                        ],
+                    )
+                ),
+            ),
+            # mass format
+            tt(
+                input_comp=sw_compdocs.component.Multibody(
+                    defn=sw_compdocs.component.Definition(mass=0.25),
+                    child=sw_compdocs.component.Definition(mass=1.25),
+                ),
+                input_label=None,
+                want_tbl=sw_compdocs.document.Table(
+                    sw_compdocs.document.TableData(
+                        sw_compdocs.document.TableDataRow(
+                            [
+                                "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_LABEL",
+                                "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_PARENT",
+                                "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_CHILD",
+                                "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_TOTAL",
+                            ]
+                        ),
+                        [
+                            sw_compdocs.document.TableDataRow(
+                                [
+                                    "DOCUMENT_MULTIBODY_PROP_TABLE_MASS_LABEL",
+                                    "0.25",
+                                    "1.25",
+                                    "1.5",
+                                ],
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                [
+                                    "DOCUMENT_MULTIBODY_PROP_TABLE_DIMS_LABEL",
+                                    "1x1x1",
+                                    "1x1x1",
+                                    "1x1x1",
+                                ],
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                [
+                                    "DOCUMENT_MULTIBODY_PROP_TABLE_COST_LABEL",
+                                    "0",
+                                    "DOCUMENT_MULTIBODY_PROP_TABLE_COST_CHILD",
+                                    "DOCUMENT_MULTIBODY_PROP_TABLE_COST_TOTAL",
+                                ],
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                [
+                                    "DOCUMENT_MULTIBODY_PROP_TABLE_TAGS_LABEL",
+                                    "",
+                                    "DOCUMENT_MULTIBODY_PROP_TABLE_TAGS_CHILD",
+                                    "DOCUMENT_MULTIBODY_PROP_TABLE_TAGS_TOTAL",
+                                ],
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                [
+                                    "DOCUMENT_MULTIBODY_PROP_TABLE_FILE_LABEL",
+                                    "",
+                                    "",
+                                    "DOCUMENT_MULTIBODY_PROP_TABLE_FILE_TOTAL",
+                                ],
+                            ),
+                        ],
+                    )
+                ),
+            ),
+            # file format
+            tt(
+                input_comp=sw_compdocs.component.Multibody(
+                    defn=sw_compdocs.component.Definition(
+                        file=b"path/to/multibody_a.xml"
+                    ),
+                    child=sw_compdocs.component.Definition(
+                        file=b"path/to/multibody_b.xml"
+                    ),
+                ),
+                input_label=None,
+                want_tbl=sw_compdocs.document.Table(
+                    sw_compdocs.document.TableData(
+                        sw_compdocs.document.TableDataRow(
+                            [
+                                "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_LABEL",
+                                "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_PARENT",
+                                "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_CHILD",
+                                "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_TOTAL",
+                            ]
+                        ),
+                        [
+                            sw_compdocs.document.TableDataRow(
+                                [
+                                    "DOCUMENT_MULTIBODY_PROP_TABLE_MASS_LABEL",
+                                    "0",
+                                    "0",
+                                    "0",
+                                ],
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                [
+                                    "DOCUMENT_MULTIBODY_PROP_TABLE_DIMS_LABEL",
+                                    "1x1x1",
+                                    "1x1x1",
+                                    "1x1x1",
+                                ],
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                [
+                                    "DOCUMENT_MULTIBODY_PROP_TABLE_COST_LABEL",
+                                    "0",
+                                    "DOCUMENT_MULTIBODY_PROP_TABLE_COST_CHILD",
+                                    "DOCUMENT_MULTIBODY_PROP_TABLE_COST_TOTAL",
+                                ],
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                [
+                                    "DOCUMENT_MULTIBODY_PROP_TABLE_TAGS_LABEL",
+                                    "",
+                                    "DOCUMENT_MULTIBODY_PROP_TABLE_TAGS_CHILD",
+                                    "DOCUMENT_MULTIBODY_PROP_TABLE_TAGS_TOTAL",
+                                ],
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                [
+                                    "DOCUMENT_MULTIBODY_PROP_TABLE_FILE_LABEL",
+                                    "multibody_a.xml",
+                                    "multibody_b.xml",
+                                    "DOCUMENT_MULTIBODY_PROP_TABLE_FILE_TOTAL",
+                                ],
+                            ),
+                        ],
+                    )
+                ),
+            ),
+            # label
+            tt(
+                input_comp=sw_compdocs.component.Multibody(
+                    defn=sw_compdocs.component.Definition(),
+                    child=sw_compdocs.component.Definition(),
+                ),
+                input_label={
+                    "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_LABEL": "Label",
+                    "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_PARENT": "Parent",
+                    "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_CHILD": "Child",
+                    "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_TOTAL": "Total",
+                    "DOCUMENT_MULTIBODY_PROP_TABLE_MASS_LABEL": "Mass",
+                    "DOCUMENT_MULTIBODY_PROP_TABLE_DIMS_LABEL": "Dimensions (WxDxH)",
+                    "DOCUMENT_MULTIBODY_PROP_TABLE_COST_LABEL": "Cost",
+                    "DOCUMENT_MULTIBODY_PROP_TABLE_COST_CHILD": "-",
+                    "DOCUMENT_MULTIBODY_PROP_TABLE_COST_TOTAL": "-",
+                    "DOCUMENT_MULTIBODY_PROP_TABLE_TAGS_LABEL": "Tags",
+                    "DOCUMENT_MULTIBODY_PROP_TABLE_TAGS_CHILD": "-",
+                    "DOCUMENT_MULTIBODY_PROP_TABLE_TAGS_TOTAL": "-",
+                    "DOCUMENT_MULTIBODY_PROP_TABLE_FILE_LABEL": "File",
+                    "DOCUMENT_MULTIBODY_PROP_TABLE_FILE_TOTAL": "-",
+                },
+                want_tbl=sw_compdocs.document.Table(
+                    sw_compdocs.document.TableData(
+                        sw_compdocs.document.TableDataRow(
+                            ["Label", "Parent", "Child", "Total"]
+                        ),
+                        [
+                            sw_compdocs.document.TableDataRow(
+                                ["Mass", "0", "0", "0"],
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                ["Dimensions (WxDxH)", "1x1x1", "1x1x1", "1x1x1"],
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                ["Cost", "0", "-", "-"],
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                ["Tags", "", "-", "-"],
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                ["File", "", "", "-"],
+                            ),
+                        ],
+                    )
+                ),
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                got_tbl = (
+                    sw_compdocs.generator.generate_document_property_table_multibody(
+                        tc.input_comp, label=tc.input_label
+                    )
+                )
+                self.assertEqual(got_tbl, tc.want_tbl)
+
+    def test_exc_label(self) -> None:
+        comp = sw_compdocs.component.Multibody(
+            defn=sw_compdocs.component.Definition(),
+            child=sw_compdocs.component.Definition(),
+        )
+        label_all = {
+            "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_LABEL": "Label",
+            "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_PARENT": "Parent",
+            "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_CHILD": "Child",
+            "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_TOTAL": "Total",
+            "DOCUMENT_MULTIBODY_PROP_TABLE_MASS_LABEL": "Mass",
+            "DOCUMENT_MULTIBODY_PROP_TABLE_DIMS_LABEL": "Dimensions (WxDxH)",
+            "DOCUMENT_MULTIBODY_PROP_TABLE_COST_LABEL": "Cost",
+            "DOCUMENT_MULTIBODY_PROP_TABLE_COST_CHILD": "-",
+            "DOCUMENT_MULTIBODY_PROP_TABLE_COST_TOTAL": "-",
+            "DOCUMENT_MULTIBODY_PROP_TABLE_TAGS_LABEL": "Tags",
+            "DOCUMENT_MULTIBODY_PROP_TABLE_TAGS_CHILD": "-",
+            "DOCUMENT_MULTIBODY_PROP_TABLE_TAGS_TOTAL": "-",
+            "DOCUMENT_MULTIBODY_PROP_TABLE_FILE_LABEL": "File",
+            "DOCUMENT_MULTIBODY_PROP_TABLE_FILE_TOTAL": "-",
+        }
+        for key in label_all.keys():
+            with self.subTest(label_key=key):
+                label = label_all.copy()
+                del label[key]
+                with self.assertRaises(sw_compdocs.generator.LabelKeyError) as ctx:
+                    sw_compdocs.generator.generate_document_property_table_multibody(
+                        comp, label=label
+                    )
+                self.assertEqual(ctx.exception.key, key)
+
+
 class TestGenerateDocumentProperty(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(
