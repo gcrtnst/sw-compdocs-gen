@@ -1073,7 +1073,7 @@ class TestGenerateDocumentLogicTableNormal(unittest.TestCase):
                 self.assertEqual(ctx.exception.key, key)
 
 
-class TestGenerateDocumentLogic(unittest.TestCase):
+class TestGenerateDocumentLogicNormal(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(
             "tt",
@@ -1359,7 +1359,7 @@ class TestGenerateDocumentLogic(unittest.TestCase):
             ),
         ]:
             with self.subTest(tc=tc):
-                got_doc = sw_compdocs.generator.generate_document_logic(
+                got_doc = sw_compdocs.generator.generate_document_logic_normal(
                     tc.input_lns,
                     label=tc.input_label,
                     lang=tc.input_lang,

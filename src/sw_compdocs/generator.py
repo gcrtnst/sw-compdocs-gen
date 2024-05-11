@@ -230,7 +230,7 @@ def generate_document_logic_table_normal(
     return document.Table(data)
 
 
-def generate_document_logic(
+def generate_document_logic_normal(
     lns: component.LogicNodeList,
     *,
     label: collections.abc.Mapping[str, str] | None = None,
@@ -326,7 +326,7 @@ def generate_document_component(
     prop_doc.shift(1)
     doc.extend(prop_doc)
 
-    logic_doc = generate_document_logic(
+    logic_doc = generate_document_logic_normal(
         comp.defn.logic_nodes, label=label, lang=lang, ctx=ctx
     )
     logic_doc.shift(1)
