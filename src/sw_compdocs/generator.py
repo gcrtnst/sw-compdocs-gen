@@ -46,6 +46,41 @@ def _ctx_format(ctx: collections.abc.Mapping[str, str] | None, s: str) -> str:
     return s
 
 
+def _classify_logic(
+    lns: component.LogicNodeList,
+) -> tuple[
+    list[component.LogicNode], list[component.LogicNode], list[component.LogicNode]
+]:
+    in_list = []
+    out_list = []
+    conn_list = []
+    for ln in lns:
+        if (
+            ln.type is component.LogicNodeType.BOOL
+            or ln.type is component.LogicNodeType.FLOAT
+            or ln.type is component.LogicNodeType.COMPOSITE
+            or ln.type is component.LogicNodeType.VIDEO
+            or ln.type is component.LogicNodeType.AUDIO
+        ):
+            if ln.mode is component.LogicNodeMode.INPUT:
+                in_list.append(ln)
+                continue
+            if ln.mode is component.LogicNodeMode.OUTPUT:
+                out_list.append(ln)
+                continue
+            typing.assert_never(ln.mode)
+        if (
+            ln.type is component.LogicNodeType.TORQUE
+            or ln.type is component.LogicNodeType.WATER
+            or ln.type is component.LogicNodeType.ELECTRIC
+            or ln.type is component.LogicNodeType.ROPE
+        ):
+            conn_list.append(ln)
+            continue
+        typing.assert_never(ln.type)
+    return in_list, out_list, conn_list
+
+
 def generate_document_property_table_normal(
     comp: component.Component,
     *,
@@ -237,34 +272,7 @@ def generate_document_logic_normal(
     lang: language.Language | None = None,
     ctx: collections.abc.Mapping[str, str] | None = None,
 ) -> document.Document:
-    in_list = []
-    out_list = []
-    conn_list = []
-    for ln in lns:
-        if (
-            ln.type is component.LogicNodeType.BOOL
-            or ln.type is component.LogicNodeType.FLOAT
-            or ln.type is component.LogicNodeType.COMPOSITE
-            or ln.type is component.LogicNodeType.VIDEO
-            or ln.type is component.LogicNodeType.AUDIO
-        ):
-            if ln.mode is component.LogicNodeMode.INPUT:
-                in_list.append(ln)
-                continue
-            if ln.mode is component.LogicNodeMode.OUTPUT:
-                out_list.append(ln)
-                continue
-            typing.assert_never(ln.mode)
-        if (
-            ln.type is component.LogicNodeType.TORQUE
-            or ln.type is component.LogicNodeType.WATER
-            or ln.type is component.LogicNodeType.ELECTRIC
-            or ln.type is component.LogicNodeType.ROPE
-        ):
-            conn_list.append(ln)
-            continue
-        typing.assert_never(ln.type)
-
+    in_list, out_list, conn_list = _classify_logic(lns)
     doc = document.Document()
     if len(in_list) > 0:
         in_head = document.Heading(_lang_find_en(lang, "logic inputs"))

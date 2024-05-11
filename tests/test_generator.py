@@ -154,6 +154,150 @@ class TestCtxFormat(unittest.TestCase):
                 self.assertEqual(got_s, tc.want_s)
 
 
+class TestClassifyLogic(unittest.TestCase):
+    def test(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_lns", sw_compdocs.component.LogicNodeList),
+                (
+                    "want_ret",
+                    tuple[
+                        list[sw_compdocs.component.LogicNode],
+                        list[sw_compdocs.component.LogicNode],
+                        list[sw_compdocs.component.LogicNode],
+                    ],
+                ),
+            ],
+        )
+
+        for tc in [
+            # empty
+            tt(
+                input_lns=sw_compdocs.component.LogicNodeList(),
+                want_ret=([], [], []),
+            ),
+            # logic node mode type
+            tt(
+                input_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(
+                            label=sw_compdocs.language.Text(en="BOOL"),
+                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                            type=sw_compdocs.component.LogicNodeType.BOOL,
+                        ),
+                        sw_compdocs.component.LogicNode(
+                            label=sw_compdocs.language.Text(en="FLOAT"),
+                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                            type=sw_compdocs.component.LogicNodeType.FLOAT,
+                        ),
+                        sw_compdocs.component.LogicNode(
+                            label=sw_compdocs.language.Text(en="TORQUE"),
+                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                            type=sw_compdocs.component.LogicNodeType.TORQUE,
+                        ),
+                        sw_compdocs.component.LogicNode(
+                            label=sw_compdocs.language.Text(en="WATER"),
+                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                            type=sw_compdocs.component.LogicNodeType.WATER,
+                        ),
+                        sw_compdocs.component.LogicNode(
+                            label=sw_compdocs.language.Text(en="ELECTRIC"),
+                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                            type=sw_compdocs.component.LogicNodeType.ELECTRIC,
+                        ),
+                        sw_compdocs.component.LogicNode(
+                            label=sw_compdocs.language.Text(en="COMPOSITE"),
+                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                            type=sw_compdocs.component.LogicNodeType.COMPOSITE,
+                        ),
+                        sw_compdocs.component.LogicNode(
+                            label=sw_compdocs.language.Text(en="VIDEO"),
+                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                            type=sw_compdocs.component.LogicNodeType.VIDEO,
+                        ),
+                        sw_compdocs.component.LogicNode(
+                            label=sw_compdocs.language.Text(en="AUDIO"),
+                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                            type=sw_compdocs.component.LogicNodeType.AUDIO,
+                        ),
+                        sw_compdocs.component.LogicNode(
+                            label=sw_compdocs.language.Text(en="ROPE"),
+                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                            type=sw_compdocs.component.LogicNodeType.ROPE,
+                        ),
+                        sw_compdocs.component.LogicNode(
+                            label=sw_compdocs.language.Text(en="OUTPUT"),
+                            mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
+                            type=sw_compdocs.component.LogicNodeType.BOOL,
+                        ),
+                    ]
+                ),
+                want_ret=(
+                    [
+                        sw_compdocs.component.LogicNode(
+                            label=sw_compdocs.language.Text(en="BOOL"),
+                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                            type=sw_compdocs.component.LogicNodeType.BOOL,
+                        ),
+                        sw_compdocs.component.LogicNode(
+                            label=sw_compdocs.language.Text(en="FLOAT"),
+                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                            type=sw_compdocs.component.LogicNodeType.FLOAT,
+                        ),
+                        sw_compdocs.component.LogicNode(
+                            label=sw_compdocs.language.Text(en="COMPOSITE"),
+                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                            type=sw_compdocs.component.LogicNodeType.COMPOSITE,
+                        ),
+                        sw_compdocs.component.LogicNode(
+                            label=sw_compdocs.language.Text(en="VIDEO"),
+                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                            type=sw_compdocs.component.LogicNodeType.VIDEO,
+                        ),
+                        sw_compdocs.component.LogicNode(
+                            label=sw_compdocs.language.Text(en="AUDIO"),
+                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                            type=sw_compdocs.component.LogicNodeType.AUDIO,
+                        ),
+                    ],
+                    [
+                        sw_compdocs.component.LogicNode(
+                            label=sw_compdocs.language.Text(en="OUTPUT"),
+                            mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
+                            type=sw_compdocs.component.LogicNodeType.BOOL,
+                        ),
+                    ],
+                    [
+                        sw_compdocs.component.LogicNode(
+                            label=sw_compdocs.language.Text(en="TORQUE"),
+                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                            type=sw_compdocs.component.LogicNodeType.TORQUE,
+                        ),
+                        sw_compdocs.component.LogicNode(
+                            label=sw_compdocs.language.Text(en="WATER"),
+                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                            type=sw_compdocs.component.LogicNodeType.WATER,
+                        ),
+                        sw_compdocs.component.LogicNode(
+                            label=sw_compdocs.language.Text(en="ELECTRIC"),
+                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                            type=sw_compdocs.component.LogicNodeType.ELECTRIC,
+                        ),
+                        sw_compdocs.component.LogicNode(
+                            label=sw_compdocs.language.Text(en="ROPE"),
+                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                            type=sw_compdocs.component.LogicNodeType.ROPE,
+                        ),
+                    ],
+                ),
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                got_ret = sw_compdocs.generator._classify_logic(tc.input_lns)
+                self.assertEqual(got_ret, tc.want_ret)
+
+
 class TestGenerateDocumentPropertyTableNormal(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(
@@ -1103,54 +1247,19 @@ class TestGenerateDocumentLogicNormal(unittest.TestCase):
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
-                            label=sw_compdocs.language.Text(en="BOOL"),
+                            label=sw_compdocs.language.Text(en="INPUT"),
                             mode=sw_compdocs.component.LogicNodeMode.INPUT,
                             type=sw_compdocs.component.LogicNodeType.BOOL,
-                        ),
-                        sw_compdocs.component.LogicNode(
-                            label=sw_compdocs.language.Text(en="FLOAT"),
-                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                            type=sw_compdocs.component.LogicNodeType.FLOAT,
-                        ),
-                        sw_compdocs.component.LogicNode(
-                            label=sw_compdocs.language.Text(en="TORQUE"),
-                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                            type=sw_compdocs.component.LogicNodeType.TORQUE,
-                        ),
-                        sw_compdocs.component.LogicNode(
-                            label=sw_compdocs.language.Text(en="WATER"),
-                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                            type=sw_compdocs.component.LogicNodeType.WATER,
-                        ),
-                        sw_compdocs.component.LogicNode(
-                            label=sw_compdocs.language.Text(en="ELECTRIC"),
-                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                            type=sw_compdocs.component.LogicNodeType.ELECTRIC,
-                        ),
-                        sw_compdocs.component.LogicNode(
-                            label=sw_compdocs.language.Text(en="COMPOSITE"),
-                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                            type=sw_compdocs.component.LogicNodeType.COMPOSITE,
-                        ),
-                        sw_compdocs.component.LogicNode(
-                            label=sw_compdocs.language.Text(en="VIDEO"),
-                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                            type=sw_compdocs.component.LogicNodeType.VIDEO,
-                        ),
-                        sw_compdocs.component.LogicNode(
-                            label=sw_compdocs.language.Text(en="AUDIO"),
-                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                            type=sw_compdocs.component.LogicNodeType.AUDIO,
-                        ),
-                        sw_compdocs.component.LogicNode(
-                            label=sw_compdocs.language.Text(en="ROPE"),
-                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
-                            type=sw_compdocs.component.LogicNodeType.ROPE,
                         ),
                         sw_compdocs.component.LogicNode(
                             label=sw_compdocs.language.Text(en="OUTPUT"),
                             mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
                             type=sw_compdocs.component.LogicNodeType.BOOL,
+                        ),
+                        sw_compdocs.component.LogicNode(
+                            label=sw_compdocs.language.Text(en="CONNECTION"),
+                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                            type=sw_compdocs.component.LogicNodeType.TORQUE,
                         ),
                     ]
                 ),
@@ -1168,19 +1277,7 @@ class TestGenerateDocumentLogicNormal(unittest.TestCase):
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["on/off", "BOOL", ""]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["number", "FLOAT", ""]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["composite", "COMPOSITE", ""]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["video", "VIDEO", ""]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["audio", "AUDIO", ""]
+                                        ["on/off", "INPUT", ""]
                                     ),
                                 ],
                             )
@@ -1214,16 +1311,7 @@ class TestGenerateDocumentLogicNormal(unittest.TestCase):
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
-                                        ["power", "TORQUE", ""]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["fluid", "WATER", ""]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["electric", "ELECTRIC", ""]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["rope", "ROPE", ""]
+                                        ["power", "CONNECTION", ""]
                                     ),
                                 ],
                             )
