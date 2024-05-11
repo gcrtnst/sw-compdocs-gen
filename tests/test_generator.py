@@ -1722,6 +1722,320 @@ class TestGenerateDocumentLogicTableMultibody(unittest.TestCase):
                 self.assertEqual(got_tbl, tc.want_tbl)
 
 
+class TestGenerateDocumentLogicMultibody(unittest.TestCase):
+    def test_pass(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_parent_lns", sw_compdocs.component.LogicNodeList),
+                ("input_child_lns", sw_compdocs.component.LogicNodeList),
+                ("input_label", collections.abc.Mapping[str, str] | None),
+                ("input_lang", sw_compdocs.language.Language | None),
+                ("input_ctx", collections.abc.Mapping[str, str] | None),
+                ("want_doc", sw_compdocs.document.Document),
+            ],
+        )
+
+        for tc in [
+            # empty
+            tt(
+                input_parent_lns=sw_compdocs.component.LogicNodeList(),
+                input_child_lns=sw_compdocs.component.LogicNodeList(),
+                input_label=None,
+                input_lang=None,
+                input_ctx=None,
+                want_doc=sw_compdocs.document.Document(),
+            ),
+            # parent in
+            tt(
+                input_parent_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(
+                            type=sw_compdocs.component.LogicNodeType.BOOL,
+                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                        )
+                    ]
+                ),
+                input_child_lns=sw_compdocs.component.LogicNodeList(),
+                input_label={
+                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_BODY": "親/子",
+                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_TYPE": "型",
+                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_LABEL": "ラベル",
+                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_DESC": "説明",
+                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_BODY_PARENT": "親",
+                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_BODY_CHILD": "子",
+                },
+                input_lang=sw_compdocs.language.Language(
+                    [
+                        sw_compdocs.language.Translation(
+                            "", "", "logic inputs", "ロジック入力"
+                        ),
+                        sw_compdocs.language.Translation("", "", "on/off", "オン/オフ"),
+                        sw_compdocs.language.Translation("", "", "", ""),
+                    ]
+                ),
+                input_ctx=None,
+                want_doc=sw_compdocs.document.Document(
+                    [
+                        sw_compdocs.document.Heading("ロジック入力"),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    ["親/子", "型", "ラベル", "説明"]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["親", "オン/オフ", "", ""]
+                                    )
+                                ],
+                            )
+                        ),
+                    ]
+                ),
+            ),
+            # parent out
+            tt(
+                input_parent_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(
+                            type=sw_compdocs.component.LogicNodeType.BOOL,
+                            mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
+                        )
+                    ]
+                ),
+                input_child_lns=sw_compdocs.component.LogicNodeList(),
+                input_label={
+                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_BODY": "親/子",
+                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_TYPE": "型",
+                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_LABEL": "ラベル",
+                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_DESC": "説明",
+                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_BODY_PARENT": "親",
+                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_BODY_CHILD": "子",
+                },
+                input_lang=sw_compdocs.language.Language(
+                    [
+                        sw_compdocs.language.Translation(
+                            "", "", "logic outputs", "ロジック出力"
+                        ),
+                        sw_compdocs.language.Translation("", "", "on/off", "オン/オフ"),
+                        sw_compdocs.language.Translation("", "", "", ""),
+                    ]
+                ),
+                input_ctx=None,
+                want_doc=sw_compdocs.document.Document(
+                    [
+                        sw_compdocs.document.Heading("ロジック出力"),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    ["親/子", "型", "ラベル", "説明"]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["親", "オン/オフ", "", ""]
+                                    )
+                                ],
+                            )
+                        ),
+                    ]
+                ),
+            ),
+            # parent conn
+            tt(
+                input_parent_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(
+                            type=sw_compdocs.component.LogicNodeType.TORQUE,
+                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                        )
+                    ]
+                ),
+                input_child_lns=sw_compdocs.component.LogicNodeList(),
+                input_label={
+                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_BODY": "親/子",
+                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_TYPE": "型",
+                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_LABEL": "ラベル",
+                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_DESC": "説明",
+                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_BODY_PARENT": "親",
+                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_BODY_CHILD": "子",
+                },
+                input_lang=sw_compdocs.language.Language(
+                    [
+                        sw_compdocs.language.Translation("", "", "connections", "接続"),
+                        sw_compdocs.language.Translation("", "", "power", "動力"),
+                        sw_compdocs.language.Translation("", "", "", ""),
+                    ]
+                ),
+                input_ctx=None,
+                want_doc=sw_compdocs.document.Document(
+                    [
+                        sw_compdocs.document.Heading("接続"),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    ["親/子", "型", "ラベル", "説明"]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["親", "動力", "", ""]
+                                    )
+                                ],
+                            )
+                        ),
+                    ]
+                ),
+            ),
+            # child in
+            tt(
+                input_parent_lns=sw_compdocs.component.LogicNodeList(),
+                input_child_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(
+                            type=sw_compdocs.component.LogicNodeType.BOOL,
+                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                        )
+                    ]
+                ),
+                input_label={
+                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_BODY": "親/子",
+                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_TYPE": "型",
+                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_LABEL": "ラベル",
+                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_DESC": "説明",
+                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_BODY_PARENT": "親",
+                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_BODY_CHILD": "子",
+                },
+                input_lang=sw_compdocs.language.Language(
+                    [
+                        sw_compdocs.language.Translation(
+                            "", "", "logic inputs", "ロジック入力"
+                        ),
+                        sw_compdocs.language.Translation("", "", "on/off", "オン/オフ"),
+                        sw_compdocs.language.Translation("", "", "", ""),
+                    ]
+                ),
+                input_ctx=None,
+                want_doc=sw_compdocs.document.Document(
+                    [
+                        sw_compdocs.document.Heading("ロジック入力"),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    ["親/子", "型", "ラベル", "説明"]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["子", "オン/オフ", "", ""]
+                                    )
+                                ],
+                            )
+                        ),
+                    ]
+                ),
+            ),
+            # child out
+            tt(
+                input_parent_lns=sw_compdocs.component.LogicNodeList(),
+                input_child_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(
+                            type=sw_compdocs.component.LogicNodeType.BOOL,
+                            mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
+                        )
+                    ]
+                ),
+                input_label={
+                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_BODY": "親/子",
+                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_TYPE": "型",
+                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_LABEL": "ラベル",
+                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_DESC": "説明",
+                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_BODY_PARENT": "親",
+                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_BODY_CHILD": "子",
+                },
+                input_lang=sw_compdocs.language.Language(
+                    [
+                        sw_compdocs.language.Translation(
+                            "", "", "logic outputs", "ロジック出力"
+                        ),
+                        sw_compdocs.language.Translation("", "", "on/off", "オン/オフ"),
+                        sw_compdocs.language.Translation("", "", "", ""),
+                    ]
+                ),
+                input_ctx=None,
+                want_doc=sw_compdocs.document.Document(
+                    [
+                        sw_compdocs.document.Heading("ロジック出力"),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    ["親/子", "型", "ラベル", "説明"]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["子", "オン/オフ", "", ""]
+                                    )
+                                ],
+                            )
+                        ),
+                    ]
+                ),
+            ),
+            # parent conn
+            tt(
+                input_parent_lns=sw_compdocs.component.LogicNodeList(),
+                input_child_lns=sw_compdocs.component.LogicNodeList(
+                    [
+                        sw_compdocs.component.LogicNode(
+                            type=sw_compdocs.component.LogicNodeType.TORQUE,
+                            mode=sw_compdocs.component.LogicNodeMode.INPUT,
+                        )
+                    ]
+                ),
+                input_label={
+                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_BODY": "親/子",
+                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_TYPE": "型",
+                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_LABEL": "ラベル",
+                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_DESC": "説明",
+                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_BODY_PARENT": "親",
+                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_BODY_CHILD": "子",
+                },
+                input_lang=sw_compdocs.language.Language(
+                    [
+                        sw_compdocs.language.Translation("", "", "connections", "接続"),
+                        sw_compdocs.language.Translation("", "", "power", "動力"),
+                        sw_compdocs.language.Translation("", "", "", ""),
+                    ]
+                ),
+                input_ctx=None,
+                want_doc=sw_compdocs.document.Document(
+                    [
+                        sw_compdocs.document.Heading("接続"),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    ["親/子", "型", "ラベル", "説明"]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["子", "動力", "", ""]
+                                    )
+                                ],
+                            )
+                        ),
+                    ]
+                ),
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                got_doc = sw_compdocs.generator.generate_document_logic_multibody(
+                    tc.input_parent_lns,
+                    tc.input_child_lns,
+                    label=tc.input_label,
+                    lang=tc.input_lang,
+                    ctx=tc.input_ctx,
+                )
+                self.assertEqual(got_doc, tc.want_doc)
+
+
 class TestGenerateDocumentComponent(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(

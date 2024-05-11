@@ -334,6 +334,44 @@ def generate_document_logic_table_multibody(
     return document.Table(data)
 
 
+def generate_document_logic_multibody(
+    parent_lns: component.LogicNodeList,
+    child_lns: component.LogicNodeList,
+    *,
+    label: collections.abc.Mapping[str, str] | None = None,
+    lang: language.Language | None = None,
+    ctx: collections.abc.Mapping[str, str] | None = None,
+) -> document.Document:
+    parent_ln_list_tuple = _classify_logic(parent_lns)
+    parent_in_ln_list, parent_out_ln_list, parent_conn_ln_list = parent_ln_list_tuple
+    child_ln_list_tuple = _classify_logic(child_lns)
+    child_in_ln_list, child_out_ln_list, child_conn_ln_list = child_ln_list_tuple
+
+    doc = document.Document()
+    if len(parent_in_ln_list) > 0 or len(child_in_ln_list) > 0:
+        in_head = document.Heading(_lang_find_en(lang, "logic inputs"))
+        in_tbl = generate_document_logic_table_multibody(
+            parent_in_ln_list, child_in_ln_list, label=label, lang=lang, ctx=ctx
+        )
+        doc.append(in_head)
+        doc.append(in_tbl)
+    if len(parent_out_ln_list) > 0 or len(child_out_ln_list) > 0:
+        out_head = document.Heading(_lang_find_en(lang, "logic outputs"))
+        out_tbl = generate_document_logic_table_multibody(
+            parent_out_ln_list, child_out_ln_list, label=label, lang=lang, ctx=ctx
+        )
+        doc.append(out_head)
+        doc.append(out_tbl)
+    if len(parent_conn_ln_list) > 0 or len(child_conn_ln_list) > 0:
+        conn_head = document.Heading(_lang_find_en(lang, "connections"))
+        conn_tbl = generate_document_logic_table_multibody(
+            parent_conn_ln_list, child_conn_ln_list, label=label, lang=lang, ctx=ctx
+        )
+        doc.append(conn_head)
+        doc.append(conn_tbl)
+    return doc
+
+
 def generate_document_component(
     comp: component.Component,
     *,
