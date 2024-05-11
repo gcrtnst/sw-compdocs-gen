@@ -181,6 +181,16 @@ def generate_document_property_table_multibody(
     return document.Table(data)
 
 
+def generate_document_property_table(
+    comp: component.Component,
+    *,
+    label: collections.abc.Mapping[str, str] | None = None,
+) -> document.Table:
+    if isinstance(comp, component.Multibody):
+        return generate_document_property_table_multibody(comp, label=label)
+    return generate_document_property_table_normal(comp, label=label)
+
+
 def generate_document_property(
     comp: component.Component,
     *,
@@ -190,7 +200,7 @@ def generate_document_property(
     return document.Document(
         [
             document.Heading(_lang_find_en(lang, "PROPERTIES")),
-            generate_document_property_table_normal(comp, label=label),
+            generate_document_property_table(comp, label=label),
         ]
     )
 

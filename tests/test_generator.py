@@ -753,48 +753,6 @@ class TestGenerateDocumentProperty(unittest.TestCase):
 
         for tc in [
             tt(
-                input_label=None,
-                input_lang=None,
-                input_comp=sw_compdocs.component.Component(
-                    defn=sw_compdocs.component.Definition()
-                ),
-                want_doc=sw_compdocs.document.Document(
-                    [
-                        sw_compdocs.document.Heading("PROPERTIES"),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL",
-                                            "1x1x1",
-                                        ]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
-                                    ),
-                                ],
-                            )
-                        ),
-                    ]
-                ),
-            ),
-            tt(
                 input_label={
                     "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL": "ラベル",
                     "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE": "値",
@@ -828,6 +786,71 @@ class TestGenerateDocumentProperty(unittest.TestCase):
                                     sw_compdocs.document.TableDataRow(["値段", "0"]),
                                     sw_compdocs.document.TableDataRow(["タグ", ""]),
                                     sw_compdocs.document.TableDataRow(["ファイル", ""]),
+                                ],
+                            )
+                        ),
+                    ]
+                ),
+            ),
+            tt(
+                input_label={
+                    "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL": "ラベル",
+                    "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE": "値",
+                    "DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL": "重量",
+                    "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL": "サイズ",
+                    "DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL": "値段",
+                    "DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL": "タグ",
+                    "DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL": "ファイル",
+                    "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_LABEL": "ラベル",
+                    "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_PARENT": "親",
+                    "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_CHILD": "子",
+                    "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_TOTAL": "合計",
+                    "DOCUMENT_MULTIBODY_PROP_TABLE_MASS_LABEL": "重量",
+                    "DOCUMENT_MULTIBODY_PROP_TABLE_DIMS_LABEL": "サイズ",
+                    "DOCUMENT_MULTIBODY_PROP_TABLE_COST_LABEL": "値段",
+                    "DOCUMENT_MULTIBODY_PROP_TABLE_COST_CHILD": "-",
+                    "DOCUMENT_MULTIBODY_PROP_TABLE_COST_TOTAL": "-",
+                    "DOCUMENT_MULTIBODY_PROP_TABLE_TAGS_LABEL": "タグ",
+                    "DOCUMENT_MULTIBODY_PROP_TABLE_TAGS_CHILD": "-",
+                    "DOCUMENT_MULTIBODY_PROP_TABLE_TAGS_TOTAL": "-",
+                    "DOCUMENT_MULTIBODY_PROP_TABLE_FILE_LABEL": "ファイル",
+                    "DOCUMENT_MULTIBODY_PROP_TABLE_FILE_TOTAL": "-",
+                },
+                input_lang=sw_compdocs.language.Language(
+                    [
+                        sw_compdocs.language.Translation(
+                            "", "", "PROPERTIES", "プロパティ"
+                        )
+                    ]
+                ),
+                input_comp=sw_compdocs.component.Multibody(
+                    defn=sw_compdocs.component.Definition(),
+                    child=sw_compdocs.component.Definition(),
+                ),
+                want_doc=sw_compdocs.document.Document(
+                    [
+                        sw_compdocs.document.Heading("プロパティ"),
+                        sw_compdocs.document.Table(
+                            sw_compdocs.document.TableData(
+                                sw_compdocs.document.TableDataRow(
+                                    ["ラベル", "親", "子", "合計"]
+                                ),
+                                [
+                                    sw_compdocs.document.TableDataRow(
+                                        ["重量", "0", "0", "0"],
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["サイズ", "1x1x1", "1x1x1", "1x1x1"],
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["値段", "0", "-", "-"],
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["タグ", "", "-", "-"],
+                                    ),
+                                    sw_compdocs.document.TableDataRow(
+                                        ["ファイル", "", "", "-"],
+                                    ),
                                 ],
                             )
                         ),
