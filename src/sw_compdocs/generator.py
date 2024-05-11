@@ -205,7 +205,7 @@ def generate_document_property(
     )
 
 
-def generate_document_logic_table(
+def generate_document_logic_table_normal(
     ln_list: collections.abc.Iterable[component.LogicNode],
     *,
     label: collections.abc.Mapping[str, str] | None = None,
@@ -268,19 +268,21 @@ def generate_document_logic(
     doc = document.Document()
     if len(in_list) > 0:
         in_head = document.Heading(_lang_find_en(lang, "logic inputs"))
-        in_tbl = generate_document_logic_table(in_list, label=label, lang=lang, ctx=ctx)
+        in_tbl = generate_document_logic_table_normal(
+            in_list, label=label, lang=lang, ctx=ctx
+        )
         doc.append(in_head)
         doc.append(in_tbl)
     if len(out_list) > 0:
         out_head = document.Heading(_lang_find_en(lang, "logic outputs"))
-        out_tbl = generate_document_logic_table(
+        out_tbl = generate_document_logic_table_normal(
             out_list, label=label, lang=lang, ctx=ctx
         )
         doc.append(out_head)
         doc.append(out_tbl)
     if len(conn_list) > 0:
         conn_head = document.Heading(_lang_find_en(lang, "connections"))
-        conn_tbl = generate_document_logic_table(
+        conn_tbl = generate_document_logic_table_normal(
             conn_list, label=label, lang=lang, ctx=ctx
         )
         doc.append(conn_head)

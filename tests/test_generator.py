@@ -865,7 +865,7 @@ class TestGenerateDocumentProperty(unittest.TestCase):
                 self.assertEqual(got_doc, tc.want_doc)
 
 
-class TestGenerateDocumentLogicTable(unittest.TestCase):
+class TestGenerateDocumentLogicTableNormal(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(
             "tt",
@@ -1047,7 +1047,7 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
             ),
         ]:
             with self.subTest(tc=tc):
-                got_tbl = sw_compdocs.generator.generate_document_logic_table(
+                got_tbl = sw_compdocs.generator.generate_document_logic_table_normal(
                     tc.input_ln_list,
                     label=tc.input_label,
                     lang=tc.input_lang,
@@ -1067,7 +1067,7 @@ class TestGenerateDocumentLogicTable(unittest.TestCase):
                 label = label_all.copy()
                 del label[key]
                 with self.assertRaises(sw_compdocs.generator.LabelKeyError) as ctx:
-                    sw_compdocs.generator.generate_document_logic_table(
+                    sw_compdocs.generator.generate_document_logic_table_normal(
                         lns, label=label
                     )
                 self.assertEqual(ctx.exception.key, key)
