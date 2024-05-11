@@ -1456,6 +1456,272 @@ class TestGenerateDocumentLogicNormal(unittest.TestCase):
                 self.assertEqual(got_doc, tc.want_doc)
 
 
+class TestGenerateDocumentLogicTableMultibody(unittest.TestCase):
+    def test_pass(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_parent_ln_list", list[sw_compdocs.component.LogicNode]),
+                ("input_child_ln_list", list[sw_compdocs.component.LogicNode]),
+                ("input_label", collections.abc.Mapping[str, str] | None),
+                ("input_lang", sw_compdocs.language.Language | None),
+                ("input_ctx", collections.abc.Mapping[str, str] | None),
+                ("want_tbl", sw_compdocs.document.Table),
+            ],
+        )
+
+        for tc in [
+            # empty
+            tt(
+                input_parent_ln_list=[],
+                input_child_ln_list=[],
+                input_label=None,
+                input_lang=None,
+                input_ctx=None,
+                want_tbl=sw_compdocs.document.Table(
+                    sw_compdocs.document.TableData(
+                        sw_compdocs.document.TableDataRow(
+                            [
+                                "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_BODY",
+                                "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_TYPE",
+                                "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_LABEL",
+                                "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_DESC",
+                            ]
+                        ),
+                    ),
+                ),
+            ),
+            # normal
+            tt(
+                input_parent_ln_list=[
+                    sw_compdocs.component.LogicNode(
+                        label=sw_compdocs.language.Text(en="Parent Label 0"),
+                        type=sw_compdocs.component.LogicNodeType.BOOL,
+                        description=sw_compdocs.language.Text(
+                            en="Parent Description 0"
+                        ),
+                    ),
+                    sw_compdocs.component.LogicNode(
+                        label=sw_compdocs.language.Text(en="Parent Label 1"),
+                        type=sw_compdocs.component.LogicNodeType.FLOAT,
+                        description=sw_compdocs.language.Text(
+                            en="Parent Description 1"
+                        ),
+                    ),
+                ],
+                input_child_ln_list=[
+                    sw_compdocs.component.LogicNode(
+                        label=sw_compdocs.language.Text(en="Child Label 0"),
+                        type=sw_compdocs.component.LogicNodeType.VIDEO,
+                        description=sw_compdocs.language.Text(en="Child Description 0"),
+                    ),
+                    sw_compdocs.component.LogicNode(
+                        label=sw_compdocs.language.Text(en="Child Label 1"),
+                        type=sw_compdocs.component.LogicNodeType.AUDIO,
+                        description=sw_compdocs.language.Text(en="Child Description 1"),
+                    ),
+                ],
+                input_label=None,
+                input_lang=None,
+                input_ctx=None,
+                want_tbl=sw_compdocs.document.Table(
+                    sw_compdocs.document.TableData(
+                        sw_compdocs.document.TableDataRow(
+                            [
+                                "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_BODY",
+                                "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_TYPE",
+                                "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_LABEL",
+                                "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_DESC",
+                            ]
+                        ),
+                        [
+                            sw_compdocs.document.TableDataRow(
+                                [
+                                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_BODY_PARENT",
+                                    "on/off",
+                                    "Parent Label 0",
+                                    "Parent Description 0",
+                                ]
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                [
+                                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_BODY_PARENT",
+                                    "number",
+                                    "Parent Label 1",
+                                    "Parent Description 1",
+                                ]
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                [
+                                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_BODY_CHILD",
+                                    "video",
+                                    "Child Label 0",
+                                    "Child Description 0",
+                                ]
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                [
+                                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_BODY_CHILD",
+                                    "audio",
+                                    "Child Label 1",
+                                    "Child Description 1",
+                                ]
+                            ),
+                        ],
+                    ),
+                ),
+            ),
+            # full
+            tt(
+                input_parent_ln_list=[
+                    sw_compdocs.component.LogicNode(
+                        label=sw_compdocs.language.Text(
+                            id="def_multibody_a_node_0_label"
+                        ),
+                        type=sw_compdocs.component.LogicNodeType.BOOL,
+                        description=sw_compdocs.language.Text(
+                            id="def_multibody_a_node_0_desc"
+                        ),
+                    ),
+                    sw_compdocs.component.LogicNode(
+                        label=sw_compdocs.language.Text(
+                            id="def_multibody_a_node_1_label"
+                        ),
+                        type=sw_compdocs.component.LogicNodeType.FLOAT,
+                        description=sw_compdocs.language.Text(
+                            id="def_multibody_a_node_1_desc"
+                        ),
+                    ),
+                ],
+                input_child_ln_list=[
+                    sw_compdocs.component.LogicNode(
+                        label=sw_compdocs.language.Text(
+                            id="def_multibody_b_node_0_label"
+                        ),
+                        type=sw_compdocs.component.LogicNodeType.VIDEO,
+                        description=sw_compdocs.language.Text(
+                            id="def_multibody_b_node_0_desc"
+                        ),
+                    ),
+                    sw_compdocs.component.LogicNode(
+                        label=sw_compdocs.language.Text(
+                            id="def_multibody_b_node_1_label"
+                        ),
+                        type=sw_compdocs.component.LogicNodeType.AUDIO,
+                        description=sw_compdocs.language.Text(
+                            id="def_multibody_b_node_1_desc"
+                        ),
+                    ),
+                ],
+                input_label={
+                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_BODY": "親/子",
+                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_TYPE": "種別",
+                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_LABEL": "ラベル",
+                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_DESC": "説明",
+                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_BODY_PARENT": "親",
+                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_BODY_CHILD": "子",
+                },
+                input_lang=sw_compdocs.language.Language(
+                    [
+                        sw_compdocs.language.Translation("", "", "on/off", "オン/オフ"),
+                        sw_compdocs.language.Translation("", "", "number", "数値"),
+                        sw_compdocs.language.Translation("", "", "video", "映像"),
+                        sw_compdocs.language.Translation("", "", "audio", "音声"),
+                        sw_compdocs.language.Translation(
+                            "def_multibody_a_node_0_label", "", "", "$[parent_label_0]"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_multibody_a_node_0_desc", "", "", "$[parent_desc_0]"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_multibody_a_node_1_label", "", "", "$[parent_label_1]"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_multibody_a_node_1_desc", "", "", "$[parent_desc_1]"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_multibody_b_node_0_label", "", "", "$[child_label_0]"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_multibody_b_node_0_desc", "", "", "$[child_desc_0]"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_multibody_b_node_1_label", "", "", "$[child_label_1]"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_multibody_b_node_1_desc", "", "", "$[child_desc_1]"
+                        ),
+                    ]
+                ),
+                input_ctx={
+                    "parent_label_0": "親部品/ロジック0/ラベル",
+                    "parent_desc_0": "親部品/ロジック0/説明",
+                    "parent_label_1": "親部品/ロジック1/ラベル",
+                    "parent_desc_1": "親部品/ロジック1/説明",
+                    "child_label_0": "子部品/ロジック0/ラベル",
+                    "child_desc_0": "子部品/ロジック0/説明",
+                    "child_label_1": "子部品/ロジック1/ラベル",
+                    "child_desc_1": "子部品/ロジック1/説明",
+                },
+                want_tbl=sw_compdocs.document.Table(
+                    sw_compdocs.document.TableData(
+                        sw_compdocs.document.TableDataRow(
+                            [
+                                "親/子",
+                                "種別",
+                                "ラベル",
+                                "説明",
+                            ]
+                        ),
+                        [
+                            sw_compdocs.document.TableDataRow(
+                                [
+                                    "親",
+                                    "オン/オフ",
+                                    "親部品/ロジック0/ラベル",
+                                    "親部品/ロジック0/説明",
+                                ]
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                [
+                                    "親",
+                                    "数値",
+                                    "親部品/ロジック1/ラベル",
+                                    "親部品/ロジック1/説明",
+                                ]
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                [
+                                    "子",
+                                    "映像",
+                                    "子部品/ロジック0/ラベル",
+                                    "子部品/ロジック0/説明",
+                                ]
+                            ),
+                            sw_compdocs.document.TableDataRow(
+                                [
+                                    "子",
+                                    "音声",
+                                    "子部品/ロジック1/ラベル",
+                                    "子部品/ロジック1/説明",
+                                ]
+                            ),
+                        ],
+                    ),
+                ),
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                got_tbl = sw_compdocs.generator.generate_document_logic_table_multibody(
+                    tc.input_parent_ln_list,
+                    tc.input_child_ln_list,
+                    label=tc.input_label,
+                    lang=tc.input_lang,
+                    ctx=tc.input_ctx,
+                )
+                self.assertEqual(got_tbl, tc.want_tbl)
+
+
 class TestGenerateDocumentComponent(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(

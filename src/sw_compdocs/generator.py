@@ -298,6 +298,42 @@ def generate_document_logic_normal(
     return doc
 
 
+def generate_document_logic_table_multibody(
+    parent_ln_list: collections.abc.Iterable[component.LogicNode],
+    child_ln_list: collections.abc.Iterable[component.LogicNode],
+    *,
+    label: collections.abc.Mapping[str, str] | None = None,
+    lang: language.Language | None = None,
+    ctx: collections.abc.Mapping[str, str] | None = None,
+) -> document.Table:
+    def generate_row(
+        body: str, ln_list: collections.abc.Iterable[component.LogicNode]
+    ) -> collections.abc.Iterable[document.TableDataRow]:
+        for ln in ln_list:
+            ln_type = _lang_find_en(lang, str(ln.type))
+            ln_label = _lang_translate(lang, ln.label)
+            ln_label = _ctx_format(ctx, ln_label)
+            ln_desc = _lang_translate(lang, ln.description)
+            ln_desc = _ctx_format(ctx, ln_desc)
+            yield document.TableDataRow([body, ln_type, ln_label, ln_desc])
+
+    head = document.TableDataRow(
+        [
+            _label_get(label, "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_BODY"),
+            _label_get(label, "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_TYPE"),
+            _label_get(label, "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_LABEL"),
+            _label_get(label, "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_DESC"),
+        ]
+    )
+    data = document.TableData(head)
+
+    parent_label = _label_get(label, "DOCUMENT_MULTIBODY_LOGIC_TABLE_BODY_PARENT")
+    child_label = _label_get(label, "DOCUMENT_MULTIBODY_LOGIC_TABLE_BODY_CHILD")
+    data.extend(generate_row(parent_label, parent_ln_list))
+    data.extend(generate_row(child_label, child_ln_list))
+    return document.Table(data)
+
+
 def generate_document_component(
     comp: component.Component,
     *,
