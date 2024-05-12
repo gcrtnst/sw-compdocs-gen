@@ -372,6 +372,29 @@ def generate_document_logic_multibody(
     return doc
 
 
+def generate_document_logic(
+    comp: component.Component,
+    *,
+    label: collections.abc.Mapping[str, str] | None = None,
+    lang: language.Language | None = None,
+    ctx: collections.abc.Mapping[str, str] | None = None,
+) -> document.Document:
+    if isinstance(comp, component.Multibody):
+        return generate_document_logic_multibody(
+            comp.defn.logic_nodes,
+            comp.child.logic_nodes,
+            label=label,
+            lang=lang,
+            ctx=ctx,
+        )
+    return generate_document_logic_normal(
+        comp.defn.logic_nodes,
+        label=label,
+        lang=lang,
+        ctx=ctx,
+    )
+
+
 def generate_document_component(
     comp: component.Component,
     *,
@@ -408,9 +431,7 @@ def generate_document_component(
     prop_doc.shift(1)
     doc.extend(prop_doc)
 
-    logic_doc = generate_document_logic_normal(
-        comp.defn.logic_nodes, label=label, lang=lang, ctx=ctx
-    )
+    logic_doc = generate_document_logic(comp, label=label, lang=lang, ctx=ctx)
     logic_doc.shift(1)
     doc.extend(logic_doc)
 
