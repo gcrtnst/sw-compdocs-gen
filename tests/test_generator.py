@@ -4066,18 +4066,28 @@ class TestGenerateSheetComponent(unittest.TestCase):
                     defn=sw_compdocs.component.Definition()
                 ),
                 want_record=[
-                    "",
-                    "",
-                    "Blocks",
-                    "",
-                    "FALSE",
-                    "0",
-                    "0",
-                    "1",
-                    "1",
-                    "1",
-                    "",
-                    "",
+                    "",  # Name
+                    "",  # Parent File
+                    "",  # Child File
+                    "Blocks",  # Category
+                    "",  # Tags
+                    "FALSE",  # Deprecated
+                    "FALSE",  # Orphan
+                    "0",  # Cost
+                    "0",  # Total Mass
+                    "0",  # Parent Mass
+                    "",  # Child Mass
+                    "1",  # Total Width
+                    "1",  # Total Depth
+                    "1",  # Total Height
+                    "1",  # Parent Width
+                    "1",  # Parent Depth
+                    "1",  # Parent Height
+                    "",  # Child Width
+                    "",  # Child Depth
+                    "",  # Child Height
+                    "",  # Short Description
+                    "",  # Description
                 ],
             ),
             tt(  # normal
@@ -4102,39 +4112,116 @@ class TestGenerateSheetComponent(unittest.TestCase):
                     )
                 ),
                 want_record=[
-                    "Name",
-                    "test.xml",
-                    "Blocks",
-                    "tags",
-                    "FALSE",
-                    "0.25",
-                    "2",
-                    "3",
-                    "7",
-                    "5",
-                    "short_description",
-                    "description",
+                    "Name",  # Name
+                    "test.xml",  # Parent File
+                    "",  # Child File
+                    "Blocks",  # Category
+                    "tags",  # Tags
+                    "FALSE",  # Deprecated
+                    "FALSE",  # Orphan
+                    "2",  # Cost
+                    "0.25",  # Total Mass
+                    "0.25",  # Parent Mass
+                    "",  # Child Mass
+                    "3",  # Total Width
+                    "7",  # Total Depth
+                    "5",  # Total Height
+                    "3",  # Parent Width
+                    "7",  # Parent Depth
+                    "5",  # Parent Height
+                    "",  # Child Width
+                    "",  # Child Depth
+                    "",  # Child Height
+                    "short_description",  # Short Description
+                    "description",  # Description
+                ],
+            ),
+            tt(  # multibody
+                input_lang=None,
+                input_ctx=None,
+                input_comp=sw_compdocs.component.Multibody(
+                    defn=sw_compdocs.component.Definition(
+                        file="multibody_a.xml",
+                        name=sw_compdocs.language.Text(en="Name"),
+                        category=sw_compdocs.component.Category.VEHICLE_CONTROL,
+                        mass=1.25,
+                        value=2,
+                        tags="tags",
+                        tooltip_properties=sw_compdocs.component.TooltipProperties(
+                            short_description=sw_compdocs.language.Text(
+                                en="short_description"
+                            ),
+                            description=sw_compdocs.language.Text(en="description"),
+                        ),
+                        voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
+                        voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
+                    ),
+                    child=sw_compdocs.component.Definition(
+                        file="multibody_b.xml",
+                        mass=0.25,
+                        voxel_min=sw_compdocs.component.VoxelPos(x=-4, y=-5, z=-6),
+                        voxel_max=sw_compdocs.component.VoxelPos(x=4, y=5, z=6),
+                    ),
+                ),
+                want_record=[
+                    "Name",  # Name
+                    "multibody_a.xml",  # Parent File
+                    "multibody_b.xml",  # Child File
+                    "Vehicle Control",  # Category
+                    "tags",  # Tags
+                    "FALSE",  # Deprecated
+                    "FALSE",  # Orphan
+                    "2",  # Cost
+                    "1.5",  # Total Mass
+                    "1.25",  # Parent Mass
+                    "0.25",  # Child Mass
+                    "9",  # Total Width
+                    "13",  # Total Depth
+                    "11",  # Total Height
+                    "3",  # Parent Width
+                    "7",  # Parent Depth
+                    "5",  # Parent Height
+                    "9",  # Child Width
+                    "13",  # Child Depth
+                    "11",  # Child Height
+                    "short_description",  # Short Description
+                    "description",  # Description
                 ],
             ),
             tt(  # file
                 input_lang=None,
                 input_ctx=None,
-                input_comp=sw_compdocs.component.Component(
-                    defn=sw_compdocs.component.Definition(file=b"path/to/test.xml")
+                input_comp=sw_compdocs.component.Multibody(
+                    defn=sw_compdocs.component.Definition(
+                        file=b"path/to/multibody_a.xml"
+                    ),
+                    child=sw_compdocs.component.Definition(
+                        file=b"path/to/multibody_b.xml"
+                    ),
                 ),
                 want_record=[
-                    "",
-                    "test.xml",
-                    "Blocks",
-                    "",
-                    "FALSE",
-                    "0",
-                    "0",
-                    "1",
-                    "1",
-                    "1",
-                    "",
-                    "",
+                    "",  # Name
+                    "multibody_a.xml",  # Parent File
+                    "multibody_b.xml",  # Child File
+                    "Blocks",  # Category
+                    "",  # Tags
+                    "FALSE",  # Deprecated
+                    "FALSE",  # Orphan
+                    "0",  # Cost
+                    "0",  # Total Mass
+                    "0",  # Parent Mass
+                    "0",  # Child Mass
+                    "1",  # Total Width
+                    "1",  # Total Depth
+                    "1",  # Total Height
+                    "1",  # Parent Width
+                    "1",  # Parent Depth
+                    "1",  # Parent Height
+                    "1",  # Child Width
+                    "1",  # Child Depth
+                    "1",  # Child Height
+                    "",  # Short Description
+                    "",  # Description
                 ],
             ),
             tt(  # deprecated
@@ -4146,18 +4233,61 @@ class TestGenerateSheetComponent(unittest.TestCase):
                     )
                 ),
                 want_record=[
-                    "",
-                    "",
-                    "Blocks",
-                    "",
-                    "TRUE",
-                    "0",
-                    "0",
-                    "1",
-                    "1",
-                    "1",
-                    "",
-                    "",
+                    "",  # Name
+                    "",  # Parent File
+                    "",  # Child File
+                    "Blocks",  # Category
+                    "",  # Tags
+                    "TRUE",  # Deprecated
+                    "FALSE",  # Orphan
+                    "0",  # Cost
+                    "0",  # Total Mass
+                    "0",  # Parent Mass
+                    "",  # Child Mass
+                    "1",  # Total Width
+                    "1",  # Total Depth
+                    "1",  # Total Height
+                    "1",  # Parent Width
+                    "1",  # Parent Depth
+                    "1",  # Parent Height
+                    "",  # Child Width
+                    "",  # Child Depth
+                    "",  # Child Height
+                    "",  # Short Description
+                    "",  # Description
+                ],
+            ),
+            tt(  # orphan
+                input_lang=None,
+                input_ctx=None,
+                input_comp=sw_compdocs.component.Component(
+                    defn=sw_compdocs.component.Definition(
+                        flags=sw_compdocs.component.Flags.MULTIBODY_CHILD
+                    )
+                ),
+                want_record=[
+                    "",  # Name
+                    "",  # Parent File
+                    "",  # Child File
+                    "Blocks",  # Category
+                    "",  # Tags
+                    "FALSE",  # Deprecated
+                    "TRUE",  # Orphan
+                    "0",  # Cost
+                    "0",  # Total Mass
+                    "0",  # Parent Mass
+                    "",  # Child Mass
+                    "1",  # Total Width
+                    "1",  # Total Depth
+                    "1",  # Total Height
+                    "1",  # Parent Width
+                    "1",  # Parent Depth
+                    "1",  # Parent Height
+                    "",  # Child Width
+                    "",  # Child Depth
+                    "",  # Child Height
+                    "",  # Short Description
+                    "",  # Description
                 ],
             ),
             tt(  # lang, template
@@ -4192,18 +4322,28 @@ class TestGenerateSheetComponent(unittest.TestCase):
                     )
                 ),
                 want_record=[
-                    "$[name]",
-                    "",
-                    "Blocks",
-                    "",
-                    "FALSE",
-                    "0",
-                    "0",
-                    "1",
-                    "1",
-                    "1",
-                    "short_description",
-                    "description",
+                    "$[name]",  # Name
+                    "",  # Parent File
+                    "",  # Child File
+                    "Blocks",  # Category
+                    "",  # Tags
+                    "FALSE",  # Deprecated
+                    "FALSE",  # Orphan
+                    "0",  # Cost
+                    "0",  # Total Mass
+                    "0",  # Parent Mass
+                    "",  # Child Mass
+                    "1",  # Total Width
+                    "1",  # Total Depth
+                    "1",  # Total Height
+                    "1",  # Parent Width
+                    "1",  # Parent Depth
+                    "1",  # Parent Height
+                    "",  # Child Width
+                    "",  # Child Depth
+                    "",  # Child Height
+                    "short_description",  # Short Description
+                    "description",  # Description
                 ],
             ),
         ]:
@@ -4249,46 +4389,76 @@ class TestGenerateSheetComponentList(unittest.TestCase):
                 input_ctx=None,
                 want_record_list=[
                     [
-                        "Test 1",
-                        "",
-                        "Blocks",
-                        "",
-                        "FALSE",
-                        "0",
-                        "0",
-                        "1",
-                        "1",
-                        "1",
-                        "",
-                        "",
+                        "Test 1",  # Name
+                        "",  # Parent File
+                        "",  # Child File
+                        "Blocks",  # Category
+                        "",  # Tags
+                        "FALSE",  # Deprecated
+                        "FALSE",  # Orphan
+                        "0",  # Cost
+                        "0",  # Total Mass
+                        "0",  # Parent Mass
+                        "",  # Child Mass
+                        "1",  # Total Width
+                        "1",  # Total Depth
+                        "1",  # Total Height
+                        "1",  # Parent Width
+                        "1",  # Parent Depth
+                        "1",  # Parent Height
+                        "",  # Child Width
+                        "",  # Child Depth
+                        "",  # Child Height
+                        "",  # Short Description
+                        "",  # Description
                     ],
                     [
-                        "Test 2",
-                        "",
-                        "Blocks",
-                        "",
-                        "FALSE",
-                        "0",
-                        "0",
-                        "1",
-                        "1",
-                        "1",
-                        "",
-                        "",
+                        "Test 2",  # Name
+                        "",  # Parent File
+                        "",  # Child File
+                        "Blocks",  # Category
+                        "",  # Tags
+                        "FALSE",  # Deprecated
+                        "FALSE",  # Orphan
+                        "0",  # Cost
+                        "0",  # Total Mass
+                        "0",  # Parent Mass
+                        "",  # Child Mass
+                        "1",  # Total Width
+                        "1",  # Total Depth
+                        "1",  # Total Height
+                        "1",  # Parent Width
+                        "1",  # Parent Depth
+                        "1",  # Parent Height
+                        "",  # Child Width
+                        "",  # Child Depth
+                        "",  # Child Height
+                        "",  # Short Description
+                        "",  # Description
                     ],
                     [
-                        "Test 3",
-                        "",
-                        "Blocks",
-                        "",
-                        "FALSE",
-                        "0",
-                        "0",
-                        "1",
-                        "1",
-                        "1",
-                        "",
-                        "",
+                        "Test 3",  # Name
+                        "",  # Parent File
+                        "",  # Child File
+                        "Blocks",  # Category
+                        "",  # Tags
+                        "FALSE",  # Deprecated
+                        "FALSE",  # Orphan
+                        "0",  # Cost
+                        "0",  # Total Mass
+                        "0",  # Parent Mass
+                        "",  # Child Mass
+                        "1",  # Total Width
+                        "1",  # Total Depth
+                        "1",  # Total Height
+                        "1",  # Parent Width
+                        "1",  # Parent Depth
+                        "1",  # Parent Height
+                        "",  # Child Width
+                        "",  # Child Depth
+                        "",  # Child Height
+                        "",  # Short Description
+                        "",  # Description
                     ],
                 ],
             ),
@@ -4336,18 +4506,28 @@ class TestGenerateSheetComponentList(unittest.TestCase):
                 },
                 want_record_list=[
                     [
-                        "$[name]",
-                        "test.xml",
-                        "Blocks",
-                        "tags",
-                        "FALSE",
-                        "1",
-                        "2",
-                        "3",
-                        "7",
-                        "5",
-                        "short_description",
-                        "description",
+                        "$[name]",  # Name
+                        "test.xml",  # Parent File
+                        "",  # Child File
+                        "Blocks",  # Category
+                        "tags",  # Tags
+                        "FALSE",  # Deprecated
+                        "FALSE",  # Orphan
+                        "2",  # Cost
+                        "1",  # Total Mass
+                        "1",  # Parent Mass
+                        "",  # Child Mass
+                        "3",  # Total Width
+                        "7",  # Total Depth
+                        "5",  # Total Height
+                        "3",  # Parent Width
+                        "7",  # Parent Depth
+                        "5",  # Parent Height
+                        "",  # Child Width
+                        "",  # Child Depth
+                        "",  # Child Height
+                        "short_description",  # Short Description
+                        "description",  # Description
                     ]
                 ],
             ),
@@ -4422,102 +4602,172 @@ class TestGenerateSheet(unittest.TestCase):
                 want_record_list=[
                     [
                         "SHEET_HEAD_NAME",
-                        "SHEET_HEAD_FILE",
+                        "SHEET_HEAD_FILE_PARENT",
+                        "SHEET_HEAD_FILE_CHILD",
                         "SHEET_HEAD_CATEGORY",
                         "SHEET_HEAD_TAGS",
                         "SHEET_HEAD_DEPRECATED",
-                        "SHEET_HEAD_MASS",
+                        "SHEET_HEAD_ORPHAN",
                         "SHEET_HEAD_COST",
-                        "SHEET_HEAD_WIDTH",
-                        "SHEET_HEAD_DEPTH",
-                        "SHEET_HEAD_HEIGHT",
+                        "SHEET_HEAD_MASS_TOTAL",
+                        "SHEET_HEAD_MASS_PARENT",
+                        "SHEET_HEAD_MASS_CHILD",
+                        "SHEET_HEAD_DIMS_TOTAL_WIDTH",
+                        "SHEET_HEAD_DIMS_TOTAL_DEPTH",
+                        "SHEET_HEAD_DIMS_TOTAL_HEIGHT",
+                        "SHEET_HEAD_DIMS_PARENT_WIDTH",
+                        "SHEET_HEAD_DIMS_PARENT_DEPTH",
+                        "SHEET_HEAD_DIMS_PARENT_HEIGHT",
+                        "SHEET_HEAD_DIMS_CHILD_WIDTH",
+                        "SHEET_HEAD_DIMS_CHILD_DEPTH",
+                        "SHEET_HEAD_DIMS_CHILD_HEIGHT",
                         "SHEET_HEAD_SDESC",
                         "SHEET_HEAD_DESC",
                     ],
                     [
-                        "Z",
-                        "",
-                        "Blocks",
-                        "",
-                        "FALSE",
-                        "0",
-                        "5",
-                        "1",
-                        "1",
-                        "1",
-                        "",
-                        "",
+                        "Z",  # Name
+                        "",  # Parent File
+                        "",  # Child File
+                        "Blocks",  # Category
+                        "",  # Tags
+                        "FALSE",  # Deprecated
+                        "FALSE",  # Orphan
+                        "5",  # Cost
+                        "0",  # Total Mass
+                        "0",  # Parent Mass
+                        "",  # Child Mass
+                        "1",  # Total Width
+                        "1",  # Total Depth
+                        "1",  # Total Height
+                        "1",  # Parent Width
+                        "1",  # Parent Depth
+                        "1",  # Parent Height
+                        "",  # Child Width
+                        "",  # Child Depth
+                        "",  # Child Height
+                        "",  # Short Description
+                        "",  # Description
                     ],
                     [
-                        "A",
-                        "",
-                        "Vehicle Control",
-                        "",
-                        "FALSE",
-                        "0",
-                        "4",
-                        "1",
-                        "1",
-                        "1",
-                        "",
-                        "",
+                        "A",  # Name
+                        "",  # Parent File
+                        "",  # Child File
+                        "Vehicle Control",  # Category
+                        "",  # Tags
+                        "FALSE",  # Deprecated
+                        "FALSE",  # Orphan
+                        "4",  # Cost
+                        "0",  # Total Mass
+                        "0",  # Parent Mass
+                        "",  # Child Mass
+                        "1",  # Total Width
+                        "1",  # Total Depth
+                        "1",  # Total Height
+                        "1",  # Parent Width
+                        "1",  # Parent Depth
+                        "1",  # Parent Height
+                        "",  # Child Width
+                        "",  # Child Depth
+                        "",  # Child Height
+                        "",  # Short Description
+                        "",  # Description
                     ],
                     [
-                        "A",
-                        "",
-                        "Vehicle Control",
-                        "",
-                        "FALSE",
-                        "0",
-                        "3",
-                        "1",
-                        "1",
-                        "1",
-                        "",
-                        "",
+                        "A",  # Name
+                        "",  # Parent File
+                        "",  # Child File
+                        "Vehicle Control",  # Category
+                        "",  # Tags
+                        "FALSE",  # Deprecated
+                        "FALSE",  # Orphan
+                        "3",  # Cost
+                        "0",  # Total Mass
+                        "0",  # Parent Mass
+                        "",  # Child Mass
+                        "1",  # Total Width
+                        "1",  # Total Depth
+                        "1",  # Total Height
+                        "1",  # Parent Width
+                        "1",  # Parent Depth
+                        "1",  # Parent Height
+                        "",  # Child Width
+                        "",  # Child Depth
+                        "",  # Child Height
+                        "",  # Short Description
+                        "",  # Description
                     ],
                     [
-                        "A",
-                        "",
-                        "Vehicle Control",
-                        "",
-                        "FALSE",
-                        "0",
-                        "2",
-                        "1",
-                        "1",
-                        "1",
-                        "",
-                        "",
+                        "A",  # Name
+                        "",  # Parent File
+                        "",  # Child File
+                        "Vehicle Control",  # Category
+                        "",  # Tags
+                        "FALSE",  # Deprecated
+                        "FALSE",  # Orphan
+                        "2",  # Cost
+                        "0",  # Total Mass
+                        "0",  # Parent Mass
+                        "",  # Child Mass
+                        "1",  # Total Width
+                        "1",  # Total Depth
+                        "1",  # Total Height
+                        "1",  # Parent Width
+                        "1",  # Parent Depth
+                        "1",  # Parent Height
+                        "",  # Child Width
+                        "",  # Child Depth
+                        "",  # Child Height
+                        "",  # Short Description
+                        "",  # Description
                     ],
                     [
-                        "Z",
-                        "",
-                        "Vehicle Control",
-                        "",
-                        "FALSE",
-                        "0",
-                        "1",
-                        "1",
-                        "1",
-                        "1",
-                        "",
-                        "",
+                        "Z",  # Name
+                        "",  # Parent File
+                        "",  # Child File
+                        "Vehicle Control",  # Category
+                        "",  # Tags
+                        "FALSE",  # Deprecated
+                        "FALSE",  # Orphan
+                        "1",  # Cost
+                        "0",  # Total Mass
+                        "0",  # Parent Mass
+                        "",  # Child Mass
+                        "1",  # Total Width
+                        "1",  # Total Depth
+                        "1",  # Total Height
+                        "1",  # Parent Width
+                        "1",  # Parent Depth
+                        "1",  # Parent Height
+                        "",  # Child Width
+                        "",  # Child Depth
+                        "",  # Child Height
+                        "",  # Short Description
+                        "",  # Description
                     ],
                 ],
             ),
             tt(  # label, lang, ctx
                 input_label={
                     "SHEET_HEAD_NAME": "Name",
-                    "SHEET_HEAD_FILE": "File",
+                    "SHEET_HEAD_FILE_PARENT": "Parent File",
+                    "SHEET_HEAD_FILE_CHILD": "Child File",
                     "SHEET_HEAD_CATEGORY": "Category",
                     "SHEET_HEAD_TAGS": "Tags",
                     "SHEET_HEAD_DEPRECATED": "Deprecated",
-                    "SHEET_HEAD_MASS": "Mass",
+                    "SHEET_HEAD_ORPHAN": "Orphan",
                     "SHEET_HEAD_COST": "Cost",
-                    "SHEET_HEAD_WIDTH": "Width",
-                    "SHEET_HEAD_DEPTH": "Depth",
-                    "SHEET_HEAD_HEIGHT": "Height",
+                    "SHEET_HEAD_MASS_TOTAL": "Total Mass",
+                    "SHEET_HEAD_MASS_PARENT": "Parent Mass",
+                    "SHEET_HEAD_MASS_CHILD": "Child Mass",
+                    "SHEET_HEAD_DIMS_TOTAL_WIDTH": "Total Width",
+                    "SHEET_HEAD_DIMS_TOTAL_DEPTH": "Total Depth",
+                    "SHEET_HEAD_DIMS_TOTAL_HEIGHT": "Total Height",
+                    "SHEET_HEAD_DIMS_PARENT_WIDTH": "Parent Width",
+                    "SHEET_HEAD_DIMS_PARENT_DEPTH": "Parent Depth",
+                    "SHEET_HEAD_DIMS_PARENT_HEIGHT": "Parent Height",
+                    "SHEET_HEAD_DIMS_CHILD_WIDTH": "Child Width",
+                    "SHEET_HEAD_DIMS_CHILD_DEPTH": "Child Depth",
+                    "SHEET_HEAD_DIMS_CHILD_HEIGHT": "Child Height",
                     "SHEET_HEAD_SDESC": "Short Description",
                     "SHEET_HEAD_DESC": "Description",
                 },
@@ -4565,31 +4815,51 @@ class TestGenerateSheet(unittest.TestCase):
                 want_record_list=[
                     [
                         "Name",
-                        "File",
+                        "Parent File",
+                        "Child File",
                         "Category",
                         "Tags",
                         "Deprecated",
-                        "Mass",
+                        "Orphan",
                         "Cost",
-                        "Width",
-                        "Depth",
-                        "Height",
+                        "Total Mass",
+                        "Parent Mass",
+                        "Child Mass",
+                        "Total Width",
+                        "Total Depth",
+                        "Total Height",
+                        "Parent Width",
+                        "Parent Depth",
+                        "Parent Height",
+                        "Child Width",
+                        "Child Depth",
+                        "Child Height",
                         "Short Description",
                         "Description",
                     ],
                     [
-                        "$[name]",
-                        "test.xml",
-                        "Blocks",
-                        "tags",
-                        "FALSE",
-                        "1",
-                        "2",
-                        "3",
-                        "7",
-                        "5",
-                        "short_description",
-                        "description",
+                        "$[name]",  # Name
+                        "test.xml",  # Parent File
+                        "",  # Child File
+                        "Blocks",  # Category
+                        "tags",  # Tags
+                        "FALSE",  # Deprecated
+                        "FALSE",  # Orphan
+                        "2",  # Cost
+                        "1",  # Total Mass
+                        "1",  # Parent Mass
+                        "",  # Child Mass
+                        "3",  # Total Width
+                        "7",  # Total Depth
+                        "5",  # Total Height
+                        "3",  # Parent Width
+                        "7",  # Parent Depth
+                        "5",  # Parent Height
+                        "",  # Child Width
+                        "",  # Child Depth
+                        "",  # Child Height
+                        "short_description",  # Short Description
+                        "description",  # Description
                     ],
                 ],
             ),
@@ -4606,15 +4876,25 @@ class TestGenerateSheet(unittest.TestCase):
     def test_exc_label(self) -> None:
         label_all = {
             "SHEET_HEAD_NAME": "Name",
-            "SHEET_HEAD_FILE": "File",
+            "SHEET_HEAD_FILE_PARENT": "Parent File",
+            "SHEET_HEAD_FILE_CHILD": "Child File",
             "SHEET_HEAD_CATEGORY": "Category",
             "SHEET_HEAD_TAGS": "Tags",
             "SHEET_HEAD_DEPRECATED": "Deprecated",
-            "SHEET_HEAD_MASS": "Mass",
+            "SHEET_HEAD_ORPHAN": "Orphan",
             "SHEET_HEAD_COST": "Cost",
-            "SHEET_HEAD_WIDTH": "Width",
-            "SHEET_HEAD_DEPTH": "Depth",
-            "SHEET_HEAD_HEIGHT": "Height",
+            "SHEET_HEAD_MASS_TOTAL": "Total Mass",
+            "SHEET_HEAD_MASS_PARENT": "Parent Mass",
+            "SHEET_HEAD_MASS_CHILD": "Child Mass",
+            "SHEET_HEAD_DIMS_TOTAL_WIDTH": "Total Width",
+            "SHEET_HEAD_DIMS_TOTAL_DEPTH": "Total Depth",
+            "SHEET_HEAD_DIMS_TOTAL_HEIGHT": "Total Height",
+            "SHEET_HEAD_DIMS_PARENT_WIDTH": "Parent Width",
+            "SHEET_HEAD_DIMS_PARENT_DEPTH": "Parent Depth",
+            "SHEET_HEAD_DIMS_PARENT_HEIGHT": "Parent Height",
+            "SHEET_HEAD_DIMS_CHILD_WIDTH": "Child Width",
+            "SHEET_HEAD_DIMS_CHILD_DEPTH": "Child Depth",
+            "SHEET_HEAD_DIMS_CHILD_HEIGHT": "Child Height",
             "SHEET_HEAD_SDESC": "Short Description",
             "SHEET_HEAD_DESC": "Description",
         }

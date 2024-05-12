@@ -504,16 +504,32 @@ def generate_sheet_component(
 ) -> list[str]:
     comp_voxel_min = comp.voxel_min()
     comp_voxel_max = comp.voxel_max()
-    dims_w = comp_voxel_max.x - comp_voxel_min.x + 1
-    dims_h = comp_voxel_max.y - comp_voxel_min.y + 1
-    dims_d = comp_voxel_max.z - comp_voxel_min.z + 1
+
+    dims_total_w = comp_voxel_max.x - comp_voxel_min.x + 1
+    dims_total_h = comp_voxel_max.y - comp_voxel_min.y + 1
+    dims_total_d = comp_voxel_max.z - comp_voxel_min.z + 1
+    dims_parent_w = comp.defn.voxel_max.x - comp.defn.voxel_min.x + 1
+    dims_parent_h = comp.defn.voxel_max.y - comp.defn.voxel_min.y + 1
+    dims_parent_d = comp.defn.voxel_max.z - comp.defn.voxel_min.z + 1
+    dims_child_w = None
+    dims_child_h = None
+    dims_child_d = None
+    if isinstance(comp, component.Multibody):
+        dims_child_w = comp.child.voxel_max.x - comp.child.voxel_min.x + 1
+        dims_child_h = comp.child.voxel_max.y - comp.child.voxel_min.y + 1
+        dims_child_d = comp.child.voxel_max.z - comp.child.voxel_min.z + 1
 
     comp_name = _lang_translate(lang, comp.name())
 
-    comp_file = ""
+    comp_file_parent = ""
     if comp.defn.file is not None:
-        comp_file = os.fsdecode(comp.defn.file)
-        comp_file = pathlib.PurePath(comp_file).name
+        comp_file_parent = os.fsdecode(comp.defn.file)
+        comp_file_parent = pathlib.PurePath(comp_file_parent).name
+
+    comp_file_child = ""
+    if isinstance(comp, component.Multibody) and comp.child.file is not None:
+        comp_file_child = os.fsdecode(comp.child.file)
+        comp_file_child = pathlib.PurePath(comp_file_child).name
 
     comp_s_desc_text = comp.short_description()
     comp_s_desc = _lang_translate(lang, comp_s_desc_text)
@@ -525,15 +541,25 @@ def generate_sheet_component(
 
     return [
         comp_name,
-        comp_file,
+        comp_file_parent,
+        comp_file_child,
         str(comp.category()),
         comp.tags(),
         "TRUE" if component.Flags.IS_DEPRECATED in comp.defn.flags else "FALSE",
-        f"{comp.mass():g}",
+        "TRUE" if component.Flags.MULTIBODY_CHILD in comp.defn.flags else "FALSE",
         f"{comp.value():d}",
-        f"{dims_w:d}",
-        f"{dims_d:d}",
-        f"{dims_h:d}",
+        f"{comp.mass():g}",
+        f"{comp.defn.mass:g}",
+        f"{comp.child.mass:g}" if isinstance(comp, component.Multibody) else "",
+        f"{dims_total_w:d}",
+        f"{dims_total_d:d}",
+        f"{dims_total_h:d}",
+        f"{dims_parent_w:d}",
+        f"{dims_parent_d:d}",
+        f"{dims_parent_h:d}",
+        f"{dims_child_w:d}" if dims_child_w is not None else "",
+        f"{dims_child_d:d}" if dims_child_d is not None else "",
+        f"{dims_child_h:d}" if dims_child_h is not None else "",
         comp_s_desc,
         comp_desc,
     ]
@@ -572,15 +598,25 @@ def generate_sheet(
 
     header = [
         _label_get(label, "SHEET_HEAD_NAME"),
-        _label_get(label, "SHEET_HEAD_FILE"),
+        _label_get(label, "SHEET_HEAD_FILE_PARENT"),
+        _label_get(label, "SHEET_HEAD_FILE_CHILD"),
         _label_get(label, "SHEET_HEAD_CATEGORY"),
         _label_get(label, "SHEET_HEAD_TAGS"),
         _label_get(label, "SHEET_HEAD_DEPRECATED"),
-        _label_get(label, "SHEET_HEAD_MASS"),
+        _label_get(label, "SHEET_HEAD_ORPHAN"),
         _label_get(label, "SHEET_HEAD_COST"),
-        _label_get(label, "SHEET_HEAD_WIDTH"),
-        _label_get(label, "SHEET_HEAD_DEPTH"),
-        _label_get(label, "SHEET_HEAD_HEIGHT"),
+        _label_get(label, "SHEET_HEAD_MASS_TOTAL"),
+        _label_get(label, "SHEET_HEAD_MASS_PARENT"),
+        _label_get(label, "SHEET_HEAD_MASS_CHILD"),
+        _label_get(label, "SHEET_HEAD_DIMS_TOTAL_WIDTH"),
+        _label_get(label, "SHEET_HEAD_DIMS_TOTAL_DEPTH"),
+        _label_get(label, "SHEET_HEAD_DIMS_TOTAL_HEIGHT"),
+        _label_get(label, "SHEET_HEAD_DIMS_PARENT_WIDTH"),
+        _label_get(label, "SHEET_HEAD_DIMS_PARENT_DEPTH"),
+        _label_get(label, "SHEET_HEAD_DIMS_PARENT_HEIGHT"),
+        _label_get(label, "SHEET_HEAD_DIMS_CHILD_WIDTH"),
+        _label_get(label, "SHEET_HEAD_DIMS_CHILD_DEPTH"),
+        _label_get(label, "SHEET_HEAD_DIMS_CHILD_HEIGHT"),
         _label_get(label, "SHEET_HEAD_SDESC"),
         _label_get(label, "SHEET_HEAD_DESC"),
     ]

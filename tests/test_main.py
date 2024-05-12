@@ -251,7 +251,7 @@ template_02 = "テンプレート 02"
             with open(out_file, mode="r", encoding="utf-8", newline="\n") as fp:
                 got_md = fp.read()
 
-            want_md = "SHEET_HEAD_NAME,SHEET_HEAD_FILE,SHEET_HEAD_CATEGORY,SHEET_HEAD_TAGS,SHEET_HEAD_DEPRECATED,SHEET_HEAD_MASS,SHEET_HEAD_COST,SHEET_HEAD_WIDTH,SHEET_HEAD_DEPTH,SHEET_HEAD_HEIGHT,SHEET_HEAD_SDESC,SHEET_HEAD_DESC\n"
+            want_md = "SHEET_HEAD_NAME,SHEET_HEAD_FILE_PARENT,SHEET_HEAD_FILE_CHILD,SHEET_HEAD_CATEGORY,SHEET_HEAD_TAGS,SHEET_HEAD_DEPRECATED,SHEET_HEAD_ORPHAN,SHEET_HEAD_COST,SHEET_HEAD_MASS_TOTAL,SHEET_HEAD_MASS_PARENT,SHEET_HEAD_MASS_CHILD,SHEET_HEAD_DIMS_TOTAL_WIDTH,SHEET_HEAD_DIMS_TOTAL_DEPTH,SHEET_HEAD_DIMS_TOTAL_HEIGHT,SHEET_HEAD_DIMS_PARENT_WIDTH,SHEET_HEAD_DIMS_PARENT_DEPTH,SHEET_HEAD_DIMS_PARENT_HEIGHT,SHEET_HEAD_DIMS_CHILD_WIDTH,SHEET_HEAD_DIMS_CHILD_DEPTH,SHEET_HEAD_DIMS_CHILD_HEIGHT,SHEET_HEAD_SDESC,SHEET_HEAD_DESC\n"
             self.assertEqual(got_md, want_md)
 
     def test_sheet_newline_default(self) -> None:
@@ -269,7 +269,7 @@ template_02 = "テンプレート 02"
             with open(out_file, mode="r", encoding="utf-8", newline="") as fp:
                 got_md = fp.read()
 
-            want_md = "SHEET_HEAD_NAME,SHEET_HEAD_FILE,SHEET_HEAD_CATEGORY,SHEET_HEAD_TAGS,SHEET_HEAD_DEPRECATED,SHEET_HEAD_MASS,SHEET_HEAD_COST,SHEET_HEAD_WIDTH,SHEET_HEAD_DEPTH,SHEET_HEAD_HEIGHT,SHEET_HEAD_SDESC,SHEET_HEAD_DESC\n"
+            want_md = "SHEET_HEAD_NAME,SHEET_HEAD_FILE_PARENT,SHEET_HEAD_FILE_CHILD,SHEET_HEAD_CATEGORY,SHEET_HEAD_TAGS,SHEET_HEAD_DEPRECATED,SHEET_HEAD_ORPHAN,SHEET_HEAD_COST,SHEET_HEAD_MASS_TOTAL,SHEET_HEAD_MASS_PARENT,SHEET_HEAD_MASS_CHILD,SHEET_HEAD_DIMS_TOTAL_WIDTH,SHEET_HEAD_DIMS_TOTAL_DEPTH,SHEET_HEAD_DIMS_TOTAL_HEIGHT,SHEET_HEAD_DIMS_PARENT_WIDTH,SHEET_HEAD_DIMS_PARENT_DEPTH,SHEET_HEAD_DIMS_PARENT_HEIGHT,SHEET_HEAD_DIMS_CHILD_WIDTH,SHEET_HEAD_DIMS_CHILD_DEPTH,SHEET_HEAD_DIMS_CHILD_HEIGHT,SHEET_HEAD_SDESC,SHEET_HEAD_DESC\n"
             want_md = want_md.replace("\n", os.linesep)
             self.assertEqual(got_md, want_md)
 
@@ -307,15 +307,25 @@ template_02 = "テンプレート 02"
                     """\
 [label]
 SHEET_HEAD_NAME = "Name"
-SHEET_HEAD_FILE = "File"
+SHEET_HEAD_FILE_PARENT = "Parent File"
+SHEET_HEAD_FILE_CHILD = "Child File"
 SHEET_HEAD_CATEGORY = "Category"
 SHEET_HEAD_TAGS = "Tags"
 SHEET_HEAD_DEPRECATED = "Deprecated"
-SHEET_HEAD_MASS = "Mass"
+SHEET_HEAD_ORPHAN = "Orphan"
 SHEET_HEAD_COST = "Cost"
-SHEET_HEAD_WIDTH = "Width"
-SHEET_HEAD_DEPTH = "Depth"
-SHEET_HEAD_HEIGHT = "Height"
+SHEET_HEAD_MASS_TOTAL = "Total Mass"
+SHEET_HEAD_MASS_PARENT = "Parent Mass"
+SHEET_HEAD_MASS_CHILD = "Child Mass"
+SHEET_HEAD_DIMS_TOTAL_WIDTH = "Total Width"
+SHEET_HEAD_DIMS_TOTAL_DEPTH = "Total Depth"
+SHEET_HEAD_DIMS_TOTAL_HEIGHT = "Total Height"
+SHEET_HEAD_DIMS_PARENT_WIDTH = "Parent Width"
+SHEET_HEAD_DIMS_PARENT_DEPTH = "Parent Depth"
+SHEET_HEAD_DIMS_PARENT_HEIGHT = "Parent Height"
+SHEET_HEAD_DIMS_CHILD_WIDTH = "Child Width"
+SHEET_HEAD_DIMS_CHILD_DEPTH = "Child Depth"
+SHEET_HEAD_DIMS_CHILD_HEIGHT = "Child Height"
 SHEET_HEAD_SDESC = "Short Description"
 SHEET_HEAD_DESC = "Description"
 """
@@ -360,9 +370,9 @@ template_02 = "テンプレート 02"
                 got_md = fp.read()
 
             want_md = """\
-Name,File,Category,Tags,Deprecated,Mass,Cost,Width,Depth,Height,Short Description,Description
-テスト 01,test_01.xml,Blocks,,FALSE,1,0,1,1,1,テンプレート 01,
-テスト 02,test_02.xml,Blocks,,FALSE,2,0,1,1,1,テンプレート 02,
+Name,Parent File,Child File,Category,Tags,Deprecated,Orphan,Cost,Total Mass,Parent Mass,Child Mass,Total Width,Total Depth,Total Height,Parent Width,Parent Depth,Parent Height,Child Width,Child Depth,Child Height,Short Description,Description
+テスト 01,test_01.xml,,Blocks,,FALSE,FALSE,0,1,1,,1,1,1,1,1,1,,,,テンプレート 01,
+テスト 02,test_02.xml,,Blocks,,FALSE,FALSE,0,2,2,,1,1,1,1,1,1,,,,テンプレート 02,
 """
             want_md = want_md.replace("\n", "\r\n")
             self.assertEqual(got_md, want_md)
@@ -401,15 +411,25 @@ Name,File,Category,Tags,Deprecated,Mass,Cost,Width,Depth,Height,Short Descriptio
                     """\
 [label]
 SHEET_HEAD_NAME = "Name"
-SHEET_HEAD_FILE = "File"
+SHEET_HEAD_FILE_PARENT = "Parent File"
+SHEET_HEAD_FILE_CHILD = "Child File"
 SHEET_HEAD_CATEGORY = "Category"
 SHEET_HEAD_TAGS = "Tags"
 SHEET_HEAD_DEPRECATED = "Deprecated"
-SHEET_HEAD_MASS = "Mass"
+SHEET_HEAD_ORPHAN = "Orphan"
 SHEET_HEAD_COST = "Cost"
-SHEET_HEAD_WIDTH = "Width"
-SHEET_HEAD_DEPTH = "Depth"
-SHEET_HEAD_HEIGHT = "Height"
+SHEET_HEAD_MASS_TOTAL = "Total Mass"
+SHEET_HEAD_MASS_PARENT = "Parent Mass"
+SHEET_HEAD_MASS_CHILD = "Child Mass"
+SHEET_HEAD_DIMS_TOTAL_WIDTH = "Total Width"
+SHEET_HEAD_DIMS_TOTAL_DEPTH = "Total Depth"
+SHEET_HEAD_DIMS_TOTAL_HEIGHT = "Total Height"
+SHEET_HEAD_DIMS_PARENT_WIDTH = "Parent Width"
+SHEET_HEAD_DIMS_PARENT_DEPTH = "Parent Depth"
+SHEET_HEAD_DIMS_PARENT_HEIGHT = "Parent Height"
+SHEET_HEAD_DIMS_CHILD_WIDTH = "Child Width"
+SHEET_HEAD_DIMS_CHILD_DEPTH = "Child Depth"
+SHEET_HEAD_DIMS_CHILD_HEIGHT = "Child Height"
 SHEET_HEAD_SDESC = "Short Description"
 SHEET_HEAD_DESC = "Description"
 """
