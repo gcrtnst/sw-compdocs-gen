@@ -415,6 +415,14 @@ def generate_document_component(
             )
         )
 
+    if component.Flags.MULTIBODY_CHILD in comp.defn.flags:
+        doc.append(
+            document.Callout(
+                _label_get(label, "DOCUMENT_COMMON_ORPHAN_TEXT"),
+                kind=document.CalloutKind.WARNING,
+            )
+        )
+
     comp_s_desc_text = comp.short_description()
     comp_s_desc = _lang_translate(lang, comp_s_desc_text)
     comp_s_desc = _ctx_format(ctx, comp_s_desc)

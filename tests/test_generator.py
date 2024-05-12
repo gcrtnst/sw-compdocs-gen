@@ -2095,7 +2095,7 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                     ]
                 ),
             ),
-            # deprecated
+            # deprecated, orphan
             tt(
                 input_label=None,
                 input_lang=None,
@@ -2103,6 +2103,7 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                 input_comp=sw_compdocs.component.Component(
                     defn=sw_compdocs.component.Definition(
                         flags=sw_compdocs.component.Flags.IS_DEPRECATED
+                        | sw_compdocs.component.Flags.MULTIBODY_CHILD
                     )
                 ),
                 want_doc=sw_compdocs.document.Document(
@@ -2110,6 +2111,10 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                         sw_compdocs.document.Heading(""),
                         sw_compdocs.document.Callout(
                             "DOCUMENT_COMMON_DEPRECATED_TEXT",
+                            kind=sw_compdocs.document.CalloutKind.WARNING,
+                        ),
+                        sw_compdocs.document.Callout(
+                            "DOCUMENT_COMMON_ORPHAN_TEXT",
                             kind=sw_compdocs.document.CalloutKind.WARNING,
                         ),
                         sw_compdocs.document.Heading("PROPERTIES", level=2),
@@ -2234,6 +2239,7 @@ class TestGenerateDocumentComponent(unittest.TestCase):
             tt(
                 input_label={
                     "DOCUMENT_COMMON_DEPRECATED_TEXT": "この部品は非推奨です。",
+                    "DOCUMENT_COMMON_ORPHAN_TEXT": "この部品は孤児です。親部品が見当たりません。",
                     "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL": "ラベル",
                     "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE": "値",
                     "DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL": "重量",
@@ -2307,6 +2313,8 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                     defn=sw_compdocs.component.Definition(
                         key="dummy",
                         name=sw_compdocs.language.Text(id="def_dummy_name"),
+                        flags=sw_compdocs.component.Flags.IS_DEPRECATED
+                        | sw_compdocs.component.Flags.MULTIBODY_CHILD,
                         tooltip_properties=sw_compdocs.component.TooltipProperties(
                             key="dummy",
                             short_description=sw_compdocs.language.Text(
@@ -2336,6 +2344,14 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                 want_doc=sw_compdocs.document.Document(
                     [
                         sw_compdocs.document.Heading("部品名"),
+                        sw_compdocs.document.Callout(
+                            "この部品は非推奨です。",
+                            kind=sw_compdocs.document.CalloutKind.WARNING,
+                        ),
+                        sw_compdocs.document.Callout(
+                            "この部品は孤児です。親部品が見当たりません。",
+                            kind=sw_compdocs.document.CalloutKind.WARNING,
+                        ),
                         sw_compdocs.document.Paragraph("短い説明"),
                         sw_compdocs.document.Paragraph("説明"),
                         sw_compdocs.document.Heading("プロパティ", level=2),
