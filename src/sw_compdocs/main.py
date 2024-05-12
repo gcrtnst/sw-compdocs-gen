@@ -20,14 +20,14 @@ from . import wraperr
 def generate_document(
     *,
     out_file: _types.StrOrBytesPath,
-    defn_list: collections.abc.Iterable[component.Definition],
+    comp_list: collections.abc.Iterable[component.Component],
     label: collections.abc.Mapping[str, str] | None,
     lang: language.Language | None,
     ctx: collections.abc.Mapping[str, str] | None,
     out_encoding: str | None = None,
     out_newline: str | None = None,
 ) -> None:
-    doc = generator.generate_document(defn_list, label=label, lang=lang, ctx=ctx)
+    doc = generator.generate_document(comp_list, label=label, lang=lang, ctx=ctx)
     md = renderer.render_markdown(doc)
 
     with wraperr.wrap_unicode_error(out_file):
@@ -44,7 +44,7 @@ def generate_document(
 def generate_sheet(
     *,
     out_file: _types.StrOrBytesPath,
-    defn_list: collections.abc.Iterable[component.Definition],
+    comp_list: collections.abc.Iterable[component.Component],
     label: collections.abc.Mapping[str, str] | None,
     lang: language.Language | None,
     ctx: collections.abc.Mapping[str, str] | None,
@@ -54,7 +54,7 @@ def generate_sheet(
     if out_newline is None:
         out_newline = os.linesep
 
-    record_list = generator.generate_sheet(defn_list, label=label, lang=lang, ctx=ctx)
+    record_list = generator.generate_sheet(comp_list, label=label, lang=lang, ctx=ctx)
     with wraperr.wrap_unicode_error(out_file):
         with open(
             out_file, mode="w", encoding=out_encoding, errors="strict", newline=""
@@ -86,13 +86,12 @@ def run(
     if template_file is not None:
         ctx = resource.load_toml_table(template_file, "template")
 
-    defn_dict = component.load_defn_dict(defn_dir)
-    defn_list = defn_dict.values()
+    comp_list = component.load_comp_list(defn_dir)
 
     if out_mode == "document":
         generate_document(
             out_file=out_file,
-            defn_list=defn_list,
+            comp_list=comp_list,
             label=label,
             lang=lang,
             ctx=ctx,
@@ -103,7 +102,7 @@ def run(
     if out_mode == "sheet":
         generate_sheet(
             out_file=out_file,
-            defn_list=defn_list,
+            comp_list=comp_list,
             label=label,
             lang=lang,
             ctx=ctx,
@@ -274,6 +273,8 @@ def main(
             out_newline=argv_newline,
         )
     except component.DefinitionXMLError as exc:
+        error(exc)
+    except component.MultibodyLinkError as exc:
         error(exc)
     except generator.LabelKeyError as exc:
         error(exc)

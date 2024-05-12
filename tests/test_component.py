@@ -128,6 +128,46 @@ class TestDefinitionXMLErrorPrependXPath(unittest.TestCase):
                     exc.prepend_xpath(s)
 
 
+class TestMultibodyLinkErrorInit(unittest.TestCase):
+    def test(self) -> None:
+        exc = sw_compdocs.component.MultibodyLinkError("parent_key", "child_key")
+        exc_args: tuple[object, ...] = exc.args
+        self.assertEqual(exc_args, ("parent_key", "child_key"))
+        self.assertEqual(exc.parent_key, "parent_key")
+        self.assertEqual(exc.child_key, "child_key")
+
+
+class TestMultibodyLinkErrorStr(unittest.TestCase):
+    def test(self) -> None:
+        exc = sw_compdocs.component.MultibodyLinkError("parent_key", "child_key")
+        self.assertEqual(
+            str(exc),
+            "failed to link parent component 'parent_key' and child component 'child_key'",
+        )
+
+
+class TestMultibodyChildNotFoundErrorStr(unittest.TestCase):
+    def test(self) -> None:
+        exc = sw_compdocs.component.MultibodyChildNotFoundError(
+            "parent_key", "child_key"
+        )
+        self.assertEqual(
+            str(exc),
+            "missing child component 'child_key' for parent component 'parent_key'",
+        )
+
+
+class TestMultibodyChildFlagNotSetErrorStr(unittest.TestCase):
+    def test(self) -> None:
+        exc = sw_compdocs.component.MultibodyChildFlagNotSetError(
+            "parent_key", "child_key"
+        )
+        self.assertEqual(
+            str(exc),
+            "multibody child flag is not set for child component 'child_key' of parent component 'parent_key'",
+        )
+
+
 class TestGenerateKey(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(
@@ -1295,6 +1335,7 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
 	</logic_nodes>
 	<voxel_min x="0" y="0" z="0"/>
 	<voxel_max x="0" y="1" z="0"/>
+	<voxel_location_child x="0" y="0" z="0"/>
 </definition>
 """
         )
@@ -1312,6 +1353,7 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
         self.assertEqual(defn.value, 100)
         self.assertEqual(defn.flags, sw_compdocs.component.Flags(8192))
         self.assertEqual(defn.tags, "basic")
+        self.assertEqual(defn.child_name, "")
         self.assertEqual(
             defn.tooltip_properties,
             sw_compdocs.component.TooltipProperties(
@@ -1375,6 +1417,60 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
         )
         self.assertEqual(defn.voxel_min, sw_compdocs.component.VoxelPos(x=0, y=0, z=0))
         self.assertEqual(defn.voxel_max, sw_compdocs.component.VoxelPos(x=0, y=1, z=0))
+        self.assertEqual(
+            defn.voxel_location_child, sw_compdocs.component.VoxelPos(x=0, y=0, z=0)
+        )
+
+    def test_pass_pivot(self) -> None:
+        elem = lxml.etree.fromstring(
+            """\
+<definition name="Pivot" category="2" type="7" mass="1" value="20" flags="64" tags="hinge" hild_name="multibody_pivot_b">
+	<logic_nodes/>
+	<voxel_min x="0" y="0" z="0"/>
+	<voxel_max x="0" y="1" z="0"/>
+	<voxel_location_child x="0" y="2" z="0"/>
+	<tooltip_properties description="The pivot can rotate to 0.25 turns in both directions." short_description="A basic pivot that can move freely."/>
+</definition>
+"""
+        )
+
+        defn = sw_compdocs.component.Definition.from_xml_elem(
+            elem, file="multibody_pivot_a.xml", key="multibody_pivot_a"
+        )
+        self.assertEqual(defn.file, "multibody_pivot_a.xml")
+        self.assertEqual(defn.key, "multibody_pivot_a")
+        self.assertEqual(
+            defn.name,
+            sw_compdocs.language.Text(id="def_multibody_pivot_a_name", en="Pivot"),
+        )
+        self.assertEqual(defn.category, sw_compdocs.component.Category.MECHANICS)
+        self.assertEqual(defn.mass, 1.0)
+        self.assertEqual(defn.value, 20)
+        self.assertEqual(defn.flags, sw_compdocs.component.Flags(64))
+        self.assertEqual(defn.tags, "hinge")
+        self.assertEqual(
+            defn.tooltip_properties,
+            sw_compdocs.component.TooltipProperties(
+                key="multibody_pivot_a",
+                short_description=sw_compdocs.language.Text(
+                    id="def_multibody_pivot_a_s_desc",
+                    en="A basic pivot that can move freely.",
+                ),
+                description=sw_compdocs.language.Text(
+                    id="def_multibody_pivot_a_desc",
+                    en="The pivot can rotate to 0.25 turns in both directions.",
+                ),
+            ),
+        )
+        self.assertEqual(
+            defn.logic_nodes,
+            sw_compdocs.component.LogicNodeList(key="multibody_pivot_a"),
+        )
+        self.assertEqual(defn.voxel_min, sw_compdocs.component.VoxelPos(x=0, y=0, z=0))
+        self.assertEqual(defn.voxel_max, sw_compdocs.component.VoxelPos(x=0, y=1, z=0))
+        self.assertEqual(
+            defn.voxel_location_child, sw_compdocs.component.VoxelPos(x=0, y=2, z=0)
+        )
 
     def test_pass_empty(self) -> None:
         elem = lxml.etree.Element("definition")
@@ -1387,12 +1483,14 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
         self.assertEqual(defn.value, 0)
         self.assertEqual(defn.flags, sw_compdocs.component.Flags(0))
         self.assertEqual(defn.tags, "")
+        self.assertEqual(defn.child_name, "")
         self.assertEqual(
             defn.tooltip_properties, sw_compdocs.component.TooltipProperties()
         )
         self.assertEqual(defn.logic_nodes, sw_compdocs.component.LogicNodeList())
         self.assertEqual(defn.voxel_min, sw_compdocs.component.VoxelPos())
         self.assertEqual(defn.voxel_max, sw_compdocs.component.VoxelPos())
+        self.assertEqual(defn.voxel_location_child, sw_compdocs.component.VoxelPos())
 
     def test_pass_empty_key(self) -> None:
         elem = lxml.etree.Element("definition")
@@ -1405,6 +1503,7 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
         self.assertEqual(defn.value, 0)
         self.assertEqual(defn.flags, sw_compdocs.component.Flags(0))
         self.assertEqual(defn.tags, "")
+        self.assertEqual(defn.child_name, "")
         self.assertEqual(
             defn.tooltip_properties,
             sw_compdocs.component.TooltipProperties(
@@ -1418,6 +1517,7 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
         )
         self.assertEqual(defn.voxel_min, sw_compdocs.component.VoxelPos())
         self.assertEqual(defn.voxel_max, sw_compdocs.component.VoxelPos())
+        self.assertEqual(defn.voxel_location_child, sw_compdocs.component.VoxelPos())
 
     def test_exc_xml(self) -> None:
         tt = typing.NamedTuple(
@@ -1493,6 +1593,15 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
                 want_msg="invalid voxel x 'nan'",
                 want_file="file",
                 want_xpath="./voxel_max",
+            ),
+            tt(
+                input_elem=lxml.etree.fromstring(
+                    """<definition><voxel_location_child x="nan"/></definition>"""
+                ),
+                input_file="file",
+                want_msg="invalid voxel x 'nan'",
+                want_file="file",
+                want_xpath="./voxel_location_child",
             ),
         ]:
             with self.subTest(tc=tc):
@@ -1591,6 +1700,265 @@ class TestDefinitionUpdateID(unittest.TestCase):
                 defn = copy.deepcopy(tc.input_defn)
                 defn.update_id(tc.input_key, recursive=tc.input_recursive)
                 self.assertEqual(defn, tc.want_defn)
+
+
+class TestComponentName(unittest.TestCase):
+    def test(self) -> None:
+        comp = sw_compdocs.component.Component(
+            defn=sw_compdocs.component.Definition(
+                name=sw_compdocs.language.Text(id="id", en="en")
+            )
+        )
+
+        name = comp.name()
+        self.assertEqual(name, sw_compdocs.language.Text(id="id", en="en"))
+
+        name.id = ""
+        self.assertEqual(comp.name().id, "id")
+        self.assertEqual(comp.defn.name.id, "id")
+
+
+class TestComponentShortDescription(unittest.TestCase):
+    def test(self) -> None:
+        comp = sw_compdocs.component.Component(
+            defn=sw_compdocs.component.Definition(
+                tooltip_properties=sw_compdocs.component.TooltipProperties(
+                    short_description=sw_compdocs.language.Text(id="id", en="en")
+                )
+            )
+        )
+
+        short_description = comp.short_description()
+        self.assertEqual(short_description, sw_compdocs.language.Text(id="id", en="en"))
+
+        short_description.id = ""
+        self.assertEqual(comp.short_description().id, "id")
+        self.assertEqual(comp.defn.tooltip_properties.short_description.id, "id")
+
+
+class TestComponentDescription(unittest.TestCase):
+    def test(self) -> None:
+        comp = sw_compdocs.component.Component(
+            defn=sw_compdocs.component.Definition(
+                tooltip_properties=sw_compdocs.component.TooltipProperties(
+                    description=sw_compdocs.language.Text(id="id", en="en")
+                )
+            )
+        )
+
+        description = comp.description()
+        self.assertEqual(description, sw_compdocs.language.Text(id="id", en="en"))
+
+        description.id = ""
+        self.assertEqual(comp.description().id, "id")
+        self.assertEqual(comp.defn.tooltip_properties.description.id, "id")
+
+
+class TestComponentCategory(unittest.TestCase):
+    def test(self) -> None:
+        comp = sw_compdocs.component.Component(
+            defn=sw_compdocs.component.Definition(
+                category=sw_compdocs.component.Category.VEHICLE_CONTROL
+            )
+        )
+        self.assertEqual(
+            comp.category(), sw_compdocs.component.Category.VEHICLE_CONTROL
+        )
+
+
+class TestComponentMass(unittest.TestCase):
+    def test(self) -> None:
+        comp = sw_compdocs.component.Component(
+            defn=sw_compdocs.component.Definition(mass=0.25)
+        )
+        self.assertEqual(comp.mass(), 0.25)
+
+
+class TestComponentValue(unittest.TestCase):
+    def test(self) -> None:
+        comp = sw_compdocs.component.Component(
+            defn=sw_compdocs.component.Definition(value=100)
+        )
+        self.assertEqual(comp.value(), 100)
+
+
+class TestComponentTags(unittest.TestCase):
+    def test(self) -> None:
+        comp = sw_compdocs.component.Component(
+            defn=sw_compdocs.component.Definition(tags="tags")
+        )
+        self.assertEqual(comp.tags(), "tags")
+
+
+class TestComponentVoxelMin(unittest.TestCase):
+    def test(self) -> None:
+        comp = sw_compdocs.component.Component(
+            defn=sw_compdocs.component.Definition(
+                voxel_min=sw_compdocs.component.VoxelPos(x=1, y=2, z=3)
+            )
+        )
+
+        voxel_min = comp.voxel_min()
+        self.assertEqual(voxel_min, sw_compdocs.component.VoxelPos(x=1, y=2, z=3))
+
+        voxel_min.x = 0
+        self.assertEqual(comp.voxel_min().x, 1)
+        self.assertEqual(comp.defn.voxel_min.x, 1)
+
+
+class TestComponentVoxelMax(unittest.TestCase):
+    def test(self) -> None:
+        comp = sw_compdocs.component.Component(
+            defn=sw_compdocs.component.Definition(
+                voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3)
+            )
+        )
+
+        voxel_max = comp.voxel_max()
+        self.assertEqual(voxel_max, sw_compdocs.component.VoxelPos(x=1, y=2, z=3))
+
+        voxel_max.x = 0
+        self.assertEqual(comp.voxel_max().x, 1)
+        self.assertEqual(comp.defn.voxel_max.x, 1)
+
+
+class TestMultibodyMass(unittest.TestCase):
+    def test(self) -> None:
+        comp = sw_compdocs.component.Multibody(
+            defn=sw_compdocs.component.Definition(mass=9.0),
+            child=sw_compdocs.component.Definition(mass=1.0),
+        )
+        self.assertEqual(comp.mass(), 10.0)
+
+
+class TestMultibodyVoxelMin(unittest.TestCase):
+    def test(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_comp", sw_compdocs.component.Multibody),
+                ("want_voxel_min", sw_compdocs.component.VoxelPos),
+            ],
+        )
+
+        for tc in [
+            tt(
+                input_comp=sw_compdocs.component.Multibody(
+                    defn=sw_compdocs.component.Definition(
+                        voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
+                        voxel_location_child=sw_compdocs.component.VoxelPos(
+                            x=1, y=2, z=3
+                        ),
+                    ),
+                    child=sw_compdocs.component.Definition(),
+                ),
+                want_voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
+            ),
+            tt(
+                input_comp=sw_compdocs.component.Multibody(
+                    defn=sw_compdocs.component.Definition(
+                        voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
+                        voxel_location_child=sw_compdocs.component.VoxelPos(x=-4),
+                    ),
+                    child=sw_compdocs.component.Definition(
+                        voxel_min=sw_compdocs.component.VoxelPos(x=-5),
+                    ),
+                ),
+                want_voxel_min=sw_compdocs.component.VoxelPos(x=-9, y=-2, z=-3),
+            ),
+            tt(
+                input_comp=sw_compdocs.component.Multibody(
+                    defn=sw_compdocs.component.Definition(
+                        voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
+                        voxel_location_child=sw_compdocs.component.VoxelPos(y=-4),
+                    ),
+                    child=sw_compdocs.component.Definition(
+                        voxel_min=sw_compdocs.component.VoxelPos(y=-5),
+                    ),
+                ),
+                want_voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-9, z=-3),
+            ),
+            tt(
+                input_comp=sw_compdocs.component.Multibody(
+                    defn=sw_compdocs.component.Definition(
+                        voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
+                        voxel_location_child=sw_compdocs.component.VoxelPos(z=-4),
+                    ),
+                    child=sw_compdocs.component.Definition(
+                        voxel_min=sw_compdocs.component.VoxelPos(z=-5),
+                    ),
+                ),
+                want_voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-9),
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                got_voxel_min = tc.input_comp.voxel_min()
+                self.assertEqual(got_voxel_min, tc.want_voxel_min)
+
+
+class TestMultibodyVoxelMax(unittest.TestCase):
+    def test(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_comp", sw_compdocs.component.Multibody),
+                ("want_voxel_max", sw_compdocs.component.VoxelPos),
+            ],
+        )
+
+        for tc in [
+            tt(
+                input_comp=sw_compdocs.component.Multibody(
+                    defn=sw_compdocs.component.Definition(
+                        voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
+                        voxel_location_child=sw_compdocs.component.VoxelPos(
+                            x=-1, y=-2, z=-3
+                        ),
+                    ),
+                    child=sw_compdocs.component.Definition(),
+                ),
+                want_voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
+            ),
+            tt(
+                input_comp=sw_compdocs.component.Multibody(
+                    defn=sw_compdocs.component.Definition(
+                        voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
+                        voxel_location_child=sw_compdocs.component.VoxelPos(x=4),
+                    ),
+                    child=sw_compdocs.component.Definition(
+                        voxel_max=sw_compdocs.component.VoxelPos(x=5),
+                    ),
+                ),
+                want_voxel_max=sw_compdocs.component.VoxelPos(x=9, y=2, z=3),
+            ),
+            tt(
+                input_comp=sw_compdocs.component.Multibody(
+                    defn=sw_compdocs.component.Definition(
+                        voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
+                        voxel_location_child=sw_compdocs.component.VoxelPos(y=4),
+                    ),
+                    child=sw_compdocs.component.Definition(
+                        voxel_max=sw_compdocs.component.VoxelPos(y=5),
+                    ),
+                ),
+                want_voxel_max=sw_compdocs.component.VoxelPos(x=1, y=9, z=3),
+            ),
+            tt(
+                input_comp=sw_compdocs.component.Multibody(
+                    defn=sw_compdocs.component.Definition(
+                        voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
+                        voxel_location_child=sw_compdocs.component.VoxelPos(z=4),
+                    ),
+                    child=sw_compdocs.component.Definition(
+                        voxel_max=sw_compdocs.component.VoxelPos(z=5),
+                    ),
+                ),
+                want_voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=9),
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                got_voxel_max = tc.input_comp.voxel_max()
+                self.assertEqual(got_voxel_max, tc.want_voxel_max)
 
 
 class TestParseXMLFile(unittest.TestCase):
@@ -1867,3 +2235,259 @@ class TestLoadDefnDict(unittest.TestCase):
                 with self.subTest(path=path):
                     got_defn_dict = sw_compdocs.component.load_defn_dict(path)
                     self.assertEqual(got_defn_dict, want_defn_dict)
+
+
+class TestBuildCompList(unittest.TestCase):
+    def test_pass(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_defn_dict", dict[str, sw_compdocs.component.Definition]),
+                ("want_comp_list", list[sw_compdocs.component.Component]),
+            ],
+        )
+
+        for tc in [
+            # empty
+            tt(
+                input_defn_dict={},
+                want_comp_list=[],
+            ),
+            # normal
+            tt(
+                input_defn_dict={
+                    "key": sw_compdocs.component.Definition(key="key"),
+                },
+                want_comp_list=[
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(key="key"),
+                    ),
+                ],
+            ),
+            # multibody
+            tt(
+                input_defn_dict={
+                    "multibody_a": sw_compdocs.component.Definition(
+                        key="multibody_a",
+                        flags=sw_compdocs.component.Flags.MULTIBODY_PARENT,
+                        child_name="multibody_b",
+                    ),
+                    "multibody_b": sw_compdocs.component.Definition(
+                        key="multibody_b",
+                        flags=sw_compdocs.component.Flags.MULTIBODY_CHILD,
+                    ),
+                },
+                want_comp_list=[
+                    sw_compdocs.component.Multibody(
+                        defn=sw_compdocs.component.Definition(
+                            key="multibody_a",
+                            flags=sw_compdocs.component.Flags.MULTIBODY_PARENT,
+                            child_name="multibody_b",
+                        ),
+                        child=sw_compdocs.component.Definition(
+                            key="multibody_b",
+                            flags=sw_compdocs.component.Flags.MULTIBODY_CHILD,
+                        ),
+                    ),
+                ],
+            ),
+            # orphan
+            tt(
+                input_defn_dict={
+                    "multibody_b": sw_compdocs.component.Definition(
+                        key="multibody_b",
+                        flags=sw_compdocs.component.Flags.MULTIBODY_CHILD,
+                    ),
+                },
+                want_comp_list=[
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(
+                            key="multibody_b",
+                            flags=sw_compdocs.component.Flags.MULTIBODY_CHILD,
+                        ),
+                    ),
+                ],
+            ),
+            # sort
+            tt(
+                input_defn_dict={
+                    "": sw_compdocs.component.Definition(),
+                    "block_c": sw_compdocs.component.Definition(key="block_c"),
+                    "block_b": sw_compdocs.component.Definition(key="block_b"),
+                    "block_a": sw_compdocs.component.Definition(key="block_a"),
+                },
+                want_comp_list=[
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(key="block_a"),
+                    ),
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(key="block_b"),
+                    ),
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(key="block_c"),
+                    ),
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(),
+                    ),
+                ],
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                got_comp_list = sw_compdocs.component.build_comp_list(
+                    tc.input_defn_dict
+                )
+                self.assertEqual(got_comp_list, tc.want_comp_list)
+
+    def test_exc(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_defn_dict", dict[str, sw_compdocs.component.Definition]),
+                ("want_exc_type", type[sw_compdocs.component.MultibodyLinkError]),
+                ("want_exc_parent_key", str),
+                ("want_exc_child_key", str),
+            ],
+        )
+
+        for tc in [
+            tt(
+                input_defn_dict={
+                    "multibody_a": sw_compdocs.component.Definition(
+                        flags=sw_compdocs.component.Flags.MULTIBODY_PARENT,
+                        child_name="multibody_b",
+                    ),
+                },
+                want_exc_type=sw_compdocs.component.MultibodyChildNotFoundError,
+                want_exc_parent_key="multibody_a",
+                want_exc_child_key="multibody_b",
+            ),
+            tt(
+                input_defn_dict={
+                    "multibody_a": sw_compdocs.component.Definition(
+                        flags=sw_compdocs.component.Flags.MULTIBODY_PARENT,
+                        child_name="multibody_b",
+                    ),
+                    "multibody_b": sw_compdocs.component.Definition(),
+                },
+                want_exc_type=sw_compdocs.component.MultibodyChildFlagNotSetError,
+                want_exc_parent_key="multibody_a",
+                want_exc_child_key="multibody_b",
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                with self.assertRaises(tc.want_exc_type) as ctx:
+                    sw_compdocs.component.build_comp_list(tc.input_defn_dict)
+                self.assertEqual(ctx.exception.parent_key, tc.want_exc_parent_key)
+                self.assertEqual(ctx.exception.child_key, tc.want_exc_child_key)
+
+
+class TestLoadCompList(unittest.TestCase):
+    def test_empty(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path_list: list[sw_compdocs._types.StrOrBytesPath] = [
+                os.fsdecode(temp_dir),
+                os.fsencode(temp_dir),
+                pathlib.Path(temp_dir),
+            ]
+            for path in path_list:
+                with self.subTest(path=path):
+                    comp_list = sw_compdocs.component.load_comp_list(path)
+                    self.assertEqual(comp_list, list[sw_compdocs.component.Component]())
+
+    def test_normal(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            dmy1_file = pathlib.Path(temp_dir, "dmy1.xml")
+            with open(dmy1_file, mode="xt", encoding="utf-8", newline="\r\n") as f:
+                f.write(
+                    """\
+<?xml version="1.0" encoding="UTF-8"?>
+<definition name="Dummy 1"/>
+"""
+                )
+
+            dmy2_file = pathlib.Path(temp_dir, "dmy2.xml")
+            with open(dmy2_file, mode="xt", encoding="utf-8", newline="\r\n") as f:
+                f.write(
+                    """\
+<?xml version="1.0" encoding="UTF-8"?>
+<definition name="Dummy 2"/>
+"""
+                )
+
+            want_comp_list = [
+                sw_compdocs.component.Component(
+                    defn=sw_compdocs.component.Definition(
+                        key="dmy1",
+                        file=dmy1_file,
+                        name=sw_compdocs.language.Text(en="Dummy 1"),
+                    )
+                ),
+                sw_compdocs.component.Component(
+                    defn=sw_compdocs.component.Definition(
+                        key="dmy2",
+                        file=dmy2_file,
+                        name=sw_compdocs.language.Text(en="Dummy 2"),
+                    )
+                ),
+            ]
+            for comp in want_comp_list:
+                comp.defn.update_id(comp.defn.key)
+
+            path_list: list[sw_compdocs._types.StrOrBytesPath] = [
+                os.fsdecode(temp_dir),
+                os.fsencode(temp_dir),
+                pathlib.Path(temp_dir),
+            ]
+            for path in path_list:
+                with self.subTest(path=path):
+                    got_comp_list = sw_compdocs.component.load_comp_list(path)
+                    self.assertEqual(got_comp_list, want_comp_list)
+
+    def test_multibody(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            dmy1_file = pathlib.Path(temp_dir, "dmy1.xml")
+            with open(dmy1_file, mode="xt", encoding="utf-8", newline="\r\n") as f:
+                f.write(
+                    """\
+<?xml version="1.0" encoding="UTF-8"?>
+<definition flags="64" child_name="dmy2"/>
+"""
+                )
+
+            dmy2_file = pathlib.Path(temp_dir, "dmy2.xml")
+            with open(dmy2_file, mode="xt", encoding="utf-8", newline="\r\n") as f:
+                f.write(
+                    """\
+<?xml version="1.0" encoding="UTF-8"?>
+<definition flags="128"/>
+"""
+                )
+
+            want_comp_list = [
+                sw_compdocs.component.Multibody(
+                    defn=sw_compdocs.component.Definition(
+                        key="dmy1",
+                        file=dmy1_file,
+                        flags=sw_compdocs.component.Flags.MULTIBODY_PARENT,
+                        child_name="dmy2",
+                    ),
+                    child=sw_compdocs.component.Definition(
+                        key="dmy2",
+                        file=dmy2_file,
+                        flags=sw_compdocs.component.Flags.MULTIBODY_CHILD,
+                    ),
+                ),
+            ]
+            for comp in want_comp_list:
+                comp.defn.update_id(comp.defn.key)
+                comp.child.update_id(comp.child.key)
+
+            path_list: list[sw_compdocs._types.StrOrBytesPath] = [
+                os.fsdecode(temp_dir),
+                os.fsencode(temp_dir),
+                pathlib.Path(temp_dir),
+            ]
+            for path in path_list:
+                with self.subTest(path=path):
+                    got_comp_list = sw_compdocs.component.load_comp_list(path)
+                    self.assertEqual(got_comp_list, want_comp_list)

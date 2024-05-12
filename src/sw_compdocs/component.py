@@ -51,6 +51,26 @@ class DefinitionXMLError(Exception):
         raise ValueError
 
 
+class MultibodyLinkError(Exception):
+    def __init__(self, parent_key: str, child_key: str) -> None:
+        super().__init__(parent_key, child_key)
+        self.parent_key: typing.Final[str] = parent_key
+        self.child_key: typing.Final[str] = child_key
+
+    def __str__(self) -> str:
+        return f"failed to link parent component {self.parent_key!r} and child component {self.child_key!r}"
+
+
+class MultibodyChildNotFoundError(MultibodyLinkError):
+    def __str__(self) -> str:
+        return f"missing child component {self.child_key!r} for parent component {self.parent_key!r}"
+
+
+class MultibodyChildFlagNotSetError(MultibodyLinkError):
+    def __str__(self) -> str:
+        return f"multibody child flag is not set for child component {self.child_key!r} of parent component {self.parent_key!r}"
+
+
 def generate_key(file: _types.StrOrBytesPath) -> str:
     if not isinstance(file, pathlib.PurePath):
         file = os.fsdecode(file)
@@ -122,6 +142,8 @@ class Category(enum.Enum):
 
 @enum.unique
 class Flags(enum.Flag, boundary=enum.KEEP):
+    MULTIBODY_PARENT = 1 << 6
+    MULTIBODY_CHILD = 1 << 7
     IS_DEPRECATED = 1 << 29
 
 
@@ -347,12 +369,14 @@ class Definition:
     value: int = 0
     flags: Flags = Flags(0)
     tags: str = ""
+    child_name: str = ""
     tooltip_properties: TooltipProperties = dataclasses.field(
         default_factory=TooltipProperties
     )
     logic_nodes: LogicNodeList = dataclasses.field(default_factory=LogicNodeList)
     voxel_min: VoxelPos = dataclasses.field(default_factory=VoxelPos)
     voxel_max: VoxelPos = dataclasses.field(default_factory=VoxelPos)
+    voxel_location_child: VoxelPos = dataclasses.field(default_factory=VoxelPos)
 
     @classmethod
     def from_xml_elem(
@@ -364,6 +388,7 @@ class Definition:
     ) -> typing.Self:
         name = language.Text(en=elem.get("name", ""))
         tags = elem.get("tags", cls.tags)
+        child_name = elem.get("child_name", cls.child_name)
 
         category = cls.category
         category_attr = elem.get("category")
@@ -449,6 +474,16 @@ class Definition:
             exc.prepend_xpath("voxel_max")
             raise
 
+        voxel_location_child_elem = elem.find("voxel_location_child")
+        if voxel_location_child_elem is None:
+            voxel_location_child_elem = lxml.etree.Element("voxel_location_child")
+        try:
+            voxel_location_child = VoxelPos.from_xml_elem(voxel_location_child_elem)
+        except DefinitionXMLError as exc:
+            exc.file = file
+            exc.prepend_xpath("voxel_location_child")
+            raise
+
         self = cls(
             file=file,
             name=name,
@@ -457,10 +492,12 @@ class Definition:
             value=value,
             flags=flags,
             tags=tags,
+            child_name=child_name,
             tooltip_properties=tooltip_properties,
             logic_nodes=logic_nodes,
             voxel_min=voxel_min,
             voxel_max=voxel_max,
+            voxel_location_child=voxel_location_child,
         )
         self.update_id(key, recursive=False)
         return self
@@ -472,6 +509,79 @@ class Definition:
 
         self.name.id = f"def_{key}_name" if key is not None else None
         self.key = key
+
+
+@dataclasses.dataclass
+class Component:
+    _: dataclasses.KW_ONLY
+    defn: Definition
+
+    def name(self) -> language.Text:
+        return dataclasses.replace(self.defn.name)
+
+    def short_description(self) -> language.Text:
+        return dataclasses.replace(self.defn.tooltip_properties.short_description)
+
+    def description(self) -> language.Text:
+        return dataclasses.replace(self.defn.tooltip_properties.description)
+
+    def category(self) -> Category:
+        return self.defn.category
+
+    def mass(self) -> float:
+        return self.defn.mass
+
+    def value(self) -> int:
+        return self.defn.value
+
+    def tags(self) -> str:
+        return self.defn.tags
+
+    def voxel_min(self) -> VoxelPos:
+        return dataclasses.replace(self.defn.voxel_min)
+
+    def voxel_max(self) -> VoxelPos:
+        return dataclasses.replace(self.defn.voxel_max)
+
+
+@dataclasses.dataclass
+class Multibody(Component):
+    child: Definition
+
+    def mass(self) -> float:
+        return self.defn.mass + self.child.mass
+
+    def voxel_min(self) -> VoxelPos:
+        return VoxelPos(
+            x=min(
+                self.defn.voxel_min.x,
+                self.defn.voxel_location_child.x + self.child.voxel_min.x,
+            ),
+            y=min(
+                self.defn.voxel_min.y,
+                self.defn.voxel_location_child.y + self.child.voxel_min.y,
+            ),
+            z=min(
+                self.defn.voxel_min.z,
+                self.defn.voxel_location_child.z + self.child.voxel_min.z,
+            ),
+        )
+
+    def voxel_max(self) -> VoxelPos:
+        return VoxelPos(
+            x=max(
+                self.defn.voxel_max.x,
+                self.defn.voxel_location_child.x + self.child.voxel_max.x,
+            ),
+            y=max(
+                self.defn.voxel_max.y,
+                self.defn.voxel_location_child.y + self.child.voxel_max.y,
+            ),
+            z=max(
+                self.defn.voxel_max.z,
+                self.defn.voxel_location_child.z + self.child.voxel_max.z,
+            ),
+        )
 
 
 # lxml.etree.XMLParser is generic in stub but not at runtime.
@@ -541,3 +651,45 @@ def load_defn_dict(defn_dir: _types.StrOrBytesPath) -> dict[str, Definition]:
         assert defn.key is not None
         defn_dict[defn.key] = defn
     return defn_dict
+
+
+def build_comp_list(defn_dict: dict[str, Definition]) -> list[Component]:
+    comp: Component
+    comp_list: list[Component]
+
+    comp_list = []
+    pend_key_set = {key for key in defn_dict.keys()}
+    for key, defn in defn_dict.items():
+        if (
+            Flags.MULTIBODY_CHILD in defn.flags
+            or Flags.MULTIBODY_PARENT not in defn.flags
+        ):
+            continue
+
+        child_key = defn.child_name
+        try:
+            child = defn_dict[child_key]
+        except KeyError as exc:
+            raise MultibodyChildNotFoundError(key, child_key) from exc
+        if Flags.MULTIBODY_CHILD not in child.flags:
+            raise MultibodyChildFlagNotSetError(key, child_key)
+
+        comp = Multibody(defn=defn, child=child)
+        comp_list.append(comp)
+        pend_key_set.discard(key)
+        pend_key_set.discard(child_key)
+
+    for key in pend_key_set:
+        defn = defn_dict[key]
+        comp = Component(defn=defn)
+        comp_list.append(comp)
+
+    def sort_key(comp: Component) -> tuple[bool, str]:
+        return comp.defn.key is None, comp.defn.key or ""
+
+    comp_list.sort(key=sort_key)
+    return comp_list
+
+
+def load_comp_list(defn_dir: _types.StrOrBytesPath) -> list[Component]:
+    return build_comp_list(load_defn_dict(defn_dir))
