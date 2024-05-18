@@ -29,7 +29,7 @@ class TOMLFileDecodeError(tomllib.TOMLDecodeError):
         self.file: _types.StrOrBytesPath | None = file
 
     def __str__(self) -> str:
-        msg_list = []
+        msg_list: list[str] = []
 
         msg = super().__str__()
         if msg != "":
@@ -55,7 +55,7 @@ def format_toml_string(s: str) -> str:
         "\\": r"\\",
     }
 
-    l = []
+    l: list[str] = []
     for c in s:
         if c not in esc_set:
             l.append(c)
@@ -101,7 +101,7 @@ def load_toml_table(file: _types.StrOrBytesPath, table_key: str) -> dict[str, st
     # dict[typing.Any, typing.Any] -> dict[object, object]
     obj = typing.cast(dict[object, object], obj)
 
-    table = {}
+    table: dict[str, str] = {}
     for key, val in obj.items():
         if not isinstance(key, str):
             # In TOML, keys are always strings.

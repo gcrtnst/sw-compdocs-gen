@@ -288,10 +288,7 @@ class LogicNodeList(container.MutableSequence[LogicNode]):
         return f"{type(self).__name__}({self._l!r}, key={self.key!r})"
 
     def __eq__(self, other: object) -> bool:
-        if type(self) is type(other):
-            # type narrowing assertion for mypy 1.8.0
-            assert isinstance(other, type(self))
-
+        if type(other) is type(self):
             if self.key != other.key:
                 return False
         return super().__eq__(other)
@@ -624,25 +621,21 @@ def _parse_xml_root(
 def parse_xml_file(file: _types.StrOrBytesPath) -> Definition:
     key = generate_key(file)
     tree = lxml.etree.parse(file, parser=_new_xml_parser())
-    elem: lxml.etree._Element | None = tree.getroot()
+    elem = tree.getroot()
     return _parse_xml_root(elem, file=file, key=key)
 
 
 def parse_xml_str(s: str, *, key: str | None = None) -> Definition:
-    elem: lxml.etree._Element | None
     elem = lxml.etree.fromstring(s, parser=_new_xml_parser())
     return _parse_xml_root(elem, key=key)
 
 
 def load_defn_dict(defn_dir: _types.StrOrBytesPath) -> dict[str, Definition]:
-    # Avoid 'Expression type contains "Any"' warning from mypy
-    path_cls: type[pathlib.Path] = pathlib.Path
-
-    if not isinstance(defn_dir, path_cls):
+    if not isinstance(defn_dir, pathlib.Path):
         defn_dir = os.fsdecode(defn_dir)
         defn_dir = pathlib.Path(defn_dir)
 
-    defn_dict = {}
+    defn_dict: dict[str, Definition] = {}
     for defn_file in defn_dir.glob("*.xml"):
         if not defn_file.is_file():
             continue

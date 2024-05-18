@@ -51,9 +51,9 @@ def _classify_logic(
 ) -> tuple[
     list[component.LogicNode], list[component.LogicNode], list[component.LogicNode]
 ]:
-    in_list = []
-    out_list = []
-    conn_list = []
+    in_list: list[component.LogicNode] = []
+    out_list: list[component.LogicNode] = []
+    conn_list: list[component.LogicNode] = []
     for ln in lns:
         if (
             ln.type is component.LogicNodeType.BOOL
@@ -571,7 +571,7 @@ def generate_sheet_component_list(
     lang: language.Language | None = None,
     ctx: collections.abc.Mapping[str, str] | None = None,
 ) -> list[list[str]]:
-    record_list = []
+    record_list: list[list[str]] = []
     for comp in comp_list:
         record = generate_sheet_component(comp, lang=lang, ctx=ctx)
         record_list.append(record)

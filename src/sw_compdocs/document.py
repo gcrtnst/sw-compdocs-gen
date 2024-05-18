@@ -11,6 +11,7 @@ class Block:
     def __init__(self) -> None:
         if type(self) is Block:
             raise NotImplementedError
+        super().__init__()
 
 
 @dataclasses.dataclass
@@ -43,7 +44,7 @@ class TableDataRow(container.Sequence[str]):
     def __setitem__(
         self, index: int | slice, value: str | collections.abc.Iterable[str]
     ) -> None:
-        if isinstance(index, slice):  # type: ignore[misc]  # suppress warning for Any types in slice type
+        if isinstance(index, slice):
             # type cast is safe because of overloads
             value = typing.cast(collections.abc.Iterable[str], value)
 
@@ -51,16 +52,11 @@ class TableDataRow(container.Sequence[str]):
             if len(self[index]) != len(value):
                 raise ValueError
             self._l[index] = value
-            return
-
-        if isinstance(index, int):
+        else:
             # type cast is safe because of overloads
             value = typing.cast(str, value)
 
             self._l[index] = value
-            return
-
-        typing.assert_never(index)
 
 
 class TableData(container.MutableSequence[TableDataRow]):
@@ -74,10 +70,7 @@ class TableData(container.MutableSequence[TableDataRow]):
         return f"{type(self).__name__}({repr(self.head)}, {repr(self._l)})"
 
     def __eq__(self, other: object) -> bool:
-        if type(self) is type(other):
-            # type narrowing assertion for mypy 1.8.0
-            assert isinstance(other, type(self))
-
+        if type(other) is type(self):
             if self.head != other.head:
                 return False
         return super().__eq__(other)

@@ -2,26 +2,21 @@ import collections.abc
 import typing
 
 
-_T = typing.TypeVar("_T")
-_T_co = typing.TypeVar("_T_co", covariant=True)
-
-
-class Sequence(collections.abc.Sequence[_T_co]):
-    def __init__(self, iterable: collections.abc.Iterable[_T_co] = ()) -> None:
+class Sequence[T](collections.abc.Sequence[T]):
+    def __init__(self, iterable: collections.abc.Iterable[T] = ()) -> None:
+        super().__init__()
         self._l = list(iterable)
 
     @typing.overload
-    def __getitem__(self, index: int) -> _T_co: ...
+    def __getitem__(self, index: int) -> T: ...
 
     @typing.overload
     def __getitem__(self, index: slice) -> typing.Self: ...
 
-    def __getitem__(self, index: int | slice) -> _T_co | typing.Self:
-        if isinstance(index, int):
-            return self._l[index]
-        if isinstance(index, slice):  # type: ignore[misc]  # suppress warning for Any types in slice type
+    def __getitem__(self, index: int | slice) -> T | typing.Self:
+        if isinstance(index, slice):
             return type(self)(self._l[index])
-        typing.assert_never(index)
+        return self._l[index]
 
     def __len__(self) -> int:
         return len(self._l)
@@ -30,58 +25,49 @@ class Sequence(collections.abc.Sequence[_T_co]):
         return f"{type(self).__name__}({repr(self._l)})"
 
     def __eq__(self, other: object) -> bool:
-        if type(self) is type(other):
-            # type narrowing assertion for mypy 1.8.0
-            assert isinstance(other, type(self))
-
+        if type(other) is type(self):
             return self._l == other._l
         return super().__eq__(other)
 
 
-class MutableSequence(collections.abc.MutableSequence[_T]):
-    def __init__(self, iterable: collections.abc.Iterable[_T] = ()) -> None:
-        self._l: typing.List[_T] = []
+class MutableSequence[T](collections.abc.MutableSequence[T]):
+    def __init__(self, iterable: collections.abc.Iterable[T] = ()) -> None:
+        super().__init__()
+        self._l: list[T] = []
         self[:] = iterable
 
     @typing.overload
-    def __getitem__(self, index: int) -> _T: ...
+    def __getitem__(self, index: int) -> T: ...
 
     @typing.overload
     def __getitem__(self, index: slice) -> typing.Self: ...
 
-    def __getitem__(self, index: int | slice) -> _T | typing.Self:
-        if isinstance(index, int):
-            return self._l[index]
-        if isinstance(index, slice):  # type: ignore[misc]  # suppress warning for Any types in slice type
+    def __getitem__(self, index: int | slice) -> T | typing.Self:
+        if isinstance(index, slice):
             return type(self)(self._l[index])
-        typing.assert_never(index)
+        return self._l[index]
 
     @typing.overload
-    def __setitem__(self, index: int, value: _T) -> None: ...
+    def __setitem__(self, index: int, value: T) -> None: ...
 
     @typing.overload
-    def __setitem__(
-        self, index: slice, value: collections.abc.Iterable[_T]
-    ) -> None: ...
+    def __setitem__(self, index: slice, value: collections.abc.Iterable[T]) -> None: ...
 
     def __setitem__(
-        self, index: int | slice, value: _T | collections.abc.Iterable[_T]
+        self, index: int | slice, value: T | collections.abc.Iterable[T]
     ) -> None:
-        if isinstance(index, slice):  # type: ignore[misc]  # suppress warning for Any types in slice type
+        if isinstance(index, slice):
             # type cast is safe because of overloads
-            value = typing.cast(collections.abc.Iterable[_T], value)
+            value = typing.cast(collections.abc.Iterable[T], value)
 
             value = self._check_value_iter(value)
             self._l[index] = value
-            return
-        if isinstance(index, int):
+        else:
             # type cast is safe because of overloads
-            value = typing.cast(_T, value)
+            value = typing.cast(T, value)
 
             self._check_value(value)
             self._l[index] = value
-            return
-        typing.assert_never(index)
 
     @typing.overload
     def __delitem__(self, index: int) -> None: ...
@@ -99,23 +85,20 @@ class MutableSequence(collections.abc.MutableSequence[_T]):
         return f"{type(self).__name__}({repr(self._l)})"
 
     def __eq__(self, other: object) -> bool:
-        if type(self) is type(other):
-            # type narrowing assertion for mypy 1.8.0
-            assert isinstance(other, type(self))
-
+        if type(other) is type(self):
             return self._l == other._l
         return super().__eq__(other)
 
-    def insert(self, index: int, value: _T) -> None:
+    def insert(self, index: int, value: T) -> None:
         self._check_value(value)
         self._l.insert(index, value)
 
     def _check_value_iter(
-        self, value_iter: collections.abc.Iterable[_T]
-    ) -> collections.abc.Iterable[_T]:
+        self, value_iter: collections.abc.Iterable[T]
+    ) -> collections.abc.Iterable[T]:
         for value in value_iter:
             self._check_value(value)
             yield value
 
-    def _check_value(self, value: _T) -> None:
+    def _check_value(self, value: T) -> None:
         pass

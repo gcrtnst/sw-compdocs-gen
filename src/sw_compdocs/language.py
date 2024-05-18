@@ -95,7 +95,7 @@ class Language(container.Sequence[Translation]):
                 if header != ["id", "description", "en", "local"]:
                     raise LanguageTSVError("invalid header")
 
-                trans_list = []
+                trans_list: list[Translation] = []
                 for record in reader:
                     if len(record) != 4:
                         raise LanguageTSVError("invalid number of fields")

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import pathlib
+import shutil
 import subprocess
 import sys
 
@@ -8,8 +9,9 @@ import sys
 def main() -> None:
     warn = False
     repo_dir = pathlib.Path(__file__).parent
+    pyproject_file = pathlib.Path(repo_dir, "pyproject.toml")
 
-    src_list = []
+    src_list: list[str] = []
     for pattern in ["*.py", "src/**/*.py", "tests/**/*.py"]:
         for src_file in repo_dir.glob(pattern):
             if src_file.is_file():
@@ -26,11 +28,21 @@ def main() -> None:
     result = subprocess.run(args)
     warn = warn or result.returncode != 0
 
-    print("==> Running mypy")
-    # Run mypy with the --no-incremental flag to ensure all errors are reported.
-    args = [sys.executable, "-m", "mypy", "--no-incremental", "--"] + src_list
-    result = subprocess.run(args)
-    warn = warn or result.returncode != 0
+    print("==> Running pyright")
+    pyright = shutil.which("pyright")
+    if pyright is None:
+        print("pyright is not found in PATH")
+        warn = True
+    else:
+        args = [
+            pyright,
+            "--project",
+            str(pyproject_file),
+            "--pythonpath",
+            sys.executable,
+        ]
+        result = subprocess.run(args)
+        warn = warn or result.returncode != 0
 
     print("==> Running unittest")
     args = [

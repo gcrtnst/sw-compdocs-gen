@@ -408,7 +408,7 @@ class TestMutableSequenceEq(unittest.TestCase):
 
 class TestMutableSequenceInsert(unittest.TestCase):
     def test(self) -> None:
-        seq = sw_compdocs.container.MutableSequence((1, 2, 3))
+        seq = sw_compdocs.container.MutableSequence[int]((1, 2, 3))
         with unittest.mock.patch.object(
             sw_compdocs.container.MutableSequence, "_check_value"
         ) as mock:
