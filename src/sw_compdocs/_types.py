@@ -2,7 +2,7 @@ import os
 import typing
 
 
-StrOrBytesPath: typing.TypeAlias = str | bytes | os.PathLike[str] | os.PathLike[bytes]
+type StrOrBytesPath = str | bytes | os.PathLike[str] | os.PathLike[bytes]
 
 
 def is_pathlike(v: object) -> typing.TypeGuard[StrOrBytesPath]:

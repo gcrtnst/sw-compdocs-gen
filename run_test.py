@@ -11,20 +11,33 @@ def main() -> None:
     repo_dir = pathlib.Path(__file__).parent
     pyproject_file = pathlib.Path(repo_dir, "pyproject.toml")
 
-    src_list: list[str] = []
-    for pattern in ["*.py", "src/**/*.py", "tests/**/*.py"]:
-        for src_file in repo_dir.glob(pattern):
-            if src_file.is_file():
-                src_list.append(str(src_file))
-    src_list.sort()
-
-    print("==> Running pyflakes")
-    args = [sys.executable, "-m", "pyflakes", "--"] + src_list
+    print("==> Running ruff check")
+    args = [
+        sys.executable,
+        "-m",
+        "ruff",
+        "check",
+        "--config",
+        str(pyproject_file),
+        "--no-fix",
+        "--",
+        str(repo_dir),
+    ]
     result = subprocess.run(args)
     warn = warn or result.returncode != 0
 
-    print("==> Running black")
-    args = [sys.executable, "-m", "black", "--check", "--"] + src_list
+    print("==> Running ruff format")
+    args = [
+        sys.executable,
+        "-m",
+        "ruff",
+        "format",
+        "--config",
+        str(pyproject_file),
+        "--check",
+        "--",
+        str(repo_dir),
+    ]
     result = subprocess.run(args)
     warn = warn or result.returncode != 0
 

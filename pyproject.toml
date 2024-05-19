@@ -6,17 +6,21 @@ build-backend = "setuptools.build_meta"
 name = "sw_compdocs"
 version = "0.1.0"
 license = {file = "LICENSE"}
+requires-python = ">= 3.12"
 dependencies = ["lxml"]
 
 [project.optional-dependencies]
-dev = [
-    "types-lxml",
-    "pyflakes",
-    "black",
-]
+dev = ["types-lxml", "ruff"]
 
 [project.scripts]
 sw_compdocs = "sw_compdocs.main:main"
+
+[tool.ruff]
+exclude = []
+respect-gitignore = true
+
+[tool.ruff.lint]
+select = ["F", "ANN0", "ANN2", "ANN4", "RUF1", "RUF2"]
 
 [tool.pyright]
 include=["*.py", "src/**/*.py", "tests/**/*.py"]

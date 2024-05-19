@@ -308,7 +308,7 @@ class TestLanguageFromFile(unittest.TestCase):
                 list[sw_compdocs.language.Translation](
                     [
                         sw_compdocs.language.Translation(
-                            "id", "description", "English", "\uFFFD" * 9
+                            "id", "description", "English", "\ufffd" * 9
                         )
                     ]
                 ),

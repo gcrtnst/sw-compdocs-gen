@@ -44,7 +44,7 @@ class TOMLFileDecodeError(tomllib.TOMLDecodeError):
 
 
 def format_toml_string(s: str) -> str:
-    esc_set = frozenset(chr(i) for i in range(0x00, 0x20)) | {'"', "\\", "\x7F"}
+    esc_set = frozenset(chr(i) for i in range(0x00, 0x20)) | {'"', "\\", "\x7f"}
     esc_dict = {
         "\b": r"\b",
         "\t": r"\t",
