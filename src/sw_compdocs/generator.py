@@ -19,13 +19,20 @@ class LabelKeyError(KeyError):
         return f"missing label text for key {self.key!r}"
 
 
-def _label_get(label: collections.abc.Mapping[str, str] | None, key: str) -> str:
-    if label is not None:
-        try:
-            key = label[key]
-        except KeyError as exc:
-            raise LabelKeyError(key) from exc
-    return key
+def _label_get(
+    label: collections.abc.Mapping[str, str] | None,
+    key: str,
+    repl: str | None = None,
+) -> str:
+    if label is None:
+        return key
+    try:
+        text = label[key]
+    except KeyError as exc:
+        raise LabelKeyError(key) from exc
+    if repl is not None:
+        text = text.replace("{}", repl)
+    return text
 
 
 def _lang_find_en(lang: language.Language | None, lang_en: str) -> str:

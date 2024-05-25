@@ -30,6 +30,7 @@ class TestLabelGet(unittest.TestCase):
             [
                 ("input_label", collections.abc.Mapping[str, str] | None),
                 ("input_key", str),
+                ("input_repl", str | None),
                 ("want_s", str),
             ],
         )
@@ -38,16 +39,32 @@ class TestLabelGet(unittest.TestCase):
             tt(
                 input_label=None,
                 input_key="LABEL",
+                input_repl=None,
                 want_s="LABEL",
             ),
             tt(
-                input_label={"LABEL": "text"},
+                input_label={"LABEL": "text {}"},
                 input_key="LABEL",
-                want_s="text",
+                input_repl=None,
+                want_s="text {}",
+            ),
+            tt(
+                input_label=None,
+                input_key="{}",
+                input_repl="repl",
+                want_s="{}",
+            ),
+            tt(
+                input_label={"LABEL": "text {}"},
+                input_key="LABEL",
+                input_repl="repl",
+                want_s="text repl",
             ),
         ]:
             with self.subTest(tc=tc):
-                got_s = sw_compdocs.generator._label_get(tc.input_label, tc.input_key)
+                got_s = sw_compdocs.generator._label_get(
+                    tc.input_label, tc.input_key, tc.input_repl
+                )
                 self.assertEqual(got_s, tc.want_s)
 
     def test_exc_label(self) -> None:
