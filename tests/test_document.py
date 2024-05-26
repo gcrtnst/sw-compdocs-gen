@@ -9,6 +9,18 @@ class TestBlockInit(unittest.TestCase):
             sw_compdocs.document.Block()
 
 
+class TestListItemInit(unittest.TestCase):
+    def test_default(self) -> None:
+        li = sw_compdocs.document.ListItem("")
+        self.assertEqual(li.l, [])
+
+
+class TestUnorderedListInit(unittest.TestCase):
+    def test_default(self) -> None:
+        ul = sw_compdocs.document.UnorderedList()
+        self.assertEqual(ul.l, [])
+
+
 class TestTableDataRowInit(unittest.TestCase):
     def test_pass(self) -> None:
         for input_list in [

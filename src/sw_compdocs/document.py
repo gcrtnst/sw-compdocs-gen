@@ -26,6 +26,17 @@ class Paragraph(Block):
     text: str
 
 
+@dataclasses.dataclass
+class ListItem:
+    s: str
+    l: list[typing.Self] = dataclasses.field(default_factory=list)
+
+
+@dataclasses.dataclass
+class UnorderedList(Block):
+    l: list[ListItem] = dataclasses.field(default_factory=list)
+
+
 class TableDataRow(container.Sequence[str]):
     def __init__(self, iterable: collections.abc.Iterable[str] = ()) -> None:
         super().__init__(iterable)
