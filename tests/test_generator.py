@@ -907,6 +907,250 @@ class TestGenerateDocumentPropertyTableMultibody(unittest.TestCase):
                 self.assertEqual(ctx.exception.key, key)
 
 
+class TestGenerateDocumentPropertyList(unittest.TestCase):
+    def test_pass(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_comp", sw_compdocs.component.Component),
+                ("input_label", dict[str, str] | None),
+                ("want_ul", sw_compdocs.document.UnorderedList),
+            ],
+        )
+
+        for tc in [
+            # normal
+            tt(
+                input_comp=sw_compdocs.component.Component(
+                    defn=sw_compdocs.component.Definition(
+                        file="file",
+                        mass=10.0,
+                        value=100,
+                        tags="tags",
+                        voxel_min=sw_compdocs.component.VoxelPos(x=0, y=-1, z=-2),
+                        voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=2),
+                    )
+                ),
+                input_label={
+                    "DOCUMENT_PROP_MASS": "Mass: {}",
+                    "DOCUMENT_PROP_MASS_PARENT": "Parent Mass: {}",
+                    "DOCUMENT_PROP_MASS_CHILD": "Child Mass: {}",
+                    "DOCUMENT_PROP_DIMS": "Dimensions (WxDxH): {}",
+                    "DOCUMENT_PROP_DIMS_PARENT": "Parent Dimensions (WxDxH): {}",
+                    "DOCUMENT_PROP_DIMS_CHILD": "Child Dimensions (WxDxH): {}",
+                    "DOCUMENT_PROP_COST": "Cost: ${}",
+                    "DOCUMENT_PROP_TAGS": "Tags: {}",
+                    "DOCUMENT_PROP_FILE": "File: {}",
+                    "DOCUMENT_PROP_FILE_PARENT": "Parent File: {}",
+                    "DOCUMENT_PROP_FILE_CHILD": "Child File: {}",
+                },
+                want_ul=sw_compdocs.document.UnorderedList(
+                    [
+                        sw_compdocs.document.ListItem("Mass: 10"),
+                        sw_compdocs.document.ListItem("Dimensions (WxDxH): 1x5x3"),
+                        sw_compdocs.document.ListItem("Cost: $100"),
+                        sw_compdocs.document.ListItem("Tags: tags"),
+                        sw_compdocs.document.ListItem("File: file"),
+                    ]
+                ),
+            ),
+            # multibody
+            tt(
+                input_comp=sw_compdocs.component.Multibody(
+                    defn=sw_compdocs.component.Definition(
+                        file="multibody_a.xml",
+                        mass=9.0,
+                        value=100,
+                        tags="parent",
+                        voxel_min=sw_compdocs.component.VoxelPos(x=0, y=-1, z=-2),
+                        voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=2),
+                        voxel_location_child=sw_compdocs.component.VoxelPos(
+                            x=-5, y=0, z=0
+                        ),
+                    ),
+                    child=sw_compdocs.component.Definition(
+                        file="multibody_b.xml",
+                        mass=1.0,
+                        value=200,
+                        tags="child",
+                        voxel_min=sw_compdocs.component.VoxelPos(x=0, y=-3, z=-4),
+                        voxel_max=sw_compdocs.component.VoxelPos(x=0, y=3, z=4),
+                    ),
+                ),
+                input_label={
+                    "DOCUMENT_PROP_MASS": "Mass: {}",
+                    "DOCUMENT_PROP_MASS_PARENT": "Parent Mass: {}",
+                    "DOCUMENT_PROP_MASS_CHILD": "Child Mass: {}",
+                    "DOCUMENT_PROP_DIMS": "Dimensions (WxDxH): {}",
+                    "DOCUMENT_PROP_DIMS_PARENT": "Parent Dimensions (WxDxH): {}",
+                    "DOCUMENT_PROP_DIMS_CHILD": "Child Dimensions (WxDxH): {}",
+                    "DOCUMENT_PROP_COST": "Cost: ${}",
+                    "DOCUMENT_PROP_TAGS": "Tags: {}",
+                    "DOCUMENT_PROP_FILE": "File: {}",
+                    "DOCUMENT_PROP_FILE_PARENT": "Parent File: {}",
+                    "DOCUMENT_PROP_FILE_CHILD": "Child File: {}",
+                },
+                want_ul=sw_compdocs.document.UnorderedList(
+                    [
+                        sw_compdocs.document.ListItem(
+                            "Mass: 10",
+                            [
+                                sw_compdocs.document.ListItem("Parent Mass: 9"),
+                                sw_compdocs.document.ListItem("Child Mass: 1"),
+                            ],
+                        ),
+                        sw_compdocs.document.ListItem(
+                            "Dimensions (WxDxH): 6x9x7",
+                            [
+                                sw_compdocs.document.ListItem(
+                                    "Parent Dimensions (WxDxH): 1x5x3"
+                                ),
+                                sw_compdocs.document.ListItem(
+                                    "Child Dimensions (WxDxH): 1x9x7"
+                                ),
+                            ],
+                        ),
+                        sw_compdocs.document.ListItem("Cost: $100"),
+                        sw_compdocs.document.ListItem("Tags: parent"),
+                        sw_compdocs.document.ListItem("Parent File: multibody_a.xml"),
+                        sw_compdocs.document.ListItem("Child File: multibody_b.xml"),
+                    ]
+                ),
+            ),
+            # mass format
+            tt(
+                input_comp=sw_compdocs.component.Multibody(
+                    defn=sw_compdocs.component.Definition(mass=0.25),
+                    child=sw_compdocs.component.Definition(mass=1.25),
+                ),
+                input_label={
+                    "DOCUMENT_PROP_MASS": "Mass: {}",
+                    "DOCUMENT_PROP_MASS_PARENT": "Parent Mass: {}",
+                    "DOCUMENT_PROP_MASS_CHILD": "Child Mass: {}",
+                    "DOCUMENT_PROP_DIMS": "Dimensions (WxDxH): {}",
+                    "DOCUMENT_PROP_DIMS_PARENT": "Parent Dimensions (WxDxH): {}",
+                    "DOCUMENT_PROP_DIMS_CHILD": "Child Dimensions (WxDxH): {}",
+                    "DOCUMENT_PROP_COST": "Cost: ${}",
+                    "DOCUMENT_PROP_TAGS": "Tags: {}",
+                    "DOCUMENT_PROP_FILE": "File: {}",
+                    "DOCUMENT_PROP_FILE_PARENT": "Parent File: {}",
+                    "DOCUMENT_PROP_FILE_CHILD": "Child File: {}",
+                },
+                want_ul=sw_compdocs.document.UnorderedList(
+                    [
+                        sw_compdocs.document.ListItem(
+                            "Mass: 1.5",
+                            [
+                                sw_compdocs.document.ListItem("Parent Mass: 0.25"),
+                                sw_compdocs.document.ListItem("Child Mass: 1.25"),
+                            ],
+                        ),
+                        sw_compdocs.document.ListItem(
+                            "Dimensions (WxDxH): 1x1x1",
+                            [
+                                sw_compdocs.document.ListItem(
+                                    "Parent Dimensions (WxDxH): 1x1x1"
+                                ),
+                                sw_compdocs.document.ListItem(
+                                    "Child Dimensions (WxDxH): 1x1x1"
+                                ),
+                            ],
+                        ),
+                        sw_compdocs.document.ListItem("Cost: $0"),
+                        sw_compdocs.document.ListItem("Tags: "),
+                        sw_compdocs.document.ListItem("Parent File: "),
+                        sw_compdocs.document.ListItem("Child File: "),
+                    ]
+                ),
+            ),
+            # file format normal
+            tt(
+                input_comp=sw_compdocs.component.Component(
+                    defn=sw_compdocs.component.Definition(
+                        file=b"path/to/definition.xml"
+                    )
+                ),
+                input_label={
+                    "DOCUMENT_PROP_MASS": "Mass: {}",
+                    "DOCUMENT_PROP_MASS_PARENT": "Parent Mass: {}",
+                    "DOCUMENT_PROP_MASS_CHILD": "Child Mass: {}",
+                    "DOCUMENT_PROP_DIMS": "Dimensions (WxDxH): {}",
+                    "DOCUMENT_PROP_DIMS_PARENT": "Parent Dimensions (WxDxH): {}",
+                    "DOCUMENT_PROP_DIMS_CHILD": "Child Dimensions (WxDxH): {}",
+                    "DOCUMENT_PROP_COST": "Cost: ${}",
+                    "DOCUMENT_PROP_TAGS": "Tags: {}",
+                    "DOCUMENT_PROP_FILE": "File: {}",
+                    "DOCUMENT_PROP_FILE_PARENT": "Parent File: {}",
+                    "DOCUMENT_PROP_FILE_CHILD": "Child File: {}",
+                },
+                want_ul=sw_compdocs.document.UnorderedList(
+                    [
+                        sw_compdocs.document.ListItem("Mass: 0"),
+                        sw_compdocs.document.ListItem("Dimensions (WxDxH): 1x1x1"),
+                        sw_compdocs.document.ListItem("Cost: $0"),
+                        sw_compdocs.document.ListItem("Tags: "),
+                        sw_compdocs.document.ListItem("File: definition.xml"),
+                    ]
+                ),
+            ),
+            # file format multibody
+            tt(
+                input_comp=sw_compdocs.component.Multibody(
+                    defn=sw_compdocs.component.Definition(
+                        file=b"path/to/multibody_a.xml"
+                    ),
+                    child=sw_compdocs.component.Definition(
+                        file=b"path/to/multibody_b.xml"
+                    ),
+                ),
+                input_label={
+                    "DOCUMENT_PROP_MASS": "Mass: {}",
+                    "DOCUMENT_PROP_MASS_PARENT": "Parent Mass: {}",
+                    "DOCUMENT_PROP_MASS_CHILD": "Child Mass: {}",
+                    "DOCUMENT_PROP_DIMS": "Dimensions (WxDxH): {}",
+                    "DOCUMENT_PROP_DIMS_PARENT": "Parent Dimensions (WxDxH): {}",
+                    "DOCUMENT_PROP_DIMS_CHILD": "Child Dimensions (WxDxH): {}",
+                    "DOCUMENT_PROP_COST": "Cost: ${}",
+                    "DOCUMENT_PROP_TAGS": "Tags: {}",
+                    "DOCUMENT_PROP_FILE": "File: {}",
+                    "DOCUMENT_PROP_FILE_PARENT": "Parent File: {}",
+                    "DOCUMENT_PROP_FILE_CHILD": "Child File: {}",
+                },
+                want_ul=sw_compdocs.document.UnorderedList(
+                    [
+                        sw_compdocs.document.ListItem(
+                            "Mass: 0",
+                            [
+                                sw_compdocs.document.ListItem("Parent Mass: 0"),
+                                sw_compdocs.document.ListItem("Child Mass: 0"),
+                            ],
+                        ),
+                        sw_compdocs.document.ListItem(
+                            "Dimensions (WxDxH): 1x1x1",
+                            [
+                                sw_compdocs.document.ListItem(
+                                    "Parent Dimensions (WxDxH): 1x1x1"
+                                ),
+                                sw_compdocs.document.ListItem(
+                                    "Child Dimensions (WxDxH): 1x1x1"
+                                ),
+                            ],
+                        ),
+                        sw_compdocs.document.ListItem("Cost: $0"),
+                        sw_compdocs.document.ListItem("Tags: "),
+                        sw_compdocs.document.ListItem("Parent File: multibody_a.xml"),
+                        sw_compdocs.document.ListItem("Child File: multibody_b.xml"),
+                    ]
+                ),
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                got_ul = sw_compdocs.generator.generate_document_property_list(
+                    tc.input_comp, label=tc.input_label
+                )
+                self.assertEqual(got_ul, tc.want_ul)
+
+
 class TestGenerateDocumentProperty(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(

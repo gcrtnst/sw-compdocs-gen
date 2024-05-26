@@ -244,6 +244,90 @@ def generate_document_property_table(
     return generate_document_property_table_normal(comp, label=label)
 
 
+def generate_document_property_list(
+    comp: component.Component,
+    *,
+    label: collections.abc.Mapping[str, str] | None = None,
+) -> document.UnorderedList:
+    def file_fn(file: _types.StrOrBytesPath | None) -> str:
+        if file is None:
+            return ""
+        file = os.fsdecode(file)
+        file = pathlib.PurePath(file)
+        return file.name
+
+    ul = document.UnorderedList()
+
+    mass = f"{comp.mass():g}"
+    mass = _label_get(label, "DOCUMENT_PROP_MASS", mass)
+    mass = document.ListItem(mass)
+    if isinstance(comp, component.Multibody):
+        mass_parent = f"{comp.defn.mass:g}"
+        mass_parent = _label_get(label, "DOCUMENT_PROP_MASS_PARENT", mass_parent)
+        mass_parent = document.ListItem(mass_parent)
+        mass.l.append(mass_parent)
+
+        mass_child = f"{comp.child.mass:g}"
+        mass_child = _label_get(label, "DOCUMENT_PROP_MASS_CHILD", mass_child)
+        mass_child = document.ListItem(mass_child)
+        mass.l.append(mass_child)
+    ul.l.append(mass)
+
+    comp_total_voxel_max = comp.voxel_max()
+    comp_total_voxel_min = comp.voxel_min()
+    dims_total_w = comp_total_voxel_max.x - comp_total_voxel_min.x + 1
+    dims_total_h = comp_total_voxel_max.y - comp_total_voxel_min.y + 1
+    dims_total_d = comp_total_voxel_max.z - comp_total_voxel_min.z + 1
+    dims = f"{dims_total_w:d}x{dims_total_d:d}x{dims_total_h:d}"
+    dims = _label_get(label, "DOCUMENT_PROP_DIMS", dims)
+    dims = document.ListItem(dims)
+    if isinstance(comp, component.Multibody):
+        dims_parent_w = comp.defn.voxel_max.x - comp.defn.voxel_min.x + 1
+        dims_parent_h = comp.defn.voxel_max.y - comp.defn.voxel_min.y + 1
+        dims_parent_d = comp.defn.voxel_max.z - comp.defn.voxel_min.z + 1
+        dims_parent = f"{dims_parent_w:d}x{dims_parent_d:d}x{dims_parent_h:d}"
+        dims_parent = _label_get(label, "DOCUMENT_PROP_DIMS_PARENT", dims_parent)
+        dims_parent = document.ListItem(dims_parent)
+        dims.l.append(dims_parent)
+
+        dims_child_w = comp.child.voxel_max.x - comp.child.voxel_min.x + 1
+        dims_child_h = comp.child.voxel_max.y - comp.child.voxel_min.y + 1
+        dims_child_d = comp.child.voxel_max.z - comp.child.voxel_min.z + 1
+        dims_child = f"{dims_child_w:d}x{dims_child_d:d}x{dims_child_h:d}"
+        dims_child = _label_get(label, "DOCUMENT_PROP_DIMS_CHILD", dims_child)
+        dims_child = document.ListItem(dims_child)
+        dims.l.append(dims_child)
+    ul.l.append(dims)
+
+    cost = f"{comp.value():d}"
+    cost = _label_get(label, "DOCUMENT_PROP_COST", cost)
+    cost = document.ListItem(cost)
+    ul.l.append(cost)
+
+    tags = comp.tags()
+    tags = _label_get(label, "DOCUMENT_PROP_TAGS", tags)
+    tags = document.ListItem(tags)
+    ul.l.append(tags)
+
+    if not isinstance(comp, component.Multibody):
+        file = file_fn(comp.defn.file)
+        file = _label_get(label, "DOCUMENT_PROP_FILE", file)
+        file = document.ListItem(file)
+        ul.l.append(file)
+    else:
+        file_parent = file_fn(comp.defn.file)
+        file_parent = _label_get(label, "DOCUMENT_PROP_FILE_PARENT", file_parent)
+        file_parent = document.ListItem(file_parent)
+        ul.l.append(file_parent)
+
+        file_child = file_fn(comp.child.file)
+        file_child = _label_get(label, "DOCUMENT_PROP_FILE_CHILD", file_child)
+        file_child = document.ListItem(file_child)
+        ul.l.append(file_child)
+
+    return ul
+
+
 def generate_document_property(
     comp: component.Component,
     *,
