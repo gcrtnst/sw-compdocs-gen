@@ -72,6 +72,13 @@ class TestLabelGet(unittest.TestCase):
             sw_compdocs.generator._label_get({}, "LABEL")
         self.assertEqual(ctx.exception.key, "LABEL")
 
+    def test_exc_placeholder(self) -> None:
+        with self.assertRaises(
+            sw_compdocs.generator.LabelMissingPlaceholderError
+        ) as ctx:
+            sw_compdocs.generator._label_get({"LABEL": "text"}, "LABEL", "repl")
+        self.assertEqual(ctx.exception.key, "LABEL")
+
 
 class TestLangFindEn(unittest.TestCase):
     def test_pass(self) -> None:

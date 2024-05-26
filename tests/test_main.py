@@ -828,6 +828,10 @@ class TestMain(unittest.TestCase):
                 want_stderr="sw_compdocs: error: missing label text for key 'key'\n",
             ),
             tt(
+                input_exc=sw_compdocs.generator.LabelMissingPlaceholderError("key"),
+                want_stderr="sw_compdocs: error: missing placeholder in label text for key 'key'\n",
+            ),
+            tt(
                 input_exc=sw_compdocs.language.LanguageTSVError("message"),
                 want_stderr="sw_compdocs: error: message\n",
             ),

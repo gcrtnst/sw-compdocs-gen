@@ -19,6 +19,15 @@ class LabelKeyError(KeyError):
         return f"missing label text for key {self.key!r}"
 
 
+class LabelMissingPlaceholderError(Exception):
+    def __init__(self, key: str) -> None:
+        super().__init__(key)
+        self.key: typing.Final[str] = key
+
+    def __str__(self) -> str:
+        return f"missing placeholder in label text for key {self.key!r}"
+
+
 def _label_get(
     label: collections.abc.Mapping[str, str] | None,
     key: str,
@@ -31,6 +40,8 @@ def _label_get(
     except KeyError as exc:
         raise LabelKeyError(key) from exc
     if repl is not None:
+        if "{}" not in text:
+            raise LabelMissingPlaceholderError(key)
         text = text.replace("{}", repl)
     return text
 
