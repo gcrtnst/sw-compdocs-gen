@@ -269,6 +269,8 @@ def main(
         error(exc)
     except generator.LabelKeyError as exc:
         error(exc)
+    except generator.LabelMissingPlaceholderError as exc:
+        error(exc)
     except language.LanguageTSVError as exc:
         error(exc)
     except language.LanguageFindError as exc:

@@ -71,13 +71,11 @@ class TestRun(unittest.TestCase):
                 fp.write(
                     """\
 [label]
-DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL = "ラベル"
-DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE = "値"
-DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL = "重量"
-DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL = "サイズ（WxDxH）"
-DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL = "価格"
-DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL = "タグ"
-DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL = "ファイル"
+DOCUMENT_PROP_MASS = "重量：{}"
+DOCUMENT_PROP_DIMS = "サイズ (WxDxH)：{}"
+DOCUMENT_PROP_COST = "価格：${}"
+DOCUMENT_PROP_TAGS = "タグ：{}"
+DOCUMENT_PROP_FILE = "ファイル：{}"
 """
                 )
 
@@ -129,13 +127,11 @@ template_02 = "テンプレート 02"
 
 ### プロパティ
 
-| ラベル | 値 |
-| --- | --- |
-| 重量 | 1 |
-| サイズ（WxDxH） | 1x1x1 |
-| 価格 | 0 |
-| タグ |  |
-| ファイル | test_01.xml |
+- 重量：1
+- サイズ (WxDxH)：1x1x1
+- 価格：$0
+- タグ：
+- ファイル：test_01.xml
 
 ## テスト 02
 
@@ -143,13 +139,11 @@ template_02 = "テンプレート 02"
 
 ### プロパティ
 
-| ラベル | 値 |
-| --- | --- |
-| 重量 | 2 |
-| サイズ（WxDxH） | 1x1x1 |
-| 価格 | 0 |
-| タグ |  |
-| ファイル | test_02.xml |
+- 重量：2
+- サイズ (WxDxH)：1x1x1
+- 価格：$0
+- タグ：
+- ファイル：test_02.xml
 """
             want_md = want_md.replace("\n", "\r\n")
             self.assertEqual(got_md, want_md)
@@ -187,13 +181,11 @@ template_02 = "テンプレート 02"
                 fp.write(
                     """\
 [label]
-DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL = "ラベル"
-DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE = "値"
-DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL = "重量"
-DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL = "サイズ（WxDxH）"
-DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL = "価格"
-DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL = "タグ"
-DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL = "ファイル"
+DOCUMENT_PROP_MASS = "重量：{}"
+DOCUMENT_PROP_DIMS = "サイズ (WxDxH)：{}"
+DOCUMENT_PROP_COST = "価格：${}"
+DOCUMENT_PROP_TAGS = "タグ：{}"
+DOCUMENT_PROP_FILE = "ファイル：{}"
 """
                 )
 
@@ -828,6 +820,10 @@ class TestMain(unittest.TestCase):
                 want_stderr="sw_compdocs: error: missing label text for key 'key'\n",
             ),
             tt(
+                input_exc=sw_compdocs.generator.LabelMissingPlaceholderError("key"),
+                want_stderr="sw_compdocs: error: missing placeholder in label text for key 'key'\n",
+            ),
+            tt(
                 input_exc=sw_compdocs.language.LanguageTSVError("message"),
                 want_stderr="sw_compdocs: error: message\n",
             ),
@@ -952,13 +948,11 @@ class TestMain(unittest.TestCase):
                 fp.write(
                     """\
 [label]
-DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL = "ラベル"
-DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE = "値"
-DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL = "重量"
-DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL = "サイズ（WxDxH）"
-DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL = "価格"
-DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL = "タグ"
-DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL = "ファイル"
+DOCUMENT_PROP_MASS = "重量：{}"
+DOCUMENT_PROP_DIMS = "サイズ (WxDxH)：{}"
+DOCUMENT_PROP_COST = "価格：${}"
+DOCUMENT_PROP_TAGS = "タグ：{}"
+DOCUMENT_PROP_FILE = "ファイル：{}"
 """
                 )
 
@@ -1026,13 +1020,11 @@ template_02 = "テンプレート 02"
 
 ### プロパティ
 
-| ラベル | 値 |
-| --- | --- |
-| 重量 | 1 |
-| サイズ（WxDxH） | 1x1x1 |
-| 価格 | 0 |
-| タグ |  |
-| ファイル | test_01.xml |
+- 重量：1
+- サイズ (WxDxH)：1x1x1
+- 価格：$0
+- タグ：
+- ファイル：test_01.xml
 
 ## テスト 02
 
@@ -1040,12 +1032,10 @@ template_02 = "テンプレート 02"
 
 ### プロパティ
 
-| ラベル | 値 |
-| --- | --- |
-| 重量 | 2 |
-| サイズ（WxDxH） | 1x1x1 |
-| 価格 | 0 |
-| タグ |  |
-| ファイル | test_02.xml |
+- 重量：2
+- サイズ (WxDxH)：1x1x1
+- 価格：$0
+- タグ：
+- ファイル：test_02.xml
 """
             self.assertEqual(got_md, want_md)

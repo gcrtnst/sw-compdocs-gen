@@ -34,6 +34,60 @@ class TestRenderMarkdownParagraph(unittest.TestCase):
         self.assertEqual(text, "foo\n")
 
 
+class TestRenderMarkdownListUnordered(unittest.TestCase):
+    def test_pass(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_ul", sw_compdocs.document.UnorderedList),
+                ("want_text", str),
+            ],
+        )
+
+        for tc in [
+            # empty
+            tt(
+                input_ul=sw_compdocs.document.UnorderedList(),
+                want_text="",
+            ),
+            # flat
+            tt(
+                input_ul=sw_compdocs.document.UnorderedList(
+                    [
+                        sw_compdocs.document.ListItem("a"),
+                        sw_compdocs.document.ListItem("b"),
+                        sw_compdocs.document.ListItem("c"),
+                    ]
+                ),
+                want_text="- a\n- b\n- c\n",
+            ),
+            # nested
+            tt(
+                input_ul=sw_compdocs.document.UnorderedList(
+                    [
+                        sw_compdocs.document.ListItem(
+                            "a",
+                            [
+                                sw_compdocs.document.ListItem(
+                                    "b",
+                                    [
+                                        sw_compdocs.document.ListItem("c"),
+                                    ],
+                                )
+                            ],
+                        ),
+                    ]
+                ),
+                want_text="- a\n  - b\n    - c\n",
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                got_text = sw_compdocs.renderer.render_markdown_list_unordered(
+                    tc.input_ul
+                )
+                self.assertEqual(got_text, tc.want_text)
+
+
 class TestRenderMarkdownTableDataDelimiter(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple("tt", [("input_n", int), ("want_text", str)])
@@ -214,6 +268,16 @@ class TestRenderMarkdownBlock(unittest.TestCase):
                 want_text="foo\n",
             ),
             tt(
+                input_blk=sw_compdocs.document.UnorderedList(
+                    [
+                        sw_compdocs.document.ListItem("a"),
+                        sw_compdocs.document.ListItem("b"),
+                        sw_compdocs.document.ListItem("c"),
+                    ]
+                ),
+                want_text="- a\n- b\n- c\n",
+            ),
+            tt(
                 input_blk=sw_compdocs.document.Table(
                     sw_compdocs.document.TableData(
                         sw_compdocs.document.TableDataRow(("A1", "A2", "A3")),
@@ -225,6 +289,12 @@ class TestRenderMarkdownBlock(unittest.TestCase):
                     )
                 ),
                 want_text="| A1 | A2 | A3 |\n| --- | --- | --- |\n| B1 | B2 | B3 |\n| C1 | C2 | C3 |\n| D1 | D2 | D3 |\n",
+            ),
+            tt(
+                input_blk=sw_compdocs.document.Callout(
+                    "callout", kind=sw_compdocs.document.CalloutKind.NOTE
+                ),
+                want_text="> [!NOTE]\n> callout\n",
             ),
         ]:
             with self.subTest(tc=tc):

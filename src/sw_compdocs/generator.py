@@ -19,13 +19,31 @@ class LabelKeyError(KeyError):
         return f"missing label text for key {self.key!r}"
 
 
-def _label_get(label: collections.abc.Mapping[str, str] | None, key: str) -> str:
-    if label is not None:
-        try:
-            key = label[key]
-        except KeyError as exc:
-            raise LabelKeyError(key) from exc
-    return key
+class LabelMissingPlaceholderError(Exception):
+    def __init__(self, key: str) -> None:
+        super().__init__(key)
+        self.key: typing.Final[str] = key
+
+    def __str__(self) -> str:
+        return f"missing placeholder in label text for key {self.key!r}"
+
+
+def _label_get(
+    label: collections.abc.Mapping[str, str] | None,
+    key: str,
+    repl: str | None = None,
+) -> str:
+    if label is None:
+        return key
+    try:
+        text = label[key]
+    except KeyError as exc:
+        raise LabelKeyError(key) from exc
+    if repl is not None:
+        if "{}" not in text:
+            raise LabelMissingPlaceholderError(key)
+        text = text.replace("{}", repl)
+    return text
 
 
 def _lang_find_en(lang: language.Language | None, lang_en: str) -> str:
@@ -81,54 +99,11 @@ def _classify_logic(
     return in_list, out_list, conn_list
 
 
-def generate_document_property_table_normal(
+def generate_document_property_list(
     comp: component.Component,
     *,
     label: collections.abc.Mapping[str, str] | None = None,
-) -> document.Table:
-    head = document.TableDataRow(
-        [
-            _label_get(label, "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL"),
-            _label_get(label, "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE"),
-        ]
-    )
-    data = document.TableData(head)
-
-    mass_label = _label_get(label, "DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL")
-    mass_value = f"{comp.mass():g}"
-    data.append(document.TableDataRow([mass_label, mass_value]))
-
-    voxel_min = comp.voxel_min()
-    voxel_max = comp.voxel_max()
-    dims_w = voxel_max.x - voxel_min.x + 1
-    dims_h = voxel_max.y - voxel_min.y + 1
-    dims_d = voxel_max.z - voxel_min.z + 1
-    dims_label = _label_get(label, "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL")
-    dims_value = f"{dims_w:d}x{dims_d:d}x{dims_h:d}"
-    data.append(document.TableDataRow([dims_label, dims_value]))
-
-    cost_label = _label_get(label, "DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL")
-    cost_value = f"{comp.value():d}"
-    data.append(document.TableDataRow([cost_label, cost_value]))
-
-    tags_label = _label_get(label, "DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL")
-    data.append(document.TableDataRow([tags_label, comp.tags()]))
-
-    file_label = _label_get(label, "DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL")
-    file_value = ""
-    if comp.defn.file is not None:
-        file_value = os.fsdecode(comp.defn.file)
-        file_value = pathlib.PurePath(file_value).name
-    data.append(document.TableDataRow([file_label, file_value]))
-
-    return document.Table(data)
-
-
-def generate_document_property_table_multibody(
-    comp: component.Multibody,
-    *,
-    label: collections.abc.Mapping[str, str] | None = None,
-) -> document.Table:
+) -> document.UnorderedList:
     def file_fn(file: _types.StrOrBytesPath | None) -> str:
         if file is None:
             return ""
@@ -136,94 +111,76 @@ def generate_document_property_table_multibody(
         file = pathlib.PurePath(file)
         return file.name
 
-    data = document.TableData(
-        document.TableDataRow(
-            [
-                _label_get(label, "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_LABEL"),
-                _label_get(label, "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_PARENT"),
-                _label_get(label, "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_CHILD"),
-                _label_get(label, "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_TOTAL"),
-            ]
-        )
-    )
+    ul = document.UnorderedList()
 
-    data.append(
-        document.TableDataRow(
-            [
-                _label_get(label, "DOCUMENT_MULTIBODY_PROP_TABLE_MASS_LABEL"),
-                f"{comp.defn.mass:g}",
-                f"{comp.child.mass:g}",
-                f"{comp.mass():g}",
-            ]
-        )
-    )
+    mass = f"{comp.mass():g}"
+    mass = _label_get(label, "DOCUMENT_PROP_MASS", mass)
+    mass = document.ListItem(mass)
+    if isinstance(comp, component.Multibody):
+        mass_parent = f"{comp.defn.mass:g}"
+        mass_parent = _label_get(label, "DOCUMENT_PROP_MASS_PARENT", mass_parent)
+        mass_parent = document.ListItem(mass_parent)
+        mass.l.append(mass_parent)
+
+        mass_child = f"{comp.child.mass:g}"
+        mass_child = _label_get(label, "DOCUMENT_PROP_MASS_CHILD", mass_child)
+        mass_child = document.ListItem(mass_child)
+        mass.l.append(mass_child)
+    ul.l.append(mass)
 
     comp_total_voxel_max = comp.voxel_max()
     comp_total_voxel_min = comp.voxel_min()
-    dims_parent_w = comp.defn.voxel_max.x - comp.defn.voxel_min.x + 1
-    dims_parent_h = comp.defn.voxel_max.y - comp.defn.voxel_min.y + 1
-    dims_parent_d = comp.defn.voxel_max.z - comp.defn.voxel_min.z + 1
-    dims_child_w = comp.child.voxel_max.x - comp.child.voxel_min.x + 1
-    dims_child_h = comp.child.voxel_max.y - comp.child.voxel_min.y + 1
-    dims_child_d = comp.child.voxel_max.z - comp.child.voxel_min.z + 1
     dims_total_w = comp_total_voxel_max.x - comp_total_voxel_min.x + 1
     dims_total_h = comp_total_voxel_max.y - comp_total_voxel_min.y + 1
     dims_total_d = comp_total_voxel_max.z - comp_total_voxel_min.z + 1
-    data.append(
-        document.TableDataRow(
-            [
-                _label_get(label, "DOCUMENT_MULTIBODY_PROP_TABLE_DIMS_LABEL"),
-                f"{dims_parent_w:d}x{dims_parent_d:d}x{dims_parent_h:d}",
-                f"{dims_child_w:d}x{dims_child_d:d}x{dims_child_h:d}",
-                f"{dims_total_w:d}x{dims_total_d:d}x{dims_total_h:d}",
-            ]
-        )
-    )
-
-    data.append(
-        document.TableDataRow(
-            [
-                _label_get(label, "DOCUMENT_MULTIBODY_PROP_TABLE_COST_LABEL"),
-                f"{comp.defn.value:d}",
-                _label_get(label, "DOCUMENT_MULTIBODY_PROP_TABLE_COST_CHILD"),
-                _label_get(label, "DOCUMENT_MULTIBODY_PROP_TABLE_COST_TOTAL"),
-            ]
-        )
-    )
-
-    data.append(
-        document.TableDataRow(
-            [
-                _label_get(label, "DOCUMENT_MULTIBODY_PROP_TABLE_TAGS_LABEL"),
-                comp.defn.tags,
-                _label_get(label, "DOCUMENT_MULTIBODY_PROP_TABLE_TAGS_CHILD"),
-                _label_get(label, "DOCUMENT_MULTIBODY_PROP_TABLE_TAGS_TOTAL"),
-            ]
-        )
-    )
-
-    data.append(
-        document.TableDataRow(
-            [
-                _label_get(label, "DOCUMENT_MULTIBODY_PROP_TABLE_FILE_LABEL"),
-                file_fn(comp.defn.file),
-                file_fn(comp.child.file),
-                _label_get(label, "DOCUMENT_MULTIBODY_PROP_TABLE_FILE_TOTAL"),
-            ]
-        )
-    )
-
-    return document.Table(data)
-
-
-def generate_document_property_table(
-    comp: component.Component,
-    *,
-    label: collections.abc.Mapping[str, str] | None = None,
-) -> document.Table:
+    dims = f"{dims_total_w:d}x{dims_total_d:d}x{dims_total_h:d}"
+    dims = _label_get(label, "DOCUMENT_PROP_DIMS", dims)
+    dims = document.ListItem(dims)
     if isinstance(comp, component.Multibody):
-        return generate_document_property_table_multibody(comp, label=label)
-    return generate_document_property_table_normal(comp, label=label)
+        dims_parent_w = comp.defn.voxel_max.x - comp.defn.voxel_min.x + 1
+        dims_parent_h = comp.defn.voxel_max.y - comp.defn.voxel_min.y + 1
+        dims_parent_d = comp.defn.voxel_max.z - comp.defn.voxel_min.z + 1
+        dims_parent = f"{dims_parent_w:d}x{dims_parent_d:d}x{dims_parent_h:d}"
+        dims_parent = _label_get(label, "DOCUMENT_PROP_DIMS_PARENT", dims_parent)
+        dims_parent = document.ListItem(dims_parent)
+        dims.l.append(dims_parent)
+
+        dims_child_w = comp.child.voxel_max.x - comp.child.voxel_min.x + 1
+        dims_child_h = comp.child.voxel_max.y - comp.child.voxel_min.y + 1
+        dims_child_d = comp.child.voxel_max.z - comp.child.voxel_min.z + 1
+        dims_child = f"{dims_child_w:d}x{dims_child_d:d}x{dims_child_h:d}"
+        dims_child = _label_get(label, "DOCUMENT_PROP_DIMS_CHILD", dims_child)
+        dims_child = document.ListItem(dims_child)
+        dims.l.append(dims_child)
+    ul.l.append(dims)
+
+    cost = f"{comp.value():d}"
+    cost = _label_get(label, "DOCUMENT_PROP_COST", cost)
+    cost = document.ListItem(cost)
+    ul.l.append(cost)
+
+    tags = comp.tags()
+    tags = _label_get(label, "DOCUMENT_PROP_TAGS", tags)
+    tags = document.ListItem(tags)
+    ul.l.append(tags)
+
+    if not isinstance(comp, component.Multibody):
+        file = file_fn(comp.defn.file)
+        file = _label_get(label, "DOCUMENT_PROP_FILE", file)
+        file = document.ListItem(file)
+        ul.l.append(file)
+    else:
+        file_parent = file_fn(comp.defn.file)
+        file_parent = _label_get(label, "DOCUMENT_PROP_FILE_PARENT", file_parent)
+        file_parent = document.ListItem(file_parent)
+        ul.l.append(file_parent)
+
+        file_child = file_fn(comp.child.file)
+        file_child = _label_get(label, "DOCUMENT_PROP_FILE_CHILD", file_child)
+        file_child = document.ListItem(file_child)
+        ul.l.append(file_child)
+
+    return ul
 
 
 def generate_document_property(
@@ -235,7 +192,7 @@ def generate_document_property(
     return document.Document(
         [
             document.Heading(_lang_find_en(lang, "PROPERTIES")),
-            generate_document_property_table(comp, label=label),
+            generate_document_property_list(comp, label=label),
         ]
     )
 
@@ -249,9 +206,9 @@ def generate_document_logic_table_normal(
 ) -> document.Table:
     head = document.TableDataRow(
         [
-            _label_get(label, "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_TYPE"),
-            _label_get(label, "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_LABEL"),
-            _label_get(label, "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_DESC"),
+            _label_get(label, "DOCUMENT_LOGIC_TABLE_NORMAL_HEAD_TYPE"),
+            _label_get(label, "DOCUMENT_LOGIC_TABLE_NORMAL_HEAD_LABEL"),
+            _label_get(label, "DOCUMENT_LOGIC_TABLE_NORMAL_HEAD_DESC"),
         ]
     )
     data = document.TableData(head)
@@ -319,16 +276,16 @@ def generate_document_logic_table_multibody(
 
     head = document.TableDataRow(
         [
-            _label_get(label, "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_BODY"),
-            _label_get(label, "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_TYPE"),
-            _label_get(label, "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_LABEL"),
-            _label_get(label, "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_DESC"),
+            _label_get(label, "DOCUMENT_LOGIC_TABLE_MULTIBODY_HEAD_BODY"),
+            _label_get(label, "DOCUMENT_LOGIC_TABLE_MULTIBODY_HEAD_TYPE"),
+            _label_get(label, "DOCUMENT_LOGIC_TABLE_MULTIBODY_HEAD_LABEL"),
+            _label_get(label, "DOCUMENT_LOGIC_TABLE_MULTIBODY_HEAD_DESC"),
         ]
     )
     data = document.TableData(head)
 
-    parent_label = _label_get(label, "DOCUMENT_MULTIBODY_LOGIC_TABLE_BODY_PARENT")
-    child_label = _label_get(label, "DOCUMENT_MULTIBODY_LOGIC_TABLE_BODY_CHILD")
+    parent_label = _label_get(label, "DOCUMENT_LOGIC_TABLE_MULTIBODY_BODY_PARENT")
+    child_label = _label_get(label, "DOCUMENT_LOGIC_TABLE_MULTIBODY_BODY_CHILD")
     data.extend(generate_row(parent_label, parent_ln_list))
     data.extend(generate_row(child_label, child_ln_list))
     return document.Table(data)
@@ -410,7 +367,7 @@ def generate_document_component(
     if component.Flags.IS_DEPRECATED in comp.defn.flags:
         doc.append(
             document.Callout(
-                _label_get(label, "DOCUMENT_COMMON_DEPRECATED_TEXT"),
+                _label_get(label, "DOCUMENT_DEPRECATED_TEXT"),
                 kind=document.CalloutKind.WARNING,
             )
         )
@@ -418,7 +375,7 @@ def generate_document_component(
     if component.Flags.MULTIBODY_CHILD in comp.defn.flags:
         doc.append(
             document.Callout(
-                _label_get(label, "DOCUMENT_COMMON_ORPHAN_TEXT"),
+                _label_get(label, "DOCUMENT_ORPHAN_TEXT"),
                 kind=document.CalloutKind.WARNING,
             )
         )

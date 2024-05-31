@@ -1,3 +1,4 @@
+import collections.abc
 import typing
 
 from . import document
@@ -11,6 +12,18 @@ def render_markdown_heading(head: document.Heading) -> str:
 
 def render_markdown_paragraph(para: document.Paragraph) -> str:
     return para.text + "\n"
+
+
+def render_markdown_list_unordered(ul: document.UnorderedList) -> str:
+    def fn(
+        l: collections.abc.Iterable[document.ListItem],
+    ) -> collections.abc.Iterable[str]:
+        for li in l:
+            yield "- " + li.s + "\n"
+            for s in fn(li.l):
+                yield "  " + s
+
+    return "".join(fn(ul.l))
 
 
 def render_markdown_table_data_delimiter(n: int) -> str:
@@ -55,6 +68,8 @@ def render_markdown_block(blk: document.Block) -> str:
         return render_markdown_heading(blk)
     if isinstance(blk, document.Paragraph):
         return render_markdown_paragraph(blk)
+    if isinstance(blk, document.UnorderedList):
+        return render_markdown_list_unordered(blk)
     if isinstance(blk, document.Table):
         return render_markdown_table(blk)
     if isinstance(blk, document.Callout):

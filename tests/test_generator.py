@@ -30,6 +30,7 @@ class TestLabelGet(unittest.TestCase):
             [
                 ("input_label", collections.abc.Mapping[str, str] | None),
                 ("input_key", str),
+                ("input_repl", str | None),
                 ("want_s", str),
             ],
         )
@@ -38,21 +39,44 @@ class TestLabelGet(unittest.TestCase):
             tt(
                 input_label=None,
                 input_key="LABEL",
+                input_repl=None,
                 want_s="LABEL",
             ),
             tt(
-                input_label={"LABEL": "text"},
+                input_label={"LABEL": "text {}"},
                 input_key="LABEL",
-                want_s="text",
+                input_repl=None,
+                want_s="text {}",
+            ),
+            tt(
+                input_label=None,
+                input_key="{}",
+                input_repl="repl",
+                want_s="{}",
+            ),
+            tt(
+                input_label={"LABEL": "text {}"},
+                input_key="LABEL",
+                input_repl="repl",
+                want_s="text repl",
             ),
         ]:
             with self.subTest(tc=tc):
-                got_s = sw_compdocs.generator._label_get(tc.input_label, tc.input_key)
+                got_s = sw_compdocs.generator._label_get(
+                    tc.input_label, tc.input_key, tc.input_repl
+                )
                 self.assertEqual(got_s, tc.want_s)
 
     def test_exc_label(self) -> None:
         with self.assertRaises(sw_compdocs.generator.LabelKeyError) as ctx:
             sw_compdocs.generator._label_get({}, "LABEL")
+        self.assertEqual(ctx.exception.key, "LABEL")
+
+    def test_exc_placeholder(self) -> None:
+        with self.assertRaises(
+            sw_compdocs.generator.LabelMissingPlaceholderError
+        ) as ctx:
+            sw_compdocs.generator._label_get({"LABEL": "text"}, "LABEL", "repl")
         self.assertEqual(ctx.exception.key, "LABEL")
 
 
@@ -298,21 +322,20 @@ class TestClassifyLogic(unittest.TestCase):
                 self.assertEqual(got_ret, tc.want_ret)
 
 
-class TestGenerateDocumentPropertyTableNormal(unittest.TestCase):
+class TestGenerateDocumentPropertyList(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(
             "tt",
             [
-                ("input_label", collections.abc.Mapping[str, str] | None),
                 ("input_comp", sw_compdocs.component.Component),
-                ("want_tbl", sw_compdocs.document.Table),
+                ("input_label", dict[str, str] | None),
+                ("want_ul", sw_compdocs.document.UnorderedList),
             ],
         )
 
         for tc in [
             # normal
             tt(
-                input_label=None,
                 input_comp=sw_compdocs.component.Component(
                     defn=sw_compdocs.component.Definition(
                         file="file",
@@ -323,210 +346,30 @@ class TestGenerateDocumentPropertyTableNormal(unittest.TestCase):
                         voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=2),
                     )
                 ),
-                want_tbl=sw_compdocs.document.Table(
-                    sw_compdocs.document.TableData(
-                        sw_compdocs.document.TableDataRow(
-                            [
-                                "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
-                                "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
-                            ]
-                        ),
-                        [
-                            sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "10"]
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL", "1x5x3"]
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "100"]
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", "tags"]
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", "file"]
-                            ),
-                        ],
-                    )
-                ),
-            ),
-            # empty
-            tt(
-                input_label=None,
-                input_comp=sw_compdocs.component.Component(
-                    defn=sw_compdocs.component.Definition()
-                ),
-                want_tbl=sw_compdocs.document.Table(
-                    sw_compdocs.document.TableData(
-                        sw_compdocs.document.TableDataRow(
-                            [
-                                "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
-                                "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
-                            ]
-                        ),
-                        [
-                            sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL", "1x1x1"]
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "0"]
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
-                            ),
-                        ],
-                    )
-                ),
-            ),
-            # mass format
-            tt(
-                input_label=None,
-                input_comp=sw_compdocs.component.Component(
-                    defn=sw_compdocs.component.Definition(mass=0.25)
-                ),
-                want_tbl=sw_compdocs.document.Table(
-                    sw_compdocs.document.TableData(
-                        sw_compdocs.document.TableDataRow(
-                            [
-                                "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
-                                "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
-                            ]
-                        ),
-                        [
-                            sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0.25"]
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL", "1x1x1"]
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "0"]
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
-                            ),
-                        ],
-                    )
-                ),
-            ),
-            # file format
-            tt(
-                input_label=None,
-                input_comp=sw_compdocs.component.Component(
-                    defn=sw_compdocs.component.Definition(
-                        file=b"path/to/definition.xml"
-                    )
-                ),
-                want_tbl=sw_compdocs.document.Table(
-                    sw_compdocs.document.TableData(
-                        sw_compdocs.document.TableDataRow(
-                            [
-                                "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
-                                "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
-                            ]
-                        ),
-                        [
-                            sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL", "1x1x1"]
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "0"]
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                [
-                                    "DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL",
-                                    "definition.xml",
-                                ]
-                            ),
-                        ],
-                    )
-                ),
-            ),
-            # label
-            tt(
                 input_label={
-                    "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL": "Label",
-                    "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE": "Value",
-                    "DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL": "Mass",
-                    "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL": "Dimensions",
-                    "DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL": "Cost",
-                    "DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL": "Tags",
-                    "DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL": "File",
+                    "DOCUMENT_PROP_MASS": "Mass: {}",
+                    "DOCUMENT_PROP_MASS_PARENT": "Parent Mass: {}",
+                    "DOCUMENT_PROP_MASS_CHILD": "Child Mass: {}",
+                    "DOCUMENT_PROP_DIMS": "Dimensions (WxDxH): {}",
+                    "DOCUMENT_PROP_DIMS_PARENT": "Parent Dimensions (WxDxH): {}",
+                    "DOCUMENT_PROP_DIMS_CHILD": "Child Dimensions (WxDxH): {}",
+                    "DOCUMENT_PROP_COST": "Cost: ${}",
+                    "DOCUMENT_PROP_TAGS": "Tags: {}",
+                    "DOCUMENT_PROP_FILE": "File: {}",
+                    "DOCUMENT_PROP_FILE_PARENT": "Parent File: {}",
+                    "DOCUMENT_PROP_FILE_CHILD": "Child File: {}",
                 },
-                input_comp=sw_compdocs.component.Component(
-                    defn=sw_compdocs.component.Definition()
-                ),
-                want_tbl=sw_compdocs.document.Table(
-                    sw_compdocs.document.TableData(
-                        sw_compdocs.document.TableDataRow(["Label", "Value"]),
-                        [
-                            sw_compdocs.document.TableDataRow(["Mass", "0"]),
-                            sw_compdocs.document.TableDataRow(["Dimensions", "1x1x1"]),
-                            sw_compdocs.document.TableDataRow(["Cost", "0"]),
-                            sw_compdocs.document.TableDataRow(["Tags", ""]),
-                            sw_compdocs.document.TableDataRow(["File", ""]),
-                        ],
-                    )
+                want_ul=sw_compdocs.document.UnorderedList(
+                    [
+                        sw_compdocs.document.ListItem("Mass: 10"),
+                        sw_compdocs.document.ListItem("Dimensions (WxDxH): 1x5x3"),
+                        sw_compdocs.document.ListItem("Cost: $100"),
+                        sw_compdocs.document.ListItem("Tags: tags"),
+                        sw_compdocs.document.ListItem("File: file"),
+                    ]
                 ),
             ),
-        ]:
-            with self.subTest(tc=tc):
-                got_tbl = sw_compdocs.generator.generate_document_property_table_normal(
-                    tc.input_comp, label=tc.input_label
-                )
-                self.assertEqual(got_tbl, tc.want_tbl)
-
-    def test_exc_label(self) -> None:
-        comp = sw_compdocs.component.Component(defn=sw_compdocs.component.Definition())
-        label_all = {
-            "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL": "Label",
-            "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE": "Value",
-            "DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL": "Mass",
-            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL": "Dimensions",
-            "DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL": "Cost",
-            "DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL": "Tags",
-            "DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL": "File",
-        }
-        for key in label_all.keys():
-            with self.subTest(label_key=key):
-                label = label_all.copy()
-                del label[key]
-                with self.assertRaises(sw_compdocs.generator.LabelKeyError) as ctx:
-                    sw_compdocs.generator.generate_document_property_table_normal(
-                        comp, label=label
-                    )
-                self.assertEqual(ctx.exception.key, key)
-
-
-class TestGenerateDocumentPropertyTableMultibody(unittest.TestCase):
-    def test_pass(self) -> None:
-        tt = typing.NamedTuple(
-            "tt",
-            [
-                ("input_comp", sw_compdocs.component.Multibody),
-                ("input_label", collections.abc.Mapping[str, str] | None),
-                ("want_tbl", sw_compdocs.document.Table),
-            ],
-        )
-
-        for tc in [
-            # normal
+            # multibody
             tt(
                 input_comp=sw_compdocs.component.Multibody(
                     defn=sw_compdocs.component.Definition(
@@ -549,122 +392,44 @@ class TestGenerateDocumentPropertyTableMultibody(unittest.TestCase):
                         voxel_max=sw_compdocs.component.VoxelPos(x=0, y=3, z=4),
                     ),
                 ),
-                input_label=None,
-                want_tbl=sw_compdocs.document.Table(
-                    sw_compdocs.document.TableData(
-                        sw_compdocs.document.TableDataRow(
+                input_label={
+                    "DOCUMENT_PROP_MASS": "Mass: {}",
+                    "DOCUMENT_PROP_MASS_PARENT": "Parent Mass: {}",
+                    "DOCUMENT_PROP_MASS_CHILD": "Child Mass: {}",
+                    "DOCUMENT_PROP_DIMS": "Dimensions (WxDxH): {}",
+                    "DOCUMENT_PROP_DIMS_PARENT": "Parent Dimensions (WxDxH): {}",
+                    "DOCUMENT_PROP_DIMS_CHILD": "Child Dimensions (WxDxH): {}",
+                    "DOCUMENT_PROP_COST": "Cost: ${}",
+                    "DOCUMENT_PROP_TAGS": "Tags: {}",
+                    "DOCUMENT_PROP_FILE": "File: {}",
+                    "DOCUMENT_PROP_FILE_PARENT": "Parent File: {}",
+                    "DOCUMENT_PROP_FILE_CHILD": "Child File: {}",
+                },
+                want_ul=sw_compdocs.document.UnorderedList(
+                    [
+                        sw_compdocs.document.ListItem(
+                            "Mass: 10",
                             [
-                                "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_LABEL",
-                                "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_PARENT",
-                                "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_CHILD",
-                                "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_TOTAL",
-                            ]
+                                sw_compdocs.document.ListItem("Parent Mass: 9"),
+                                sw_compdocs.document.ListItem("Child Mass: 1"),
+                            ],
                         ),
-                        [
-                            sw_compdocs.document.TableDataRow(
-                                [
-                                    "DOCUMENT_MULTIBODY_PROP_TABLE_MASS_LABEL",
-                                    "9",
-                                    "1",
-                                    "10",
-                                ],
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                [
-                                    "DOCUMENT_MULTIBODY_PROP_TABLE_DIMS_LABEL",
-                                    "1x5x3",
-                                    "1x9x7",
-                                    "6x9x7",
-                                ],
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                [
-                                    "DOCUMENT_MULTIBODY_PROP_TABLE_COST_LABEL",
-                                    "100",
-                                    "DOCUMENT_MULTIBODY_PROP_TABLE_COST_CHILD",
-                                    "DOCUMENT_MULTIBODY_PROP_TABLE_COST_TOTAL",
-                                ],
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                [
-                                    "DOCUMENT_MULTIBODY_PROP_TABLE_TAGS_LABEL",
-                                    "parent",
-                                    "DOCUMENT_MULTIBODY_PROP_TABLE_TAGS_CHILD",
-                                    "DOCUMENT_MULTIBODY_PROP_TABLE_TAGS_TOTAL",
-                                ],
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                [
-                                    "DOCUMENT_MULTIBODY_PROP_TABLE_FILE_LABEL",
-                                    "multibody_a.xml",
-                                    "multibody_b.xml",
-                                    "DOCUMENT_MULTIBODY_PROP_TABLE_FILE_TOTAL",
-                                ],
-                            ),
-                        ],
-                    )
-                ),
-            ),
-            # empty
-            tt(
-                input_comp=sw_compdocs.component.Multibody(
-                    defn=sw_compdocs.component.Definition(),
-                    child=sw_compdocs.component.Definition(),
-                ),
-                input_label=None,
-                want_tbl=sw_compdocs.document.Table(
-                    sw_compdocs.document.TableData(
-                        sw_compdocs.document.TableDataRow(
+                        sw_compdocs.document.ListItem(
+                            "Dimensions (WxDxH): 6x9x7",
                             [
-                                "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_LABEL",
-                                "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_PARENT",
-                                "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_CHILD",
-                                "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_TOTAL",
-                            ]
+                                sw_compdocs.document.ListItem(
+                                    "Parent Dimensions (WxDxH): 1x5x3"
+                                ),
+                                sw_compdocs.document.ListItem(
+                                    "Child Dimensions (WxDxH): 1x9x7"
+                                ),
+                            ],
                         ),
-                        [
-                            sw_compdocs.document.TableDataRow(
-                                [
-                                    "DOCUMENT_MULTIBODY_PROP_TABLE_MASS_LABEL",
-                                    "0",
-                                    "0",
-                                    "0",
-                                ],
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                [
-                                    "DOCUMENT_MULTIBODY_PROP_TABLE_DIMS_LABEL",
-                                    "1x1x1",
-                                    "1x1x1",
-                                    "1x1x1",
-                                ],
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                [
-                                    "DOCUMENT_MULTIBODY_PROP_TABLE_COST_LABEL",
-                                    "0",
-                                    "DOCUMENT_MULTIBODY_PROP_TABLE_COST_CHILD",
-                                    "DOCUMENT_MULTIBODY_PROP_TABLE_COST_TOTAL",
-                                ],
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                [
-                                    "DOCUMENT_MULTIBODY_PROP_TABLE_TAGS_LABEL",
-                                    "",
-                                    "DOCUMENT_MULTIBODY_PROP_TABLE_TAGS_CHILD",
-                                    "DOCUMENT_MULTIBODY_PROP_TABLE_TAGS_TOTAL",
-                                ],
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                [
-                                    "DOCUMENT_MULTIBODY_PROP_TABLE_FILE_LABEL",
-                                    "",
-                                    "",
-                                    "DOCUMENT_MULTIBODY_PROP_TABLE_FILE_TOTAL",
-                                ],
-                            ),
-                        ],
-                    )
+                        sw_compdocs.document.ListItem("Cost: $100"),
+                        sw_compdocs.document.ListItem("Tags: parent"),
+                        sw_compdocs.document.ListItem("Parent File: multibody_a.xml"),
+                        sw_compdocs.document.ListItem("Child File: multibody_b.xml"),
+                    ]
                 ),
             ),
             # mass format
@@ -673,63 +438,77 @@ class TestGenerateDocumentPropertyTableMultibody(unittest.TestCase):
                     defn=sw_compdocs.component.Definition(mass=0.25),
                     child=sw_compdocs.component.Definition(mass=1.25),
                 ),
-                input_label=None,
-                want_tbl=sw_compdocs.document.Table(
-                    sw_compdocs.document.TableData(
-                        sw_compdocs.document.TableDataRow(
+                input_label={
+                    "DOCUMENT_PROP_MASS": "Mass: {}",
+                    "DOCUMENT_PROP_MASS_PARENT": "Parent Mass: {}",
+                    "DOCUMENT_PROP_MASS_CHILD": "Child Mass: {}",
+                    "DOCUMENT_PROP_DIMS": "Dimensions (WxDxH): {}",
+                    "DOCUMENT_PROP_DIMS_PARENT": "Parent Dimensions (WxDxH): {}",
+                    "DOCUMENT_PROP_DIMS_CHILD": "Child Dimensions (WxDxH): {}",
+                    "DOCUMENT_PROP_COST": "Cost: ${}",
+                    "DOCUMENT_PROP_TAGS": "Tags: {}",
+                    "DOCUMENT_PROP_FILE": "File: {}",
+                    "DOCUMENT_PROP_FILE_PARENT": "Parent File: {}",
+                    "DOCUMENT_PROP_FILE_CHILD": "Child File: {}",
+                },
+                want_ul=sw_compdocs.document.UnorderedList(
+                    [
+                        sw_compdocs.document.ListItem(
+                            "Mass: 1.5",
                             [
-                                "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_LABEL",
-                                "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_PARENT",
-                                "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_CHILD",
-                                "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_TOTAL",
-                            ]
+                                sw_compdocs.document.ListItem("Parent Mass: 0.25"),
+                                sw_compdocs.document.ListItem("Child Mass: 1.25"),
+                            ],
                         ),
-                        [
-                            sw_compdocs.document.TableDataRow(
-                                [
-                                    "DOCUMENT_MULTIBODY_PROP_TABLE_MASS_LABEL",
-                                    "0.25",
-                                    "1.25",
-                                    "1.5",
-                                ],
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                [
-                                    "DOCUMENT_MULTIBODY_PROP_TABLE_DIMS_LABEL",
-                                    "1x1x1",
-                                    "1x1x1",
-                                    "1x1x1",
-                                ],
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                [
-                                    "DOCUMENT_MULTIBODY_PROP_TABLE_COST_LABEL",
-                                    "0",
-                                    "DOCUMENT_MULTIBODY_PROP_TABLE_COST_CHILD",
-                                    "DOCUMENT_MULTIBODY_PROP_TABLE_COST_TOTAL",
-                                ],
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                [
-                                    "DOCUMENT_MULTIBODY_PROP_TABLE_TAGS_LABEL",
-                                    "",
-                                    "DOCUMENT_MULTIBODY_PROP_TABLE_TAGS_CHILD",
-                                    "DOCUMENT_MULTIBODY_PROP_TABLE_TAGS_TOTAL",
-                                ],
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                [
-                                    "DOCUMENT_MULTIBODY_PROP_TABLE_FILE_LABEL",
-                                    "",
-                                    "",
-                                    "DOCUMENT_MULTIBODY_PROP_TABLE_FILE_TOTAL",
-                                ],
-                            ),
-                        ],
-                    )
+                        sw_compdocs.document.ListItem(
+                            "Dimensions (WxDxH): 1x1x1",
+                            [
+                                sw_compdocs.document.ListItem(
+                                    "Parent Dimensions (WxDxH): 1x1x1"
+                                ),
+                                sw_compdocs.document.ListItem(
+                                    "Child Dimensions (WxDxH): 1x1x1"
+                                ),
+                            ],
+                        ),
+                        sw_compdocs.document.ListItem("Cost: $0"),
+                        sw_compdocs.document.ListItem("Tags: "),
+                        sw_compdocs.document.ListItem("Parent File: "),
+                        sw_compdocs.document.ListItem("Child File: "),
+                    ]
                 ),
             ),
-            # file format
+            # file format normal
+            tt(
+                input_comp=sw_compdocs.component.Component(
+                    defn=sw_compdocs.component.Definition(
+                        file=b"path/to/definition.xml"
+                    )
+                ),
+                input_label={
+                    "DOCUMENT_PROP_MASS": "Mass: {}",
+                    "DOCUMENT_PROP_MASS_PARENT": "Parent Mass: {}",
+                    "DOCUMENT_PROP_MASS_CHILD": "Child Mass: {}",
+                    "DOCUMENT_PROP_DIMS": "Dimensions (WxDxH): {}",
+                    "DOCUMENT_PROP_DIMS_PARENT": "Parent Dimensions (WxDxH): {}",
+                    "DOCUMENT_PROP_DIMS_CHILD": "Child Dimensions (WxDxH): {}",
+                    "DOCUMENT_PROP_COST": "Cost: ${}",
+                    "DOCUMENT_PROP_TAGS": "Tags: {}",
+                    "DOCUMENT_PROP_FILE": "File: {}",
+                    "DOCUMENT_PROP_FILE_PARENT": "Parent File: {}",
+                    "DOCUMENT_PROP_FILE_CHILD": "Child File: {}",
+                },
+                want_ul=sw_compdocs.document.UnorderedList(
+                    [
+                        sw_compdocs.document.ListItem("Mass: 0"),
+                        sw_compdocs.document.ListItem("Dimensions (WxDxH): 1x1x1"),
+                        sw_compdocs.document.ListItem("Cost: $0"),
+                        sw_compdocs.document.ListItem("Tags: "),
+                        sw_compdocs.document.ListItem("File: definition.xml"),
+                    ]
+                ),
+            ),
+            # file format multibody
             tt(
                 input_comp=sw_compdocs.component.Multibody(
                     defn=sw_compdocs.component.Definition(
@@ -739,274 +518,52 @@ class TestGenerateDocumentPropertyTableMultibody(unittest.TestCase):
                         file=b"path/to/multibody_b.xml"
                     ),
                 ),
-                input_label=None,
-                want_tbl=sw_compdocs.document.Table(
-                    sw_compdocs.document.TableData(
-                        sw_compdocs.document.TableDataRow(
+                input_label={
+                    "DOCUMENT_PROP_MASS": "Mass: {}",
+                    "DOCUMENT_PROP_MASS_PARENT": "Parent Mass: {}",
+                    "DOCUMENT_PROP_MASS_CHILD": "Child Mass: {}",
+                    "DOCUMENT_PROP_DIMS": "Dimensions (WxDxH): {}",
+                    "DOCUMENT_PROP_DIMS_PARENT": "Parent Dimensions (WxDxH): {}",
+                    "DOCUMENT_PROP_DIMS_CHILD": "Child Dimensions (WxDxH): {}",
+                    "DOCUMENT_PROP_COST": "Cost: ${}",
+                    "DOCUMENT_PROP_TAGS": "Tags: {}",
+                    "DOCUMENT_PROP_FILE": "File: {}",
+                    "DOCUMENT_PROP_FILE_PARENT": "Parent File: {}",
+                    "DOCUMENT_PROP_FILE_CHILD": "Child File: {}",
+                },
+                want_ul=sw_compdocs.document.UnorderedList(
+                    [
+                        sw_compdocs.document.ListItem(
+                            "Mass: 0",
                             [
-                                "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_LABEL",
-                                "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_PARENT",
-                                "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_CHILD",
-                                "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_TOTAL",
-                            ]
+                                sw_compdocs.document.ListItem("Parent Mass: 0"),
+                                sw_compdocs.document.ListItem("Child Mass: 0"),
+                            ],
                         ),
-                        [
-                            sw_compdocs.document.TableDataRow(
-                                [
-                                    "DOCUMENT_MULTIBODY_PROP_TABLE_MASS_LABEL",
-                                    "0",
-                                    "0",
-                                    "0",
-                                ],
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                [
-                                    "DOCUMENT_MULTIBODY_PROP_TABLE_DIMS_LABEL",
-                                    "1x1x1",
-                                    "1x1x1",
-                                    "1x1x1",
-                                ],
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                [
-                                    "DOCUMENT_MULTIBODY_PROP_TABLE_COST_LABEL",
-                                    "0",
-                                    "DOCUMENT_MULTIBODY_PROP_TABLE_COST_CHILD",
-                                    "DOCUMENT_MULTIBODY_PROP_TABLE_COST_TOTAL",
-                                ],
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                [
-                                    "DOCUMENT_MULTIBODY_PROP_TABLE_TAGS_LABEL",
-                                    "",
-                                    "DOCUMENT_MULTIBODY_PROP_TABLE_TAGS_CHILD",
-                                    "DOCUMENT_MULTIBODY_PROP_TABLE_TAGS_TOTAL",
-                                ],
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                [
-                                    "DOCUMENT_MULTIBODY_PROP_TABLE_FILE_LABEL",
-                                    "multibody_a.xml",
-                                    "multibody_b.xml",
-                                    "DOCUMENT_MULTIBODY_PROP_TABLE_FILE_TOTAL",
-                                ],
-                            ),
-                        ],
-                    )
-                ),
-            ),
-            # label
-            tt(
-                input_comp=sw_compdocs.component.Multibody(
-                    defn=sw_compdocs.component.Definition(),
-                    child=sw_compdocs.component.Definition(),
-                ),
-                input_label={
-                    "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_LABEL": "Label",
-                    "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_PARENT": "Parent",
-                    "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_CHILD": "Child",
-                    "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_TOTAL": "Total",
-                    "DOCUMENT_MULTIBODY_PROP_TABLE_MASS_LABEL": "Mass",
-                    "DOCUMENT_MULTIBODY_PROP_TABLE_DIMS_LABEL": "Dimensions (WxDxH)",
-                    "DOCUMENT_MULTIBODY_PROP_TABLE_COST_LABEL": "Cost",
-                    "DOCUMENT_MULTIBODY_PROP_TABLE_COST_CHILD": "-",
-                    "DOCUMENT_MULTIBODY_PROP_TABLE_COST_TOTAL": "-",
-                    "DOCUMENT_MULTIBODY_PROP_TABLE_TAGS_LABEL": "Tags",
-                    "DOCUMENT_MULTIBODY_PROP_TABLE_TAGS_CHILD": "-",
-                    "DOCUMENT_MULTIBODY_PROP_TABLE_TAGS_TOTAL": "-",
-                    "DOCUMENT_MULTIBODY_PROP_TABLE_FILE_LABEL": "File",
-                    "DOCUMENT_MULTIBODY_PROP_TABLE_FILE_TOTAL": "-",
-                },
-                want_tbl=sw_compdocs.document.Table(
-                    sw_compdocs.document.TableData(
-                        sw_compdocs.document.TableDataRow(
-                            ["Label", "Parent", "Child", "Total"]
-                        ),
-                        [
-                            sw_compdocs.document.TableDataRow(
-                                ["Mass", "0", "0", "0"],
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                ["Dimensions (WxDxH)", "1x1x1", "1x1x1", "1x1x1"],
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                ["Cost", "0", "-", "-"],
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                ["Tags", "", "-", "-"],
-                            ),
-                            sw_compdocs.document.TableDataRow(
-                                ["File", "", "", "-"],
-                            ),
-                        ],
-                    )
-                ),
-            ),
-        ]:
-            with self.subTest(tc=tc):
-                got_tbl = (
-                    sw_compdocs.generator.generate_document_property_table_multibody(
-                        tc.input_comp, label=tc.input_label
-                    )
-                )
-                self.assertEqual(got_tbl, tc.want_tbl)
-
-    def test_exc_label(self) -> None:
-        comp = sw_compdocs.component.Multibody(
-            defn=sw_compdocs.component.Definition(),
-            child=sw_compdocs.component.Definition(),
-        )
-        label_all = {
-            "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_LABEL": "Label",
-            "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_PARENT": "Parent",
-            "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_CHILD": "Child",
-            "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_TOTAL": "Total",
-            "DOCUMENT_MULTIBODY_PROP_TABLE_MASS_LABEL": "Mass",
-            "DOCUMENT_MULTIBODY_PROP_TABLE_DIMS_LABEL": "Dimensions (WxDxH)",
-            "DOCUMENT_MULTIBODY_PROP_TABLE_COST_LABEL": "Cost",
-            "DOCUMENT_MULTIBODY_PROP_TABLE_COST_CHILD": "-",
-            "DOCUMENT_MULTIBODY_PROP_TABLE_COST_TOTAL": "-",
-            "DOCUMENT_MULTIBODY_PROP_TABLE_TAGS_LABEL": "Tags",
-            "DOCUMENT_MULTIBODY_PROP_TABLE_TAGS_CHILD": "-",
-            "DOCUMENT_MULTIBODY_PROP_TABLE_TAGS_TOTAL": "-",
-            "DOCUMENT_MULTIBODY_PROP_TABLE_FILE_LABEL": "File",
-            "DOCUMENT_MULTIBODY_PROP_TABLE_FILE_TOTAL": "-",
-        }
-        for key in label_all.keys():
-            with self.subTest(label_key=key):
-                label = label_all.copy()
-                del label[key]
-                with self.assertRaises(sw_compdocs.generator.LabelKeyError) as ctx:
-                    sw_compdocs.generator.generate_document_property_table_multibody(
-                        comp, label=label
-                    )
-                self.assertEqual(ctx.exception.key, key)
-
-
-class TestGenerateDocumentProperty(unittest.TestCase):
-    def test_pass(self) -> None:
-        tt = typing.NamedTuple(
-            "tt",
-            [
-                ("input_label", collections.abc.Mapping[str, str] | None),
-                ("input_lang", sw_compdocs.language.Language | None),
-                ("input_comp", sw_compdocs.component.Component),
-                ("want_doc", sw_compdocs.document.Document),
-            ],
-        )
-
-        for tc in [
-            tt(
-                input_label={
-                    "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL": "ラベル",
-                    "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE": "値",
-                    "DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL": "重量",
-                    "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL": "サイズ",
-                    "DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL": "値段",
-                    "DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL": "タグ",
-                    "DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL": "ファイル",
-                },
-                input_lang=sw_compdocs.language.Language(
-                    [
-                        sw_compdocs.language.Translation(
-                            "", "", "PROPERTIES", "プロパティ"
-                        )
-                    ]
-                ),
-                input_comp=sw_compdocs.component.Component(
-                    defn=sw_compdocs.component.Definition()
-                ),
-                want_doc=sw_compdocs.document.Document(
-                    [
-                        sw_compdocs.document.Heading("プロパティ"),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(["ラベル", "値"]),
-                                [
-                                    sw_compdocs.document.TableDataRow(["重量", "0"]),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["サイズ", "1x1x1"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(["値段", "0"]),
-                                    sw_compdocs.document.TableDataRow(["タグ", ""]),
-                                    sw_compdocs.document.TableDataRow(["ファイル", ""]),
-                                ],
-                            )
-                        ),
-                    ]
-                ),
-            ),
-            tt(
-                input_label={
-                    "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL": "ラベル",
-                    "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE": "値",
-                    "DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL": "重量",
-                    "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL": "サイズ",
-                    "DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL": "値段",
-                    "DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL": "タグ",
-                    "DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL": "ファイル",
-                    "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_LABEL": "ラベル",
-                    "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_PARENT": "親",
-                    "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_CHILD": "子",
-                    "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_TOTAL": "合計",
-                    "DOCUMENT_MULTIBODY_PROP_TABLE_MASS_LABEL": "重量",
-                    "DOCUMENT_MULTIBODY_PROP_TABLE_DIMS_LABEL": "サイズ",
-                    "DOCUMENT_MULTIBODY_PROP_TABLE_COST_LABEL": "値段",
-                    "DOCUMENT_MULTIBODY_PROP_TABLE_COST_CHILD": "-",
-                    "DOCUMENT_MULTIBODY_PROP_TABLE_COST_TOTAL": "-",
-                    "DOCUMENT_MULTIBODY_PROP_TABLE_TAGS_LABEL": "タグ",
-                    "DOCUMENT_MULTIBODY_PROP_TABLE_TAGS_CHILD": "-",
-                    "DOCUMENT_MULTIBODY_PROP_TABLE_TAGS_TOTAL": "-",
-                    "DOCUMENT_MULTIBODY_PROP_TABLE_FILE_LABEL": "ファイル",
-                    "DOCUMENT_MULTIBODY_PROP_TABLE_FILE_TOTAL": "-",
-                },
-                input_lang=sw_compdocs.language.Language(
-                    [
-                        sw_compdocs.language.Translation(
-                            "", "", "PROPERTIES", "プロパティ"
-                        )
-                    ]
-                ),
-                input_comp=sw_compdocs.component.Multibody(
-                    defn=sw_compdocs.component.Definition(),
-                    child=sw_compdocs.component.Definition(),
-                ),
-                want_doc=sw_compdocs.document.Document(
-                    [
-                        sw_compdocs.document.Heading("プロパティ"),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    ["ラベル", "親", "子", "合計"]
+                        sw_compdocs.document.ListItem(
+                            "Dimensions (WxDxH): 1x1x1",
+                            [
+                                sw_compdocs.document.ListItem(
+                                    "Parent Dimensions (WxDxH): 1x1x1"
                                 ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["重量", "0", "0", "0"],
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["サイズ", "1x1x1", "1x1x1", "1x1x1"],
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["値段", "0", "-", "-"],
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["タグ", "", "-", "-"],
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["ファイル", "", "", "-"],
-                                    ),
-                                ],
-                            )
+                                sw_compdocs.document.ListItem(
+                                    "Child Dimensions (WxDxH): 1x1x1"
+                                ),
+                            ],
                         ),
+                        sw_compdocs.document.ListItem("Cost: $0"),
+                        sw_compdocs.document.ListItem("Tags: "),
+                        sw_compdocs.document.ListItem("Parent File: multibody_a.xml"),
+                        sw_compdocs.document.ListItem("Child File: multibody_b.xml"),
                     ]
                 ),
             ),
         ]:
             with self.subTest(tc=tc):
-                got_doc = sw_compdocs.generator.generate_document_property(
-                    tc.input_comp, label=tc.input_label, lang=tc.input_lang
+                got_ul = sw_compdocs.generator.generate_document_property_list(
+                    tc.input_comp, label=tc.input_label
                 )
-                self.assertEqual(got_doc, tc.want_doc)
+                self.assertEqual(got_ul, tc.want_ul)
 
 
 class TestGenerateDocumentLogicTableNormal(unittest.TestCase):
@@ -1033,9 +590,9 @@ class TestGenerateDocumentLogicTableNormal(unittest.TestCase):
                     sw_compdocs.document.TableData(
                         sw_compdocs.document.TableDataRow(
                             [
-                                "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_TYPE",
-                                "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_LABEL",
-                                "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_DESC",
+                                "DOCUMENT_LOGIC_TABLE_NORMAL_HEAD_TYPE",
+                                "DOCUMENT_LOGIC_TABLE_NORMAL_HEAD_LABEL",
+                                "DOCUMENT_LOGIC_TABLE_NORMAL_HEAD_DESC",
                             ]
                         ),
                         [],
@@ -1075,9 +632,9 @@ class TestGenerateDocumentLogicTableNormal(unittest.TestCase):
                     sw_compdocs.document.TableData(
                         sw_compdocs.document.TableDataRow(
                             [
-                                "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_TYPE",
-                                "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_LABEL",
-                                "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_DESC",
+                                "DOCUMENT_LOGIC_TABLE_NORMAL_HEAD_TYPE",
+                                "DOCUMENT_LOGIC_TABLE_NORMAL_HEAD_LABEL",
+                                "DOCUMENT_LOGIC_TABLE_NORMAL_HEAD_DESC",
                             ]
                         ),
                         [
@@ -1097,9 +654,9 @@ class TestGenerateDocumentLogicTableNormal(unittest.TestCase):
             ),
             tt(
                 input_label={
-                    "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_TYPE": "種別",
-                    "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_LABEL": "ラベル",
-                    "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_DESC": "説明",
+                    "DOCUMENT_LOGIC_TABLE_NORMAL_HEAD_TYPE": "種別",
+                    "DOCUMENT_LOGIC_TABLE_NORMAL_HEAD_LABEL": "ラベル",
+                    "DOCUMENT_LOGIC_TABLE_NORMAL_HEAD_DESC": "説明",
                 },
                 input_lang=sw_compdocs.language.Language(
                     [
@@ -1202,9 +759,9 @@ class TestGenerateDocumentLogicTableNormal(unittest.TestCase):
     def test_exc_label(self) -> None:
         lns = sw_compdocs.component.LogicNodeList()
         label_all = {
-            "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_TYPE": "種別",
-            "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_LABEL": "ラベル",
-            "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_DESC": "説明",
+            "DOCUMENT_LOGIC_TABLE_NORMAL_HEAD_TYPE": "種別",
+            "DOCUMENT_LOGIC_TABLE_NORMAL_HEAD_LABEL": "ラベル",
+            "DOCUMENT_LOGIC_TABLE_NORMAL_HEAD_DESC": "説明",
         }
         for key in label_all.keys():
             with self.subTest(label_key=key):
@@ -1270,9 +827,9 @@ class TestGenerateDocumentLogicNormal(unittest.TestCase):
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
                                     [
-                                        "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_TYPE",
-                                        "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_DESC",
+                                        "DOCUMENT_LOGIC_TABLE_NORMAL_HEAD_TYPE",
+                                        "DOCUMENT_LOGIC_TABLE_NORMAL_HEAD_LABEL",
+                                        "DOCUMENT_LOGIC_TABLE_NORMAL_HEAD_DESC",
                                     ]
                                 ),
                                 [
@@ -1287,9 +844,9 @@ class TestGenerateDocumentLogicNormal(unittest.TestCase):
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
                                     [
-                                        "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_TYPE",
-                                        "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_DESC",
+                                        "DOCUMENT_LOGIC_TABLE_NORMAL_HEAD_TYPE",
+                                        "DOCUMENT_LOGIC_TABLE_NORMAL_HEAD_LABEL",
+                                        "DOCUMENT_LOGIC_TABLE_NORMAL_HEAD_DESC",
                                     ]
                                 ),
                                 [
@@ -1304,9 +861,9 @@ class TestGenerateDocumentLogicNormal(unittest.TestCase):
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
                                     [
-                                        "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_TYPE",
-                                        "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_DESC",
+                                        "DOCUMENT_LOGIC_TABLE_NORMAL_HEAD_TYPE",
+                                        "DOCUMENT_LOGIC_TABLE_NORMAL_HEAD_LABEL",
+                                        "DOCUMENT_LOGIC_TABLE_NORMAL_HEAD_DESC",
                                     ]
                                 ),
                                 [
@@ -1396,9 +953,9 @@ class TestGenerateDocumentLogicNormal(unittest.TestCase):
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
                                     [
-                                        "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_TYPE",
-                                        "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_DESC",
+                                        "DOCUMENT_LOGIC_TABLE_NORMAL_HEAD_TYPE",
+                                        "DOCUMENT_LOGIC_TABLE_NORMAL_HEAD_LABEL",
+                                        "DOCUMENT_LOGIC_TABLE_NORMAL_HEAD_DESC",
                                     ]
                                 ),
                                 [
@@ -1413,9 +970,9 @@ class TestGenerateDocumentLogicNormal(unittest.TestCase):
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
                                     [
-                                        "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_TYPE",
-                                        "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_DESC",
+                                        "DOCUMENT_LOGIC_TABLE_NORMAL_HEAD_TYPE",
+                                        "DOCUMENT_LOGIC_TABLE_NORMAL_HEAD_LABEL",
+                                        "DOCUMENT_LOGIC_TABLE_NORMAL_HEAD_DESC",
                                     ]
                                 ),
                                 [
@@ -1430,9 +987,9 @@ class TestGenerateDocumentLogicNormal(unittest.TestCase):
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
                                     [
-                                        "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_TYPE",
-                                        "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_DESC",
+                                        "DOCUMENT_LOGIC_TABLE_NORMAL_HEAD_TYPE",
+                                        "DOCUMENT_LOGIC_TABLE_NORMAL_HEAD_LABEL",
+                                        "DOCUMENT_LOGIC_TABLE_NORMAL_HEAD_DESC",
                                     ]
                                 ),
                                 [
@@ -1482,10 +1039,10 @@ class TestGenerateDocumentLogicTableMultibody(unittest.TestCase):
                     sw_compdocs.document.TableData(
                         sw_compdocs.document.TableDataRow(
                             [
-                                "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_BODY",
-                                "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_TYPE",
-                                "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_LABEL",
-                                "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_DESC",
+                                "DOCUMENT_LOGIC_TABLE_MULTIBODY_HEAD_BODY",
+                                "DOCUMENT_LOGIC_TABLE_MULTIBODY_HEAD_TYPE",
+                                "DOCUMENT_LOGIC_TABLE_MULTIBODY_HEAD_LABEL",
+                                "DOCUMENT_LOGIC_TABLE_MULTIBODY_HEAD_DESC",
                             ]
                         ),
                     ),
@@ -1528,16 +1085,16 @@ class TestGenerateDocumentLogicTableMultibody(unittest.TestCase):
                     sw_compdocs.document.TableData(
                         sw_compdocs.document.TableDataRow(
                             [
-                                "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_BODY",
-                                "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_TYPE",
-                                "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_LABEL",
-                                "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_DESC",
+                                "DOCUMENT_LOGIC_TABLE_MULTIBODY_HEAD_BODY",
+                                "DOCUMENT_LOGIC_TABLE_MULTIBODY_HEAD_TYPE",
+                                "DOCUMENT_LOGIC_TABLE_MULTIBODY_HEAD_LABEL",
+                                "DOCUMENT_LOGIC_TABLE_MULTIBODY_HEAD_DESC",
                             ]
                         ),
                         [
                             sw_compdocs.document.TableDataRow(
                                 [
-                                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_BODY_PARENT",
+                                    "DOCUMENT_LOGIC_TABLE_MULTIBODY_BODY_PARENT",
                                     "on/off",
                                     "Parent Label 0",
                                     "Parent Description 0",
@@ -1545,7 +1102,7 @@ class TestGenerateDocumentLogicTableMultibody(unittest.TestCase):
                             ),
                             sw_compdocs.document.TableDataRow(
                                 [
-                                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_BODY_PARENT",
+                                    "DOCUMENT_LOGIC_TABLE_MULTIBODY_BODY_PARENT",
                                     "number",
                                     "Parent Label 1",
                                     "Parent Description 1",
@@ -1553,7 +1110,7 @@ class TestGenerateDocumentLogicTableMultibody(unittest.TestCase):
                             ),
                             sw_compdocs.document.TableDataRow(
                                 [
-                                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_BODY_CHILD",
+                                    "DOCUMENT_LOGIC_TABLE_MULTIBODY_BODY_CHILD",
                                     "video",
                                     "Child Label 0",
                                     "Child Description 0",
@@ -1561,7 +1118,7 @@ class TestGenerateDocumentLogicTableMultibody(unittest.TestCase):
                             ),
                             sw_compdocs.document.TableDataRow(
                                 [
-                                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_BODY_CHILD",
+                                    "DOCUMENT_LOGIC_TABLE_MULTIBODY_BODY_CHILD",
                                     "audio",
                                     "Child Label 1",
                                     "Child Description 1",
@@ -1614,12 +1171,12 @@ class TestGenerateDocumentLogicTableMultibody(unittest.TestCase):
                     ),
                 ],
                 input_label={
-                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_BODY": "親/子",
-                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_TYPE": "種別",
-                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_LABEL": "ラベル",
-                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_DESC": "説明",
-                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_BODY_PARENT": "親",
-                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_BODY_CHILD": "子",
+                    "DOCUMENT_LOGIC_TABLE_MULTIBODY_HEAD_BODY": "親/子",
+                    "DOCUMENT_LOGIC_TABLE_MULTIBODY_HEAD_TYPE": "種別",
+                    "DOCUMENT_LOGIC_TABLE_MULTIBODY_HEAD_LABEL": "ラベル",
+                    "DOCUMENT_LOGIC_TABLE_MULTIBODY_HEAD_DESC": "説明",
+                    "DOCUMENT_LOGIC_TABLE_MULTIBODY_BODY_PARENT": "親",
+                    "DOCUMENT_LOGIC_TABLE_MULTIBODY_BODY_CHILD": "子",
                 },
                 input_lang=sw_compdocs.language.Language(
                     [
@@ -1758,12 +1315,12 @@ class TestGenerateDocumentLogicMultibody(unittest.TestCase):
                 ),
                 input_child_lns=sw_compdocs.component.LogicNodeList(),
                 input_label={
-                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_BODY": "親/子",
-                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_TYPE": "型",
-                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_LABEL": "ラベル",
-                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_DESC": "説明",
-                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_BODY_PARENT": "親",
-                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_BODY_CHILD": "子",
+                    "DOCUMENT_LOGIC_TABLE_MULTIBODY_HEAD_BODY": "親/子",
+                    "DOCUMENT_LOGIC_TABLE_MULTIBODY_HEAD_TYPE": "型",
+                    "DOCUMENT_LOGIC_TABLE_MULTIBODY_HEAD_LABEL": "ラベル",
+                    "DOCUMENT_LOGIC_TABLE_MULTIBODY_HEAD_DESC": "説明",
+                    "DOCUMENT_LOGIC_TABLE_MULTIBODY_BODY_PARENT": "親",
+                    "DOCUMENT_LOGIC_TABLE_MULTIBODY_BODY_CHILD": "子",
                 },
                 input_lang=sw_compdocs.language.Language(
                     [
@@ -1805,12 +1362,12 @@ class TestGenerateDocumentLogicMultibody(unittest.TestCase):
                 ),
                 input_child_lns=sw_compdocs.component.LogicNodeList(),
                 input_label={
-                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_BODY": "親/子",
-                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_TYPE": "型",
-                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_LABEL": "ラベル",
-                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_DESC": "説明",
-                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_BODY_PARENT": "親",
-                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_BODY_CHILD": "子",
+                    "DOCUMENT_LOGIC_TABLE_MULTIBODY_HEAD_BODY": "親/子",
+                    "DOCUMENT_LOGIC_TABLE_MULTIBODY_HEAD_TYPE": "型",
+                    "DOCUMENT_LOGIC_TABLE_MULTIBODY_HEAD_LABEL": "ラベル",
+                    "DOCUMENT_LOGIC_TABLE_MULTIBODY_HEAD_DESC": "説明",
+                    "DOCUMENT_LOGIC_TABLE_MULTIBODY_BODY_PARENT": "親",
+                    "DOCUMENT_LOGIC_TABLE_MULTIBODY_BODY_CHILD": "子",
                 },
                 input_lang=sw_compdocs.language.Language(
                     [
@@ -1852,12 +1409,12 @@ class TestGenerateDocumentLogicMultibody(unittest.TestCase):
                 ),
                 input_child_lns=sw_compdocs.component.LogicNodeList(),
                 input_label={
-                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_BODY": "親/子",
-                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_TYPE": "型",
-                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_LABEL": "ラベル",
-                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_DESC": "説明",
-                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_BODY_PARENT": "親",
-                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_BODY_CHILD": "子",
+                    "DOCUMENT_LOGIC_TABLE_MULTIBODY_HEAD_BODY": "親/子",
+                    "DOCUMENT_LOGIC_TABLE_MULTIBODY_HEAD_TYPE": "型",
+                    "DOCUMENT_LOGIC_TABLE_MULTIBODY_HEAD_LABEL": "ラベル",
+                    "DOCUMENT_LOGIC_TABLE_MULTIBODY_HEAD_DESC": "説明",
+                    "DOCUMENT_LOGIC_TABLE_MULTIBODY_BODY_PARENT": "親",
+                    "DOCUMENT_LOGIC_TABLE_MULTIBODY_BODY_CHILD": "子",
                 },
                 input_lang=sw_compdocs.language.Language(
                     [
@@ -1897,12 +1454,12 @@ class TestGenerateDocumentLogicMultibody(unittest.TestCase):
                     ]
                 ),
                 input_label={
-                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_BODY": "親/子",
-                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_TYPE": "型",
-                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_LABEL": "ラベル",
-                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_DESC": "説明",
-                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_BODY_PARENT": "親",
-                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_BODY_CHILD": "子",
+                    "DOCUMENT_LOGIC_TABLE_MULTIBODY_HEAD_BODY": "親/子",
+                    "DOCUMENT_LOGIC_TABLE_MULTIBODY_HEAD_TYPE": "型",
+                    "DOCUMENT_LOGIC_TABLE_MULTIBODY_HEAD_LABEL": "ラベル",
+                    "DOCUMENT_LOGIC_TABLE_MULTIBODY_HEAD_DESC": "説明",
+                    "DOCUMENT_LOGIC_TABLE_MULTIBODY_BODY_PARENT": "親",
+                    "DOCUMENT_LOGIC_TABLE_MULTIBODY_BODY_CHILD": "子",
                 },
                 input_lang=sw_compdocs.language.Language(
                     [
@@ -1944,12 +1501,12 @@ class TestGenerateDocumentLogicMultibody(unittest.TestCase):
                     ]
                 ),
                 input_label={
-                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_BODY": "親/子",
-                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_TYPE": "型",
-                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_LABEL": "ラベル",
-                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_DESC": "説明",
-                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_BODY_PARENT": "親",
-                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_BODY_CHILD": "子",
+                    "DOCUMENT_LOGIC_TABLE_MULTIBODY_HEAD_BODY": "親/子",
+                    "DOCUMENT_LOGIC_TABLE_MULTIBODY_HEAD_TYPE": "型",
+                    "DOCUMENT_LOGIC_TABLE_MULTIBODY_HEAD_LABEL": "ラベル",
+                    "DOCUMENT_LOGIC_TABLE_MULTIBODY_HEAD_DESC": "説明",
+                    "DOCUMENT_LOGIC_TABLE_MULTIBODY_BODY_PARENT": "親",
+                    "DOCUMENT_LOGIC_TABLE_MULTIBODY_BODY_CHILD": "子",
                 },
                 input_lang=sw_compdocs.language.Language(
                     [
@@ -1991,12 +1548,12 @@ class TestGenerateDocumentLogicMultibody(unittest.TestCase):
                     ]
                 ),
                 input_label={
-                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_BODY": "親/子",
-                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_TYPE": "型",
-                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_LABEL": "ラベル",
-                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_DESC": "説明",
-                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_BODY_PARENT": "親",
-                    "DOCUMENT_MULTIBODY_LOGIC_TABLE_BODY_CHILD": "子",
+                    "DOCUMENT_LOGIC_TABLE_MULTIBODY_HEAD_BODY": "親/子",
+                    "DOCUMENT_LOGIC_TABLE_MULTIBODY_HEAD_TYPE": "型",
+                    "DOCUMENT_LOGIC_TABLE_MULTIBODY_HEAD_LABEL": "ラベル",
+                    "DOCUMENT_LOGIC_TABLE_MULTIBODY_HEAD_DESC": "説明",
+                    "DOCUMENT_LOGIC_TABLE_MULTIBODY_BODY_PARENT": "親",
+                    "DOCUMENT_LOGIC_TABLE_MULTIBODY_BODY_CHILD": "子",
                 },
                 input_lang=sw_compdocs.language.Language(
                     [
@@ -2062,35 +1619,14 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                     [
                         sw_compdocs.document.Heading(""),
                         sw_compdocs.document.Heading("PROPERTIES", level=2),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL",
-                                            "1x1x1",
-                                        ]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
-                                    ),
-                                ],
-                            )
+                        sw_compdocs.document.UnorderedList(
+                            [
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
+                            ]
                         ),
                     ]
                 ),
@@ -2110,43 +1646,22 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                     [
                         sw_compdocs.document.Heading(""),
                         sw_compdocs.document.Callout(
-                            "DOCUMENT_COMMON_DEPRECATED_TEXT",
+                            "DOCUMENT_DEPRECATED_TEXT",
                             kind=sw_compdocs.document.CalloutKind.WARNING,
                         ),
                         sw_compdocs.document.Callout(
-                            "DOCUMENT_COMMON_ORPHAN_TEXT",
+                            "DOCUMENT_ORPHAN_TEXT",
                             kind=sw_compdocs.document.CalloutKind.WARNING,
                         ),
                         sw_compdocs.document.Heading("PROPERTIES", level=2),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL",
-                                            "1x1x1",
-                                        ]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
-                                    ),
-                                ],
-                            )
+                        sw_compdocs.document.UnorderedList(
+                            [
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
+                            ]
                         ),
                     ]
                 ),
@@ -2185,44 +1700,23 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                         sw_compdocs.document.Paragraph("Short Description"),
                         sw_compdocs.document.Paragraph("Description"),
                         sw_compdocs.document.Heading("PROPERTIES", level=2),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL",
-                                            "1x1x1",
-                                        ]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
-                                    ),
-                                ],
-                            )
+                        sw_compdocs.document.UnorderedList(
+                            [
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
+                            ]
                         ),
                         sw_compdocs.document.Heading("logic inputs", level=2),
                         sw_compdocs.document.Table(
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
                                     [
-                                        "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_TYPE",
-                                        "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_DESC",
+                                        "DOCUMENT_LOGIC_TABLE_NORMAL_HEAD_TYPE",
+                                        "DOCUMENT_LOGIC_TABLE_NORMAL_HEAD_LABEL",
+                                        "DOCUMENT_LOGIC_TABLE_NORMAL_HEAD_DESC",
                                     ]
                                 ),
                                 [
@@ -2238,18 +1732,16 @@ class TestGenerateDocumentComponent(unittest.TestCase):
             # label, lang, template
             tt(
                 input_label={
-                    "DOCUMENT_COMMON_DEPRECATED_TEXT": "この部品は非推奨です。",
-                    "DOCUMENT_COMMON_ORPHAN_TEXT": "この部品は孤児です。親部品が見当たりません。",
-                    "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL": "ラベル",
-                    "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE": "値",
-                    "DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL": "重量",
-                    "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL": "サイズ(WxDxH)",
-                    "DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL": "値段",
-                    "DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL": "タグ",
-                    "DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL": "ファイル",
-                    "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_TYPE": "型",
-                    "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_LABEL": "ラベル",
-                    "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_DESC": "説明",
+                    "DOCUMENT_DEPRECATED_TEXT": "この部品は非推奨です。",
+                    "DOCUMENT_ORPHAN_TEXT": "この部品は孤児です。親部品が見当たりません。",
+                    "DOCUMENT_PROP_MASS": "重量: {}",
+                    "DOCUMENT_PROP_DIMS": "サイズ (WxDxH): {}",
+                    "DOCUMENT_PROP_COST": "値段: ${}",
+                    "DOCUMENT_PROP_TAGS": "タグ: {}",
+                    "DOCUMENT_PROP_FILE": "ファイル: {}",
+                    "DOCUMENT_LOGIC_TABLE_NORMAL_HEAD_TYPE": "型",
+                    "DOCUMENT_LOGIC_TABLE_NORMAL_HEAD_LABEL": "ラベル",
+                    "DOCUMENT_LOGIC_TABLE_NORMAL_HEAD_DESC": "説明",
                 },
                 input_lang=sw_compdocs.language.Language(
                     [
@@ -2355,19 +1847,14 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                         sw_compdocs.document.Paragraph("短い説明"),
                         sw_compdocs.document.Paragraph("説明"),
                         sw_compdocs.document.Heading("プロパティ", level=2),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(["ラベル", "値"]),
-                                [
-                                    sw_compdocs.document.TableDataRow(["重量", "0"]),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["サイズ(WxDxH)", "1x1x1"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(["値段", "0"]),
-                                    sw_compdocs.document.TableDataRow(["タグ", ""]),
-                                    sw_compdocs.document.TableDataRow(["ファイル", ""]),
-                                ],
-                            )
+                        sw_compdocs.document.UnorderedList(
+                            [
+                                sw_compdocs.document.ListItem("重量: 0"),
+                                sw_compdocs.document.ListItem("サイズ (WxDxH): 1x1x1"),
+                                sw_compdocs.document.ListItem("値段: $0"),
+                                sw_compdocs.document.ListItem("タグ: "),
+                                sw_compdocs.document.ListItem("ファイル: "),
+                            ]
                         ),
                         sw_compdocs.document.Heading("ロジック入力", level=2),
                         sw_compdocs.document.Table(
@@ -2388,16 +1875,14 @@ class TestGenerateDocumentComponent(unittest.TestCase):
             # button_push
             tt(
                 input_label={
-                    "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL": "ラベル",
-                    "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE": "値",
-                    "DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL": "重量",
-                    "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL": "サイズ(WxDxH)",
-                    "DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL": "値段",
-                    "DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL": "タグ",
-                    "DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL": "ファイル",
-                    "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_TYPE": "型",
-                    "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_LABEL": "ラベル",
-                    "DOCUMENT_NORMAL_LOGIC_TABLE_HEAD_DESC": "説明",
+                    "DOCUMENT_PROP_MASS": "重量: {}",
+                    "DOCUMENT_PROP_DIMS": "サイズ (WxDxH): {}",
+                    "DOCUMENT_PROP_COST": "値段: ${}",
+                    "DOCUMENT_PROP_TAGS": "タグ: {}",
+                    "DOCUMENT_PROP_FILE": "ファイル: {}",
+                    "DOCUMENT_LOGIC_TABLE_NORMAL_HEAD_TYPE": "型",
+                    "DOCUMENT_LOGIC_TABLE_NORMAL_HEAD_LABEL": "ラベル",
+                    "DOCUMENT_LOGIC_TABLE_NORMAL_HEAD_DESC": "説明",
                 },
                 input_lang=sw_compdocs.language.Language(
                     [
@@ -2575,23 +2060,16 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                             "外部入力でボタンのオン/オフを制御することができ, 複数のボタンを同時に制御できます."
                         ),
                         sw_compdocs.document.Heading("プロパティ", level=2),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(["ラベル", "値"]),
-                                [
-                                    sw_compdocs.document.TableDataRow(["重量", "1"]),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["サイズ(WxDxH)", "1x1x2"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(["値段", "10"]),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["タグ", "basic"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["ファイル", "button_push.xml"]
-                                    ),
-                                ],
-                            )
+                        sw_compdocs.document.UnorderedList(
+                            [
+                                sw_compdocs.document.ListItem("重量: 1"),
+                                sw_compdocs.document.ListItem("サイズ (WxDxH): 1x1x2"),
+                                sw_compdocs.document.ListItem("値段: $10"),
+                                sw_compdocs.document.ListItem("タグ: basic"),
+                                sw_compdocs.document.ListItem(
+                                    "ファイル: button_push.xml"
+                                ),
+                            ]
                         ),
                         sw_compdocs.document.Heading("ロジック入力", level=2),
                         sw_compdocs.document.Table(
@@ -2664,75 +2142,55 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                     [
                         sw_compdocs.document.Heading(""),
                         sw_compdocs.document.Heading("PROPERTIES", level=2),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
+                        sw_compdocs.document.UnorderedList(
+                            [
+                                sw_compdocs.document.ListItem(
+                                    "DOCUMENT_PROP_MASS",
                                     [
-                                        "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_PARENT",
-                                        "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_CHILD",
-                                        "DOCUMENT_MULTIBODY_PROP_TABLE_HEAD_TOTAL",
-                                    ]
+                                        sw_compdocs.document.ListItem(
+                                            "DOCUMENT_PROP_MASS_PARENT"
+                                        ),
+                                        sw_compdocs.document.ListItem(
+                                            "DOCUMENT_PROP_MASS_CHILD"
+                                        ),
+                                    ],
                                 ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "DOCUMENT_MULTIBODY_PROP_TABLE_MASS_LABEL",
-                                            "0",
-                                            "0",
-                                            "0",
-                                        ]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "DOCUMENT_MULTIBODY_PROP_TABLE_DIMS_LABEL",
-                                            "1x1x1",
-                                            "1x1x1",
-                                            "1x1x1",
-                                        ]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "DOCUMENT_MULTIBODY_PROP_TABLE_COST_LABEL",
-                                            "0",
-                                            "DOCUMENT_MULTIBODY_PROP_TABLE_COST_CHILD",
-                                            "DOCUMENT_MULTIBODY_PROP_TABLE_COST_TOTAL",
-                                        ]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "DOCUMENT_MULTIBODY_PROP_TABLE_TAGS_LABEL",
-                                            "",
-                                            "DOCUMENT_MULTIBODY_PROP_TABLE_TAGS_CHILD",
-                                            "DOCUMENT_MULTIBODY_PROP_TABLE_TAGS_TOTAL",
-                                        ]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "DOCUMENT_MULTIBODY_PROP_TABLE_FILE_LABEL",
-                                            "",
-                                            "",
-                                            "DOCUMENT_MULTIBODY_PROP_TABLE_FILE_TOTAL",
-                                        ]
-                                    ),
-                                ],
-                            )
+                                sw_compdocs.document.ListItem(
+                                    "DOCUMENT_PROP_DIMS",
+                                    [
+                                        sw_compdocs.document.ListItem(
+                                            "DOCUMENT_PROP_DIMS_PARENT"
+                                        ),
+                                        sw_compdocs.document.ListItem(
+                                            "DOCUMENT_PROP_DIMS_CHILD"
+                                        ),
+                                    ],
+                                ),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
+                                sw_compdocs.document.ListItem(
+                                    "DOCUMENT_PROP_FILE_PARENT"
+                                ),
+                                sw_compdocs.document.ListItem(
+                                    "DOCUMENT_PROP_FILE_CHILD"
+                                ),
+                            ]
                         ),
                         sw_compdocs.document.Heading("logic outputs", level=2),
                         sw_compdocs.document.Table(
                             sw_compdocs.document.TableData(
                                 sw_compdocs.document.TableDataRow(
                                     [
-                                        "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_BODY",
-                                        "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_TYPE",
-                                        "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_MULTIBODY_LOGIC_TABLE_HEAD_DESC",
+                                        "DOCUMENT_LOGIC_TABLE_MULTIBODY_HEAD_BODY",
+                                        "DOCUMENT_LOGIC_TABLE_MULTIBODY_HEAD_TYPE",
+                                        "DOCUMENT_LOGIC_TABLE_MULTIBODY_HEAD_LABEL",
+                                        "DOCUMENT_LOGIC_TABLE_MULTIBODY_HEAD_DESC",
                                     ]
                                 ),
                                 [
                                     sw_compdocs.document.TableDataRow(
                                         [
-                                            "DOCUMENT_MULTIBODY_LOGIC_TABLE_BODY_CHILD",
+                                            "DOCUMENT_LOGIC_TABLE_MULTIBODY_BODY_CHILD",
                                             "on/off",
                                             "",
                                             "",
@@ -2762,7 +2220,7 @@ class TestGenerateDocumentComponent(unittest.TestCase):
         )
         with self.assertRaises(sw_compdocs.generator.LabelKeyError) as ctx:
             sw_compdocs.generator.generate_document_component(comp, label={})
-        self.assertEqual(ctx.exception.key, "DOCUMENT_COMMON_DEPRECATED_TEXT")
+        self.assertEqual(ctx.exception.key, "DOCUMENT_DEPRECATED_TEXT")
 
 
 class TestGenerateDocumentComponentList(unittest.TestCase):
@@ -2806,67 +2264,25 @@ class TestGenerateDocumentComponentList(unittest.TestCase):
                     [
                         sw_compdocs.document.Heading("A", level=1),
                         sw_compdocs.document.Heading("PROPERTIES", level=2),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL",
-                                            "1x1x1",
-                                        ]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
-                                    ),
-                                ],
-                            )
+                        sw_compdocs.document.UnorderedList(
+                            [
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
+                            ]
                         ),
                         sw_compdocs.document.Heading("B", level=1),
                         sw_compdocs.document.Heading("PROPERTIES", level=2),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL",
-                                            "1x1x1",
-                                        ]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
-                                    ),
-                                ],
-                            )
+                        sw_compdocs.document.UnorderedList(
+                            [
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
+                            ]
                         ),
                     ]
                 ),
@@ -2891,13 +2307,11 @@ class TestGenerateDocumentComponentList(unittest.TestCase):
                     ),
                 ],
                 input_label={
-                    "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL": "Label",
-                    "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE": "Value",
-                    "DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL": "Mass",
-                    "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL": "Dimensions (WxDxH)",
-                    "DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL": "Cost",
-                    "DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL": "Tags",
-                    "DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL": "File",
+                    "DOCUMENT_PROP_MASS": "重量: {}",
+                    "DOCUMENT_PROP_DIMS": "サイズ (WxDxH): {}",
+                    "DOCUMENT_PROP_COST": "値段: ${}",
+                    "DOCUMENT_PROP_TAGS": "タグ: {}",
+                    "DOCUMENT_PROP_FILE": "ファイル: {}",
                 },
                 input_lang=sw_compdocs.language.Language(
                     [
@@ -2922,19 +2336,14 @@ class TestGenerateDocumentComponentList(unittest.TestCase):
                         sw_compdocs.document.Paragraph("短い説明 foo"),
                         sw_compdocs.document.Paragraph("長い説明 bar"),
                         sw_compdocs.document.Heading("プロパティ", level=2),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(["Label", "Value"]),
-                                [
-                                    sw_compdocs.document.TableDataRow(["Mass", "0"]),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["Dimensions (WxDxH)", "1x1x1"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(["Cost", "0"]),
-                                    sw_compdocs.document.TableDataRow(["Tags", ""]),
-                                    sw_compdocs.document.TableDataRow(["File", ""]),
-                                ],
-                            )
+                        sw_compdocs.document.UnorderedList(
+                            [
+                                sw_compdocs.document.ListItem("重量: 0"),
+                                sw_compdocs.document.ListItem("サイズ (WxDxH): 1x1x1"),
+                                sw_compdocs.document.ListItem("値段: $0"),
+                                sw_compdocs.document.ListItem("タグ: "),
+                                sw_compdocs.document.ListItem("ファイル: "),
+                            ]
                         ),
                     ]
                 ),
@@ -2990,35 +2399,14 @@ class TestGenerateDocument(unittest.TestCase):
                         sw_compdocs.document.Heading("Blocks", level=1),
                         sw_compdocs.document.Heading("Blocks_1", level=2),
                         sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL",
-                                            "1x1x1",
-                                        ]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
-                                    ),
-                                ],
-                            )
+                        sw_compdocs.document.UnorderedList(
+                            [
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
+                            ]
                         ),
                     ],
                 ),
@@ -3059,99 +2447,36 @@ class TestGenerateDocument(unittest.TestCase):
                         sw_compdocs.document.Heading("Blocks", level=1),
                         sw_compdocs.document.Heading("Blocks_1", level=2),
                         sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL",
-                                            "1x1x1",
-                                        ]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "3"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
-                                    ),
-                                ],
-                            )
+                        sw_compdocs.document.UnorderedList(
+                            [
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
+                            ]
                         ),
                         sw_compdocs.document.Heading("Blocks_2", level=2),
                         sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL",
-                                            "1x1x1",
-                                        ]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "2"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
-                                    ),
-                                ],
-                            )
+                        sw_compdocs.document.UnorderedList(
+                            [
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
+                            ]
                         ),
                         sw_compdocs.document.Heading("Blocks_3", level=2),
                         sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL",
-                                            "1x1x1",
-                                        ]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "1"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
-                                    ),
-                                ],
-                            )
+                        sw_compdocs.document.UnorderedList(
+                            [
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
+                            ]
                         ),
                     ],
                 ),
@@ -3163,32 +2488,36 @@ class TestGenerateDocument(unittest.TestCase):
                         defn=sw_compdocs.component.Definition(
                             key=None,
                             name=sw_compdocs.language.Text(en="Blocks_1"),
-                            value=4,
-                            category=sw_compdocs.component.Category.BLOCKS,
+                            tooltip_properties=sw_compdocs.component.TooltipProperties(
+                                short_description=sw_compdocs.language.Text(en="4"),
+                            ),
                         )
                     ),
                     sw_compdocs.component.Component(
                         defn=sw_compdocs.component.Definition(
                             key="blocks_3",
                             name=sw_compdocs.language.Text(en="Blocks_1"),
-                            value=3,
-                            category=sw_compdocs.component.Category.BLOCKS,
+                            tooltip_properties=sw_compdocs.component.TooltipProperties(
+                                short_description=sw_compdocs.language.Text(en="3"),
+                            ),
                         )
                     ),
                     sw_compdocs.component.Component(
                         defn=sw_compdocs.component.Definition(
                             key="blocks_2",
                             name=sw_compdocs.language.Text(en="Blocks_1"),
-                            value=2,
-                            category=sw_compdocs.component.Category.BLOCKS,
+                            tooltip_properties=sw_compdocs.component.TooltipProperties(
+                                short_description=sw_compdocs.language.Text(en="2"),
+                            ),
                         )
                     ),
                     sw_compdocs.component.Component(
                         defn=sw_compdocs.component.Definition(
                             key="blocks_1",
                             name=sw_compdocs.language.Text(en="Blocks_1"),
-                            value=1,
-                            category=sw_compdocs.component.Category.BLOCKS,
+                            tooltip_properties=sw_compdocs.component.TooltipProperties(
+                                short_description=sw_compdocs.language.Text(en="1"),
+                            ),
                         )
                     ),
                 ],
@@ -3199,132 +2528,52 @@ class TestGenerateDocument(unittest.TestCase):
                     [
                         sw_compdocs.document.Heading("Blocks", level=1),
                         sw_compdocs.document.Heading("Blocks_1", level=2),
+                        sw_compdocs.document.Paragraph("1"),
                         sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL",
-                                            "1x1x1",
-                                        ]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "1"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
-                                    ),
-                                ],
-                            )
+                        sw_compdocs.document.UnorderedList(
+                            [
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
+                            ]
                         ),
                         sw_compdocs.document.Heading("Blocks_1", level=2),
+                        sw_compdocs.document.Paragraph("2"),
                         sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL",
-                                            "1x1x1",
-                                        ]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "2"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
-                                    ),
-                                ],
-                            )
+                        sw_compdocs.document.UnorderedList(
+                            [
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
+                            ]
                         ),
                         sw_compdocs.document.Heading("Blocks_1", level=2),
+                        sw_compdocs.document.Paragraph("3"),
                         sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL",
-                                            "1x1x1",
-                                        ]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "3"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
-                                    ),
-                                ],
-                            )
+                        sw_compdocs.document.UnorderedList(
+                            [
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
+                            ]
                         ),
                         sw_compdocs.document.Heading("Blocks_1", level=2),
+                        sw_compdocs.document.Paragraph("4"),
                         sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL",
-                                            "1x1x1",
-                                        ]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "4"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
-                                    ),
-                                ],
-                            )
+                        sw_compdocs.document.UnorderedList(
+                            [
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
+                            ]
                         ),
                     ],
                 ),
@@ -3437,530 +2686,194 @@ class TestGenerateDocument(unittest.TestCase):
                         sw_compdocs.document.Heading("Blocks", level=1),
                         sw_compdocs.document.Heading("BLOCKS_0", level=2),
                         sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL",
-                                            "1x1x1",
-                                        ]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
-                                    ),
-                                ],
-                            )
+                        sw_compdocs.document.UnorderedList(
+                            [
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
+                            ]
                         ),
                         sw_compdocs.document.Heading("Vehicle Control", level=1),
                         sw_compdocs.document.Heading("VEHICLE_CONTROL_0", level=2),
                         sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL",
-                                            "1x1x1",
-                                        ]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
-                                    ),
-                                ],
-                            )
+                        sw_compdocs.document.UnorderedList(
+                            [
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
+                            ]
                         ),
                         sw_compdocs.document.Heading("Mechanics", level=1),
                         sw_compdocs.document.Heading("MECHANICS_0", level=2),
                         sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL",
-                                            "1x1x1",
-                                        ]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
-                                    ),
-                                ],
-                            )
+                        sw_compdocs.document.UnorderedList(
+                            [
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
+                            ]
                         ),
                         sw_compdocs.document.Heading("Propulsion", level=1),
                         sw_compdocs.document.Heading("PROPULSION_0", level=2),
                         sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL",
-                                            "1x1x1",
-                                        ]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
-                                    ),
-                                ],
-                            )
+                        sw_compdocs.document.UnorderedList(
+                            [
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
+                            ]
                         ),
                         sw_compdocs.document.Heading("Specialist Equipment", level=1),
                         sw_compdocs.document.Heading("SPECIALIST_EQUIPMENT_0", level=2),
                         sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL",
-                                            "1x1x1",
-                                        ]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
-                                    ),
-                                ],
-                            )
+                        sw_compdocs.document.UnorderedList(
+                            [
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
+                            ]
                         ),
                         sw_compdocs.document.Heading("Logic", level=1),
                         sw_compdocs.document.Heading("LOGIC_0", level=2),
                         sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL",
-                                            "1x1x1",
-                                        ]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
-                                    ),
-                                ],
-                            )
+                        sw_compdocs.document.UnorderedList(
+                            [
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
+                            ]
                         ),
                         sw_compdocs.document.Heading("Displays", level=1),
                         sw_compdocs.document.Heading("DISPLAYS_0", level=2),
                         sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL",
-                                            "1x1x1",
-                                        ]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
-                                    ),
-                                ],
-                            )
+                        sw_compdocs.document.UnorderedList(
+                            [
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
+                            ]
                         ),
                         sw_compdocs.document.Heading("Sensors", level=1),
                         sw_compdocs.document.Heading("SENSORS_0", level=2),
                         sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL",
-                                            "1x1x1",
-                                        ]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
-                                    ),
-                                ],
-                            )
+                        sw_compdocs.document.UnorderedList(
+                            [
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
+                            ]
                         ),
                         sw_compdocs.document.Heading("Decorative", level=1),
                         sw_compdocs.document.Heading("DECORATIVE_0", level=2),
                         sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL",
-                                            "1x1x1",
-                                        ]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
-                                    ),
-                                ],
-                            )
+                        sw_compdocs.document.UnorderedList(
+                            [
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
+                            ]
                         ),
                         sw_compdocs.document.Heading("Fluid", level=1),
                         sw_compdocs.document.Heading("FLUID_0", level=2),
                         sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL",
-                                            "1x1x1",
-                                        ]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
-                                    ),
-                                ],
-                            )
+                        sw_compdocs.document.UnorderedList(
+                            [
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
+                            ]
                         ),
                         sw_compdocs.document.Heading("Electric", level=1),
                         sw_compdocs.document.Heading("ELECTRIC_0", level=2),
                         sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL",
-                                            "1x1x1",
-                                        ]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
-                                    ),
-                                ],
-                            )
+                        sw_compdocs.document.UnorderedList(
+                            [
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
+                            ]
                         ),
                         sw_compdocs.document.Heading("Jet Engines", level=1),
                         sw_compdocs.document.Heading("JET_ENGINES_0", level=2),
                         sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL",
-                                            "1x1x1",
-                                        ]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
-                                    ),
-                                ],
-                            )
+                        sw_compdocs.document.UnorderedList(
+                            [
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
+                            ]
                         ),
                         sw_compdocs.document.Heading("Weapons", level=1),
                         sw_compdocs.document.Heading("WEAPONS_0", level=2),
                         sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL",
-                                            "1x1x1",
-                                        ]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
-                                    ),
-                                ],
-                            )
+                        sw_compdocs.document.UnorderedList(
+                            [
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
+                            ]
                         ),
                         sw_compdocs.document.Heading("Modular Engines", level=1),
                         sw_compdocs.document.Heading("MODULAR_ENGINES_0", level=2),
                         sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL",
-                                            "1x1x1",
-                                        ]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
-                                    ),
-                                ],
-                            )
+                        sw_compdocs.document.UnorderedList(
+                            [
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
+                            ]
                         ),
                         sw_compdocs.document.Heading("Industry", level=1),
                         sw_compdocs.document.Heading("INDUSTRY_0", level=2),
                         sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL",
-                                            "1x1x1",
-                                        ]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
-                                    ),
-                                ],
-                            )
+                        sw_compdocs.document.UnorderedList(
+                            [
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
+                            ]
                         ),
                         sw_compdocs.document.Heading("Windows", level=1),
                         sw_compdocs.document.Heading("WINDOWS_0", level=2),
                         sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(
-                                    [
-                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL",
-                                        "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE",
-                                    ]
-                                ),
-                                [
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        [
-                                            "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL",
-                                            "1x1x1",
-                                        ]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL", "0"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL", ""]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL", ""]
-                                    ),
-                                ],
-                            )
+                        sw_compdocs.document.UnorderedList(
+                            [
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
+                            ]
                         ),
                     ],
                 ),
@@ -3986,13 +2899,11 @@ class TestGenerateDocument(unittest.TestCase):
                     ),
                 ],
                 input_label={
-                    "DOCUMENT_NORMAL_PROP_TABLE_HEAD_LABEL": "Label",
-                    "DOCUMENT_NORMAL_PROP_TABLE_HEAD_VALUE": "Value",
-                    "DOCUMENT_NORMAL_PROP_TABLE_MASS_LABEL": "Mass",
-                    "DOCUMENT_NORMAL_PROP_TABLE_DIMS_LABEL": "Dimensions (WxDxH)",
-                    "DOCUMENT_NORMAL_PROP_TABLE_COST_LABEL": "Cost",
-                    "DOCUMENT_NORMAL_PROP_TABLE_TAGS_LABEL": "Tags",
-                    "DOCUMENT_NORMAL_PROP_TABLE_FILE_LABEL": "File",
+                    "DOCUMENT_PROP_MASS": "Mass: {}",
+                    "DOCUMENT_PROP_DIMS": "Dimensions (WxDxH): {}",
+                    "DOCUMENT_PROP_COST": "Cost: ${}",
+                    "DOCUMENT_PROP_TAGS": "Tags: {}",
+                    "DOCUMENT_PROP_FILE": "File: {}",
                 },
                 input_lang=sw_compdocs.language.Language(
                     [
@@ -4018,19 +2929,16 @@ class TestGenerateDocument(unittest.TestCase):
                         sw_compdocs.document.Paragraph("短い説明 foo"),
                         sw_compdocs.document.Paragraph("長い説明 bar"),
                         sw_compdocs.document.Heading("プロパティ", level=3),
-                        sw_compdocs.document.Table(
-                            sw_compdocs.document.TableData(
-                                sw_compdocs.document.TableDataRow(["Label", "Value"]),
-                                [
-                                    sw_compdocs.document.TableDataRow(["Mass", "0"]),
-                                    sw_compdocs.document.TableDataRow(
-                                        ["Dimensions (WxDxH)", "1x1x1"]
-                                    ),
-                                    sw_compdocs.document.TableDataRow(["Cost", "0"]),
-                                    sw_compdocs.document.TableDataRow(["Tags", ""]),
-                                    sw_compdocs.document.TableDataRow(["File", ""]),
-                                ],
-                            )
+                        sw_compdocs.document.UnorderedList(
+                            [
+                                sw_compdocs.document.ListItem("Mass: 0"),
+                                sw_compdocs.document.ListItem(
+                                    "Dimensions (WxDxH): 1x1x1"
+                                ),
+                                sw_compdocs.document.ListItem("Cost: $0"),
+                                sw_compdocs.document.ListItem("Tags: "),
+                                sw_compdocs.document.ListItem("File: "),
+                            ]
                         ),
                     ]
                 ),
