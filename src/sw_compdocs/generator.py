@@ -337,7 +337,7 @@ def generate_document_property(
     return document.Document(
         [
             document.Heading(_lang_find_en(lang, "PROPERTIES")),
-            generate_document_property_table(comp, label=label),
+            generate_document_property_list(comp, label=label),
         ]
     )
 
