@@ -213,7 +213,6 @@ class LogicNodeType(enum.Enum):
 @dataclasses.dataclass
 class LogicNode:
     _: dataclasses.KW_ONLY
-    key: str | None = None
     idx: int | None = None
     label: language.Text = dataclasses.field(default_factory=language.Text)
     mode: LogicNodeMode = LogicNodeMode.OUTPUT
@@ -266,7 +265,6 @@ class LogicNode:
 
         self.label.id = label_id
         self.description.id = description_id
-        self.key = key
         self.idx = idx
 
 

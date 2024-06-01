@@ -491,7 +491,6 @@ class TestLogicNodeFromXMLElem(unittest.TestCase):
                 input_key="key",
                 input_idx=52149,
                 want_ln=sw_compdocs.component.LogicNode(
-                    key="key",
                     idx=52149,
                     label=sw_compdocs.language.Text(
                         id="def_key_node_52149_label", en="label"
@@ -513,7 +512,6 @@ class TestLogicNodeFromXMLElem(unittest.TestCase):
                 input_key="key",
                 input_idx=52149,
                 want_ln=sw_compdocs.component.LogicNode(
-                    key="key",
                     idx=52149,
                     label=sw_compdocs.language.Text(id="def_key_node_52149_label"),
                     mode=sw_compdocs.component.LogicNodeMode.INPUT,
@@ -533,7 +531,6 @@ class TestLogicNodeFromXMLElem(unittest.TestCase):
                 input_key="key",
                 input_idx=52149,
                 want_ln=sw_compdocs.component.LogicNode(
-                    key="key",
                     idx=52149,
                     label=sw_compdocs.language.Text(
                         id="def_key_node_52149_label", en="label"
@@ -555,7 +552,6 @@ class TestLogicNodeFromXMLElem(unittest.TestCase):
                 input_key="key",
                 input_idx=52149,
                 want_ln=sw_compdocs.component.LogicNode(
-                    key="key",
                     idx=52149,
                     label=sw_compdocs.language.Text(
                         id="def_key_node_52149_label", en="label"
@@ -577,7 +573,6 @@ class TestLogicNodeFromXMLElem(unittest.TestCase):
                 input_key="key",
                 input_idx=52149,
                 want_ln=sw_compdocs.component.LogicNode(
-                    key="key",
                     idx=52149,
                     label=sw_compdocs.language.Text(
                         id="def_key_node_52149_label", en="label"
@@ -598,7 +593,6 @@ class TestLogicNodeFromXMLElem(unittest.TestCase):
                 input_key=None,
                 input_idx=None,
                 want_ln=sw_compdocs.component.LogicNode(
-                    key=None,
                     idx=None,
                     label=sw_compdocs.language.Text(en="label"),
                     mode=sw_compdocs.component.LogicNodeMode.INPUT,
@@ -692,7 +686,6 @@ class TestLogicNodeUpdateID(unittest.TestCase):
                 input_idx=52149,
                 input_recursive=False,
                 want_ln=sw_compdocs.component.LogicNode(
-                    key="key",
                     idx=52149,
                     label=sw_compdocs.language.Text(id="def_key_node_52149_label"),
                     description=sw_compdocs.language.Text(id="def_key_node_52149_desc"),
@@ -700,7 +693,6 @@ class TestLogicNodeUpdateID(unittest.TestCase):
             ),
             tt(
                 input_ln=sw_compdocs.component.LogicNode(
-                    key="key",
                     label=sw_compdocs.language.Text(id="def_key_node_52149_label"),
                     description=sw_compdocs.language.Text(id="def_key_node_52149_desc"),
                 ),
@@ -718,7 +710,7 @@ class TestLogicNodeUpdateID(unittest.TestCase):
                 input_key="key",
                 input_idx=None,
                 input_recursive=False,
-                want_ln=sw_compdocs.component.LogicNode(key="key"),
+                want_ln=sw_compdocs.component.LogicNode(),
             ),
             tt(
                 input_ln=sw_compdocs.component.LogicNode(),
@@ -726,7 +718,6 @@ class TestLogicNodeUpdateID(unittest.TestCase):
                 input_idx=52149,
                 input_recursive=True,
                 want_ln=sw_compdocs.component.LogicNode(
-                    key="key",
                     idx=52149,
                     label=sw_compdocs.language.Text(id="def_key_node_52149_label"),
                     description=sw_compdocs.language.Text(id="def_key_node_52149_desc"),
@@ -734,7 +725,6 @@ class TestLogicNodeUpdateID(unittest.TestCase):
             ),
             tt(
                 input_ln=sw_compdocs.component.LogicNode(
-                    key="key",
                     label=sw_compdocs.language.Text(id="def_key_node_52149_label"),
                     description=sw_compdocs.language.Text(id="def_key_node_52149_desc"),
                 ),
@@ -752,7 +742,7 @@ class TestLogicNodeUpdateID(unittest.TestCase):
                 input_key="key",
                 input_idx=None,
                 input_recursive=True,
-                want_ln=sw_compdocs.component.LogicNode(key="key"),
+                want_ln=sw_compdocs.component.LogicNode(),
             ),
         ]:
             with self.subTest(tc=tc):
@@ -951,7 +941,6 @@ class TestLogicNodeListFromXMLElem(unittest.TestCase):
                 want_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
-                            key="key",
                             idx=0,
                             label=sw_compdocs.language.Text(
                                 id="def_key_node_0_label", en="a"
@@ -961,7 +950,6 @@ class TestLogicNodeListFromXMLElem(unittest.TestCase):
                             ),
                         ),
                         sw_compdocs.component.LogicNode(
-                            key="key",
                             idx=1,
                             label=sw_compdocs.language.Text(
                                 id="def_key_node_1_label", en="b"
@@ -971,7 +959,6 @@ class TestLogicNodeListFromXMLElem(unittest.TestCase):
                             ),
                         ),
                         sw_compdocs.component.LogicNode(
-                            key="key",
                             idx=2,
                             label=sw_compdocs.language.Text(
                                 id="def_key_node_2_label", en="c"
@@ -1059,7 +1046,6 @@ class TestLogicNodeListUpdateID(unittest.TestCase):
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
-                            key="key",
                             idx=0,
                             label=sw_compdocs.language.Text(id="def_key_node_0_label"),
                             description=sw_compdocs.language.Text(
@@ -1067,7 +1053,6 @@ class TestLogicNodeListUpdateID(unittest.TestCase):
                             ),
                         ),
                         sw_compdocs.component.LogicNode(
-                            key="key",
                             idx=1,
                             label=sw_compdocs.language.Text(id="def_key_node_1_label"),
                             description=sw_compdocs.language.Text(
@@ -1075,7 +1060,6 @@ class TestLogicNodeListUpdateID(unittest.TestCase):
                             ),
                         ),
                         sw_compdocs.component.LogicNode(
-                            key="key",
                             idx=2,
                             label=sw_compdocs.language.Text(id="def_key_node_2_label"),
                             description=sw_compdocs.language.Text(
@@ -1090,7 +1074,6 @@ class TestLogicNodeListUpdateID(unittest.TestCase):
                 want_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
-                            key="key",
                             idx=0,
                             label=sw_compdocs.language.Text(id="def_key_node_0_label"),
                             description=sw_compdocs.language.Text(
@@ -1098,7 +1081,6 @@ class TestLogicNodeListUpdateID(unittest.TestCase):
                             ),
                         ),
                         sw_compdocs.component.LogicNode(
-                            key="key",
                             idx=1,
                             label=sw_compdocs.language.Text(id="def_key_node_1_label"),
                             description=sw_compdocs.language.Text(
@@ -1106,7 +1088,6 @@ class TestLogicNodeListUpdateID(unittest.TestCase):
                             ),
                         ),
                         sw_compdocs.component.LogicNode(
-                            key="key",
                             idx=2,
                             label=sw_compdocs.language.Text(id="def_key_node_2_label"),
                             description=sw_compdocs.language.Text(
@@ -1139,7 +1120,6 @@ class TestLogicNodeListUpdateID(unittest.TestCase):
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
-                            key="key",
                             idx=0,
                             label=sw_compdocs.language.Text(id="def_key_node_0_label"),
                             description=sw_compdocs.language.Text(
@@ -1147,7 +1127,6 @@ class TestLogicNodeListUpdateID(unittest.TestCase):
                             ),
                         ),
                         sw_compdocs.component.LogicNode(
-                            key="key",
                             idx=1,
                             label=sw_compdocs.language.Text(id="def_key_node_1_label"),
                             description=sw_compdocs.language.Text(
@@ -1155,7 +1134,6 @@ class TestLogicNodeListUpdateID(unittest.TestCase):
                             ),
                         ),
                         sw_compdocs.component.LogicNode(
-                            key="key",
                             idx=2,
                             label=sw_compdocs.language.Text(id="def_key_node_2_label"),
                             description=sw_compdocs.language.Text(
@@ -1188,7 +1166,6 @@ class TestLogicNodeListUpdateID(unittest.TestCase):
                 want_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
-                            key="key",
                             idx=0,
                             label=sw_compdocs.language.Text(id="def_key_node_0_label"),
                             description=sw_compdocs.language.Text(
@@ -1196,7 +1173,6 @@ class TestLogicNodeListUpdateID(unittest.TestCase):
                             ),
                         ),
                         sw_compdocs.component.LogicNode(
-                            key="key",
                             idx=1,
                             label=sw_compdocs.language.Text(id="def_key_node_1_label"),
                             description=sw_compdocs.language.Text(
@@ -1204,7 +1180,6 @@ class TestLogicNodeListUpdateID(unittest.TestCase):
                             ),
                         ),
                         sw_compdocs.component.LogicNode(
-                            key="key",
                             idx=2,
                             label=sw_compdocs.language.Text(id="def_key_node_2_label"),
                             description=sw_compdocs.language.Text(
@@ -1364,7 +1339,6 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
             sw_compdocs.component.LogicNodeList(
                 [
                     sw_compdocs.component.LogicNode(
-                        key="clock",
                         idx=0,
                         label=sw_compdocs.language.Text(
                             id="def_clock_node_0_label", en="Time"
@@ -1377,7 +1351,6 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
                         ),
                     ),
                     sw_compdocs.component.LogicNode(
-                        key="clock",
                         idx=1,
                         label=sw_compdocs.language.Text(
                             id="def_clock_node_1_label", en="Backlight"
@@ -1390,7 +1363,6 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
                         ),
                     ),
                     sw_compdocs.component.LogicNode(
-                        key="clock",
                         idx=2,
                         label=sw_compdocs.language.Text(
                             id="def_clock_node_2_label", en="Electric"
