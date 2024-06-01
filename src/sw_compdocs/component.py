@@ -213,7 +213,6 @@ class LogicNodeType(enum.Enum):
 @dataclasses.dataclass
 class LogicNode:
     _: dataclasses.KW_ONLY
-    idx: int | None = None
     label: language.Text = dataclasses.field(default_factory=language.Text)
     mode: LogicNodeMode = LogicNodeMode.OUTPUT
     type: LogicNodeType = LogicNodeType.BOOL
@@ -265,7 +264,6 @@ class LogicNode:
 
         self.label.id = label_id
         self.description.id = description_id
-        self.idx = idx
 
 
 class LogicNodeList(container.MutableSequence[LogicNode]):
