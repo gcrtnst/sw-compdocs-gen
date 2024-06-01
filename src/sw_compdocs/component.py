@@ -274,18 +274,6 @@ class LogicNodeList(container.MutableSequence[LogicNode]):
         key: str | None = None,
     ) -> None:
         super().__init__(iterable)
-        self.key: str | None = key
-
-    def __repr__(self) -> str:
-        if self.key is None:
-            return f"{type(self).__name__}({self._l!r})"
-        return f"{type(self).__name__}({self._l!r}, key={self.key!r})"
-
-    def __eq__(self, other: object) -> bool:
-        if type(other) is type(self):
-            if self.key != other.key:
-                return False
-        return super().__eq__(other)
 
     @classmethod
     def from_xml_elem(
@@ -309,8 +297,6 @@ class LogicNodeList(container.MutableSequence[LogicNode]):
         if recursive:
             for idx, ln in enumerate(self):
                 ln.update_id(key, idx)
-
-        self.key = key
 
 
 @dataclasses.dataclass
