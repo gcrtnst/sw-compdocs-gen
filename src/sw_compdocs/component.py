@@ -150,7 +150,6 @@ class Flags(enum.Flag, boundary=enum.KEEP):
 @dataclasses.dataclass
 class TooltipProperties:
     _: dataclasses.KW_ONLY
-    key: str | None = None
     short_description: language.Text = dataclasses.field(default_factory=language.Text)
     description: language.Text = dataclasses.field(default_factory=language.Text)
 
@@ -168,7 +167,6 @@ class TooltipProperties:
     def update_id(self, key: str | None, *, recursive: bool = True) -> None:
         self.short_description.id = f"def_{key}_s_desc" if key is not None else None
         self.description.id = f"def_{key}_desc" if key is not None else None
-        self.key = key
 
 
 @enum.unique

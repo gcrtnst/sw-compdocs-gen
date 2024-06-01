@@ -1808,7 +1808,6 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                         flags=sw_compdocs.component.Flags.IS_DEPRECATED
                         | sw_compdocs.component.Flags.MULTIBODY_CHILD,
                         tooltip_properties=sw_compdocs.component.TooltipProperties(
-                            key="dummy",
                             short_description=sw_compdocs.language.Text(
                                 id="def_dummy_s_desc"
                             ),

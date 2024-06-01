@@ -316,7 +316,6 @@ class TestTooltipPropertiesFromXMLElem(unittest.TestCase):
                 ),
                 input_key=None,
                 want_prop=sw_compdocs.component.TooltipProperties(
-                    key=None,
                     short_description=sw_compdocs.language.Text(en="a"),
                     description=sw_compdocs.language.Text(en="b"),
                 ),
@@ -325,7 +324,6 @@ class TestTooltipPropertiesFromXMLElem(unittest.TestCase):
                 input_elem=lxml.etree.Element("tooltip_properties", description="b"),
                 input_key=None,
                 want_prop=sw_compdocs.component.TooltipProperties(
-                    key=None,
                     short_description=sw_compdocs.language.Text(),
                     description=sw_compdocs.language.Text(en="b"),
                 ),
@@ -336,7 +334,6 @@ class TestTooltipPropertiesFromXMLElem(unittest.TestCase):
                 ),
                 input_key=None,
                 want_prop=sw_compdocs.component.TooltipProperties(
-                    key=None,
                     short_description=sw_compdocs.language.Text(en="a"),
                     description=sw_compdocs.language.Text(),
                 ),
@@ -347,7 +344,6 @@ class TestTooltipPropertiesFromXMLElem(unittest.TestCase):
                 ),
                 input_key="key",
                 want_prop=sw_compdocs.component.TooltipProperties(
-                    key="key",
                     short_description=sw_compdocs.language.Text(
                         id="def_key_s_desc", en="a"
                     ),
@@ -377,7 +373,6 @@ class TestTooltipPropertiesUpdateID(unittest.TestCase):
         for tc in [
             tt(
                 input_prop=sw_compdocs.component.TooltipProperties(
-                    key="key",
                     short_description=sw_compdocs.language.Text(id="def_key_s_desc"),
                     description=sw_compdocs.language.Text(id="def_key_desc"),
                 ),
@@ -390,14 +385,12 @@ class TestTooltipPropertiesUpdateID(unittest.TestCase):
                 input_key="key",
                 input_recursive=False,
                 want_prop=sw_compdocs.component.TooltipProperties(
-                    key="key",
                     short_description=sw_compdocs.language.Text(id="def_key_s_desc"),
                     description=sw_compdocs.language.Text(id="def_key_desc"),
                 ),
             ),
             tt(
                 input_prop=sw_compdocs.component.TooltipProperties(
-                    key="key",
                     short_description=sw_compdocs.language.Text(id="def_key_s_desc"),
                     description=sw_compdocs.language.Text(id="def_key_desc"),
                 ),
@@ -410,7 +403,6 @@ class TestTooltipPropertiesUpdateID(unittest.TestCase):
                 input_key="key",
                 input_recursive=True,
                 want_prop=sw_compdocs.component.TooltipProperties(
-                    key="key",
                     short_description=sw_compdocs.language.Text(id="def_key_s_desc"),
                     description=sw_compdocs.language.Text(id="def_key_desc"),
                 ),
@@ -1357,7 +1349,6 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
         self.assertEqual(
             defn.tooltip_properties,
             sw_compdocs.component.TooltipProperties(
-                key="clock",
                 short_description=sw_compdocs.language.Text(
                     id="def_clock_s_desc",
                     en="An analogue clock display that outputs a number value representing the time of day.",
@@ -1451,7 +1442,6 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
         self.assertEqual(
             defn.tooltip_properties,
             sw_compdocs.component.TooltipProperties(
-                key="multibody_pivot_a",
                 short_description=sw_compdocs.language.Text(
                     id="def_multibody_pivot_a_s_desc",
                     en="A basic pivot that can move freely.",
@@ -1507,7 +1497,6 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
         self.assertEqual(
             defn.tooltip_properties,
             sw_compdocs.component.TooltipProperties(
-                key="key",
                 short_description=sw_compdocs.language.Text(id="def_key_s_desc"),
                 description=sw_compdocs.language.Text(id="def_key_desc"),
             ),
@@ -1632,7 +1621,6 @@ class TestDefinitionUpdateID(unittest.TestCase):
                     key="key",
                     name=sw_compdocs.language.Text(id="def_key_name"),
                     tooltip_properties=sw_compdocs.component.TooltipProperties(
-                        key="key",
                         short_description=sw_compdocs.language.Text(
                             id="def_key_s_desc"
                         ),
@@ -1644,7 +1632,6 @@ class TestDefinitionUpdateID(unittest.TestCase):
                 input_recursive=False,
                 want_defn=sw_compdocs.component.Definition(
                     tooltip_properties=sw_compdocs.component.TooltipProperties(
-                        key="key",
                         short_description=sw_compdocs.language.Text(
                             id="def_key_s_desc"
                         ),
@@ -1666,7 +1653,6 @@ class TestDefinitionUpdateID(unittest.TestCase):
                     key="key",
                     name=sw_compdocs.language.Text(id="def_key_name"),
                     tooltip_properties=sw_compdocs.component.TooltipProperties(
-                        key="key",
                         short_description=sw_compdocs.language.Text(
                             id="def_key_s_desc"
                         ),
@@ -1686,7 +1672,6 @@ class TestDefinitionUpdateID(unittest.TestCase):
                     key="key",
                     name=sw_compdocs.language.Text(id="def_key_name"),
                     tooltip_properties=sw_compdocs.component.TooltipProperties(
-                        key="key",
                         short_description=sw_compdocs.language.Text(
                             id="def_key_s_desc"
                         ),
