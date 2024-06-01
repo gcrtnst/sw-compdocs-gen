@@ -150,7 +150,6 @@ class Flags(enum.Flag, boundary=enum.KEEP):
 @dataclasses.dataclass
 class TooltipProperties:
     _: dataclasses.KW_ONLY
-    key: str | None = None
     short_description: language.Text = dataclasses.field(default_factory=language.Text)
     description: language.Text = dataclasses.field(default_factory=language.Text)
 
@@ -168,7 +167,6 @@ class TooltipProperties:
     def update_id(self, key: str | None, *, recursive: bool = True) -> None:
         self.short_description.id = f"def_{key}_s_desc" if key is not None else None
         self.description.id = f"def_{key}_desc" if key is not None else None
-        self.key = key
 
 
 @enum.unique
@@ -215,8 +213,6 @@ class LogicNodeType(enum.Enum):
 @dataclasses.dataclass
 class LogicNode:
     _: dataclasses.KW_ONLY
-    key: str | None = None
-    idx: int | None = None
     label: language.Text = dataclasses.field(default_factory=language.Text)
     mode: LogicNodeMode = LogicNodeMode.OUTPUT
     type: LogicNodeType = LogicNodeType.BOOL
@@ -268,8 +264,6 @@ class LogicNode:
 
         self.label.id = label_id
         self.description.id = description_id
-        self.key = key
-        self.idx = idx
 
 
 class LogicNodeList(container.MutableSequence[LogicNode]):
@@ -280,18 +274,6 @@ class LogicNodeList(container.MutableSequence[LogicNode]):
         key: str | None = None,
     ) -> None:
         super().__init__(iterable)
-        self.key: str | None = key
-
-    def __repr__(self) -> str:
-        if self.key is None:
-            return f"{type(self).__name__}({self._l!r})"
-        return f"{type(self).__name__}({self._l!r}, key={self.key!r})"
-
-    def __eq__(self, other: object) -> bool:
-        if type(other) is type(self):
-            if self.key != other.key:
-                return False
-        return super().__eq__(other)
 
     @classmethod
     def from_xml_elem(
@@ -315,8 +297,6 @@ class LogicNodeList(container.MutableSequence[LogicNode]):
         if recursive:
             for idx, ln in enumerate(self):
                 ln.update_id(key, idx)
-
-        self.key = key
 
 
 @dataclasses.dataclass

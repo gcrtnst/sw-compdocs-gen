@@ -606,8 +606,6 @@ class TestGenerateDocumentLogicTableNormal(unittest.TestCase):
                 input_ctx=None,
                 input_ln_list=[
                     sw_compdocs.component.LogicNode(
-                        key="test",
-                        idx=0,
                         label=sw_compdocs.language.Text(
                             id="def_test_node_0_label", en="label 0 $[label_0]"
                         ),
@@ -617,8 +615,6 @@ class TestGenerateDocumentLogicTableNormal(unittest.TestCase):
                         ),
                     ),
                     sw_compdocs.component.LogicNode(
-                        key="test",
-                        idx=1,
                         label=sw_compdocs.language.Text(
                             id="def_test_node_1_label", en="label 1 $[label_1]"
                         ),
@@ -706,8 +702,6 @@ class TestGenerateDocumentLogicTableNormal(unittest.TestCase):
                 },
                 input_ln_list=[
                     sw_compdocs.component.LogicNode(
-                        key="test",
-                        idx=0,
                         label=sw_compdocs.language.Text(
                             id="def_test_node_0_label", en="label 0 $[label_0]"
                         ),
@@ -717,8 +711,6 @@ class TestGenerateDocumentLogicTableNormal(unittest.TestCase):
                         ),
                     ),
                     sw_compdocs.component.LogicNode(
-                        key="test",
-                        idx=1,
                         label=sw_compdocs.language.Text(
                             id="def_test_node_1_label", en="label 1 $[label_1]"
                         ),
@@ -914,8 +906,6 @@ class TestGenerateDocumentLogicNormal(unittest.TestCase):
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
-                            key="test",
-                            idx=0,
                             label=sw_compdocs.language.Text(id="def_test_node_0_label"),
                             mode=sw_compdocs.component.LogicNodeMode.INPUT,
                             type=sw_compdocs.component.LogicNodeType.BOOL,
@@ -924,8 +914,6 @@ class TestGenerateDocumentLogicNormal(unittest.TestCase):
                             ),
                         ),
                         sw_compdocs.component.LogicNode(
-                            key="test",
-                            idx=1,
                             label=sw_compdocs.language.Text(id="def_test_node_1_label"),
                             mode=sw_compdocs.component.LogicNodeMode.OUTPUT,
                             type=sw_compdocs.component.LogicNodeType.BOOL,
@@ -934,8 +922,6 @@ class TestGenerateDocumentLogicNormal(unittest.TestCase):
                             ),
                         ),
                         sw_compdocs.component.LogicNode(
-                            key="test",
-                            idx=2,
                             label=sw_compdocs.language.Text(id="def_test_node_2_label"),
                             mode=sw_compdocs.component.LogicNodeMode.INPUT,
                             type=sw_compdocs.component.LogicNodeType.TORQUE,
@@ -1808,7 +1794,6 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                         flags=sw_compdocs.component.Flags.IS_DEPRECATED
                         | sw_compdocs.component.Flags.MULTIBODY_CHILD,
                         tooltip_properties=sw_compdocs.component.TooltipProperties(
-                            key="dummy",
                             short_description=sw_compdocs.language.Text(
                                 id="def_dummy_s_desc"
                             ),
@@ -1817,8 +1802,6 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                         logic_nodes=sw_compdocs.component.LogicNodeList(
                             [
                                 sw_compdocs.component.LogicNode(
-                                    key="dummy",
-                                    idx=0,
                                     label=sw_compdocs.language.Text(
                                         id="def_dummy_node_0_label"
                                     ),
@@ -2004,8 +1987,6 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                         logic_nodes=sw_compdocs.component.LogicNodeList(
                             [
                                 sw_compdocs.component.LogicNode(
-                                    key="button_push",
-                                    idx=0,
                                     label=sw_compdocs.language.Text(
                                         id="def_button_push_node_0_label", en="Pressed"
                                     ),
@@ -2017,8 +1998,6 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                                     ),
                                 ),
                                 sw_compdocs.component.LogicNode(
-                                    key="button_push",
-                                    idx=1,
                                     label=sw_compdocs.language.Text(
                                         id="def_button_push_node_1_label",
                                         en="External Input",
@@ -2031,8 +2010,6 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                                     ),
                                 ),
                                 sw_compdocs.component.LogicNode(
-                                    key="button_push",
-                                    idx=2,
                                     label=sw_compdocs.language.Text(
                                         id="def_button_push_node_2_label", en="Electric"
                                     ),
