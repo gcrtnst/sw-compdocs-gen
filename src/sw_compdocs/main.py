@@ -25,8 +25,13 @@ def generate_document(
     lang: language.Language | None,
     ctx: collections.abc.Mapping[str, str] | None,
     out_encoding: str | None = None,
-    out_newline: str | None = None,
+    out_newline: typing.Literal["\r", "\n", "\r\n"] | None = None,
 ) -> None:
+    if out_encoding is None:
+        out_encoding = "utf-8"
+    if out_newline is None:
+        out_newline = "\n"
+
     doc = generator.generate_document(comp_list, label=label, lang=lang, ctx=ctx)
     md = renderer.render_markdown(doc)
 
@@ -49,10 +54,12 @@ def generate_sheet(
     lang: language.Language | None,
     ctx: collections.abc.Mapping[str, str] | None,
     out_encoding: str | None = None,
-    out_newline: str | None = None,
+    out_newline: typing.Literal["\r", "\n", "\r\n"] | None = None,
 ) -> None:
+    if out_encoding is None:
+        out_encoding = "utf-8"
     if out_newline is None:
-        out_newline = os.linesep
+        out_newline = "\r\n"
 
     record_list = generator.generate_sheet(comp_list, label=label, lang=lang, ctx=ctx)
     with wraperr.wrap_unicode_error(out_file):
@@ -72,7 +79,7 @@ def run(
     template_file: _types.StrOrBytesPath | None = None,
     out_mode: typing.Literal["document", "sheet"] = "document",
     out_encoding: str | None = None,
-    out_newline: str | None = None,
+    out_newline: typing.Literal["\r", "\n", "\r\n"] | None = None,
 ) -> None:
     label = None
     if label_file is not None:
@@ -188,14 +195,13 @@ def main(
     argp.add_argument(
         "-e",
         "--encoding",
-        default="utf-8",
-        help="output encoding (default: %(default)s)",
+        help="output encoding (default varies by output format)",
     )
     argp.add_argument(
         "-n",
         "--newline",
         choices=("CR", "LF", "CRLF"),
-        help="output newline (default: LF in document mode, CRLF in sheet mode)",
+        help="output newline (default varies by output format)",
     )
     argp.add_argument(
         "output",
@@ -224,7 +230,7 @@ def main(
         raise Exception
 
     argv_encoding: object = argv.encoding
-    if not isinstance(argv_encoding, str):
+    if argv_encoding is not None and not isinstance(argv_encoding, str):
         raise Exception
 
     argv_newline: object = argv.newline
@@ -236,11 +242,7 @@ def main(
         case "CRLF":
             argv_newline = "\r\n"
         case None:
-            match argv_mode:
-                case "document":
-                    argv_newline = "\n"
-                case "sheet":
-                    argv_newline = "\r\n"
+            pass
         case _:
             raise Exception
 

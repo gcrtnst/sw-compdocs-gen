@@ -3,7 +3,6 @@ import csv
 import errno
 import io
 import lxml.etree
-import os
 import pathlib
 import sw_compdocs.component
 import sw_compdocs.generator
@@ -148,6 +147,113 @@ template_02 = "テンプレート 02"
             want_md = want_md.replace("\n", "\r\n")
             self.assertEqual(got_md, want_md)
 
+    def test_document_encoding_newline_default(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            out_file = pathlib.Path(temp_dir, "out.md")
+
+            defn_dir = pathlib.Path(temp_dir, "definitions")
+            defn_dir.mkdir()
+
+            defn_file = pathlib.Path(defn_dir, "test_01.xml")
+            with open(defn_file, mode="x", encoding="utf-8", newline="\r\n") as fp:
+                fp.write(
+                    """\
+<?xml version="1.0" encoding="UTF-8"?>
+<definition mass="1"/>
+"""
+                )
+
+            defn_file = pathlib.Path(defn_dir, "test_02.xml")
+            with open(defn_file, mode="x", encoding="utf-8", newline="\r\n") as fp:
+                fp.write(
+                    """\
+<?xml version="1.0" encoding="UTF-8"?>
+<definition mass="2"/>
+"""
+                )
+
+            defn_file = pathlib.Path(defn_dir, "dummy")
+            defn_file.mkdir()
+
+            label_file = pathlib.Path(temp_dir, "label.toml")
+            with open(label_file, mode="x", encoding="utf-8", newline="\n") as fp:
+                fp.write(
+                    """\
+[label]
+DOCUMENT_PROP_MASS = "重量：{}"
+DOCUMENT_PROP_DIMS = "サイズ (WxDxH)：{}"
+DOCUMENT_PROP_COST = "価格：${}"
+DOCUMENT_PROP_TAGS = "タグ：{}"
+DOCUMENT_PROP_FILE = "ファイル：{}"
+"""
+                )
+
+            lang_file = pathlib.Path(temp_dir, "japanese.tsv")
+            lang_list = [
+                ["id", "description", "en", "local"],
+                ["", "", "PROPERTIES", "プロパティ"],
+                ["def_test_01_name", "", "", "テスト 01"],
+                ["def_test_01_s_desc", "", "", "$[template_01]"],
+                ["def_test_01_desc", "", "", ""],
+                ["def_test_02_name", "", "", "テスト 02"],
+                ["def_test_02_s_desc", "", "", "$[template_02]"],
+                ["def_test_02_desc", "", "", ""],
+            ]
+            with open(lang_file, mode="x", encoding="utf-8", newline="\n") as fp:
+                w = csv.writer(fp, dialect=sw_compdocs.language.LanguageTSVDialect)
+                w.writerows(lang_list)
+
+            template_file = pathlib.Path(temp_dir, "template.toml")
+            with open(template_file, mode="x", encoding="utf-8", newline="\n") as fp:
+                fp.write(
+                    """\
+[template]
+template_01 = "テンプレート 01"
+template_02 = "テンプレート 02"
+"""
+                )
+
+            sw_compdocs.main.run(
+                out_file=out_file,
+                defn_dir=defn_dir,
+                label_file=label_file,
+                lang_file=lang_file,
+                template_file=template_file,
+                out_mode="document",
+            )
+
+            with open(out_file, mode="r", encoding="utf-8", newline="\n") as fp:
+                got_md = fp.read()
+
+            want_md = """\
+# Blocks
+
+## テスト 01
+
+テンプレート 01
+
+### プロパティ
+
+- 重量：1
+- サイズ (WxDxH)：1x1x1
+- 価格：$0
+- タグ：
+- ファイル：test_01.xml
+
+## テスト 02
+
+テンプレート 02
+
+### プロパティ
+
+- 重量：2
+- サイズ (WxDxH)：1x1x1
+- 価格：$0
+- タグ：
+- ファイル：test_02.xml
+"""
+            self.assertEqual(got_md, want_md)
+
     def test_document_exc_unicode(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             out_file = pathlib.Path(temp_dir, "out.md")
@@ -246,25 +352,6 @@ template_02 = "テンプレート 02"
             want_md = "SHEET_HEAD_NAME,SHEET_HEAD_FILE_PARENT,SHEET_HEAD_FILE_CHILD,SHEET_HEAD_CATEGORY,SHEET_HEAD_TAGS,SHEET_HEAD_DEPRECATED,SHEET_HEAD_ORPHAN,SHEET_HEAD_COST,SHEET_HEAD_MASS_TOTAL,SHEET_HEAD_MASS_PARENT,SHEET_HEAD_MASS_CHILD,SHEET_HEAD_DIMS_TOTAL_WIDTH,SHEET_HEAD_DIMS_TOTAL_DEPTH,SHEET_HEAD_DIMS_TOTAL_HEIGHT,SHEET_HEAD_DIMS_PARENT_WIDTH,SHEET_HEAD_DIMS_PARENT_DEPTH,SHEET_HEAD_DIMS_PARENT_HEIGHT,SHEET_HEAD_DIMS_CHILD_WIDTH,SHEET_HEAD_DIMS_CHILD_DEPTH,SHEET_HEAD_DIMS_CHILD_HEIGHT,SHEET_HEAD_SDESC,SHEET_HEAD_DESC\n"
             self.assertEqual(got_md, want_md)
 
-    def test_sheet_newline_default(self) -> None:
-        with tempfile.TemporaryDirectory() as temp_dir:
-            out_file = pathlib.Path(temp_dir, "out.csv")
-            defn_dir = pathlib.Path(temp_dir, "definitions")
-            defn_dir.mkdir()
-            sw_compdocs.main.run(
-                out_file=out_file,
-                defn_dir=defn_dir,
-                out_mode="sheet",
-                out_encoding="utf-8",
-            )
-
-            with open(out_file, mode="r", encoding="utf-8", newline="") as fp:
-                got_md = fp.read()
-
-            want_md = "SHEET_HEAD_NAME,SHEET_HEAD_FILE_PARENT,SHEET_HEAD_FILE_CHILD,SHEET_HEAD_CATEGORY,SHEET_HEAD_TAGS,SHEET_HEAD_DEPRECATED,SHEET_HEAD_ORPHAN,SHEET_HEAD_COST,SHEET_HEAD_MASS_TOTAL,SHEET_HEAD_MASS_PARENT,SHEET_HEAD_MASS_CHILD,SHEET_HEAD_DIMS_TOTAL_WIDTH,SHEET_HEAD_DIMS_TOTAL_DEPTH,SHEET_HEAD_DIMS_TOTAL_HEIGHT,SHEET_HEAD_DIMS_PARENT_WIDTH,SHEET_HEAD_DIMS_PARENT_DEPTH,SHEET_HEAD_DIMS_PARENT_HEIGHT,SHEET_HEAD_DIMS_CHILD_WIDTH,SHEET_HEAD_DIMS_CHILD_DEPTH,SHEET_HEAD_DIMS_CHILD_HEIGHT,SHEET_HEAD_SDESC,SHEET_HEAD_DESC\n"
-            want_md = want_md.replace("\n", os.linesep)
-            self.assertEqual(got_md, want_md)
-
     def test_sheet_all(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             out_file = pathlib.Path(temp_dir, "out.csv")
@@ -355,10 +442,111 @@ template_02 = "テンプレート 02"
                 template_file=template_file,
                 out_mode="sheet",
                 out_encoding="shift-jis",
-                out_newline="\r\n",
+                out_newline="\n",
             )
 
-            with open(out_file, mode="r", encoding="shift-jis", newline="\r\n") as fp:
+            with open(out_file, mode="r", encoding="shift-jis", newline="\n") as fp:
+                got_md = fp.read()
+
+            want_md = """\
+Name,Parent File,Child File,Category,Tags,Deprecated,Orphan,Cost,Total Mass,Parent Mass,Child Mass,Total Width,Total Depth,Total Height,Parent Width,Parent Depth,Parent Height,Child Width,Child Depth,Child Height,Short Description,Description
+テスト 01,test_01.xml,,Blocks,,FALSE,FALSE,0,1,1,,1,1,1,1,1,1,,,,テンプレート 01,
+テスト 02,test_02.xml,,Blocks,,FALSE,FALSE,0,2,2,,1,1,1,1,1,1,,,,テンプレート 02,
+"""
+            self.assertEqual(got_md, want_md)
+
+    def test_sheet_encoding_newline_default(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            out_file = pathlib.Path(temp_dir, "out.csv")
+
+            defn_dir = pathlib.Path(temp_dir, "definitions")
+            defn_dir.mkdir()
+
+            defn_file = pathlib.Path(defn_dir, "test_01.xml")
+            with open(defn_file, mode="x", encoding="utf-8", newline="\r\n") as fp:
+                fp.write(
+                    """\
+<?xml version="1.0" encoding="UTF-8"?>
+<definition mass="1"/>
+"""
+                )
+
+            defn_file = pathlib.Path(defn_dir, "test_02.xml")
+            with open(defn_file, mode="x", encoding="utf-8", newline="\r\n") as fp:
+                fp.write(
+                    """\
+<?xml version="1.0" encoding="UTF-8"?>
+<definition mass="2"/>
+"""
+                )
+
+            defn_file = pathlib.Path(defn_dir, "dummy")
+            defn_file.mkdir()
+
+            label_file = pathlib.Path(temp_dir, "label.toml")
+            with open(label_file, mode="x", encoding="utf-8", newline="\n") as fp:
+                fp.write(
+                    """\
+[label]
+SHEET_HEAD_NAME = "Name"
+SHEET_HEAD_FILE_PARENT = "Parent File"
+SHEET_HEAD_FILE_CHILD = "Child File"
+SHEET_HEAD_CATEGORY = "Category"
+SHEET_HEAD_TAGS = "Tags"
+SHEET_HEAD_DEPRECATED = "Deprecated"
+SHEET_HEAD_ORPHAN = "Orphan"
+SHEET_HEAD_COST = "Cost"
+SHEET_HEAD_MASS_TOTAL = "Total Mass"
+SHEET_HEAD_MASS_PARENT = "Parent Mass"
+SHEET_HEAD_MASS_CHILD = "Child Mass"
+SHEET_HEAD_DIMS_TOTAL_WIDTH = "Total Width"
+SHEET_HEAD_DIMS_TOTAL_DEPTH = "Total Depth"
+SHEET_HEAD_DIMS_TOTAL_HEIGHT = "Total Height"
+SHEET_HEAD_DIMS_PARENT_WIDTH = "Parent Width"
+SHEET_HEAD_DIMS_PARENT_DEPTH = "Parent Depth"
+SHEET_HEAD_DIMS_PARENT_HEIGHT = "Parent Height"
+SHEET_HEAD_DIMS_CHILD_WIDTH = "Child Width"
+SHEET_HEAD_DIMS_CHILD_DEPTH = "Child Depth"
+SHEET_HEAD_DIMS_CHILD_HEIGHT = "Child Height"
+SHEET_HEAD_SDESC = "Short Description"
+SHEET_HEAD_DESC = "Description"
+"""
+                )
+
+            lang_file = pathlib.Path(temp_dir, "japanese.tsv")
+            lang_list = [
+                ["id", "description", "en", "local"],
+                ["def_test_01_name", "", "", "テスト 01"],
+                ["def_test_01_s_desc", "", "", "$[template_01]"],
+                ["def_test_01_desc", "", "", ""],
+                ["def_test_02_name", "", "", "テスト 02"],
+                ["def_test_02_s_desc", "", "", "$[template_02]"],
+                ["def_test_02_desc", "", "", ""],
+            ]
+            with open(lang_file, mode="x", encoding="utf-8", newline="\n") as fp:
+                w = csv.writer(fp, dialect=sw_compdocs.language.LanguageTSVDialect)
+                w.writerows(lang_list)
+
+            template_file = pathlib.Path(temp_dir, "template.toml")
+            with open(template_file, mode="x", encoding="utf-8", newline="\n") as fp:
+                fp.write(
+                    """\
+[template]
+template_01 = "テンプレート 01"
+template_02 = "テンプレート 02"
+"""
+                )
+
+            sw_compdocs.main.run(
+                out_file=out_file,
+                defn_dir=defn_dir,
+                label_file=label_file,
+                lang_file=lang_file,
+                template_file=template_file,
+                out_mode="sheet",
+            )
+
+            with open(out_file, mode="r", encoding="utf-8", newline="\r\n") as fp:
                 got_md = fp.read()
 
             want_md = """\
@@ -553,8 +741,8 @@ class TestMain(unittest.TestCase):
                     lang_file=None,
                     template_file=None,
                     out_mode="document",
-                    out_encoding="utf-8",
-                    out_newline="\n",
+                    out_encoding=None,
+                    out_newline=None,
                 ),
             ),
             tt(
@@ -572,8 +760,8 @@ class TestMain(unittest.TestCase):
                     lang_file=None,
                     template_file=None,
                     out_mode="document",
-                    out_encoding="utf-8",
-                    out_newline="\n",
+                    out_encoding=None,
+                    out_newline=None,
                 ),
             ),
             tt(
@@ -591,8 +779,8 @@ class TestMain(unittest.TestCase):
                     lang_file="path/to/language",
                     template_file=None,
                     out_mode="document",
-                    out_encoding="utf-8",
-                    out_newline="\n",
+                    out_encoding=None,
+                    out_newline=None,
                 ),
             ),
             tt(
@@ -610,8 +798,8 @@ class TestMain(unittest.TestCase):
                     lang_file=None,
                     template_file="path/to/template",
                     out_mode="document",
-                    out_encoding="utf-8",
-                    out_newline="\n",
+                    out_encoding=None,
+                    out_newline=None,
                 ),
             ),
             tt(
@@ -629,8 +817,8 @@ class TestMain(unittest.TestCase):
                     lang_file=None,
                     template_file=None,
                     out_mode="sheet",
-                    out_encoding="utf-8",
-                    out_newline="\r\n",
+                    out_encoding=None,
+                    out_newline=None,
                 ),
             ),
             tt(
@@ -649,7 +837,7 @@ class TestMain(unittest.TestCase):
                     template_file=None,
                     out_mode="document",
                     out_encoding="shift-jis",
-                    out_newline="\n",
+                    out_newline=None,
                 ),
             ),
             tt(
@@ -667,7 +855,7 @@ class TestMain(unittest.TestCase):
                     lang_file=None,
                     template_file=None,
                     out_mode="document",
-                    out_encoding="utf-8",
+                    out_encoding=None,
                     out_newline="\r",
                 ),
             ),
@@ -686,7 +874,7 @@ class TestMain(unittest.TestCase):
                     lang_file=None,
                     template_file=None,
                     out_mode="document",
-                    out_encoding="utf-8",
+                    out_encoding=None,
                     out_newline="\r\n",
                 ),
             ),
@@ -707,7 +895,7 @@ class TestMain(unittest.TestCase):
                     lang_file=None,
                     template_file=None,
                     out_mode="sheet",
-                    out_encoding="utf-8",
+                    out_encoding=None,
                     out_newline="\n",
                 ),
             ),
