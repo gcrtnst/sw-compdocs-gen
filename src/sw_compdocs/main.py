@@ -162,7 +162,7 @@ def main(
         argp_definitions_required = False
         argp_definitions_help += f" (default: '{argp_definitions_default}')"
 
-    argp = argparse.ArgumentParser(prog=prog)
+    argp = argparse.ArgumentParser(prog=prog, allow_abbrev=False)
     argp.add_argument(
         "-d",
         "--definitions",
