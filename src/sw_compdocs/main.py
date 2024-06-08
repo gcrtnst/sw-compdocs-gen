@@ -17,6 +17,48 @@ from . import template
 from . import wraperr
 
 
+class ShowHideAction(argparse.Action):
+    def __init__(
+        self,
+        option_strings: collections.abc.Sequence[str],
+        dest: str,
+        default: object = None,
+        required: bool = False,
+        help: str | None = None,
+    ) -> None:
+        if len(option_strings) <= 0:
+            raise ValueError
+
+        _option_strings: list[str] = []
+        for option_string in option_strings:
+            if not option_string.startswith("--show-"):
+                raise ValueError
+            _option_strings.append(option_string)
+            _option_strings.append("--hide-" + option_string[7:])
+
+        super().__init__(
+            option_strings=_option_strings,
+            dest=dest,
+            nargs=0,
+            default=default,
+            required=required,
+            help=help,
+        )
+
+    def __call__(
+        self,
+        parser: argparse.ArgumentParser,
+        namespace: object,
+        values: object,
+        option_string: str | None = None,
+    ) -> None:
+        if option_string is not None and option_string in self.option_strings:
+            setattr(namespace, self.dest, option_string.startswith("--show-"))
+
+    def format_usage(self) -> str:
+        return " | ".join(self.option_strings)
+
+
 def generate_document(
     *,
     out_file: _types.StrOrBytesPath,
@@ -74,6 +116,8 @@ def run(
     *,
     out_file: _types.StrOrBytesPath,
     defn_dir: _types.StrOrBytesPath,
+    show_deprecated: bool = True,
+    show_orphan: bool = False,
     label_file: _types.StrOrBytesPath | None = None,
     lang_file: _types.StrOrBytesPath | None = None,
     template_file: _types.StrOrBytesPath | None = None,
@@ -94,6 +138,14 @@ def run(
         ctx = resource.load_toml_table(template_file, "template")
 
     comp_list = component.load_comp_list(defn_dir)
+    comp_list = [
+        comp
+        for comp in comp_list
+        if (
+            (show_deprecated or component.Flags.IS_DEPRECATED not in comp.defn.flags)
+            and (show_orphan or component.Flags.MULTIBODY_CHILD not in comp.defn.flags)
+        )
+    ]
 
     if out_mode == "document":
         generate_document(
@@ -171,6 +223,18 @@ def main(
         help=argp_definitions_help,
     )
     argp.add_argument(
+        "--show-deprecated",
+        action=ShowHideAction,
+        default=True,
+        help="show deprecated components (default: show)",
+    )
+    argp.add_argument(
+        "--show-orphan",
+        action=ShowHideAction,
+        default=False,
+        help="show orphan components (default: hide)",
+    )
+    argp.add_argument(
         "-s",
         "--label",
         help="toml file containing label table",
@@ -211,6 +275,14 @@ def main(
 
     argv_definitions: object = argv.definitions
     if not isinstance(argv_definitions, str):
+        raise Exception
+
+    argv_show_deprecated: object = argv.show_deprecated
+    if not isinstance(argv_show_deprecated, bool):
+        raise Exception
+
+    argv_show_orphan: object = argv.show_orphan
+    if not isinstance(argv_show_orphan, bool):
         raise Exception
 
     argv_label: object = argv.label
@@ -258,6 +330,8 @@ def main(
         run(
             out_file=argv_output,
             defn_dir=argv_definitions,
+            show_deprecated=argv_show_deprecated,
+            show_orphan=argv_show_orphan,
             label_file=argv_label,
             lang_file=argv_language,
             template_file=argv_template,

@@ -1,3 +1,4 @@
+import argparse
 import collections.abc
 import csv
 import errno
@@ -17,6 +18,55 @@ import tempfile
 import typing
 import unittest
 import unittest.mock
+
+
+class TestShowHideAction(unittest.TestCase):
+    def test_default(self) -> None:
+        argp = argparse.ArgumentParser(
+            prog="test", add_help=False, allow_abbrev=False, exit_on_error=False
+        )
+        argp.add_argument(
+            "--show-flag", action=sw_compdocs.main.ShowHideAction, default="default"
+        )
+        argv = argp.parse_args([])
+        self.assertEqual(argv.show_flag, "default")
+
+    def test_show(self) -> None:
+        argp = argparse.ArgumentParser(
+            prog="test", add_help=False, allow_abbrev=False, exit_on_error=False
+        )
+        argp.add_argument(
+            "--show-flag", action=sw_compdocs.main.ShowHideAction, default="default"
+        )
+        argv = argp.parse_args(["--show-flag"])
+        self.assertEqual(argv.show_flag, True)
+
+    def test_hide(self) -> None:
+        argp = argparse.ArgumentParser(
+            prog="test", add_help=False, allow_abbrev=False, exit_on_error=False
+        )
+        argp.add_argument(
+            "--show-flag", action=sw_compdocs.main.ShowHideAction, default="default"
+        )
+        argv = argp.parse_args(["--hide-flag"])
+        self.assertEqual(argv.show_flag, False)
+
+    def test_exc_value(self) -> None:
+        for name_or_flags in [
+            ["name"],
+            ["--flag"],
+            ["--hide-flag"],
+            ["--show-flag", "--hide-flag"],
+        ]:
+            with self.subTest(name_or_flags=name_or_flags):
+                argp = argparse.ArgumentParser(
+                    prog="test", add_help=False, allow_abbrev=False, exit_on_error=False
+                )
+                with self.assertRaises(ValueError) as ctx:
+                    argp.add_argument(
+                        *name_or_flags, action=sw_compdocs.main.ShowHideAction
+                    )
+                self.assertIs(type(ctx.exception), ValueError)
 
 
 class TestRun(unittest.TestCase):
@@ -652,6 +702,101 @@ template_02 = "テンプレート 02"
                 )
             self.assertEqual(ctx.exception.filename, out_file)
 
+    def test_filter(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_show_deprecated", bool),
+                ("input_show_orphan", bool),
+                ("want_csv", str),
+            ],
+        )
+        self.maxDiff = None
+
+        for tc in [
+            tt(
+                input_show_deprecated=True,
+                input_show_orphan=True,
+                want_csv="""\
+SHEET_HEAD_NAME,SHEET_HEAD_FILE_PARENT,SHEET_HEAD_FILE_CHILD,SHEET_HEAD_CATEGORY,SHEET_HEAD_TAGS,SHEET_HEAD_DEPRECATED,SHEET_HEAD_ORPHAN,SHEET_HEAD_COST,SHEET_HEAD_MASS_TOTAL,SHEET_HEAD_MASS_PARENT,SHEET_HEAD_MASS_CHILD,SHEET_HEAD_DIMS_TOTAL_WIDTH,SHEET_HEAD_DIMS_TOTAL_DEPTH,SHEET_HEAD_DIMS_TOTAL_HEIGHT,SHEET_HEAD_DIMS_PARENT_WIDTH,SHEET_HEAD_DIMS_PARENT_DEPTH,SHEET_HEAD_DIMS_PARENT_HEIGHT,SHEET_HEAD_DIMS_CHILD_WIDTH,SHEET_HEAD_DIMS_CHILD_DEPTH,SHEET_HEAD_DIMS_CHILD_HEIGHT,SHEET_HEAD_SDESC,SHEET_HEAD_DESC
+,01_normal.xml,,Blocks,,FALSE,FALSE,0,0,0,,1,1,1,1,1,1,,,,,
+,02_deprecated.xml,,Blocks,,TRUE,FALSE,0,0,0,,1,1,1,1,1,1,,,,,
+,03_orphan.xml,,Blocks,,FALSE,TRUE,0,0,0,,1,1,1,1,1,1,,,,,
+""",
+            ),
+            tt(
+                input_show_deprecated=False,
+                input_show_orphan=True,
+                want_csv="""\
+SHEET_HEAD_NAME,SHEET_HEAD_FILE_PARENT,SHEET_HEAD_FILE_CHILD,SHEET_HEAD_CATEGORY,SHEET_HEAD_TAGS,SHEET_HEAD_DEPRECATED,SHEET_HEAD_ORPHAN,SHEET_HEAD_COST,SHEET_HEAD_MASS_TOTAL,SHEET_HEAD_MASS_PARENT,SHEET_HEAD_MASS_CHILD,SHEET_HEAD_DIMS_TOTAL_WIDTH,SHEET_HEAD_DIMS_TOTAL_DEPTH,SHEET_HEAD_DIMS_TOTAL_HEIGHT,SHEET_HEAD_DIMS_PARENT_WIDTH,SHEET_HEAD_DIMS_PARENT_DEPTH,SHEET_HEAD_DIMS_PARENT_HEIGHT,SHEET_HEAD_DIMS_CHILD_WIDTH,SHEET_HEAD_DIMS_CHILD_DEPTH,SHEET_HEAD_DIMS_CHILD_HEIGHT,SHEET_HEAD_SDESC,SHEET_HEAD_DESC
+,01_normal.xml,,Blocks,,FALSE,FALSE,0,0,0,,1,1,1,1,1,1,,,,,
+,03_orphan.xml,,Blocks,,FALSE,TRUE,0,0,0,,1,1,1,1,1,1,,,,,
+""",
+            ),
+            tt(
+                input_show_deprecated=True,
+                input_show_orphan=False,
+                want_csv="""\
+SHEET_HEAD_NAME,SHEET_HEAD_FILE_PARENT,SHEET_HEAD_FILE_CHILD,SHEET_HEAD_CATEGORY,SHEET_HEAD_TAGS,SHEET_HEAD_DEPRECATED,SHEET_HEAD_ORPHAN,SHEET_HEAD_COST,SHEET_HEAD_MASS_TOTAL,SHEET_HEAD_MASS_PARENT,SHEET_HEAD_MASS_CHILD,SHEET_HEAD_DIMS_TOTAL_WIDTH,SHEET_HEAD_DIMS_TOTAL_DEPTH,SHEET_HEAD_DIMS_TOTAL_HEIGHT,SHEET_HEAD_DIMS_PARENT_WIDTH,SHEET_HEAD_DIMS_PARENT_DEPTH,SHEET_HEAD_DIMS_PARENT_HEIGHT,SHEET_HEAD_DIMS_CHILD_WIDTH,SHEET_HEAD_DIMS_CHILD_DEPTH,SHEET_HEAD_DIMS_CHILD_HEIGHT,SHEET_HEAD_SDESC,SHEET_HEAD_DESC
+,01_normal.xml,,Blocks,,FALSE,FALSE,0,0,0,,1,1,1,1,1,1,,,,,
+,02_deprecated.xml,,Blocks,,TRUE,FALSE,0,0,0,,1,1,1,1,1,1,,,,,
+""",
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                with tempfile.TemporaryDirectory() as temp_dir:
+                    out_file = pathlib.Path(temp_dir, "out.csv")
+
+                    defn_dir = pathlib.Path(temp_dir, "definitions")
+                    defn_dir.mkdir()
+
+                    defn_file = pathlib.Path(defn_dir, "01_normal.xml")
+                    with open(
+                        defn_file, mode="x", encoding="utf-8", newline="\r\n"
+                    ) as fp:
+                        fp.write(
+                            """\
+<?xml version="1.0" encoding="UTF-8"?>
+<definition/>
+        """
+                        )
+
+                    defn_file = pathlib.Path(defn_dir, "02_deprecated.xml")
+                    with open(
+                        defn_file, mode="x", encoding="utf-8", newline="\r\n"
+                    ) as fp:
+                        fp.write(
+                            """\
+<?xml version="1.0" encoding="UTF-8"?>
+<definition flags="536870912"/>
+        """
+                        )
+
+                    defn_file = pathlib.Path(defn_dir, "03_orphan.xml")
+                    with open(
+                        defn_file, mode="x", encoding="utf-8", newline="\r\n"
+                    ) as fp:
+                        fp.write(
+                            """\
+<?xml version="1.0" encoding="UTF-8"?>
+<definition flags="128"/>
+        """
+                        )
+
+                    sw_compdocs.main.run(
+                        out_file=out_file,
+                        defn_dir=defn_dir,
+                        show_deprecated=tc.input_show_deprecated,
+                        show_orphan=tc.input_show_orphan,
+                        out_mode="sheet",
+                        out_encoding="utf-8",
+                        out_newline="\n",
+                    )
+
+                    with open(out_file, mode="r", encoding="utf-8", newline="\n") as fp:
+                        got_csv = fp.read()
+                    self.assertEqual(got_csv, tc.want_csv)
+
 
 class TestFormatOSError(unittest.TestCase):
     def test(self) -> None:
@@ -737,6 +882,88 @@ class TestMain(unittest.TestCase):
                 want_call_args=unittest.mock.call(
                     out_file="path/to/output",
                     defn_dir="path/to/definitions",
+                    show_deprecated=True,
+                    show_orphan=False,
+                    label_file=None,
+                    lang_file=None,
+                    template_file=None,
+                    out_mode="document",
+                    out_encoding=None,
+                    out_newline=None,
+                ),
+            ),
+            tt(
+                input_args=[
+                    "--definitions",
+                    "path/to/definitions",
+                    "--show-deprecated",
+                    "path/to/output",
+                ],
+                want_call_args=unittest.mock.call(
+                    out_file="path/to/output",
+                    defn_dir="path/to/definitions",
+                    show_deprecated=True,
+                    show_orphan=False,
+                    label_file=None,
+                    lang_file=None,
+                    template_file=None,
+                    out_mode="document",
+                    out_encoding=None,
+                    out_newline=None,
+                ),
+            ),
+            tt(
+                input_args=[
+                    "--definitions",
+                    "path/to/definitions",
+                    "--hide-deprecated",
+                    "path/to/output",
+                ],
+                want_call_args=unittest.mock.call(
+                    out_file="path/to/output",
+                    defn_dir="path/to/definitions",
+                    show_deprecated=False,
+                    show_orphan=False,
+                    label_file=None,
+                    lang_file=None,
+                    template_file=None,
+                    out_mode="document",
+                    out_encoding=None,
+                    out_newline=None,
+                ),
+            ),
+            tt(
+                input_args=[
+                    "--definitions",
+                    "path/to/definitions",
+                    "--show-orphan",
+                    "path/to/output",
+                ],
+                want_call_args=unittest.mock.call(
+                    out_file="path/to/output",
+                    defn_dir="path/to/definitions",
+                    show_deprecated=True,
+                    show_orphan=True,
+                    label_file=None,
+                    lang_file=None,
+                    template_file=None,
+                    out_mode="document",
+                    out_encoding=None,
+                    out_newline=None,
+                ),
+            ),
+            tt(
+                input_args=[
+                    "--definitions",
+                    "path/to/definitions",
+                    "--hide-orphan",
+                    "path/to/output",
+                ],
+                want_call_args=unittest.mock.call(
+                    out_file="path/to/output",
+                    defn_dir="path/to/definitions",
+                    show_deprecated=True,
+                    show_orphan=False,
                     label_file=None,
                     lang_file=None,
                     template_file=None,
@@ -756,6 +983,8 @@ class TestMain(unittest.TestCase):
                 want_call_args=unittest.mock.call(
                     out_file="path/to/output",
                     defn_dir="path/to/definitions",
+                    show_deprecated=True,
+                    show_orphan=False,
                     label_file="path/to/label",
                     lang_file=None,
                     template_file=None,
@@ -775,6 +1004,8 @@ class TestMain(unittest.TestCase):
                 want_call_args=unittest.mock.call(
                     out_file="path/to/output",
                     defn_dir="path/to/definitions",
+                    show_deprecated=True,
+                    show_orphan=False,
                     label_file=None,
                     lang_file="path/to/language",
                     template_file=None,
@@ -794,6 +1025,8 @@ class TestMain(unittest.TestCase):
                 want_call_args=unittest.mock.call(
                     out_file="path/to/output",
                     defn_dir="path/to/definitions",
+                    show_deprecated=True,
+                    show_orphan=False,
                     label_file=None,
                     lang_file=None,
                     template_file="path/to/template",
@@ -813,6 +1046,8 @@ class TestMain(unittest.TestCase):
                 want_call_args=unittest.mock.call(
                     out_file="path/to/output",
                     defn_dir="path/to/definitions",
+                    show_deprecated=True,
+                    show_orphan=False,
                     label_file=None,
                     lang_file=None,
                     template_file=None,
@@ -832,6 +1067,8 @@ class TestMain(unittest.TestCase):
                 want_call_args=unittest.mock.call(
                     out_file="path/to/output",
                     defn_dir="path/to/definitions",
+                    show_deprecated=True,
+                    show_orphan=False,
                     label_file=None,
                     lang_file=None,
                     template_file=None,
@@ -851,6 +1088,8 @@ class TestMain(unittest.TestCase):
                 want_call_args=unittest.mock.call(
                     out_file="path/to/output",
                     defn_dir="path/to/definitions",
+                    show_deprecated=True,
+                    show_orphan=False,
                     label_file=None,
                     lang_file=None,
                     template_file=None,
@@ -870,6 +1109,8 @@ class TestMain(unittest.TestCase):
                 want_call_args=unittest.mock.call(
                     out_file="path/to/output",
                     defn_dir="path/to/definitions",
+                    show_deprecated=True,
+                    show_orphan=False,
                     label_file=None,
                     lang_file=None,
                     template_file=None,
@@ -891,6 +1132,8 @@ class TestMain(unittest.TestCase):
                 want_call_args=unittest.mock.call(
                     out_file="path/to/output",
                     defn_dir="path/to/definitions",
+                    show_deprecated=True,
+                    show_orphan=False,
                     label_file=None,
                     lang_file=None,
                     template_file=None,
