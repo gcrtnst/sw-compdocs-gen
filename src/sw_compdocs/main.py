@@ -125,17 +125,12 @@ def run(
     out_encoding: str | None = None,
     out_newline: typing.Literal["\r", "\n", "\r\n"] | None = None,
 ) -> None:
-    label = None
-    if label_file is not None:
-        label = resource.load_toml_table(label_file, "label")
+    label = resource.load_label(label_file)
+    ctx = resource.load_template(template_file)
 
     lang = None
     if lang_file is not None:
         lang = language.Language.from_file(lang_file, errors="strict")
-
-    ctx = None
-    if template_file is not None:
-        ctx = resource.load_toml_table(template_file, "template")
 
     comp_list = component.load_comp_list(defn_dir)
     comp_list = [

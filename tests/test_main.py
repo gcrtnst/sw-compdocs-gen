@@ -399,7 +399,7 @@ template_02 = "テンプレート 02"
             with open(out_file, mode="r", encoding="utf-8", newline="\n") as fp:
                 got_md = fp.read()
 
-            want_md = "SHEET_HEAD_NAME,SHEET_HEAD_FILE_PARENT,SHEET_HEAD_FILE_CHILD,SHEET_HEAD_CATEGORY,SHEET_HEAD_TAGS,SHEET_HEAD_DEPRECATED,SHEET_HEAD_ORPHAN,SHEET_HEAD_COST,SHEET_HEAD_MASS_TOTAL,SHEET_HEAD_MASS_PARENT,SHEET_HEAD_MASS_CHILD,SHEET_HEAD_DIMS_TOTAL_WIDTH,SHEET_HEAD_DIMS_TOTAL_DEPTH,SHEET_HEAD_DIMS_TOTAL_HEIGHT,SHEET_HEAD_DIMS_PARENT_WIDTH,SHEET_HEAD_DIMS_PARENT_DEPTH,SHEET_HEAD_DIMS_PARENT_HEIGHT,SHEET_HEAD_DIMS_CHILD_WIDTH,SHEET_HEAD_DIMS_CHILD_DEPTH,SHEET_HEAD_DIMS_CHILD_HEIGHT,SHEET_HEAD_SDESC,SHEET_HEAD_DESC\n"
+            want_md = "Name,Parent File,Child File,Category,Tags,Deprecated,Orphan,Cost,Total Mass,Parent Mass,Child Mass,Total Width,Total Depth,Total Height,Parent Width,Parent Depth,Parent Height,Child Width,Child Depth,Child Height,Short Description,Description\n"
             self.assertEqual(got_md, want_md)
 
     def test_sheet_all(self) -> None:
@@ -718,7 +718,7 @@ template_02 = "テンプレート 02"
                 input_show_deprecated=True,
                 input_show_orphan=True,
                 want_csv="""\
-SHEET_HEAD_NAME,SHEET_HEAD_FILE_PARENT,SHEET_HEAD_FILE_CHILD,SHEET_HEAD_CATEGORY,SHEET_HEAD_TAGS,SHEET_HEAD_DEPRECATED,SHEET_HEAD_ORPHAN,SHEET_HEAD_COST,SHEET_HEAD_MASS_TOTAL,SHEET_HEAD_MASS_PARENT,SHEET_HEAD_MASS_CHILD,SHEET_HEAD_DIMS_TOTAL_WIDTH,SHEET_HEAD_DIMS_TOTAL_DEPTH,SHEET_HEAD_DIMS_TOTAL_HEIGHT,SHEET_HEAD_DIMS_PARENT_WIDTH,SHEET_HEAD_DIMS_PARENT_DEPTH,SHEET_HEAD_DIMS_PARENT_HEIGHT,SHEET_HEAD_DIMS_CHILD_WIDTH,SHEET_HEAD_DIMS_CHILD_DEPTH,SHEET_HEAD_DIMS_CHILD_HEIGHT,SHEET_HEAD_SDESC,SHEET_HEAD_DESC
+Name,Parent File,Child File,Category,Tags,Deprecated,Orphan,Cost,Total Mass,Parent Mass,Child Mass,Total Width,Total Depth,Total Height,Parent Width,Parent Depth,Parent Height,Child Width,Child Depth,Child Height,Short Description,Description
 ,01_normal.xml,,Blocks,,FALSE,FALSE,0,0,0,,1,1,1,1,1,1,,,,,
 ,02_deprecated.xml,,Blocks,,TRUE,FALSE,0,0,0,,1,1,1,1,1,1,,,,,
 ,03_orphan.xml,,Blocks,,FALSE,TRUE,0,0,0,,1,1,1,1,1,1,,,,,
@@ -728,7 +728,7 @@ SHEET_HEAD_NAME,SHEET_HEAD_FILE_PARENT,SHEET_HEAD_FILE_CHILD,SHEET_HEAD_CATEGORY
                 input_show_deprecated=False,
                 input_show_orphan=True,
                 want_csv="""\
-SHEET_HEAD_NAME,SHEET_HEAD_FILE_PARENT,SHEET_HEAD_FILE_CHILD,SHEET_HEAD_CATEGORY,SHEET_HEAD_TAGS,SHEET_HEAD_DEPRECATED,SHEET_HEAD_ORPHAN,SHEET_HEAD_COST,SHEET_HEAD_MASS_TOTAL,SHEET_HEAD_MASS_PARENT,SHEET_HEAD_MASS_CHILD,SHEET_HEAD_DIMS_TOTAL_WIDTH,SHEET_HEAD_DIMS_TOTAL_DEPTH,SHEET_HEAD_DIMS_TOTAL_HEIGHT,SHEET_HEAD_DIMS_PARENT_WIDTH,SHEET_HEAD_DIMS_PARENT_DEPTH,SHEET_HEAD_DIMS_PARENT_HEIGHT,SHEET_HEAD_DIMS_CHILD_WIDTH,SHEET_HEAD_DIMS_CHILD_DEPTH,SHEET_HEAD_DIMS_CHILD_HEIGHT,SHEET_HEAD_SDESC,SHEET_HEAD_DESC
+Name,Parent File,Child File,Category,Tags,Deprecated,Orphan,Cost,Total Mass,Parent Mass,Child Mass,Total Width,Total Depth,Total Height,Parent Width,Parent Depth,Parent Height,Child Width,Child Depth,Child Height,Short Description,Description
 ,01_normal.xml,,Blocks,,FALSE,FALSE,0,0,0,,1,1,1,1,1,1,,,,,
 ,03_orphan.xml,,Blocks,,FALSE,TRUE,0,0,0,,1,1,1,1,1,1,,,,,
 """,
@@ -737,7 +737,7 @@ SHEET_HEAD_NAME,SHEET_HEAD_FILE_PARENT,SHEET_HEAD_FILE_CHILD,SHEET_HEAD_CATEGORY
                 input_show_deprecated=True,
                 input_show_orphan=False,
                 want_csv="""\
-SHEET_HEAD_NAME,SHEET_HEAD_FILE_PARENT,SHEET_HEAD_FILE_CHILD,SHEET_HEAD_CATEGORY,SHEET_HEAD_TAGS,SHEET_HEAD_DEPRECATED,SHEET_HEAD_ORPHAN,SHEET_HEAD_COST,SHEET_HEAD_MASS_TOTAL,SHEET_HEAD_MASS_PARENT,SHEET_HEAD_MASS_CHILD,SHEET_HEAD_DIMS_TOTAL_WIDTH,SHEET_HEAD_DIMS_TOTAL_DEPTH,SHEET_HEAD_DIMS_TOTAL_HEIGHT,SHEET_HEAD_DIMS_PARENT_WIDTH,SHEET_HEAD_DIMS_PARENT_DEPTH,SHEET_HEAD_DIMS_PARENT_HEIGHT,SHEET_HEAD_DIMS_CHILD_WIDTH,SHEET_HEAD_DIMS_CHILD_DEPTH,SHEET_HEAD_DIMS_CHILD_HEIGHT,SHEET_HEAD_SDESC,SHEET_HEAD_DESC
+Name,Parent File,Child File,Category,Tags,Deprecated,Orphan,Cost,Total Mass,Parent Mass,Child Mass,Total Width,Total Depth,Total Height,Parent Width,Parent Depth,Parent Height,Child Width,Child Depth,Child Height,Short Description,Description
 ,01_normal.xml,,Blocks,,FALSE,FALSE,0,0,0,,1,1,1,1,1,1,,,,,
 ,02_deprecated.xml,,Blocks,,TRUE,FALSE,0,0,0,,1,1,1,1,1,1,,,,,
 """,

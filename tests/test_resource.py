@@ -413,3 +413,39 @@ key_2 = 2
                         )
                     self.assertEqual(ctx.exception.msg, tc.want_exc_msg)
                     self.assertEqual(ctx.exception.file, temp_file)
+
+
+class TestLoadLabel(unittest.TestCase):
+    def test_default(self) -> None:
+        label = sw_compdocs.resource.load_label()
+        self.assertEqual(label, sw_compdocs.resource.default_label)
+
+    def test_file(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_file = pathlib.Path(temp_dir, "label.toml")
+            with open(temp_file, mode="w", encoding="utf-8", newline="\n") as fp:
+                fp.write("""\
+[label]
+KEY = "value"
+""")
+
+            label = sw_compdocs.resource.load_label(temp_file)
+            self.assertEqual(label, {"KEY": "value"})
+
+
+class TestLoadTemplate(unittest.TestCase):
+    def test_default(self) -> None:
+        ctx = sw_compdocs.resource.load_template()
+        self.assertEqual(ctx, sw_compdocs.resource.default_ctx)
+
+    def test_file(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_file = pathlib.Path(temp_dir, "template.toml")
+            with open(temp_file, mode="w", encoding="utf-8", newline="\n") as fp:
+                fp.write("""\
+[template]
+key = "value"
+""")
+
+            ctx = sw_compdocs.resource.load_template(temp_file)
+            self.assertEqual(ctx, {"key": "value"})
