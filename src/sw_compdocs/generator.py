@@ -58,9 +58,9 @@ def _lang_translate(lang: language.Language | None, text: language.Text) -> str:
     return lang.translate(text)
 
 
-def _ctx_format(ctx: collections.abc.Mapping[str, str] | None, s: str) -> str:
-    if ctx is not None:
-        s = template.format(s, ctx)
+def _bind_format(bind: collections.abc.Mapping[str, str] | None, s: str) -> str:
+    if bind is not None:
+        s = template.format(s, bind)
     return s
 
 
@@ -202,7 +202,7 @@ def generate_document_logic_table_normal(
     *,
     label: collections.abc.Mapping[str, str] | None = None,
     lang: language.Language | None = None,
-    ctx: collections.abc.Mapping[str, str] | None = None,
+    bind: collections.abc.Mapping[str, str] | None = None,
 ) -> document.Table:
     head = document.TableDataRow(
         [
@@ -215,9 +215,9 @@ def generate_document_logic_table_normal(
     for ln in ln_list:
         ln_type = _lang_find_en(lang, str(ln.type))
         ln_label = _lang_translate(lang, ln.label)
-        ln_label = _ctx_format(ctx, ln_label)
+        ln_label = _bind_format(bind, ln_label)
         ln_desc = _lang_translate(lang, ln.description)
-        ln_desc = _ctx_format(ctx, ln_desc)
+        ln_desc = _bind_format(bind, ln_desc)
         data.append(document.TableDataRow([ln_type, ln_label, ln_desc]))
     return document.Table(data)
 
@@ -227,28 +227,28 @@ def generate_document_logic_normal(
     *,
     label: collections.abc.Mapping[str, str] | None = None,
     lang: language.Language | None = None,
-    ctx: collections.abc.Mapping[str, str] | None = None,
+    bind: collections.abc.Mapping[str, str] | None = None,
 ) -> document.Document:
     in_list, out_list, conn_list = _classify_logic(lns)
     doc = document.Document()
     if len(in_list) > 0:
         in_head = document.Heading(_lang_find_en(lang, "logic inputs"))
         in_tbl = generate_document_logic_table_normal(
-            in_list, label=label, lang=lang, ctx=ctx
+            in_list, label=label, lang=lang, bind=bind
         )
         doc.append(in_head)
         doc.append(in_tbl)
     if len(out_list) > 0:
         out_head = document.Heading(_lang_find_en(lang, "logic outputs"))
         out_tbl = generate_document_logic_table_normal(
-            out_list, label=label, lang=lang, ctx=ctx
+            out_list, label=label, lang=lang, bind=bind
         )
         doc.append(out_head)
         doc.append(out_tbl)
     if len(conn_list) > 0:
         conn_head = document.Heading(_lang_find_en(lang, "connections"))
         conn_tbl = generate_document_logic_table_normal(
-            conn_list, label=label, lang=lang, ctx=ctx
+            conn_list, label=label, lang=lang, bind=bind
         )
         doc.append(conn_head)
         doc.append(conn_tbl)
@@ -261,7 +261,7 @@ def generate_document_logic_table_multibody(
     *,
     label: collections.abc.Mapping[str, str] | None = None,
     lang: language.Language | None = None,
-    ctx: collections.abc.Mapping[str, str] | None = None,
+    bind: collections.abc.Mapping[str, str] | None = None,
 ) -> document.Table:
     def generate_row(
         body: str, ln_list: collections.abc.Iterable[component.LogicNode]
@@ -269,9 +269,9 @@ def generate_document_logic_table_multibody(
         for ln in ln_list:
             ln_type = _lang_find_en(lang, str(ln.type))
             ln_label = _lang_translate(lang, ln.label)
-            ln_label = _ctx_format(ctx, ln_label)
+            ln_label = _bind_format(bind, ln_label)
             ln_desc = _lang_translate(lang, ln.description)
-            ln_desc = _ctx_format(ctx, ln_desc)
+            ln_desc = _bind_format(bind, ln_desc)
             yield document.TableDataRow([body, ln_type, ln_label, ln_desc])
 
     head = document.TableDataRow(
@@ -297,7 +297,7 @@ def generate_document_logic_multibody(
     *,
     label: collections.abc.Mapping[str, str] | None = None,
     lang: language.Language | None = None,
-    ctx: collections.abc.Mapping[str, str] | None = None,
+    bind: collections.abc.Mapping[str, str] | None = None,
 ) -> document.Document:
     parent_ln_list_tuple = _classify_logic(parent_lns)
     parent_in_ln_list, parent_out_ln_list, parent_conn_ln_list = parent_ln_list_tuple
@@ -308,21 +308,21 @@ def generate_document_logic_multibody(
     if len(parent_in_ln_list) > 0 or len(child_in_ln_list) > 0:
         in_head = document.Heading(_lang_find_en(lang, "logic inputs"))
         in_tbl = generate_document_logic_table_multibody(
-            parent_in_ln_list, child_in_ln_list, label=label, lang=lang, ctx=ctx
+            parent_in_ln_list, child_in_ln_list, label=label, lang=lang, bind=bind
         )
         doc.append(in_head)
         doc.append(in_tbl)
     if len(parent_out_ln_list) > 0 or len(child_out_ln_list) > 0:
         out_head = document.Heading(_lang_find_en(lang, "logic outputs"))
         out_tbl = generate_document_logic_table_multibody(
-            parent_out_ln_list, child_out_ln_list, label=label, lang=lang, ctx=ctx
+            parent_out_ln_list, child_out_ln_list, label=label, lang=lang, bind=bind
         )
         doc.append(out_head)
         doc.append(out_tbl)
     if len(parent_conn_ln_list) > 0 or len(child_conn_ln_list) > 0:
         conn_head = document.Heading(_lang_find_en(lang, "connections"))
         conn_tbl = generate_document_logic_table_multibody(
-            parent_conn_ln_list, child_conn_ln_list, label=label, lang=lang, ctx=ctx
+            parent_conn_ln_list, child_conn_ln_list, label=label, lang=lang, bind=bind
         )
         doc.append(conn_head)
         doc.append(conn_tbl)
@@ -334,7 +334,7 @@ def generate_document_logic(
     *,
     label: collections.abc.Mapping[str, str] | None = None,
     lang: language.Language | None = None,
-    ctx: collections.abc.Mapping[str, str] | None = None,
+    bind: collections.abc.Mapping[str, str] | None = None,
 ) -> document.Document:
     if isinstance(comp, component.Multibody):
         return generate_document_logic_multibody(
@@ -342,13 +342,13 @@ def generate_document_logic(
             comp.child.logic_nodes,
             label=label,
             lang=lang,
-            ctx=ctx,
+            bind=bind,
         )
     return generate_document_logic_normal(
         comp.defn.logic_nodes,
         label=label,
         lang=lang,
-        ctx=ctx,
+        bind=bind,
     )
 
 
@@ -357,7 +357,7 @@ def generate_document_component(
     *,
     label: collections.abc.Mapping[str, str] | None = None,
     lang: language.Language | None = None,
-    ctx: collections.abc.Mapping[str, str] | None = None,
+    bind: collections.abc.Mapping[str, str] | None = None,
 ) -> document.Document:
     doc = document.Document()
 
@@ -382,13 +382,13 @@ def generate_document_component(
 
     comp_s_desc_text = comp.short_description()
     comp_s_desc = _lang_translate(lang, comp_s_desc_text)
-    comp_s_desc = _ctx_format(ctx, comp_s_desc)
+    comp_s_desc = _bind_format(bind, comp_s_desc)
     if comp_s_desc != "":
         doc.append(document.Paragraph(comp_s_desc))
 
     comp_desc_text = comp.description()
     comp_desc = _lang_translate(lang, comp_desc_text)
-    comp_desc = _ctx_format(ctx, comp_desc)
+    comp_desc = _bind_format(bind, comp_desc)
     if comp_desc != "":
         doc.append(document.Paragraph(comp_desc))
 
@@ -396,7 +396,7 @@ def generate_document_component(
     prop_doc.shift(1)
     doc.extend(prop_doc)
 
-    logic_doc = generate_document_logic(comp, label=label, lang=lang, ctx=ctx)
+    logic_doc = generate_document_logic(comp, label=label, lang=lang, bind=bind)
     logic_doc.shift(1)
     doc.extend(logic_doc)
 
@@ -408,11 +408,11 @@ def generate_document_component_list(
     *,
     label: collections.abc.Mapping[str, str] | None = None,
     lang: language.Language | None = None,
-    ctx: collections.abc.Mapping[str, str] | None = None,
+    bind: collections.abc.Mapping[str, str] | None = None,
 ) -> document.Document:
     doc = document.Document()
     for comp in comp_list:
-        comp_doc = generate_document_component(comp, label=label, lang=lang, ctx=ctx)
+        comp_doc = generate_document_component(comp, label=label, lang=lang, bind=bind)
         doc.extend(comp_doc)
     return doc
 
@@ -422,7 +422,7 @@ def generate_document(
     *,
     label: collections.abc.Mapping[str, str] | None = None,
     lang: language.Language | None = None,
-    ctx: collections.abc.Mapping[str, str] | None = None,
+    bind: collections.abc.Mapping[str, str] | None = None,
 ) -> document.Document:
     def sort_key_category(category: component.Category) -> int:
         return category.value
@@ -444,7 +444,7 @@ def generate_document(
         category_comp_list = category_comp_dict[category]
         category_comp_list.sort(key=sort_key_component)
         category_comp_list_doc = generate_document_component_list(
-            category_comp_list, label=label, lang=lang, ctx=ctx
+            category_comp_list, label=label, lang=lang, bind=bind
         )
         category_comp_list_doc.shift(1)
 
@@ -457,7 +457,7 @@ def generate_sheet_component(
     comp: component.Component,
     *,
     lang: language.Language | None = None,
-    ctx: collections.abc.Mapping[str, str] | None = None,
+    bind: collections.abc.Mapping[str, str] | None = None,
 ) -> list[str]:
     comp_voxel_min = comp.voxel_min()
     comp_voxel_max = comp.voxel_max()
@@ -490,11 +490,11 @@ def generate_sheet_component(
 
     comp_s_desc_text = comp.short_description()
     comp_s_desc = _lang_translate(lang, comp_s_desc_text)
-    comp_s_desc = _ctx_format(ctx, comp_s_desc)
+    comp_s_desc = _bind_format(bind, comp_s_desc)
 
     comp_desc_text = comp.description()
     comp_desc = _lang_translate(lang, comp_desc_text)
-    comp_desc = _ctx_format(ctx, comp_desc)
+    comp_desc = _bind_format(bind, comp_desc)
 
     return [
         comp_name,
@@ -526,11 +526,11 @@ def generate_sheet_component_list(
     comp_list: collections.abc.Iterable[component.Component],
     *,
     lang: language.Language | None = None,
-    ctx: collections.abc.Mapping[str, str] | None = None,
+    bind: collections.abc.Mapping[str, str] | None = None,
 ) -> list[list[str]]:
     record_list: list[list[str]] = []
     for comp in comp_list:
-        record = generate_sheet_component(comp, lang=lang, ctx=ctx)
+        record = generate_sheet_component(comp, lang=lang, bind=bind)
         record_list.append(record)
     return record_list
 
@@ -540,7 +540,7 @@ def generate_sheet(
     *,
     label: collections.abc.Mapping[str, str] | None = None,
     lang: language.Language | None = None,
-    ctx: collections.abc.Mapping[str, str] | None = None,
+    bind: collections.abc.Mapping[str, str] | None = None,
 ) -> list[list[str]]:
     def sort_key(comp: component.Component) -> tuple[int, str, bool, str]:
         return (
@@ -578,5 +578,5 @@ def generate_sheet(
         _label_get(label, "SHEET_HEAD_DESC"),
     ]
     record_list = [header]
-    record_list.extend(generate_sheet_component_list(comp_list, lang=lang, ctx=ctx))
+    record_list.extend(generate_sheet_component_list(comp_list, lang=lang, bind=bind))
     return record_list

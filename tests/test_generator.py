@@ -150,12 +150,12 @@ class TestLangTranslate(unittest.TestCase):
                 self.assertEqual(got_s, tc.want_s)
 
 
-class TestCtxFormat(unittest.TestCase):
+class TestBindFormat(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(
             "tt",
             [
-                ("input_ctx", collections.abc.Mapping[str, str] | None),
+                ("input_bind", collections.abc.Mapping[str, str] | None),
                 ("input_s", str),
                 ("want_s", str),
             ],
@@ -163,18 +163,18 @@ class TestCtxFormat(unittest.TestCase):
 
         for tc in [
             tt(
-                input_ctx=None,
+                input_bind=None,
                 input_s="$[var]",
                 want_s="$[var]",
             ),
             tt(
-                input_ctx={"var": "text"},
+                input_bind={"var": "text"},
                 input_s="$[var]",
                 want_s="text",
             ),
         ]:
             with self.subTest(tc=tc):
-                got_s = sw_compdocs.generator._ctx_format(tc.input_ctx, tc.input_s)
+                got_s = sw_compdocs.generator._bind_format(tc.input_bind, tc.input_s)
                 self.assertEqual(got_s, tc.want_s)
 
 
@@ -573,7 +573,7 @@ class TestGenerateDocumentLogicTableNormal(unittest.TestCase):
             [
                 ("input_label", collections.abc.Mapping[str, str] | None),
                 ("input_lang", sw_compdocs.language.Language | None),
-                ("input_ctx", collections.abc.Mapping[str, str] | None),
+                ("input_bind", collections.abc.Mapping[str, str] | None),
                 ("input_ln_list", list[sw_compdocs.component.LogicNode]),
                 ("want_tbl", sw_compdocs.document.Table),
             ],
@@ -584,7 +584,7 @@ class TestGenerateDocumentLogicTableNormal(unittest.TestCase):
             tt(
                 input_label=None,
                 input_lang=None,
-                input_ctx=None,
+                input_bind=None,
                 input_ln_list=[],
                 want_tbl=sw_compdocs.document.Table(
                     sw_compdocs.document.TableData(
@@ -603,7 +603,7 @@ class TestGenerateDocumentLogicTableNormal(unittest.TestCase):
             tt(
                 input_label=None,
                 input_lang=None,
-                input_ctx=None,
+                input_bind=None,
                 input_ln_list=[
                     sw_compdocs.component.LogicNode(
                         label=sw_compdocs.language.Text(
@@ -694,7 +694,7 @@ class TestGenerateDocumentLogicTableNormal(unittest.TestCase):
                         ),
                     ]
                 ),
-                input_ctx={
+                input_bind={
                     "label_0": "label_0_fmt",
                     "desc_0": "desc_0_fmt",
                     "label_1": "label_1_fmt",
@@ -744,7 +744,7 @@ class TestGenerateDocumentLogicTableNormal(unittest.TestCase):
                     tc.input_ln_list,
                     label=tc.input_label,
                     lang=tc.input_lang,
-                    ctx=tc.input_ctx,
+                    bind=tc.input_bind,
                 )
                 self.assertEqual(got_tbl, tc.want_tbl)
 
@@ -773,7 +773,7 @@ class TestGenerateDocumentLogicNormal(unittest.TestCase):
             [
                 ("input_label", collections.abc.Mapping[str, str] | None),
                 ("input_lang", sw_compdocs.language.Language | None),
-                ("input_ctx", collections.abc.Mapping[str, str] | None),
+                ("input_bind", collections.abc.Mapping[str, str] | None),
                 ("input_lns", sw_compdocs.component.LogicNodeList),
                 ("want_doc", sw_compdocs.document.Document),
             ],
@@ -784,7 +784,7 @@ class TestGenerateDocumentLogicNormal(unittest.TestCase):
             tt(
                 input_label=None,
                 input_lang=None,
-                input_ctx=None,
+                input_bind=None,
                 input_lns=sw_compdocs.component.LogicNodeList(),
                 want_doc=sw_compdocs.document.Document(),
             ),
@@ -792,7 +792,7 @@ class TestGenerateDocumentLogicNormal(unittest.TestCase):
             tt(
                 input_label=None,
                 input_lang=None,
-                input_ctx=None,
+                input_bind=None,
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
@@ -902,7 +902,7 @@ class TestGenerateDocumentLogicNormal(unittest.TestCase):
                         ),
                     ]
                 ),
-                input_ctx=None,
+                input_bind=None,
                 input_lns=sw_compdocs.component.LogicNodeList(
                     [
                         sw_compdocs.component.LogicNode(
@@ -994,7 +994,7 @@ class TestGenerateDocumentLogicNormal(unittest.TestCase):
                     tc.input_lns,
                     label=tc.input_label,
                     lang=tc.input_lang,
-                    ctx=tc.input_ctx,
+                    bind=tc.input_bind,
                 )
                 self.assertEqual(got_doc, tc.want_doc)
 
@@ -1008,7 +1008,7 @@ class TestGenerateDocumentLogicTableMultibody(unittest.TestCase):
                 ("input_child_ln_list", list[sw_compdocs.component.LogicNode]),
                 ("input_label", collections.abc.Mapping[str, str] | None),
                 ("input_lang", sw_compdocs.language.Language | None),
-                ("input_ctx", collections.abc.Mapping[str, str] | None),
+                ("input_bind", collections.abc.Mapping[str, str] | None),
                 ("want_tbl", sw_compdocs.document.Table),
             ],
         )
@@ -1020,7 +1020,7 @@ class TestGenerateDocumentLogicTableMultibody(unittest.TestCase):
                 input_child_ln_list=[],
                 input_label=None,
                 input_lang=None,
-                input_ctx=None,
+                input_bind=None,
                 want_tbl=sw_compdocs.document.Table(
                     sw_compdocs.document.TableData(
                         sw_compdocs.document.TableDataRow(
@@ -1066,7 +1066,7 @@ class TestGenerateDocumentLogicTableMultibody(unittest.TestCase):
                 ],
                 input_label=None,
                 input_lang=None,
-                input_ctx=None,
+                input_bind=None,
                 want_tbl=sw_compdocs.document.Table(
                     sw_compdocs.document.TableData(
                         sw_compdocs.document.TableDataRow(
@@ -1196,7 +1196,7 @@ class TestGenerateDocumentLogicTableMultibody(unittest.TestCase):
                         ),
                     ]
                 ),
-                input_ctx={
+                input_bind={
                     "parent_label_0": "親部品/ロジック0/ラベル",
                     "parent_desc_0": "親部品/ロジック0/説明",
                     "parent_label_1": "親部品/ロジック1/ラベル",
@@ -1260,7 +1260,7 @@ class TestGenerateDocumentLogicTableMultibody(unittest.TestCase):
                     tc.input_child_ln_list,
                     label=tc.input_label,
                     lang=tc.input_lang,
-                    ctx=tc.input_ctx,
+                    bind=tc.input_bind,
                 )
                 self.assertEqual(got_tbl, tc.want_tbl)
 
@@ -1274,7 +1274,7 @@ class TestGenerateDocumentLogicMultibody(unittest.TestCase):
                 ("input_child_lns", sw_compdocs.component.LogicNodeList),
                 ("input_label", collections.abc.Mapping[str, str] | None),
                 ("input_lang", sw_compdocs.language.Language | None),
-                ("input_ctx", collections.abc.Mapping[str, str] | None),
+                ("input_bind", collections.abc.Mapping[str, str] | None),
                 ("want_doc", sw_compdocs.document.Document),
             ],
         )
@@ -1286,7 +1286,7 @@ class TestGenerateDocumentLogicMultibody(unittest.TestCase):
                 input_child_lns=sw_compdocs.component.LogicNodeList(),
                 input_label=None,
                 input_lang=None,
-                input_ctx=None,
+                input_bind=None,
                 want_doc=sw_compdocs.document.Document(),
             ),
             # parent in
@@ -1317,7 +1317,7 @@ class TestGenerateDocumentLogicMultibody(unittest.TestCase):
                         sw_compdocs.language.Translation("", "", "", ""),
                     ]
                 ),
-                input_ctx=None,
+                input_bind=None,
                 want_doc=sw_compdocs.document.Document(
                     [
                         sw_compdocs.document.Heading("ロジック入力"),
@@ -1364,7 +1364,7 @@ class TestGenerateDocumentLogicMultibody(unittest.TestCase):
                         sw_compdocs.language.Translation("", "", "", ""),
                     ]
                 ),
-                input_ctx=None,
+                input_bind=None,
                 want_doc=sw_compdocs.document.Document(
                     [
                         sw_compdocs.document.Heading("ロジック出力"),
@@ -1409,7 +1409,7 @@ class TestGenerateDocumentLogicMultibody(unittest.TestCase):
                         sw_compdocs.language.Translation("", "", "", ""),
                     ]
                 ),
-                input_ctx=None,
+                input_bind=None,
                 want_doc=sw_compdocs.document.Document(
                     [
                         sw_compdocs.document.Heading("接続"),
@@ -1456,7 +1456,7 @@ class TestGenerateDocumentLogicMultibody(unittest.TestCase):
                         sw_compdocs.language.Translation("", "", "", ""),
                     ]
                 ),
-                input_ctx=None,
+                input_bind=None,
                 want_doc=sw_compdocs.document.Document(
                     [
                         sw_compdocs.document.Heading("ロジック入力"),
@@ -1503,7 +1503,7 @@ class TestGenerateDocumentLogicMultibody(unittest.TestCase):
                         sw_compdocs.language.Translation("", "", "", ""),
                     ]
                 ),
-                input_ctx=None,
+                input_bind=None,
                 want_doc=sw_compdocs.document.Document(
                     [
                         sw_compdocs.document.Heading("ロジック出力"),
@@ -1548,7 +1548,7 @@ class TestGenerateDocumentLogicMultibody(unittest.TestCase):
                         sw_compdocs.language.Translation("", "", "", ""),
                     ]
                 ),
-                input_ctx=None,
+                input_bind=None,
                 want_doc=sw_compdocs.document.Document(
                     [
                         sw_compdocs.document.Heading("接続"),
@@ -1574,7 +1574,7 @@ class TestGenerateDocumentLogicMultibody(unittest.TestCase):
                     tc.input_child_lns,
                     label=tc.input_label,
                     lang=tc.input_lang,
-                    ctx=tc.input_ctx,
+                    bind=tc.input_bind,
                 )
                 self.assertEqual(got_doc, tc.want_doc)
 
@@ -1586,7 +1586,7 @@ class TestGenerateDocumentComponent(unittest.TestCase):
             [
                 ("input_label", collections.abc.Mapping[str, str] | None),
                 ("input_lang", sw_compdocs.language.Language | None),
-                ("input_ctx", collections.abc.Mapping[str, str] | None),
+                ("input_bind", collections.abc.Mapping[str, str] | None),
                 ("input_comp", sw_compdocs.component.Component),
                 ("want_doc", sw_compdocs.document.Document),
             ],
@@ -1597,7 +1597,7 @@ class TestGenerateDocumentComponent(unittest.TestCase):
             tt(
                 input_label=None,
                 input_lang=None,
-                input_ctx=None,
+                input_bind=None,
                 input_comp=sw_compdocs.component.Component(
                     defn=sw_compdocs.component.Definition()
                 ),
@@ -1621,7 +1621,7 @@ class TestGenerateDocumentComponent(unittest.TestCase):
             tt(
                 input_label=None,
                 input_lang=None,
-                input_ctx=None,
+                input_bind=None,
                 input_comp=sw_compdocs.component.Component(
                     defn=sw_compdocs.component.Definition(
                         flags=sw_compdocs.component.Flags.IS_DEPRECATED
@@ -1656,7 +1656,7 @@ class TestGenerateDocumentComponent(unittest.TestCase):
             tt(
                 input_label=None,
                 input_lang=None,
-                input_ctx=None,
+                input_bind=None,
                 input_comp=sw_compdocs.component.Component(
                     defn=sw_compdocs.component.Definition(
                         name=sw_compdocs.language.Text(en="Name"),
@@ -1715,7 +1715,7 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                     ]
                 ),
             ),
-            # label, lang, template
+            # label, lang, keybindings
             tt(
                 input_label={
                     "DOCUMENT_DEPRECATED_TEXT": "この部品は非推奨です。",
@@ -1781,7 +1781,7 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                         ),
                     ]
                 ),
-                input_ctx={
+                input_bind={
                     "def_dummy_desc_placeholder": "説明",
                     "def_dummy_s_desc_placeholder": "短い説明",
                     "def_dummy_node_0_label_placeholder": "ノードラベル",
@@ -1961,7 +1961,7 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                         ),
                     ]
                 ),
-                input_ctx={"action_interact_left": "q", "action_interact_right": "e"},
+                input_bind={"action_interact_left": "q", "action_interact_right": "e"},
                 input_comp=sw_compdocs.component.Component(
                     defn=sw_compdocs.component.Definition(
                         file="button_push.xml",
@@ -2106,7 +2106,7 @@ class TestGenerateDocumentComponent(unittest.TestCase):
             tt(
                 input_label=None,
                 input_lang=None,
-                input_ctx=None,
+                input_bind=None,
                 input_comp=sw_compdocs.component.Multibody(
                     defn=sw_compdocs.component.Definition(),
                     child=sw_compdocs.component.Definition(
@@ -2185,7 +2185,7 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                     tc.input_comp,
                     label=tc.input_label,
                     lang=tc.input_lang,
-                    ctx=tc.input_ctx,
+                    bind=tc.input_bind,
                 )
                 self.assertEqual(got_doc, tc.want_doc)
 
@@ -2208,7 +2208,7 @@ class TestGenerateDocumentComponentList(unittest.TestCase):
                 ("input_comp_list", list[sw_compdocs.component.Component]),
                 ("input_label", collections.abc.Mapping[str, str] | None),
                 ("input_lang", sw_compdocs.language.Language | None),
-                ("input_ctx", collections.abc.Mapping[str, str] | None),
+                ("input_bind", collections.abc.Mapping[str, str] | None),
                 ("want_doc", sw_compdocs.document.Document),
             ],
         )
@@ -2218,7 +2218,7 @@ class TestGenerateDocumentComponentList(unittest.TestCase):
                 input_comp_list=[],
                 input_label=None,
                 input_lang=None,
-                input_ctx=None,
+                input_bind=None,
                 want_doc=sw_compdocs.document.Document(),
             ),
             tt(
@@ -2236,7 +2236,7 @@ class TestGenerateDocumentComponentList(unittest.TestCase):
                 ],
                 input_label=None,
                 input_lang=None,
-                input_ctx=None,
+                input_bind=None,
                 want_doc=sw_compdocs.document.Document(
                     [
                         sw_compdocs.document.Heading("A", level=1),
@@ -2306,7 +2306,7 @@ class TestGenerateDocumentComponentList(unittest.TestCase):
                         ),
                     ]
                 ),
-                input_ctx={"s_desc": "foo", "desc": "bar"},
+                input_bind={"s_desc": "foo", "desc": "bar"},
                 want_doc=sw_compdocs.document.Document(
                     [
                         sw_compdocs.document.Heading("テスト", level=1),
@@ -2331,7 +2331,7 @@ class TestGenerateDocumentComponentList(unittest.TestCase):
                     tc.input_comp_list,
                     label=tc.input_label,
                     lang=tc.input_lang,
-                    ctx=tc.input_ctx,
+                    bind=tc.input_bind,
                 )
                 self.assertEqual(got_doc, tc.want_doc)
 
@@ -2344,7 +2344,7 @@ class TestGenerateDocument(unittest.TestCase):
                 ("input_comp_list", list[sw_compdocs.component.Component]),
                 ("input_label", collections.abc.Mapping[str, str] | None),
                 ("input_lang", sw_compdocs.language.Language | None),
-                ("input_ctx", collections.abc.Mapping[str, str] | None),
+                ("input_bind", collections.abc.Mapping[str, str] | None),
                 ("want_doc", sw_compdocs.document.Document),
             ],
         )
@@ -2355,7 +2355,7 @@ class TestGenerateDocument(unittest.TestCase):
                 input_comp_list=[],
                 input_label=None,
                 input_lang=None,
-                input_ctx=None,
+                input_bind=None,
                 want_doc=sw_compdocs.document.Document(),
             ),
             # single
@@ -2370,7 +2370,7 @@ class TestGenerateDocument(unittest.TestCase):
                 ],
                 input_label=None,
                 input_lang=None,
-                input_ctx=None,
+                input_bind=None,
                 want_doc=sw_compdocs.document.Document(
                     [
                         sw_compdocs.document.Heading("Blocks", level=1),
@@ -2418,7 +2418,7 @@ class TestGenerateDocument(unittest.TestCase):
                 ],
                 input_label=None,
                 input_lang=None,
-                input_ctx=None,
+                input_bind=None,
                 want_doc=sw_compdocs.document.Document(
                     [
                         sw_compdocs.document.Heading("Blocks", level=1),
@@ -2500,7 +2500,7 @@ class TestGenerateDocument(unittest.TestCase):
                 ],
                 input_label=None,
                 input_lang=None,
-                input_ctx=None,
+                input_bind=None,
                 want_doc=sw_compdocs.document.Document(
                     [
                         sw_compdocs.document.Heading("Blocks", level=1),
@@ -2657,7 +2657,7 @@ class TestGenerateDocument(unittest.TestCase):
                 ],
                 input_label=None,
                 input_lang=None,
-                input_ctx=None,
+                input_bind=None,
                 want_doc=sw_compdocs.document.Document(
                     [
                         sw_compdocs.document.Heading("Blocks", level=1),
@@ -2855,7 +2855,7 @@ class TestGenerateDocument(unittest.TestCase):
                     ],
                 ),
             ),
-            # label, lang, template
+            # label, lang, keybindings
             tt(
                 input_comp_list=[
                     sw_compdocs.component.Component(
@@ -2898,7 +2898,7 @@ class TestGenerateDocument(unittest.TestCase):
                         ),
                     ]
                 ),
-                input_ctx={"s_desc": "foo", "desc": "bar"},
+                input_bind={"s_desc": "foo", "desc": "bar"},
                 want_doc=sw_compdocs.document.Document(
                     [
                         sw_compdocs.document.Heading("Blocks", level=1),
@@ -2926,7 +2926,7 @@ class TestGenerateDocument(unittest.TestCase):
                     tc.input_comp_list,
                     label=tc.input_label,
                     lang=tc.input_lang,
-                    ctx=tc.input_ctx,
+                    bind=tc.input_bind,
                 )
                 self.assertEqual(got_doc, tc.want_doc)
 
@@ -2937,7 +2937,7 @@ class TestGenerateSheetComponent(unittest.TestCase):
             "tt",
             [
                 ("input_lang", sw_compdocs.language.Language | None),
-                ("input_ctx", collections.abc.Mapping[str, str] | None),
+                ("input_bind", collections.abc.Mapping[str, str] | None),
                 ("input_comp", sw_compdocs.component.Component),
                 ("want_record", list[str]),
             ],
@@ -2946,7 +2946,7 @@ class TestGenerateSheetComponent(unittest.TestCase):
         for tc in [
             tt(  # empty
                 input_lang=None,
-                input_ctx=None,
+                input_bind=None,
                 input_comp=sw_compdocs.component.Component(
                     defn=sw_compdocs.component.Definition()
                 ),
@@ -2977,7 +2977,7 @@ class TestGenerateSheetComponent(unittest.TestCase):
             ),
             tt(  # normal
                 input_lang=None,
-                input_ctx=None,
+                input_bind=None,
                 input_comp=sw_compdocs.component.Component(
                     defn=sw_compdocs.component.Definition(
                         file="test.xml",
@@ -3023,7 +3023,7 @@ class TestGenerateSheetComponent(unittest.TestCase):
             ),
             tt(  # multibody
                 input_lang=None,
-                input_ctx=None,
+                input_bind=None,
                 input_comp=sw_compdocs.component.Multibody(
                     defn=sw_compdocs.component.Definition(
                         file="multibody_a.xml",
@@ -3075,7 +3075,7 @@ class TestGenerateSheetComponent(unittest.TestCase):
             ),
             tt(  # file
                 input_lang=None,
-                input_ctx=None,
+                input_bind=None,
                 input_comp=sw_compdocs.component.Multibody(
                     defn=sw_compdocs.component.Definition(
                         file=b"path/to/multibody_a.xml"
@@ -3111,7 +3111,7 @@ class TestGenerateSheetComponent(unittest.TestCase):
             ),
             tt(  # deprecated
                 input_lang=None,
-                input_ctx=None,
+                input_bind=None,
                 input_comp=sw_compdocs.component.Component(
                     defn=sw_compdocs.component.Definition(
                         flags=sw_compdocs.component.Flags.IS_DEPRECATED
@@ -3144,7 +3144,7 @@ class TestGenerateSheetComponent(unittest.TestCase):
             ),
             tt(  # orphan
                 input_lang=None,
-                input_ctx=None,
+                input_bind=None,
                 input_comp=sw_compdocs.component.Component(
                     defn=sw_compdocs.component.Definition(
                         flags=sw_compdocs.component.Flags.MULTIBODY_CHILD
@@ -3175,7 +3175,7 @@ class TestGenerateSheetComponent(unittest.TestCase):
                     "",  # Description
                 ],
             ),
-            tt(  # lang, template
+            tt(  # lang, keybindings
                 input_lang=sw_compdocs.language.Language(
                     [
                         sw_compdocs.language.Translation(
@@ -3189,7 +3189,7 @@ class TestGenerateSheetComponent(unittest.TestCase):
                         ),
                     ]
                 ),
-                input_ctx={
+                input_bind={
                     "name": "Name",
                     "s_desc": "short_description",
                     "desc": "description",
@@ -3234,7 +3234,7 @@ class TestGenerateSheetComponent(unittest.TestCase):
         ]:
             with self.subTest(tc=tc):
                 got_record = sw_compdocs.generator.generate_sheet_component(
-                    tc.input_comp, lang=tc.input_lang, ctx=tc.input_ctx
+                    tc.input_comp, lang=tc.input_lang, bind=tc.input_bind
                 )
                 self.assertEqual(got_record, tc.want_record)
 
@@ -3246,7 +3246,7 @@ class TestGenerateSheetComponentList(unittest.TestCase):
             [
                 ("input_comp_list", list[sw_compdocs.component.Component]),
                 ("input_lang", sw_compdocs.language.Language | None),
-                ("input_ctx", collections.abc.Mapping[str, str] | None),
+                ("input_bind", collections.abc.Mapping[str, str] | None),
                 ("want_record_list", list[list[str]]),
             ],
         )
@@ -3271,7 +3271,7 @@ class TestGenerateSheetComponentList(unittest.TestCase):
                     ),
                 ],
                 input_lang=None,
-                input_ctx=None,
+                input_bind=None,
                 want_record_list=[
                     [
                         "Test 1",  # Name
@@ -3384,7 +3384,7 @@ class TestGenerateSheetComponentList(unittest.TestCase):
                         ),
                     ]
                 ),
-                input_ctx={
+                input_bind={
                     "name": "Name",
                     "s_desc": "short_description",
                     "desc": "description",
@@ -3419,7 +3419,7 @@ class TestGenerateSheetComponentList(unittest.TestCase):
         ]:
             with self.subTest(tc=tc):
                 got_record_list = sw_compdocs.generator.generate_sheet_component_list(
-                    tc.input_comp_list, lang=tc.input_lang, ctx=tc.input_ctx
+                    tc.input_comp_list, lang=tc.input_lang, bind=tc.input_bind
                 )
                 self.assertEqual(got_record_list, tc.want_record_list)
 
@@ -3431,7 +3431,7 @@ class TestGenerateSheet(unittest.TestCase):
             [
                 ("input_label", collections.abc.Mapping[str, str] | None),
                 ("input_lang", sw_compdocs.language.Language | None),
-                ("input_ctx", collections.abc.Mapping[str, str] | None),
+                ("input_bind", collections.abc.Mapping[str, str] | None),
                 ("input_comp_list", list[sw_compdocs.component.Component]),
                 ("want_record_list", list[list[str]]),
             ],
@@ -3441,7 +3441,7 @@ class TestGenerateSheet(unittest.TestCase):
             tt(  # sort
                 input_label=None,
                 input_lang=None,
-                input_ctx=None,
+                input_bind=None,
                 input_comp_list=[
                     sw_compdocs.component.Component(
                         defn=sw_compdocs.component.Definition(
@@ -3631,7 +3631,7 @@ class TestGenerateSheet(unittest.TestCase):
                     ],
                 ],
             ),
-            tt(  # label, lang, ctx
+            tt(  # label, lang, bind
                 input_label={
                     "SHEET_HEAD_NAME": "Name",
                     "SHEET_HEAD_FILE_PARENT": "Parent File",
@@ -3669,7 +3669,7 @@ class TestGenerateSheet(unittest.TestCase):
                         ),
                     ]
                 ),
-                input_ctx={
+                input_bind={
                     "name": "Name",
                     "s_desc": "short_description",
                     "desc": "description",
@@ -3754,7 +3754,7 @@ class TestGenerateSheet(unittest.TestCase):
                     tc.input_comp_list,
                     label=tc.input_label,
                     lang=tc.input_lang,
-                    ctx=tc.input_ctx,
+                    bind=tc.input_bind,
                 )
                 self.assertEqual(got_record_list, tc.want_record_list)
 

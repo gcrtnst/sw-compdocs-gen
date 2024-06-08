@@ -143,11 +143,11 @@ DOCUMENT_PROP_FILE = "ファイル：{}"
                 w = csv.writer(fp, dialect=sw_compdocs.language.LanguageTSVDialect)
                 w.writerows(lang_list)
 
-            template_file = pathlib.Path(temp_dir, "template.toml")
-            with open(template_file, mode="x", encoding="utf-8", newline="\n") as fp:
+            bind_file = pathlib.Path(temp_dir, "keybindings.toml")
+            with open(bind_file, mode="x", encoding="utf-8", newline="\n") as fp:
                 fp.write(
                     """\
-[template]
+[keybindings]
 template_01 = "テンプレート 01"
 template_02 = "テンプレート 02"
 """
@@ -158,7 +158,7 @@ template_02 = "テンプレート 02"
                 defn_dir=defn_dir,
                 label_file=label_file,
                 lang_file=lang_file,
-                template_file=template_file,
+                bind_file=bind_file,
                 out_mode="document",
                 out_encoding="shift-jis",
                 out_newline="\r\n",
@@ -253,11 +253,11 @@ DOCUMENT_PROP_FILE = "ファイル：{}"
                 w = csv.writer(fp, dialect=sw_compdocs.language.LanguageTSVDialect)
                 w.writerows(lang_list)
 
-            template_file = pathlib.Path(temp_dir, "template.toml")
-            with open(template_file, mode="x", encoding="utf-8", newline="\n") as fp:
+            bind_file = pathlib.Path(temp_dir, "keybindings.toml")
+            with open(bind_file, mode="x", encoding="utf-8", newline="\n") as fp:
                 fp.write(
                     """\
-[template]
+[keybindings]
 template_01 = "テンプレート 01"
 template_02 = "テンプレート 02"
 """
@@ -268,7 +268,7 @@ template_02 = "テンプレート 02"
                 defn_dir=defn_dir,
                 label_file=label_file,
                 lang_file=lang_file,
-                template_file=template_file,
+                bind_file=bind_file,
                 out_mode="document",
             )
 
@@ -360,11 +360,11 @@ DOCUMENT_PROP_FILE = "ファイル：{}"
                 w = csv.writer(fp, dialect=sw_compdocs.language.LanguageTSVDialect)
                 w.writerows(lang_list)
 
-            template_file = pathlib.Path(temp_dir, "template.toml")
-            with open(template_file, mode="x", encoding="utf-8", newline="\n") as fp:
+            bind_file = pathlib.Path(temp_dir, "keybindings.toml")
+            with open(bind_file, mode="x", encoding="utf-8", newline="\n") as fp:
                 fp.write(
                     """\
-[template]
+[keybindings]
 template_01 = "テンプレート 01"
 template_02 = "テンプレート 02"
 """
@@ -376,7 +376,7 @@ template_02 = "テンプレート 02"
                     defn_dir=defn_dir,
                     label_file=label_file,
                     lang_file=lang_file,
-                    template_file=template_file,
+                    bind_file=bind_file,
                     out_mode="document",
                     out_encoding="ascii",
                     out_newline="\r\n",
@@ -474,11 +474,11 @@ SHEET_HEAD_DESC = "Description"
                 w = csv.writer(fp, dialect=sw_compdocs.language.LanguageTSVDialect)
                 w.writerows(lang_list)
 
-            template_file = pathlib.Path(temp_dir, "template.toml")
-            with open(template_file, mode="x", encoding="utf-8", newline="\n") as fp:
+            bind_file = pathlib.Path(temp_dir, "keybindings.toml")
+            with open(bind_file, mode="x", encoding="utf-8", newline="\n") as fp:
                 fp.write(
                     """\
-[template]
+[keybindings]
 template_01 = "テンプレート 01"
 template_02 = "テンプレート 02"
 """
@@ -489,7 +489,7 @@ template_02 = "テンプレート 02"
                 defn_dir=defn_dir,
                 label_file=label_file,
                 lang_file=lang_file,
-                template_file=template_file,
+                bind_file=bind_file,
                 out_mode="sheet",
                 out_encoding="shift-jis",
                 out_newline="\n",
@@ -577,11 +577,11 @@ SHEET_HEAD_DESC = "Description"
                 w = csv.writer(fp, dialect=sw_compdocs.language.LanguageTSVDialect)
                 w.writerows(lang_list)
 
-            template_file = pathlib.Path(temp_dir, "template.toml")
-            with open(template_file, mode="x", encoding="utf-8", newline="\n") as fp:
+            bind_file = pathlib.Path(temp_dir, "keybindings.toml")
+            with open(bind_file, mode="x", encoding="utf-8", newline="\n") as fp:
                 fp.write(
                     """\
-[template]
+[keybindings]
 template_01 = "テンプレート 01"
 template_02 = "テンプレート 02"
 """
@@ -592,7 +592,7 @@ template_02 = "テンプレート 02"
                 defn_dir=defn_dir,
                 label_file=label_file,
                 lang_file=lang_file,
-                template_file=template_file,
+                bind_file=bind_file,
                 out_mode="sheet",
             )
 
@@ -679,11 +679,11 @@ SHEET_HEAD_DESC = "Description"
                 w = csv.writer(fp, dialect=sw_compdocs.language.LanguageTSVDialect)
                 w.writerows(lang_list)
 
-            template_file = pathlib.Path(temp_dir, "template.toml")
-            with open(template_file, mode="x", encoding="utf-8", newline="\n") as fp:
+            bind_file = pathlib.Path(temp_dir, "keybindings.toml")
+            with open(bind_file, mode="x", encoding="utf-8", newline="\n") as fp:
                 fp.write(
                     """\
-[template]
+[keybindings]
 template_01 = "テンプレート 01"
 template_02 = "テンプレート 02"
 """
@@ -695,7 +695,7 @@ template_02 = "テンプレート 02"
                     defn_dir=defn_dir,
                     label_file=label_file,
                     lang_file=lang_file,
-                    template_file=template_file,
+                    bind_file=bind_file,
                     out_mode="sheet",
                     out_encoding="ascii",
                     out_newline="\r\n",
@@ -886,7 +886,7 @@ class TestMain(unittest.TestCase):
                     show_orphan=False,
                     label_file=None,
                     lang_file=None,
-                    template_file=None,
+                    bind_file=None,
                     out_mode="document",
                     out_encoding=None,
                     out_newline=None,
@@ -906,7 +906,7 @@ class TestMain(unittest.TestCase):
                     show_orphan=False,
                     label_file=None,
                     lang_file=None,
-                    template_file=None,
+                    bind_file=None,
                     out_mode="document",
                     out_encoding=None,
                     out_newline=None,
@@ -926,7 +926,7 @@ class TestMain(unittest.TestCase):
                     show_orphan=False,
                     label_file=None,
                     lang_file=None,
-                    template_file=None,
+                    bind_file=None,
                     out_mode="document",
                     out_encoding=None,
                     out_newline=None,
@@ -946,7 +946,7 @@ class TestMain(unittest.TestCase):
                     show_orphan=True,
                     label_file=None,
                     lang_file=None,
-                    template_file=None,
+                    bind_file=None,
                     out_mode="document",
                     out_encoding=None,
                     out_newline=None,
@@ -966,7 +966,7 @@ class TestMain(unittest.TestCase):
                     show_orphan=False,
                     label_file=None,
                     lang_file=None,
-                    template_file=None,
+                    bind_file=None,
                     out_mode="document",
                     out_encoding=None,
                     out_newline=None,
@@ -987,7 +987,7 @@ class TestMain(unittest.TestCase):
                     show_orphan=False,
                     label_file="path/to/label",
                     lang_file=None,
-                    template_file=None,
+                    bind_file=None,
                     out_mode="document",
                     out_encoding=None,
                     out_newline=None,
@@ -1008,7 +1008,7 @@ class TestMain(unittest.TestCase):
                     show_orphan=False,
                     label_file=None,
                     lang_file="path/to/language",
-                    template_file=None,
+                    bind_file=None,
                     out_mode="document",
                     out_encoding=None,
                     out_newline=None,
@@ -1018,8 +1018,8 @@ class TestMain(unittest.TestCase):
                 input_args=[
                     "--definitions",
                     "path/to/definitions",
-                    "--template",
-                    "path/to/template",
+                    "--keybindings",
+                    "path/to/keybindings",
                     "path/to/output",
                 ],
                 want_call_args=unittest.mock.call(
@@ -1029,7 +1029,7 @@ class TestMain(unittest.TestCase):
                     show_orphan=False,
                     label_file=None,
                     lang_file=None,
-                    template_file="path/to/template",
+                    bind_file="path/to/keybindings",
                     out_mode="document",
                     out_encoding=None,
                     out_newline=None,
@@ -1050,7 +1050,7 @@ class TestMain(unittest.TestCase):
                     show_orphan=False,
                     label_file=None,
                     lang_file=None,
-                    template_file=None,
+                    bind_file=None,
                     out_mode="sheet",
                     out_encoding=None,
                     out_newline=None,
@@ -1071,7 +1071,7 @@ class TestMain(unittest.TestCase):
                     show_orphan=False,
                     label_file=None,
                     lang_file=None,
-                    template_file=None,
+                    bind_file=None,
                     out_mode="document",
                     out_encoding="shift-jis",
                     out_newline=None,
@@ -1092,7 +1092,7 @@ class TestMain(unittest.TestCase):
                     show_orphan=False,
                     label_file=None,
                     lang_file=None,
-                    template_file=None,
+                    bind_file=None,
                     out_mode="document",
                     out_encoding=None,
                     out_newline="\r",
@@ -1113,7 +1113,7 @@ class TestMain(unittest.TestCase):
                     show_orphan=False,
                     label_file=None,
                     lang_file=None,
-                    template_file=None,
+                    bind_file=None,
                     out_mode="document",
                     out_encoding=None,
                     out_newline="\r\n",
@@ -1136,7 +1136,7 @@ class TestMain(unittest.TestCase):
                     show_orphan=False,
                     label_file=None,
                     lang_file=None,
-                    template_file=None,
+                    bind_file=None,
                     out_mode="sheet",
                     out_encoding=None,
                     out_newline="\n",
@@ -1402,11 +1402,11 @@ DOCUMENT_PROP_FILE = "ファイル：{}"
                 w = csv.writer(fp, dialect=sw_compdocs.language.LanguageTSVDialect)
                 w.writerows(lang_list)
 
-            template_file = pathlib.Path(temp_dir, "template.toml")
-            with open(template_file, mode="x", encoding="utf-8", newline="\n") as fp:
+            bind_file = pathlib.Path(temp_dir, "keybindings.toml")
+            with open(bind_file, mode="x", encoding="utf-8", newline="\n") as fp:
                 fp.write(
                     """\
-[template]
+[keybindings]
 template_01 = "テンプレート 01"
 template_02 = "テンプレート 02"
 """
@@ -1426,8 +1426,8 @@ template_02 = "テンプレート 02"
                         str(label_file),
                         "--language",
                         str(lang_file),
-                        "--template",
-                        str(template_file),
+                        "--keybindings",
+                        str(bind_file),
                         "--encoding",
                         "shift-jis",
                         "--newline",

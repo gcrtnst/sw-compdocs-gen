@@ -56,7 +56,7 @@ default_label: typing.Final[collections.abc.Mapping[str, str]] = {
 }
 
 
-default_ctx: typing.Final[collections.abc.Mapping[str, str]] = {
+default_bind: typing.Final[collections.abc.Mapping[str, str]] = {
     "action_axis_ui_navigate_x": "pad 1 axis 1",
     "action_axis_ui_navigate_y": "pad 1 axis 2",
     "action_ui_select": "pad 1 button 1",
@@ -312,7 +312,7 @@ def load_label(file: _types.StrOrBytesPath | None = None) -> dict[str, str]:
     return load_toml_table(file, "label")
 
 
-def load_template(file: _types.StrOrBytesPath | None = None) -> dict[str, str]:
+def load_keybindings(file: _types.StrOrBytesPath | None = None) -> dict[str, str]:
     if file is None:
-        return dict(default_ctx)
-    return load_toml_table(file, "template")
+        return dict(default_bind)
+    return load_toml_table(file, "keybindings")

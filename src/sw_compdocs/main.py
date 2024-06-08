@@ -65,7 +65,7 @@ def generate_document(
     comp_list: collections.abc.Iterable[component.Component],
     label: collections.abc.Mapping[str, str] | None,
     lang: language.Language | None,
-    ctx: collections.abc.Mapping[str, str] | None,
+    bind: collections.abc.Mapping[str, str] | None,
     out_encoding: str | None = None,
     out_newline: typing.Literal["\r", "\n", "\r\n"] | None = None,
 ) -> None:
@@ -74,7 +74,7 @@ def generate_document(
     if out_newline is None:
         out_newline = "\n"
 
-    doc = generator.generate_document(comp_list, label=label, lang=lang, ctx=ctx)
+    doc = generator.generate_document(comp_list, label=label, lang=lang, bind=bind)
     md = renderer.render_markdown(doc)
 
     with wraperr.wrap_unicode_error(out_file):
@@ -94,7 +94,7 @@ def generate_sheet(
     comp_list: collections.abc.Iterable[component.Component],
     label: collections.abc.Mapping[str, str] | None,
     lang: language.Language | None,
-    ctx: collections.abc.Mapping[str, str] | None,
+    bind: collections.abc.Mapping[str, str] | None,
     out_encoding: str | None = None,
     out_newline: typing.Literal["\r", "\n", "\r\n"] | None = None,
 ) -> None:
@@ -103,7 +103,7 @@ def generate_sheet(
     if out_newline is None:
         out_newline = "\r\n"
 
-    record_list = generator.generate_sheet(comp_list, label=label, lang=lang, ctx=ctx)
+    record_list = generator.generate_sheet(comp_list, label=label, lang=lang, bind=bind)
     with wraperr.wrap_unicode_error(out_file):
         with open(
             out_file, mode="w", encoding=out_encoding, errors="strict", newline=""
@@ -120,13 +120,13 @@ def run(
     show_orphan: bool = False,
     label_file: _types.StrOrBytesPath | None = None,
     lang_file: _types.StrOrBytesPath | None = None,
-    template_file: _types.StrOrBytesPath | None = None,
+    bind_file: _types.StrOrBytesPath | None = None,
     out_mode: typing.Literal["document", "sheet"] = "document",
     out_encoding: str | None = None,
     out_newline: typing.Literal["\r", "\n", "\r\n"] | None = None,
 ) -> None:
     label = resource.load_label(label_file)
-    ctx = resource.load_template(template_file)
+    bind = resource.load_keybindings(bind_file)
 
     lang = None
     if lang_file is not None:
@@ -148,7 +148,7 @@ def run(
             comp_list=comp_list,
             label=label,
             lang=lang,
-            ctx=ctx,
+            bind=bind,
             out_encoding=out_encoding,
             out_newline=out_newline,
         )
@@ -159,7 +159,7 @@ def run(
             comp_list=comp_list,
             label=label,
             lang=lang,
-            ctx=ctx,
+            bind=bind,
             out_encoding=out_encoding,
             out_newline=out_newline,
         )
@@ -240,9 +240,9 @@ def main(
         help="stormworks language tsv file",
     )
     argp.add_argument(
-        "-t",
-        "--template",
-        help="toml file containing template table",
+        "-k",
+        "--keybindings",
+        help="toml file containing keybindings table",
     )
     argp.add_argument(
         "-m",
@@ -288,8 +288,8 @@ def main(
     if argv_language is not None and not isinstance(argv_language, str):
         raise Exception
 
-    argv_template: object = argv.template
-    if argv_template is not None and not isinstance(argv_template, str):
+    argv_keybindings: object = argv.keybindings
+    if argv_keybindings is not None and not isinstance(argv_keybindings, str):
         raise Exception
 
     argv_mode: typing.Literal["document", "sheet"] = argv.mode
@@ -329,7 +329,7 @@ def main(
             show_orphan=argv_show_orphan,
             label_file=argv_label,
             lang_file=argv_language,
-            template_file=argv_template,
+            bind_file=argv_keybindings,
             out_mode=argv_mode,
             out_encoding=argv_encoding,
             out_newline=argv_newline,

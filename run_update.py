@@ -21,8 +21,8 @@ def main() -> None:
     toml_file = pathlib.Path(repo_dir, "res/sw_compdocs_label.toml")
     _dump_toml(toml_dict, toml_file)
 
-    toml_dict = {"template": dict(sw_compdocs.resource.default_ctx)}
-    toml_file = pathlib.Path(repo_dir, "res/sw_compdocs_template.toml")
+    toml_dict = {"keybindings": dict(sw_compdocs.resource.default_bind)}
+    toml_file = pathlib.Path(repo_dir, "res/sw_compdocs_keybindings.toml")
     _dump_toml(toml_dict, toml_file)
 
 

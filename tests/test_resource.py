@@ -433,19 +433,19 @@ KEY = "value"
             self.assertEqual(label, {"KEY": "value"})
 
 
-class TestLoadTemplate(unittest.TestCase):
+class TestLoadKeybindings(unittest.TestCase):
     def test_default(self) -> None:
-        ctx = sw_compdocs.resource.load_template()
-        self.assertEqual(ctx, sw_compdocs.resource.default_ctx)
+        bind = sw_compdocs.resource.load_keybindings()
+        self.assertEqual(bind, sw_compdocs.resource.default_bind)
 
     def test_file(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
-            temp_file = pathlib.Path(temp_dir, "template.toml")
+            temp_file = pathlib.Path(temp_dir, "keybindings.toml")
             with open(temp_file, mode="w", encoding="utf-8", newline="\n") as fp:
                 fp.write("""\
-[template]
+[keybindings]
 key = "value"
 """)
 
-            ctx = sw_compdocs.resource.load_template(temp_file)
-            self.assertEqual(ctx, {"key": "value"})
+            bind = sw_compdocs.resource.load_keybindings(temp_file)
+            self.assertEqual(bind, {"key": "value"})
