@@ -1,5 +1,8 @@
+import pathlib
 import sw_compdocs.document
 import sw_compdocs.exporter
+import sw_compdocs.wraperr
+import tempfile
 import typing
 import unittest
 
@@ -366,3 +369,40 @@ class TestRenderMarkdown(unittest.TestCase):
             with self.subTest(tc=tc):
                 got_text = sw_compdocs.exporter.render_markdown(tc.input_doc)
                 self.assertEqual(got_text, tc.want_text)
+
+
+class TestExportMarkdown(unittest.TestCase):
+    def test_pass(self) -> None:
+        doc = sw_compdocs.document.Document([sw_compdocs.document.Heading("テスト")])
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_file = pathlib.Path(temp_dir, "output.md")
+            sw_compdocs.exporter.export_markdown(
+                doc,
+                temp_file,
+                mode="x",
+                encoding="utf-8",
+                errors="strict",
+                newline="\n",
+            )
+            with open(
+                temp_file, mode="r", encoding="utf-8", errors="strict", newline="\n"
+            ) as fp:
+                got_md = fp.read()
+        self.assertEqual(got_md, "# テスト\n")
+
+    def test_exc_unicode(self) -> None:
+        doc = sw_compdocs.document.Document([sw_compdocs.document.Heading("テスト")])
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_file = pathlib.Path(temp_dir, "output.md")
+            with self.assertRaises(sw_compdocs.wraperr.UnicodeEncodeFileError) as ctx:
+                sw_compdocs.exporter.export_markdown(
+                    doc,
+                    temp_file,
+                    mode="x",
+                    encoding="ascii",
+                    errors="strict",
+                    newline="\n",
+                )
+            self.assertEqual(ctx.exception.filename, temp_file)
