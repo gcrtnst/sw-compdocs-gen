@@ -1,7 +1,9 @@
 import collections.abc
 import typing
 
+from . import _types
 from . import document
+from . import wraperr
 
 
 def render_markdown_heading(head: document.Heading) -> str:
@@ -79,3 +81,25 @@ def render_markdown_block(blk: document.Block) -> str:
 
 def render_markdown(doc: document.Document) -> str:
     return "\n".join(render_markdown_block(blk) for blk in doc)
+
+
+def export_markdown(
+    doc: document.Document,
+    file: _types.StrOrBytesPath,
+    *,
+    mode: typing.Literal["w", "wt", "tw", "a", "at", "ta", "x", "xt", "tx"] = "w",
+    encoding: str | None = None,
+    errors: str | None = None,
+    newline: str | None = None,
+) -> None:
+    md = render_markdown(doc)
+
+    with wraperr.wrap_unicode_error(file):
+        with open(
+            file,
+            mode=mode,
+            encoding=encoding,
+            errors=errors,
+            newline=newline,
+        ) as fp:
+            fp.write(md)

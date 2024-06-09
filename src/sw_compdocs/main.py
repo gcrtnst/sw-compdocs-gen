@@ -75,17 +75,14 @@ def generate_document(
         out_newline = "\n"
 
     doc = generator.generate_document(comp_list, label=label, lang=lang, bind=bind)
-    md = exporter.render_markdown(doc)
-
-    with wraperr.wrap_unicode_error(out_file):
-        with open(
-            out_file,
-            mode="w",
-            encoding=out_encoding,
-            errors="strict",
-            newline=out_newline,
-        ) as fp:
-            fp.write(md)
+    exporter.export_markdown(
+        doc,
+        out_file,
+        mode="w",
+        encoding=out_encoding,
+        errors="strict",
+        newline=out_newline,
+    )
 
 
 def generate_sheet(
