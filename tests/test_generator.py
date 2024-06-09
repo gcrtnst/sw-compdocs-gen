@@ -930,7 +930,6 @@ class TestGenerateDocumentLogicNormal(unittest.TestCase):
                             ),
                         ),
                     ],
-                    key="test",
                 ),
                 want_doc=sw_compdocs.document.Document(
                     [
@@ -1812,7 +1811,6 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                                     ),
                                 ),
                             ],
-                            key="dummy",
                         ),
                     )
                 ),
@@ -2021,7 +2019,6 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                                     ),
                                 ),
                             ],
-                            key="button_push",
                         ),
                         voxel_min=sw_compdocs.component.VoxelPos(x=0, y=0, z=0),
                         voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=0),

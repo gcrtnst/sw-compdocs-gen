@@ -741,23 +741,6 @@ class TestLogicNodeUpdateID(unittest.TestCase):
                 self.assertEqual(ln, tc.want_ln)
 
 
-class TestLogicNodeListInit(unittest.TestCase):
-    def test(self) -> None:
-        lst = [
-            sw_compdocs.component.LogicNode(
-                type=sw_compdocs.component.LogicNodeType.BOOL
-            ),
-            sw_compdocs.component.LogicNode(
-                type=sw_compdocs.component.LogicNodeType.FLOAT
-            ),
-            sw_compdocs.component.LogicNode(
-                type=sw_compdocs.component.LogicNodeType.TORQUE
-            ),
-        ]
-        lns = sw_compdocs.component.LogicNodeList(lst, key="key")
-        self.assertEqual(list[sw_compdocs.component.LogicNode](lns), lst)
-
-
 class TestLogicNodeListFromXMLElem(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(
@@ -848,7 +831,6 @@ class TestLogicNodeListFromXMLElem(unittest.TestCase):
                             ),
                         ),
                     ],
-                    key="key",
                 ),
             ),
         ]:
@@ -944,7 +926,6 @@ class TestLogicNodeListUpdateID(unittest.TestCase):
                             ),
                         ),
                     ],
-                    key="key",
                 ),
                 input_key=None,
                 input_recursive=False,
@@ -987,7 +968,6 @@ class TestLogicNodeListUpdateID(unittest.TestCase):
                         sw_compdocs.component.LogicNode(),
                         sw_compdocs.component.LogicNode(),
                     ],
-                    key="key",
                 ),
             ),
             tt(
@@ -1012,7 +992,6 @@ class TestLogicNodeListUpdateID(unittest.TestCase):
                             ),
                         ),
                     ],
-                    key="key",
                 ),
                 input_key=None,
                 input_recursive=True,
@@ -1055,7 +1034,6 @@ class TestLogicNodeListUpdateID(unittest.TestCase):
                             ),
                         ),
                     ],
-                    key="key",
                 ),
             ),
         ]:
@@ -1240,7 +1218,6 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
                         ),
                     ),
                 ],
-                key="clock",
             ),
         )
         self.assertEqual(defn.voxel_min, sw_compdocs.component.VoxelPos(x=0, y=0, z=0))
@@ -1291,7 +1268,7 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
         )
         self.assertEqual(
             defn.logic_nodes,
-            sw_compdocs.component.LogicNodeList(key="multibody_pivot_a"),
+            sw_compdocs.component.LogicNodeList(),
         )
         self.assertEqual(defn.voxel_min, sw_compdocs.component.VoxelPos(x=0, y=0, z=0))
         self.assertEqual(defn.voxel_max, sw_compdocs.component.VoxelPos(x=0, y=1, z=0))
@@ -1338,9 +1315,7 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
                 description=sw_compdocs.language.Text(id="def_key_desc"),
             ),
         )
-        self.assertEqual(
-            defn.logic_nodes, sw_compdocs.component.LogicNodeList(key="key")
-        )
+        self.assertEqual(defn.logic_nodes, sw_compdocs.component.LogicNodeList())
         self.assertEqual(defn.voxel_min, sw_compdocs.component.VoxelPos())
         self.assertEqual(defn.voxel_max, sw_compdocs.component.VoxelPos())
         self.assertEqual(defn.voxel_location_child, sw_compdocs.component.VoxelPos())
@@ -1463,7 +1438,7 @@ class TestDefinitionUpdateID(unittest.TestCase):
                         ),
                         description=sw_compdocs.language.Text(id="def_key_desc"),
                     ),
-                    logic_nodes=sw_compdocs.component.LogicNodeList(key="key"),
+                    logic_nodes=sw_compdocs.component.LogicNodeList(),
                 ),
                 input_key=None,
                 input_recursive=False,
@@ -1474,7 +1449,7 @@ class TestDefinitionUpdateID(unittest.TestCase):
                         ),
                         description=sw_compdocs.language.Text(id="def_key_desc"),
                     ),
-                    logic_nodes=sw_compdocs.component.LogicNodeList(key="key"),
+                    logic_nodes=sw_compdocs.component.LogicNodeList(),
                 ),
             ),
             tt(
@@ -1495,7 +1470,7 @@ class TestDefinitionUpdateID(unittest.TestCase):
                         ),
                         description=sw_compdocs.language.Text(id="def_key_desc"),
                     ),
-                    logic_nodes=sw_compdocs.component.LogicNodeList(key="key"),
+                    logic_nodes=sw_compdocs.component.LogicNodeList(),
                 ),
                 input_key=None,
                 input_recursive=True,
@@ -1514,7 +1489,7 @@ class TestDefinitionUpdateID(unittest.TestCase):
                         ),
                         description=sw_compdocs.language.Text(id="def_key_desc"),
                     ),
-                    logic_nodes=sw_compdocs.component.LogicNodeList(key="key"),
+                    logic_nodes=sw_compdocs.component.LogicNodeList(),
                 ),
             ),
         ]:

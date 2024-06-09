@@ -267,14 +267,6 @@ class LogicNode:
 
 
 class LogicNodeList(container.MutableSequence[LogicNode]):
-    def __init__(
-        self,
-        iterable: collections.abc.Iterable[LogicNode] = (),
-        *,
-        key: str | None = None,
-    ) -> None:
-        super().__init__(iterable)
-
     @classmethod
     def from_xml_elem(
         cls, elem: lxml.etree._Element, *, key: str | None = None
