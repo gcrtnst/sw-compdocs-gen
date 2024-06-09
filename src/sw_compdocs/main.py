@@ -10,7 +10,7 @@ from . import _types
 from . import component
 from . import generator
 from . import language
-from . import renderer
+from . import exporter
 from . import resource
 from . import steamfind
 from . import template
@@ -75,7 +75,7 @@ def generate_document(
         out_newline = "\n"
 
     doc = generator.generate_document(comp_list, label=label, lang=lang, bind=bind)
-    md = renderer.render_markdown(doc)
+    md = exporter.render_markdown(doc)
 
     with wraperr.wrap_unicode_error(out_file):
         with open(
