@@ -1172,12 +1172,14 @@ class TestMain(unittest.TestCase):
             unittest.mock.call(
                 out_file="path/to/output",
                 defn_dir=str(definitions),
+                show_deprecated=True,
+                show_orphan=False,
                 label_file=None,
                 lang_file=None,
-                template_file=None,
+                bind_file=None,
                 out_mode="document",
-                out_encoding="utf-8",
-                out_newline="\n",
+                out_encoding=None,
+                out_newline=None,
             ),
         )
 
