@@ -1,18 +1,21 @@
+import pathlib
 import sw_compdocs.document
-import sw_compdocs.renderer
+import sw_compdocs.exporter
+import sw_compdocs.wraperr
+import tempfile
 import typing
 import unittest
 
 
 class TestRenderMarkdownHeading(unittest.TestCase):
     def test_pass(self) -> None:
-        text = sw_compdocs.renderer.render_markdown_heading(
+        text = sw_compdocs.exporter.render_markdown_heading(
             sw_compdocs.document.Heading("foo")
         )
         self.assertEqual(text, "# foo\n")
 
     def test_pass_level(self) -> None:
-        text = sw_compdocs.renderer.render_markdown_heading(
+        text = sw_compdocs.exporter.render_markdown_heading(
             sw_compdocs.document.Heading("foo", level=6)
         )
         self.assertEqual(text, "###### foo\n")
@@ -21,14 +24,14 @@ class TestRenderMarkdownHeading(unittest.TestCase):
         for level in [0, 7]:
             with self.subTest(level=level):
                 with self.assertRaises(ValueError):
-                    sw_compdocs.renderer.render_markdown_heading(
+                    sw_compdocs.exporter.render_markdown_heading(
                         sw_compdocs.document.Heading("foo", level=level)
                     )
 
 
 class TestRenderMarkdownParagraph(unittest.TestCase):
     def test_pass(self) -> None:
-        text = sw_compdocs.renderer.render_markdown_paragraph(
+        text = sw_compdocs.exporter.render_markdown_paragraph(
             sw_compdocs.document.Paragraph("foo")
         )
         self.assertEqual(text, "foo\n")
@@ -82,7 +85,7 @@ class TestRenderMarkdownListUnordered(unittest.TestCase):
             ),
         ]:
             with self.subTest(tc=tc):
-                got_text = sw_compdocs.renderer.render_markdown_list_unordered(
+                got_text = sw_compdocs.exporter.render_markdown_list_unordered(
                     tc.input_ul
                 )
                 self.assertEqual(got_text, tc.want_text)
@@ -97,14 +100,14 @@ class TestRenderMarkdownTableDataDelimiter(unittest.TestCase):
             tt(input_n=3, want_text="| --- | --- | --- |\n"),
         ]:
             with self.subTest(tc=tc):
-                got_text = sw_compdocs.renderer.render_markdown_table_data_delimiter(
+                got_text = sw_compdocs.exporter.render_markdown_table_data_delimiter(
                     tc.input_n
                 )
                 self.assertEqual(got_text, tc.want_text)
 
     def test_exc_value(self) -> None:
         with self.assertRaises(ValueError):
-            sw_compdocs.renderer.render_markdown_table_data_delimiter(0)
+            sw_compdocs.exporter.render_markdown_table_data_delimiter(0)
 
 
 class TestRenderMarkdownTableDataRow(unittest.TestCase):
@@ -128,7 +131,7 @@ class TestRenderMarkdownTableDataRow(unittest.TestCase):
             ),
         ]:
             with self.subTest(tc=tc):
-                got_text = sw_compdocs.renderer.render_markdown_table_data_row(
+                got_text = sw_compdocs.exporter.render_markdown_table_data_row(
                     tc.input_row
                 )
                 self.assertEqual(got_text, tc.want_text)
@@ -183,7 +186,7 @@ class TestRenderMarkdownTableData(unittest.TestCase):
             ),
         ]:
             with self.subTest(tc=tc):
-                got_text = sw_compdocs.renderer.render_markdown_table_data(
+                got_text = sw_compdocs.exporter.render_markdown_table_data(
                     tc.input_data
                 )
                 self.assertEqual(got_text, tc.want_text)
@@ -191,7 +194,7 @@ class TestRenderMarkdownTableData(unittest.TestCase):
 
 class TestRenderMarkdownTable(unittest.TestCase):
     def test_pass(self) -> None:
-        text = sw_compdocs.renderer.render_markdown_table(
+        text = sw_compdocs.exporter.render_markdown_table(
             sw_compdocs.document.Table(
                 sw_compdocs.document.TableData(
                     sw_compdocs.document.TableDataRow(("A1", "A2", "A3")),
@@ -242,7 +245,7 @@ class TestRenderMarkdownCallout(unittest.TestCase):
             ),
         ]:
             with self.subTest(tc=tc):
-                got_text = sw_compdocs.renderer.render_markdown_callout(
+                got_text = sw_compdocs.exporter.render_markdown_callout(
                     tc.input_callout
                 )
                 self.assertEqual(got_text, tc.want_text)
@@ -298,7 +301,7 @@ class TestRenderMarkdownBlock(unittest.TestCase):
             ),
         ]:
             with self.subTest(tc=tc):
-                got_text = sw_compdocs.renderer.render_markdown_block(tc.input_blk)
+                got_text = sw_compdocs.exporter.render_markdown_block(tc.input_blk)
                 self.assertEqual(got_text, tc.want_text)
 
 
@@ -364,5 +367,42 @@ class TestRenderMarkdown(unittest.TestCase):
             ),
         ]:
             with self.subTest(tc=tc):
-                got_text = sw_compdocs.renderer.render_markdown(tc.input_doc)
+                got_text = sw_compdocs.exporter.render_markdown(tc.input_doc)
                 self.assertEqual(got_text, tc.want_text)
+
+
+class TestExportMarkdown(unittest.TestCase):
+    def test_pass(self) -> None:
+        doc = sw_compdocs.document.Document([sw_compdocs.document.Heading("テスト")])
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_file = pathlib.Path(temp_dir, "output.md")
+            sw_compdocs.exporter.export_markdown(
+                doc,
+                temp_file,
+                mode="x",
+                encoding="utf-8",
+                errors="strict",
+                newline="\n",
+            )
+            with open(
+                temp_file, mode="r", encoding="utf-8", errors="strict", newline="\n"
+            ) as fp:
+                got_md = fp.read()
+        self.assertEqual(got_md, "# テスト\n")
+
+    def test_exc_unicode(self) -> None:
+        doc = sw_compdocs.document.Document([sw_compdocs.document.Heading("テスト")])
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_file = pathlib.Path(temp_dir, "output.md")
+            with self.assertRaises(sw_compdocs.wraperr.UnicodeEncodeFileError) as ctx:
+                sw_compdocs.exporter.export_markdown(
+                    doc,
+                    temp_file,
+                    mode="x",
+                    encoding="ascii",
+                    errors="strict",
+                    newline="\n",
+                )
+            self.assertEqual(ctx.exception.filename, temp_file)
