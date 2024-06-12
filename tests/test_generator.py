@@ -2333,11 +2333,12 @@ class TestGenerateDocumentComponentList(unittest.TestCase):
                 self.assertEqual(got_doc, tc.want_doc)
 
 
-class TestGenerateDocument(unittest.TestCase):
+class TestGenerateDocumentCategory(unittest.TestCase):
     def test_pass(self) -> None:
         tt = typing.NamedTuple(
             "tt",
             [
+                ("input_category", sw_compdocs.component.Category),
                 ("input_comp_list", list[sw_compdocs.component.Component]),
                 ("input_label", collections.abc.Mapping[str, str] | None),
                 ("input_lang", sw_compdocs.language.Language | None),
@@ -2349,14 +2350,20 @@ class TestGenerateDocument(unittest.TestCase):
         for tc in [
             # empty
             tt(
+                input_category=sw_compdocs.component.Category.BLOCKS,
                 input_comp_list=[],
                 input_label=None,
                 input_lang=None,
                 input_bind=None,
-                want_doc=sw_compdocs.document.Document(),
+                want_doc=sw_compdocs.document.Document(
+                    [
+                        sw_compdocs.document.Heading("Blocks"),
+                    ]
+                ),
             ),
             # single
             tt(
+                input_category=sw_compdocs.component.Category.BLOCKS,
                 input_comp_list=[
                     sw_compdocs.component.Component(
                         defn=sw_compdocs.component.Definition(
@@ -2387,6 +2394,7 @@ class TestGenerateDocument(unittest.TestCase):
             ),
             # sort defn_list name
             tt(
+                input_category=sw_compdocs.component.Category.BLOCKS,
                 input_comp_list=[
                     sw_compdocs.component.Component(
                         defn=sw_compdocs.component.Definition(
@@ -2457,6 +2465,7 @@ class TestGenerateDocument(unittest.TestCase):
             ),
             # sort defn_list key
             tt(
+                input_category=sw_compdocs.component.Category.BLOCKS,
                 input_comp_list=[
                     sw_compdocs.component.Component(
                         defn=sw_compdocs.component.Definition(
@@ -2552,7 +2561,216 @@ class TestGenerateDocument(unittest.TestCase):
                     ],
                 ),
             ),
-            # sort category
+            # label, lang, keybindings
+            tt(
+                input_category=sw_compdocs.component.Category.BLOCKS,
+                input_comp_list=[
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(
+                            key="test",
+                            name=sw_compdocs.language.Text(
+                                id="def_test_name", en="Test"
+                            ),
+                            tooltip_properties=sw_compdocs.component.TooltipProperties(
+                                short_description=sw_compdocs.language.Text(
+                                    id="def_test_s_desc", en="Short Description"
+                                ),
+                                description=sw_compdocs.language.Text(
+                                    id="def_test_desc", en="Description"
+                                ),
+                            ),
+                        )
+                    ),
+                ],
+                input_label={
+                    "DOCUMENT_PROP_MASS": "Mass: {}",
+                    "DOCUMENT_PROP_DIMS": "Dimensions (WxDxH): {}",
+                    "DOCUMENT_PROP_COST": "Cost: ${}",
+                    "DOCUMENT_PROP_TAGS": "Tags: {}",
+                    "DOCUMENT_PROP_FILE": "File: {}",
+                },
+                input_lang=sw_compdocs.language.Language(
+                    [
+                        sw_compdocs.language.Translation(
+                            "", "", "PROPERTIES", "プロパティ"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_name", "", "", "テスト"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_s_desc", "", "", "短い説明 $[s_desc]"
+                        ),
+                        sw_compdocs.language.Translation(
+                            "def_test_desc", "", "", "長い説明 $[desc]"
+                        ),
+                    ]
+                ),
+                input_bind={"s_desc": "foo", "desc": "bar"},
+                want_doc=sw_compdocs.document.Document(
+                    [
+                        sw_compdocs.document.Heading("Blocks", level=1),
+                        sw_compdocs.document.Heading("テスト", level=2),
+                        sw_compdocs.document.Paragraph("短い説明 foo"),
+                        sw_compdocs.document.Paragraph("長い説明 bar"),
+                        sw_compdocs.document.Heading("プロパティ", level=3),
+                        sw_compdocs.document.UnorderedList(
+                            [
+                                sw_compdocs.document.ListItem("Mass: 0"),
+                                sw_compdocs.document.ListItem(
+                                    "Dimensions (WxDxH): 1x1x1"
+                                ),
+                                sw_compdocs.document.ListItem("Cost: $0"),
+                                sw_compdocs.document.ListItem("Tags: "),
+                                sw_compdocs.document.ListItem("File: "),
+                            ]
+                        ),
+                    ]
+                ),
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                got_doc = sw_compdocs.generator.generate_document_category(
+                    tc.input_category,
+                    tc.input_comp_list,
+                    label=tc.input_label,
+                    lang=tc.input_lang,
+                    bind=tc.input_bind,
+                )
+                self.assertEqual(got_doc, tc.want_doc)
+
+    def test_exc_value(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_category", sw_compdocs.component.Category),
+                ("input_comp_list", list[sw_compdocs.component.Component]),
+            ],
+        )
+
+        for tc in [
+            tt(
+                input_category=sw_compdocs.component.Category.BLOCKS,
+                input_comp_list=[
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(
+                            category=sw_compdocs.component.Category.VEHICLE_CONTROL,
+                        )
+                    ),
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(
+                            category=sw_compdocs.component.Category.BLOCKS,
+                        )
+                    ),
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(
+                            category=sw_compdocs.component.Category.BLOCKS,
+                        )
+                    ),
+                ],
+            ),
+            tt(
+                input_category=sw_compdocs.component.Category.BLOCKS,
+                input_comp_list=[
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(
+                            category=sw_compdocs.component.Category.BLOCKS,
+                        )
+                    ),
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(
+                            category=sw_compdocs.component.Category.VEHICLE_CONTROL,
+                        )
+                    ),
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(
+                            category=sw_compdocs.component.Category.BLOCKS,
+                        )
+                    ),
+                ],
+            ),
+            tt(
+                input_category=sw_compdocs.component.Category.BLOCKS,
+                input_comp_list=[
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(
+                            category=sw_compdocs.component.Category.BLOCKS,
+                        )
+                    ),
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(
+                            category=sw_compdocs.component.Category.BLOCKS,
+                        )
+                    ),
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(
+                            category=sw_compdocs.component.Category.VEHICLE_CONTROL,
+                        )
+                    ),
+                ],
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                with self.assertRaises(ValueError):
+                    sw_compdocs.generator.generate_document_category(
+                        tc.input_category, tc.input_comp_list
+                    )
+
+
+class TestGenerateDocument(unittest.TestCase):
+    def test_pass(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_comp_list", list[sw_compdocs.component.Component]),
+                ("input_label", collections.abc.Mapping[str, str] | None),
+                ("input_lang", sw_compdocs.language.Language | None),
+                ("input_bind", collections.abc.Mapping[str, str] | None),
+                ("want_doc_dict", dict[str, sw_compdocs.document.Document]),
+            ],
+        )
+
+        for tc in [
+            # empty
+            tt(
+                input_comp_list=[],
+                input_label=None,
+                input_lang=None,
+                input_bind=None,
+                want_doc_dict={},
+            ),
+            # single
+            tt(
+                input_comp_list=[
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(
+                            name=sw_compdocs.language.Text(en="Blocks_1"),
+                            category=sw_compdocs.component.Category.BLOCKS,
+                        )
+                    ),
+                ],
+                input_label=None,
+                input_lang=None,
+                input_bind=None,
+                want_doc_dict={
+                    "Blocks": sw_compdocs.document.Document(
+                        [
+                            sw_compdocs.document.Heading("Blocks", level=1),
+                            sw_compdocs.document.Heading("Blocks_1", level=2),
+                            sw_compdocs.document.Heading("PROPERTIES", level=3),
+                            sw_compdocs.document.UnorderedList(
+                                [
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
+                                ]
+                            ),
+                        ],
+                    )
+                },
+            ),
+            # multiple category
             tt(
                 input_comp_list=[
                     sw_compdocs.component.Component(
@@ -2655,202 +2873,268 @@ class TestGenerateDocument(unittest.TestCase):
                 input_label=None,
                 input_lang=None,
                 input_bind=None,
-                want_doc=sw_compdocs.document.Document(
-                    [
-                        sw_compdocs.document.Heading("Blocks", level=1),
-                        sw_compdocs.document.Heading("BLOCKS_0", level=2),
-                        sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.UnorderedList(
-                            [
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
-                            ]
-                        ),
-                        sw_compdocs.document.Heading("Vehicle Control", level=1),
-                        sw_compdocs.document.Heading("VEHICLE_CONTROL_0", level=2),
-                        sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.UnorderedList(
-                            [
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
-                            ]
-                        ),
-                        sw_compdocs.document.Heading("Mechanics", level=1),
-                        sw_compdocs.document.Heading("MECHANICS_0", level=2),
-                        sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.UnorderedList(
-                            [
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
-                            ]
-                        ),
-                        sw_compdocs.document.Heading("Propulsion", level=1),
-                        sw_compdocs.document.Heading("PROPULSION_0", level=2),
-                        sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.UnorderedList(
-                            [
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
-                            ]
-                        ),
-                        sw_compdocs.document.Heading("Specialist Equipment", level=1),
-                        sw_compdocs.document.Heading("SPECIALIST_EQUIPMENT_0", level=2),
-                        sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.UnorderedList(
-                            [
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
-                            ]
-                        ),
-                        sw_compdocs.document.Heading("Logic", level=1),
-                        sw_compdocs.document.Heading("LOGIC_0", level=2),
-                        sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.UnorderedList(
-                            [
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
-                            ]
-                        ),
-                        sw_compdocs.document.Heading("Displays", level=1),
-                        sw_compdocs.document.Heading("DISPLAYS_0", level=2),
-                        sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.UnorderedList(
-                            [
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
-                            ]
-                        ),
-                        sw_compdocs.document.Heading("Sensors", level=1),
-                        sw_compdocs.document.Heading("SENSORS_0", level=2),
-                        sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.UnorderedList(
-                            [
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
-                            ]
-                        ),
-                        sw_compdocs.document.Heading("Decorative", level=1),
-                        sw_compdocs.document.Heading("DECORATIVE_0", level=2),
-                        sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.UnorderedList(
-                            [
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
-                            ]
-                        ),
-                        sw_compdocs.document.Heading("Fluid", level=1),
-                        sw_compdocs.document.Heading("FLUID_0", level=2),
-                        sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.UnorderedList(
-                            [
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
-                            ]
-                        ),
-                        sw_compdocs.document.Heading("Electric", level=1),
-                        sw_compdocs.document.Heading("ELECTRIC_0", level=2),
-                        sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.UnorderedList(
-                            [
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
-                            ]
-                        ),
-                        sw_compdocs.document.Heading("Jet Engines", level=1),
-                        sw_compdocs.document.Heading("JET_ENGINES_0", level=2),
-                        sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.UnorderedList(
-                            [
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
-                            ]
-                        ),
-                        sw_compdocs.document.Heading("Weapons", level=1),
-                        sw_compdocs.document.Heading("WEAPONS_0", level=2),
-                        sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.UnorderedList(
-                            [
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
-                            ]
-                        ),
-                        sw_compdocs.document.Heading("Modular Engines", level=1),
-                        sw_compdocs.document.Heading("MODULAR_ENGINES_0", level=2),
-                        sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.UnorderedList(
-                            [
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
-                            ]
-                        ),
-                        sw_compdocs.document.Heading("Industry", level=1),
-                        sw_compdocs.document.Heading("INDUSTRY_0", level=2),
-                        sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.UnorderedList(
-                            [
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
-                            ]
-                        ),
-                        sw_compdocs.document.Heading("Windows", level=1),
-                        sw_compdocs.document.Heading("WINDOWS_0", level=2),
-                        sw_compdocs.document.Heading("PROPERTIES", level=3),
-                        sw_compdocs.document.UnorderedList(
-                            [
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
-                                sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
-                            ]
-                        ),
-                    ],
-                ),
+                want_doc_dict={
+                    "Blocks": sw_compdocs.document.Document(
+                        [
+                            sw_compdocs.document.Heading("Blocks", level=1),
+                            sw_compdocs.document.Heading("BLOCKS_0", level=2),
+                            sw_compdocs.document.Heading("PROPERTIES", level=3),
+                            sw_compdocs.document.UnorderedList(
+                                [
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
+                                ]
+                            ),
+                        ]
+                    ),
+                    "Vehicle Control": sw_compdocs.document.Document(
+                        [
+                            sw_compdocs.document.Heading("Vehicle Control", level=1),
+                            sw_compdocs.document.Heading("VEHICLE_CONTROL_0", level=2),
+                            sw_compdocs.document.Heading("PROPERTIES", level=3),
+                            sw_compdocs.document.UnorderedList(
+                                [
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
+                                ]
+                            ),
+                        ]
+                    ),
+                    "Mechanics": sw_compdocs.document.Document(
+                        [
+                            sw_compdocs.document.Heading("Mechanics", level=1),
+                            sw_compdocs.document.Heading("MECHANICS_0", level=2),
+                            sw_compdocs.document.Heading("PROPERTIES", level=3),
+                            sw_compdocs.document.UnorderedList(
+                                [
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
+                                ]
+                            ),
+                        ]
+                    ),
+                    "Propulsion": sw_compdocs.document.Document(
+                        [
+                            sw_compdocs.document.Heading("Propulsion", level=1),
+                            sw_compdocs.document.Heading("PROPULSION_0", level=2),
+                            sw_compdocs.document.Heading("PROPERTIES", level=3),
+                            sw_compdocs.document.UnorderedList(
+                                [
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
+                                ]
+                            ),
+                        ]
+                    ),
+                    "Specialist Equipment": sw_compdocs.document.Document(
+                        [
+                            sw_compdocs.document.Heading(
+                                "Specialist Equipment", level=1
+                            ),
+                            sw_compdocs.document.Heading(
+                                "SPECIALIST_EQUIPMENT_0", level=2
+                            ),
+                            sw_compdocs.document.Heading("PROPERTIES", level=3),
+                            sw_compdocs.document.UnorderedList(
+                                [
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
+                                ]
+                            ),
+                        ]
+                    ),
+                    "Logic": sw_compdocs.document.Document(
+                        [
+                            sw_compdocs.document.Heading("Logic", level=1),
+                            sw_compdocs.document.Heading("LOGIC_0", level=2),
+                            sw_compdocs.document.Heading("PROPERTIES", level=3),
+                            sw_compdocs.document.UnorderedList(
+                                [
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
+                                ]
+                            ),
+                        ]
+                    ),
+                    "Displays": sw_compdocs.document.Document(
+                        [
+                            sw_compdocs.document.Heading("Displays", level=1),
+                            sw_compdocs.document.Heading("DISPLAYS_0", level=2),
+                            sw_compdocs.document.Heading("PROPERTIES", level=3),
+                            sw_compdocs.document.UnorderedList(
+                                [
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
+                                ]
+                            ),
+                        ]
+                    ),
+                    "Sensors": sw_compdocs.document.Document(
+                        [
+                            sw_compdocs.document.Heading("Sensors", level=1),
+                            sw_compdocs.document.Heading("SENSORS_0", level=2),
+                            sw_compdocs.document.Heading("PROPERTIES", level=3),
+                            sw_compdocs.document.UnorderedList(
+                                [
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
+                                ]
+                            ),
+                        ]
+                    ),
+                    "Decorative": sw_compdocs.document.Document(
+                        [
+                            sw_compdocs.document.Heading("Decorative", level=1),
+                            sw_compdocs.document.Heading("DECORATIVE_0", level=2),
+                            sw_compdocs.document.Heading("PROPERTIES", level=3),
+                            sw_compdocs.document.UnorderedList(
+                                [
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
+                                ]
+                            ),
+                        ]
+                    ),
+                    "Fluid": sw_compdocs.document.Document(
+                        [
+                            sw_compdocs.document.Heading("Fluid", level=1),
+                            sw_compdocs.document.Heading("FLUID_0", level=2),
+                            sw_compdocs.document.Heading("PROPERTIES", level=3),
+                            sw_compdocs.document.UnorderedList(
+                                [
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
+                                ]
+                            ),
+                        ]
+                    ),
+                    "Electric": sw_compdocs.document.Document(
+                        [
+                            sw_compdocs.document.Heading("Electric", level=1),
+                            sw_compdocs.document.Heading("ELECTRIC_0", level=2),
+                            sw_compdocs.document.Heading("PROPERTIES", level=3),
+                            sw_compdocs.document.UnorderedList(
+                                [
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
+                                ]
+                            ),
+                        ]
+                    ),
+                    "Jet Engines": sw_compdocs.document.Document(
+                        [
+                            sw_compdocs.document.Heading("Jet Engines", level=1),
+                            sw_compdocs.document.Heading("JET_ENGINES_0", level=2),
+                            sw_compdocs.document.Heading("PROPERTIES", level=3),
+                            sw_compdocs.document.UnorderedList(
+                                [
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
+                                ]
+                            ),
+                        ]
+                    ),
+                    "Weapons": sw_compdocs.document.Document(
+                        [
+                            sw_compdocs.document.Heading("Weapons", level=1),
+                            sw_compdocs.document.Heading("WEAPONS_0", level=2),
+                            sw_compdocs.document.Heading("PROPERTIES", level=3),
+                            sw_compdocs.document.UnorderedList(
+                                [
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
+                                ]
+                            ),
+                        ]
+                    ),
+                    "Modular Engines": sw_compdocs.document.Document(
+                        [
+                            sw_compdocs.document.Heading("Modular Engines", level=1),
+                            sw_compdocs.document.Heading("MODULAR_ENGINES_0", level=2),
+                            sw_compdocs.document.Heading("PROPERTIES", level=3),
+                            sw_compdocs.document.UnorderedList(
+                                [
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
+                                ]
+                            ),
+                        ]
+                    ),
+                    "Industry": sw_compdocs.document.Document(
+                        [
+                            sw_compdocs.document.Heading("Industry", level=1),
+                            sw_compdocs.document.Heading("INDUSTRY_0", level=2),
+                            sw_compdocs.document.Heading("PROPERTIES", level=3),
+                            sw_compdocs.document.UnorderedList(
+                                [
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
+                                ]
+                            ),
+                        ]
+                    ),
+                    "Windows": sw_compdocs.document.Document(
+                        [
+                            sw_compdocs.document.Heading("Windows", level=1),
+                            sw_compdocs.document.Heading("WINDOWS_0", level=2),
+                            sw_compdocs.document.Heading("PROPERTIES", level=3),
+                            sw_compdocs.document.UnorderedList(
+                                [
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
+                                    sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
+                                ]
+                            ),
+                        ],
+                    ),
+                },
             ),
             # label, lang, keybindings
             tt(
@@ -2896,36 +3180,38 @@ class TestGenerateDocument(unittest.TestCase):
                     ]
                 ),
                 input_bind={"s_desc": "foo", "desc": "bar"},
-                want_doc=sw_compdocs.document.Document(
-                    [
-                        sw_compdocs.document.Heading("Blocks", level=1),
-                        sw_compdocs.document.Heading("テスト", level=2),
-                        sw_compdocs.document.Paragraph("短い説明 foo"),
-                        sw_compdocs.document.Paragraph("長い説明 bar"),
-                        sw_compdocs.document.Heading("プロパティ", level=3),
-                        sw_compdocs.document.UnorderedList(
-                            [
-                                sw_compdocs.document.ListItem("Mass: 0"),
-                                sw_compdocs.document.ListItem(
-                                    "Dimensions (WxDxH): 1x1x1"
-                                ),
-                                sw_compdocs.document.ListItem("Cost: $0"),
-                                sw_compdocs.document.ListItem("Tags: "),
-                                sw_compdocs.document.ListItem("File: "),
-                            ]
-                        ),
-                    ]
-                ),
+                want_doc_dict={
+                    "Blocks": sw_compdocs.document.Document(
+                        [
+                            sw_compdocs.document.Heading("Blocks", level=1),
+                            sw_compdocs.document.Heading("テスト", level=2),
+                            sw_compdocs.document.Paragraph("短い説明 foo"),
+                            sw_compdocs.document.Paragraph("長い説明 bar"),
+                            sw_compdocs.document.Heading("プロパティ", level=3),
+                            sw_compdocs.document.UnorderedList(
+                                [
+                                    sw_compdocs.document.ListItem("Mass: 0"),
+                                    sw_compdocs.document.ListItem(
+                                        "Dimensions (WxDxH): 1x1x1"
+                                    ),
+                                    sw_compdocs.document.ListItem("Cost: $0"),
+                                    sw_compdocs.document.ListItem("Tags: "),
+                                    sw_compdocs.document.ListItem("File: "),
+                                ]
+                            ),
+                        ]
+                    )
+                },
             ),
         ]:
             with self.subTest(tc=tc):
-                got_doc = sw_compdocs.generator.generate_document(
+                got_doc_dict = sw_compdocs.generator.generate_document(
                     tc.input_comp_list,
                     label=tc.input_label,
                     lang=tc.input_lang,
                     bind=tc.input_bind,
                 )
-                self.assertEqual(got_doc, tc.want_doc)
+                self.assertEqual(got_doc_dict, tc.want_doc_dict)
 
 
 class TestGenerateSheetComponent(unittest.TestCase):

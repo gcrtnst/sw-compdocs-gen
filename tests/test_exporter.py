@@ -406,3 +406,50 @@ class TestExportMarkdown(unittest.TestCase):
                     newline="\n",
                 )
             self.assertEqual(ctx.exception.filename, temp_file)
+
+
+class TestExportMarkdownDict(unittest.TestCase):
+    def test_empty(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            out_dir = pathlib.Path(temp_dir, "out")
+            sw_compdocs.exporter.export_markdown_dict({}, out_dir)
+            self.assertFalse(out_dir.is_dir())
+
+    def test_normal(self) -> None:
+        doc_dict = {
+            "1": sw_compdocs.document.Document([sw_compdocs.document.Heading("１")]),
+            "2": sw_compdocs.document.Document([sw_compdocs.document.Heading("２")]),
+            "3": sw_compdocs.document.Document([sw_compdocs.document.Heading("３")]),
+        }
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            out_dir = pathlib.Path(temp_dir, "out")
+            sw_compdocs.exporter.export_markdown_dict(
+                doc_dict,
+                out_dir,
+                mode="x",
+                encoding="utf-8",
+                errors="strict",
+                newline="\n",
+            )
+
+            md_file = pathlib.Path(out_dir, "1.md")
+            with open(
+                md_file, mode="r", encoding="utf-8", errors="strict", newline="\n"
+            ) as fp:
+                md = fp.read()
+            self.assertEqual(md, "# １\n")
+
+            md_file = pathlib.Path(out_dir, "2.md")
+            with open(
+                md_file, mode="r", encoding="utf-8", errors="strict", newline="\n"
+            ) as fp:
+                md = fp.read()
+            self.assertEqual(md, "# ２\n")
+
+            md_file = pathlib.Path(out_dir, "3.md")
+            with open(
+                md_file, mode="r", encoding="utf-8", errors="strict", newline="\n"
+            ) as fp:
+                md = fp.read()
+            self.assertEqual(md, "# ３\n")

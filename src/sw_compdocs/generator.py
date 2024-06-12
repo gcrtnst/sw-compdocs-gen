@@ -417,18 +417,46 @@ def generate_document_component_list(
     return doc
 
 
-def generate_document(
+def generate_document_category(
+    category: component.Category,
     comp_list: collections.abc.Iterable[component.Component],
     *,
     label: collections.abc.Mapping[str, str] | None = None,
     lang: language.Language | None = None,
     bind: collections.abc.Mapping[str, str] | None = None,
 ) -> document.Document:
-    def sort_key_category(category: component.Category) -> int:
-        return category.value
-
     def sort_key_component(comp: component.Component) -> tuple[str, bool, str]:
         return comp.name().en, comp.defn.key is None, comp.defn.key or ""
+
+    comp_list = list(comp_list)
+    for comp in comp_list:
+        if comp.category() is not category:
+            raise ValueError
+    comp_list.sort(key=sort_key_component)
+
+    comp_list_doc = generate_document_component_list(
+        comp_list,
+        label=label,
+        lang=lang,
+        bind=bind,
+    )
+    comp_list_doc.shift(1)
+
+    doc = document.Document()
+    doc.append(document.Heading(str(category)))
+    doc.extend(comp_list_doc)
+    return doc
+
+
+def generate_document(
+    comp_list: collections.abc.Iterable[component.Component],
+    *,
+    label: collections.abc.Mapping[str, str] | None = None,
+    lang: language.Language | None = None,
+    bind: collections.abc.Mapping[str, str] | None = None,
+) -> dict[str, document.Document]:
+    def sort_key_category(category: component.Category) -> int:
+        return category.value
 
     category_comp_dict: dict[component.Category, list[component.Component]] = {}
     for comp in comp_list:
@@ -439,18 +467,20 @@ def generate_document(
     category_list = category_comp_dict.keys()
     category_list = sorted(category_list, key=sort_key_category)
 
-    doc = document.Document()
+    doc_dict: dict[str, document.Document] = {}
     for category in category_list:
         category_comp_list = category_comp_dict[category]
-        category_comp_list.sort(key=sort_key_component)
-        category_comp_list_doc = generate_document_component_list(
-            category_comp_list, label=label, lang=lang, bind=bind
-        )
-        category_comp_list_doc.shift(1)
 
-        doc.append(document.Heading(str(category)))
-        doc.extend(category_comp_list_doc)
-    return doc
+        doc_name = str(category)
+        doc = generate_document_category(
+            category,
+            category_comp_list,
+            label=label,
+            lang=lang,
+            bind=bind,
+        )
+        doc_dict[doc_name] = doc
+    return doc_dict
 
 
 def generate_sheet_component(

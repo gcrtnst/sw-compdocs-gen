@@ -1,4 +1,6 @@
 import collections.abc
+import os
+import pathlib
 import typing
 
 from . import _types
@@ -103,3 +105,26 @@ def export_markdown(
             newline=newline,
         ) as fp:
             fp.write(md)
+
+
+def export_markdown_dict(
+    doc_dict: collections.abc.Mapping[str, document.Document],
+    dir: _types.StrOrBytesPath,
+    *,
+    mode: typing.Literal["w", "wt", "tw", "a", "at", "ta", "x", "xt", "tx"] = "w",
+    encoding: str | None = None,
+    errors: str | None = None,
+    newline: str | None = None,
+) -> None:
+    dir = pathlib.Path(os.fsdecode(dir))
+    for name, doc in doc_dict.items():
+        file = pathlib.Path(dir, name + ".md")
+        dir.mkdir(exist_ok=True)
+        export_markdown(
+            doc,
+            file,
+            mode=mode,
+            encoding=encoding,
+            errors=errors,
+            newline=newline,
+        )
