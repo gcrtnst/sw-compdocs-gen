@@ -72,24 +72,17 @@ class TestShowHideAction(unittest.TestCase):
 class TestRun(unittest.TestCase):
     def test_document_empty(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
-            out_file = pathlib.Path(temp_dir, "out.md")
+            out_dir = pathlib.Path(temp_dir, "out")
+            out_dir.mkdir()
             defn_dir = pathlib.Path(temp_dir, "definitions")
             defn_dir.mkdir()
-            sw_compdocs.main.run(
-                out_file=out_file,
-                defn_dir=defn_dir,
-                out_mode="document",
-                out_encoding="utf-8",
-                out_newline="\n",
-            )
-
-            with open(out_file, mode="r", encoding="utf-8", newline="\n") as fp:
-                got_md = fp.read()
-            self.assertEqual(got_md, "")
+            sw_compdocs.main.run(out_path=out_dir, defn_dir=defn_dir)
+            self.assertIsNone(next(out_dir.iterdir(), None))
 
     def test_document_all(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
-            out_file = pathlib.Path(temp_dir, "out.md")
+            out_dir = pathlib.Path(temp_dir, "out")
+            out_dir.mkdir()
 
             defn_dir = pathlib.Path(temp_dir, "definitions")
             defn_dir.mkdir()
@@ -154,7 +147,7 @@ template_02 = "テンプレート 02"
                 )
 
             sw_compdocs.main.run(
-                out_file=out_file,
+                out_path=out_dir,
                 defn_dir=defn_dir,
                 label_file=label_file,
                 lang_file=lang_file,
@@ -164,6 +157,7 @@ template_02 = "テンプレート 02"
                 out_newline="\r\n",
             )
 
+            out_file = pathlib.Path(out_dir, "Blocks.md")
             with open(out_file, mode="r", encoding="shift-jis", newline="\r\n") as fp:
                 got_md = fp.read()
 
@@ -199,7 +193,8 @@ template_02 = "テンプレート 02"
 
     def test_document_encoding_newline_default(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
-            out_file = pathlib.Path(temp_dir, "out.md")
+            out_dir = pathlib.Path(temp_dir, "out")
+            out_dir.mkdir()
 
             defn_dir = pathlib.Path(temp_dir, "definitions")
             defn_dir.mkdir()
@@ -264,7 +259,7 @@ template_02 = "テンプレート 02"
                 )
 
             sw_compdocs.main.run(
-                out_file=out_file,
+                out_path=out_dir,
                 defn_dir=defn_dir,
                 label_file=label_file,
                 lang_file=lang_file,
@@ -272,6 +267,7 @@ template_02 = "テンプレート 02"
                 out_mode="document",
             )
 
+            out_file = pathlib.Path(out_dir, "Blocks.md")
             with open(out_file, mode="r", encoding="utf-8", newline="\n") as fp:
                 got_md = fp.read()
 
@@ -306,7 +302,8 @@ template_02 = "テンプレート 02"
 
     def test_document_exc_unicode(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
-            out_file = pathlib.Path(temp_dir, "out.md")
+            out_dir = pathlib.Path(temp_dir, "out")
+            out_dir.mkdir()
 
             defn_dir = pathlib.Path(temp_dir, "definitions")
             defn_dir.mkdir()
@@ -372,7 +369,7 @@ template_02 = "テンプレート 02"
 
             with self.assertRaises(sw_compdocs.wraperr.UnicodeEncodeFileError) as ctx:
                 sw_compdocs.main.run(
-                    out_file=out_file,
+                    out_path=out_dir,
                     defn_dir=defn_dir,
                     label_file=label_file,
                     lang_file=lang_file,
@@ -381,6 +378,8 @@ template_02 = "テンプレート 02"
                     out_encoding="ascii",
                     out_newline="\r\n",
                 )
+
+            out_file = pathlib.Path(out_dir, "Blocks.md")
             self.assertEqual(ctx.exception.filename, out_file)
 
     def test_sheet_empty(self) -> None:
@@ -389,7 +388,7 @@ template_02 = "テンプレート 02"
             defn_dir = pathlib.Path(temp_dir, "definitions")
             defn_dir.mkdir()
             sw_compdocs.main.run(
-                out_file=out_file,
+                out_path=out_file,
                 defn_dir=defn_dir,
                 out_mode="sheet",
                 out_encoding="utf-8",
@@ -485,7 +484,7 @@ template_02 = "テンプレート 02"
                 )
 
             sw_compdocs.main.run(
-                out_file=out_file,
+                out_path=out_file,
                 defn_dir=defn_dir,
                 label_file=label_file,
                 lang_file=lang_file,
@@ -588,7 +587,7 @@ template_02 = "テンプレート 02"
                 )
 
             sw_compdocs.main.run(
-                out_file=out_file,
+                out_path=out_file,
                 defn_dir=defn_dir,
                 label_file=label_file,
                 lang_file=lang_file,
@@ -691,7 +690,7 @@ template_02 = "テンプレート 02"
 
             with self.assertRaises(sw_compdocs.wraperr.UnicodeEncodeFileError) as ctx:
                 sw_compdocs.main.run(
-                    out_file=out_file,
+                    out_path=out_file,
                     defn_dir=defn_dir,
                     label_file=label_file,
                     lang_file=lang_file,
@@ -784,7 +783,7 @@ Name,Parent File,Child File,Category,Tags,Deprecated,Orphan,Cost,Total Mass,Pare
                         )
 
                     sw_compdocs.main.run(
-                        out_file=out_file,
+                        out_path=out_file,
                         defn_dir=defn_dir,
                         show_deprecated=tc.input_show_deprecated,
                         show_orphan=tc.input_show_orphan,
@@ -880,7 +879,7 @@ class TestMain(unittest.TestCase):
                     "path/to/output",
                 ],
                 want_call_args=unittest.mock.call(
-                    out_file="path/to/output",
+                    out_path="path/to/output",
                     defn_dir="path/to/definitions",
                     show_deprecated=True,
                     show_orphan=False,
@@ -900,7 +899,7 @@ class TestMain(unittest.TestCase):
                     "path/to/output",
                 ],
                 want_call_args=unittest.mock.call(
-                    out_file="path/to/output",
+                    out_path="path/to/output",
                     defn_dir="path/to/definitions",
                     show_deprecated=True,
                     show_orphan=False,
@@ -920,7 +919,7 @@ class TestMain(unittest.TestCase):
                     "path/to/output",
                 ],
                 want_call_args=unittest.mock.call(
-                    out_file="path/to/output",
+                    out_path="path/to/output",
                     defn_dir="path/to/definitions",
                     show_deprecated=False,
                     show_orphan=False,
@@ -940,7 +939,7 @@ class TestMain(unittest.TestCase):
                     "path/to/output",
                 ],
                 want_call_args=unittest.mock.call(
-                    out_file="path/to/output",
+                    out_path="path/to/output",
                     defn_dir="path/to/definitions",
                     show_deprecated=True,
                     show_orphan=True,
@@ -960,7 +959,7 @@ class TestMain(unittest.TestCase):
                     "path/to/output",
                 ],
                 want_call_args=unittest.mock.call(
-                    out_file="path/to/output",
+                    out_path="path/to/output",
                     defn_dir="path/to/definitions",
                     show_deprecated=True,
                     show_orphan=False,
@@ -981,7 +980,7 @@ class TestMain(unittest.TestCase):
                     "path/to/output",
                 ],
                 want_call_args=unittest.mock.call(
-                    out_file="path/to/output",
+                    out_path="path/to/output",
                     defn_dir="path/to/definitions",
                     show_deprecated=True,
                     show_orphan=False,
@@ -1002,7 +1001,7 @@ class TestMain(unittest.TestCase):
                     "path/to/output",
                 ],
                 want_call_args=unittest.mock.call(
-                    out_file="path/to/output",
+                    out_path="path/to/output",
                     defn_dir="path/to/definitions",
                     show_deprecated=True,
                     show_orphan=False,
@@ -1023,7 +1022,7 @@ class TestMain(unittest.TestCase):
                     "path/to/output",
                 ],
                 want_call_args=unittest.mock.call(
-                    out_file="path/to/output",
+                    out_path="path/to/output",
                     defn_dir="path/to/definitions",
                     show_deprecated=True,
                     show_orphan=False,
@@ -1044,7 +1043,7 @@ class TestMain(unittest.TestCase):
                     "path/to/output",
                 ],
                 want_call_args=unittest.mock.call(
-                    out_file="path/to/output",
+                    out_path="path/to/output",
                     defn_dir="path/to/definitions",
                     show_deprecated=True,
                     show_orphan=False,
@@ -1065,7 +1064,7 @@ class TestMain(unittest.TestCase):
                     "path/to/output",
                 ],
                 want_call_args=unittest.mock.call(
-                    out_file="path/to/output",
+                    out_path="path/to/output",
                     defn_dir="path/to/definitions",
                     show_deprecated=True,
                     show_orphan=False,
@@ -1086,7 +1085,7 @@ class TestMain(unittest.TestCase):
                     "path/to/output",
                 ],
                 want_call_args=unittest.mock.call(
-                    out_file="path/to/output",
+                    out_path="path/to/output",
                     defn_dir="path/to/definitions",
                     show_deprecated=True,
                     show_orphan=False,
@@ -1107,7 +1106,7 @@ class TestMain(unittest.TestCase):
                     "path/to/output",
                 ],
                 want_call_args=unittest.mock.call(
-                    out_file="path/to/output",
+                    out_path="path/to/output",
                     defn_dir="path/to/definitions",
                     show_deprecated=True,
                     show_orphan=False,
@@ -1130,7 +1129,7 @@ class TestMain(unittest.TestCase):
                     "path/to/output",
                 ],
                 want_call_args=unittest.mock.call(
-                    out_file="path/to/output",
+                    out_path="path/to/output",
                     defn_dir="path/to/definitions",
                     show_deprecated=True,
                     show_orphan=False,
@@ -1353,7 +1352,8 @@ class TestMain(unittest.TestCase):
 
     def test_run(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
-            out_file = pathlib.Path(temp_dir, "out.md")
+            out_dir = pathlib.Path(temp_dir, "out")
+            out_dir.mkdir()
 
             defn_dir = pathlib.Path(temp_dir, "definitions")
             defn_dir.mkdir()
@@ -1434,12 +1434,13 @@ template_02 = "テンプレート 02"
                         "shift-jis",
                         "--newline",
                         "CRLF",
-                        str(out_file),
+                        str(out_dir),
                     ]
                 )
             self.assertEqual(stdout.getvalue(), "")
             self.assertEqual(stderr.getvalue(), "")
 
+            out_file = pathlib.Path(out_dir, "Blocks.md")
             with open(out_file, mode="r", encoding="shift-jis", newline="\r\n") as fp:
                 got_md = fp.read()
             got_md = got_md.replace("\r\n", "\n")

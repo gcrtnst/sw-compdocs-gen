@@ -61,7 +61,7 @@ class ShowHideAction(argparse.Action):
 
 def generate_document(
     *,
-    out_file: _types.StrOrBytesPath,
+    out_dir: _types.StrOrBytesPath,
     comp_list: collections.abc.Iterable[component.Component],
     label: collections.abc.Mapping[str, str] | None,
     lang: language.Language | None,
@@ -74,10 +74,10 @@ def generate_document(
     if out_newline is None:
         out_newline = "\n"
 
-    doc = generator.generate_document(comp_list, label=label, lang=lang, bind=bind)
-    exporter.export_markdown(
-        doc,
-        out_file,
+    doc_dict = generator.generate_document(comp_list, label=label, lang=lang, bind=bind)
+    exporter.export_markdown_dict(
+        doc_dict,
+        out_dir,
         mode="w",
         encoding=out_encoding,
         errors="strict",
@@ -111,7 +111,7 @@ def generate_sheet(
 
 def run(
     *,
-    out_file: _types.StrOrBytesPath,
+    out_path: _types.StrOrBytesPath,
     defn_dir: _types.StrOrBytesPath,
     show_deprecated: bool = True,
     show_orphan: bool = False,
@@ -141,7 +141,7 @@ def run(
 
     if out_mode == "document":
         generate_document(
-            out_file=out_file,
+            out_dir=out_path,
             comp_list=comp_list,
             label=label,
             lang=lang,
@@ -152,7 +152,7 @@ def run(
         return
     if out_mode == "sheet":
         generate_sheet(
-            out_file=out_file,
+            out_file=out_path,
             comp_list=comp_list,
             label=label,
             lang=lang,
@@ -261,7 +261,7 @@ def main(
     )
     argp.add_argument(
         "output",
-        help="output file",
+        help="output path",
     )
     argv = argp.parse_args(args=args)
 
@@ -320,7 +320,7 @@ def main(
 
     try:
         run(
-            out_file=argv_output,
+            out_path=argv_output,
             defn_dir=argv_definitions,
             show_deprecated=argv_show_deprecated,
             show_orphan=argv_show_orphan,

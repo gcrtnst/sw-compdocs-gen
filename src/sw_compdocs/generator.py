@@ -454,7 +454,7 @@ def generate_document(
     label: collections.abc.Mapping[str, str] | None = None,
     lang: language.Language | None = None,
     bind: collections.abc.Mapping[str, str] | None = None,
-) -> document.Document:
+) -> dict[str, document.Document]:
     def sort_key_category(category: component.Category) -> int:
         return category.value
 
@@ -467,19 +467,20 @@ def generate_document(
     category_list = category_comp_dict.keys()
     category_list = sorted(category_list, key=sort_key_category)
 
-    doc = document.Document()
+    doc_dict: dict[str, document.Document] = {}
     for category in category_list:
         category_comp_list = category_comp_dict[category]
-        doc.extend(
-            generate_document_category(
-                category,
-                category_comp_list,
-                label=label,
-                lang=lang,
-                bind=bind,
-            )
+
+        doc_name = str(category)
+        doc = generate_document_category(
+            category,
+            category_comp_list,
+            label=label,
+            lang=lang,
+            bind=bind,
         )
-    return doc
+        doc_dict[doc_name] = doc
+    return doc_dict
 
 
 def generate_sheet_component(
