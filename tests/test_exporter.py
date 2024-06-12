@@ -411,9 +411,9 @@ class TestExportMarkdown(unittest.TestCase):
 class TestExportMarkdownDict(unittest.TestCase):
     def test_empty(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
-            temp_dir = pathlib.Path(temp_dir)
-            sw_compdocs.exporter.export_markdown_dict({}, temp_dir)
-            self.assertIsNone(next(temp_dir.iterdir(), None))
+            out_dir = pathlib.Path(temp_dir, "out")
+            sw_compdocs.exporter.export_markdown_dict({}, out_dir)
+            self.assertFalse(out_dir.is_dir())
 
     def test_normal(self) -> None:
         doc_dict = {
@@ -423,30 +423,31 @@ class TestExportMarkdownDict(unittest.TestCase):
         }
 
         with tempfile.TemporaryDirectory() as temp_dir:
+            out_dir = pathlib.Path(temp_dir, "out")
             sw_compdocs.exporter.export_markdown_dict(
                 doc_dict,
-                temp_dir,
+                out_dir,
                 mode="x",
                 encoding="utf-8",
                 errors="strict",
                 newline="\n",
             )
 
-            md_file = pathlib.Path(temp_dir, "1.md")
+            md_file = pathlib.Path(out_dir, "1.md")
             with open(
                 md_file, mode="r", encoding="utf-8", errors="strict", newline="\n"
             ) as fp:
                 md = fp.read()
             self.assertEqual(md, "# １\n")
 
-            md_file = pathlib.Path(temp_dir, "2.md")
+            md_file = pathlib.Path(out_dir, "2.md")
             with open(
                 md_file, mode="r", encoding="utf-8", errors="strict", newline="\n"
             ) as fp:
                 md = fp.read()
             self.assertEqual(md, "# ２\n")
 
-            md_file = pathlib.Path(temp_dir, "3.md")
+            md_file = pathlib.Path(out_dir, "3.md")
             with open(
                 md_file, mode="r", encoding="utf-8", errors="strict", newline="\n"
             ) as fp:

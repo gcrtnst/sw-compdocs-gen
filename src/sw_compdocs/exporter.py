@@ -116,9 +116,10 @@ def export_markdown_dict(
     errors: str | None = None,
     newline: str | None = None,
 ) -> None:
-    dir = os.fsdecode(dir)
+    dir = pathlib.Path(os.fsdecode(dir))
     for name, doc in doc_dict.items():
         file = pathlib.Path(dir, name + ".md")
+        dir.mkdir(exist_ok=True)
         export_markdown(
             doc,
             file,
