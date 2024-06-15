@@ -3238,6 +3238,7 @@ class TestGenerateSheetComponent(unittest.TestCase):
                     "",  # File
                     "Blocks",  # Category
                     "",  # Tags
+                    "FALSE",  # Multibody
                     "FALSE",  # Deprecated
                     "FALSE",  # Orphan
                     "0",  # Cost
@@ -3275,6 +3276,7 @@ class TestGenerateSheetComponent(unittest.TestCase):
                     "test.xml",  # File
                     "Blocks",  # Category
                     "tags",  # Tags
+                    "FALSE",  # Multibody
                     "FALSE",  # Deprecated
                     "FALSE",  # Orphan
                     "2",  # Cost
@@ -3318,6 +3320,7 @@ class TestGenerateSheetComponent(unittest.TestCase):
                     "multibody_a.xml",  # File
                     "Vehicle Control",  # Category
                     "tags",  # Tags
+                    "TRUE",  # Multibody
                     "FALSE",  # Deprecated
                     "FALSE",  # Orphan
                     "2",  # Cost
@@ -3345,6 +3348,7 @@ class TestGenerateSheetComponent(unittest.TestCase):
                     "multibody_a.xml",  # File
                     "Blocks",  # Category
                     "",  # Tags
+                    "TRUE",  # Multibody
                     "FALSE",  # Deprecated
                     "FALSE",  # Orphan
                     "0",  # Cost
@@ -3369,6 +3373,7 @@ class TestGenerateSheetComponent(unittest.TestCase):
                     "",  # File
                     "Blocks",  # Category
                     "",  # Tags
+                    "FALSE",  # Multibody
                     "TRUE",  # Deprecated
                     "FALSE",  # Orphan
                     "0",  # Cost
@@ -3393,6 +3398,7 @@ class TestGenerateSheetComponent(unittest.TestCase):
                     "",  # File
                     "Blocks",  # Category
                     "",  # Tags
+                    "FALSE",  # Multibody
                     "FALSE",  # Deprecated
                     "TRUE",  # Orphan
                     "0",  # Cost
@@ -3440,6 +3446,7 @@ class TestGenerateSheetComponent(unittest.TestCase):
                     "",  # File
                     "Blocks",  # Category
                     "",  # Tags
+                    "FALSE",  # Multibody
                     "FALSE",  # Deprecated
                     "FALSE",  # Orphan
                     "0",  # Cost
@@ -3498,6 +3505,7 @@ class TestGenerateSheetComponentList(unittest.TestCase):
                         "",  # File
                         "Blocks",  # Category
                         "",  # Tags
+                        "FALSE",  # Multibody
                         "FALSE",  # Deprecated
                         "FALSE",  # Orphan
                         "0",  # Cost
@@ -3513,6 +3521,7 @@ class TestGenerateSheetComponentList(unittest.TestCase):
                         "",  # File
                         "Blocks",  # Category
                         "",  # Tags
+                        "FALSE",  # Multibody
                         "FALSE",  # Deprecated
                         "FALSE",  # Orphan
                         "0",  # Cost
@@ -3528,6 +3537,7 @@ class TestGenerateSheetComponentList(unittest.TestCase):
                         "",  # File
                         "Blocks",  # Category
                         "",  # Tags
+                        "FALSE",  # Multibody
                         "FALSE",  # Deprecated
                         "FALSE",  # Orphan
                         "0",  # Cost
@@ -3588,6 +3598,7 @@ class TestGenerateSheetComponentList(unittest.TestCase):
                         "test.xml",  # File
                         "Blocks",  # Category
                         "tags",  # Tags
+                        "FALSE",  # Multibody
                         "FALSE",  # Deprecated
                         "FALSE",  # Orphan
                         "2",  # Cost
@@ -3674,6 +3685,7 @@ class TestGenerateSheet(unittest.TestCase):
                         "SHEET_HEAD_FILE",
                         "SHEET_HEAD_CATEGORY",
                         "SHEET_HEAD_TAGS",
+                        "SHEET_HEAD_MULTIBODY",
                         "SHEET_HEAD_DEPRECATED",
                         "SHEET_HEAD_ORPHAN",
                         "SHEET_HEAD_COST",
@@ -3689,6 +3701,7 @@ class TestGenerateSheet(unittest.TestCase):
                         "",  # File
                         "Blocks",  # Category
                         "",  # Tags
+                        "FALSE",  # Multibody
                         "FALSE",  # Deprecated
                         "FALSE",  # Orphan
                         "5",  # Cost
@@ -3704,6 +3717,7 @@ class TestGenerateSheet(unittest.TestCase):
                         "",  # File
                         "Vehicle Control",  # Category
                         "",  # Tags
+                        "FALSE",  # Multibody
                         "FALSE",  # Deprecated
                         "FALSE",  # Orphan
                         "4",  # Cost
@@ -3719,6 +3733,7 @@ class TestGenerateSheet(unittest.TestCase):
                         "",  # File
                         "Vehicle Control",  # Category
                         "",  # Tags
+                        "FALSE",  # Multibody
                         "FALSE",  # Deprecated
                         "FALSE",  # Orphan
                         "3",  # Cost
@@ -3734,6 +3749,7 @@ class TestGenerateSheet(unittest.TestCase):
                         "",  # File
                         "Vehicle Control",  # Category
                         "",  # Tags
+                        "FALSE",  # Multibody
                         "FALSE",  # Deprecated
                         "FALSE",  # Orphan
                         "2",  # Cost
@@ -3749,6 +3765,7 @@ class TestGenerateSheet(unittest.TestCase):
                         "",  # File
                         "Vehicle Control",  # Category
                         "",  # Tags
+                        "FALSE",  # Multibody
                         "FALSE",  # Deprecated
                         "FALSE",  # Orphan
                         "1",  # Cost
@@ -3767,6 +3784,7 @@ class TestGenerateSheet(unittest.TestCase):
                     "SHEET_HEAD_FILE": "File",
                     "SHEET_HEAD_CATEGORY": "Category",
                     "SHEET_HEAD_TAGS": "Tags",
+                    "SHEET_HEAD_MULTIBODY": "Multibody",
                     "SHEET_HEAD_DEPRECATED": "Deprecated",
                     "SHEET_HEAD_ORPHAN": "Orphan",
                     "SHEET_HEAD_COST": "Cost",
@@ -3824,6 +3842,7 @@ class TestGenerateSheet(unittest.TestCase):
                         "File",
                         "Category",
                         "Tags",
+                        "Multibody",
                         "Deprecated",
                         "Orphan",
                         "Cost",
@@ -3839,6 +3858,7 @@ class TestGenerateSheet(unittest.TestCase):
                         "test.xml",  # File
                         "Blocks",  # Category
                         "tags",  # Tags
+                        "FALSE",  # Multibody
                         "FALSE",  # Deprecated
                         "FALSE",  # Orphan
                         "2",  # Cost
@@ -3867,6 +3887,7 @@ class TestGenerateSheet(unittest.TestCase):
             "SHEET_HEAD_FILE": "File",
             "SHEET_HEAD_CATEGORY": "Category",
             "SHEET_HEAD_TAGS": "Tags",
+            "SHEET_HEAD_MULTIBODY": "Multibody",
             "SHEET_HEAD_DEPRECATED": "Deprecated",
             "SHEET_HEAD_ORPHAN": "Orphan",
             "SHEET_HEAD_COST": "Cost",

@@ -398,7 +398,7 @@ template_02 = "テンプレート 02"
             with open(out_file, mode="r", encoding="utf-8", newline="\n") as fp:
                 got_md = fp.read()
 
-            want_md = "Name,File,Category,Tags,Deprecated,Orphan,Cost,Mass,Width,Depth,Height,Short Description,Description\n"
+            want_md = "Name,File,Category,Tags,Multibody,Deprecated,Orphan,Cost,Mass,Width,Depth,Height,Short Description,Description\n"
             self.assertEqual(got_md, want_md)
 
     def test_sheet_all(self) -> None:
@@ -438,6 +438,7 @@ SHEET_HEAD_NAME = "Name"
 SHEET_HEAD_FILE = "File"
 SHEET_HEAD_CATEGORY = "Category"
 SHEET_HEAD_TAGS = "Tags"
+SHEET_HEAD_MULTIBODY = "Multibody"
 SHEET_HEAD_DEPRECATED = "Deprecated"
 SHEET_HEAD_ORPHAN = "Orphan"
 SHEET_HEAD_COST = "Cost"
@@ -489,9 +490,9 @@ template_02 = "テンプレート 02"
                 got_md = fp.read()
 
             want_md = """\
-Name,File,Category,Tags,Deprecated,Orphan,Cost,Mass,Width,Depth,Height,Short Description,Description
-テスト 01,test_01.xml,Blocks,,FALSE,FALSE,0,1,1,1,1,テンプレート 01,
-テスト 02,test_02.xml,Blocks,,FALSE,FALSE,0,2,1,1,1,テンプレート 02,
+Name,File,Category,Tags,Multibody,Deprecated,Orphan,Cost,Mass,Width,Depth,Height,Short Description,Description
+テスト 01,test_01.xml,Blocks,,FALSE,FALSE,FALSE,0,1,1,1,1,テンプレート 01,
+テスト 02,test_02.xml,Blocks,,FALSE,FALSE,FALSE,0,2,1,1,1,テンプレート 02,
 """
             self.assertEqual(got_md, want_md)
 
@@ -532,6 +533,7 @@ SHEET_HEAD_NAME = "Name"
 SHEET_HEAD_FILE = "File"
 SHEET_HEAD_CATEGORY = "Category"
 SHEET_HEAD_TAGS = "Tags"
+SHEET_HEAD_MULTIBODY = "Multibody"
 SHEET_HEAD_DEPRECATED = "Deprecated"
 SHEET_HEAD_ORPHAN = "Orphan"
 SHEET_HEAD_COST = "Cost"
@@ -581,9 +583,9 @@ template_02 = "テンプレート 02"
                 got_md = fp.read()
 
             want_md = """\
-Name,File,Category,Tags,Deprecated,Orphan,Cost,Mass,Width,Depth,Height,Short Description,Description
-テスト 01,test_01.xml,Blocks,,FALSE,FALSE,0,1,1,1,1,テンプレート 01,
-テスト 02,test_02.xml,Blocks,,FALSE,FALSE,0,2,1,1,1,テンプレート 02,
+Name,File,Category,Tags,Multibody,Deprecated,Orphan,Cost,Mass,Width,Depth,Height,Short Description,Description
+テスト 01,test_01.xml,Blocks,,FALSE,FALSE,FALSE,0,1,1,1,1,テンプレート 01,
+テスト 02,test_02.xml,Blocks,,FALSE,FALSE,FALSE,0,2,1,1,1,テンプレート 02,
 """
             want_md = want_md.replace("\n", "\r\n")
             self.assertEqual(got_md, want_md)
@@ -625,6 +627,7 @@ SHEET_HEAD_NAME = "Name"
 SHEET_HEAD_FILE = "File"
 SHEET_HEAD_CATEGORY = "Category"
 SHEET_HEAD_TAGS = "Tags"
+SHEET_HEAD_MULTIBODY = "Multibody"
 SHEET_HEAD_DEPRECATED = "Deprecated"
 SHEET_HEAD_ORPHAN = "Orphan"
 SHEET_HEAD_COST = "Cost"
@@ -690,28 +693,28 @@ template_02 = "テンプレート 02"
                 input_show_deprecated=True,
                 input_show_orphan=True,
                 want_csv="""\
-Name,File,Category,Tags,Deprecated,Orphan,Cost,Mass,Width,Depth,Height,Short Description,Description
-,01_normal.xml,Blocks,,FALSE,FALSE,0,0,1,1,1,,
-,02_deprecated.xml,Blocks,,TRUE,FALSE,0,0,1,1,1,,
-,03_orphan.xml,Blocks,,FALSE,TRUE,0,0,1,1,1,,
+Name,File,Category,Tags,Multibody,Deprecated,Orphan,Cost,Mass,Width,Depth,Height,Short Description,Description
+,01_normal.xml,Blocks,,FALSE,FALSE,FALSE,0,0,1,1,1,,
+,02_deprecated.xml,Blocks,,FALSE,TRUE,FALSE,0,0,1,1,1,,
+,03_orphan.xml,Blocks,,FALSE,FALSE,TRUE,0,0,1,1,1,,
 """,
             ),
             tt(
                 input_show_deprecated=False,
                 input_show_orphan=True,
                 want_csv="""\
-Name,File,Category,Tags,Deprecated,Orphan,Cost,Mass,Width,Depth,Height,Short Description,Description
-,01_normal.xml,Blocks,,FALSE,FALSE,0,0,1,1,1,,
-,03_orphan.xml,Blocks,,FALSE,TRUE,0,0,1,1,1,,
+Name,File,Category,Tags,Multibody,Deprecated,Orphan,Cost,Mass,Width,Depth,Height,Short Description,Description
+,01_normal.xml,Blocks,,FALSE,FALSE,FALSE,0,0,1,1,1,,
+,03_orphan.xml,Blocks,,FALSE,FALSE,TRUE,0,0,1,1,1,,
 """,
             ),
             tt(
                 input_show_deprecated=True,
                 input_show_orphan=False,
                 want_csv="""\
-Name,File,Category,Tags,Deprecated,Orphan,Cost,Mass,Width,Depth,Height,Short Description,Description
-,01_normal.xml,Blocks,,FALSE,FALSE,0,0,1,1,1,,
-,02_deprecated.xml,Blocks,,TRUE,FALSE,0,0,1,1,1,,
+Name,File,Category,Tags,Multibody,Deprecated,Orphan,Cost,Mass,Width,Depth,Height,Short Description,Description
+,01_normal.xml,Blocks,,FALSE,FALSE,FALSE,0,0,1,1,1,,
+,02_deprecated.xml,Blocks,,FALSE,TRUE,FALSE,0,0,1,1,1,,
 """,
             ),
         ]:
