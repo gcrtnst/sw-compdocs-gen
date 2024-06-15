@@ -398,7 +398,7 @@ template_02 = "テンプレート 02"
             with open(out_file, mode="r", encoding="utf-8", newline="\n") as fp:
                 got_md = fp.read()
 
-            want_md = "Name,Parent File,Child File,Category,Tags,Deprecated,Orphan,Cost,Total Mass,Parent Mass,Child Mass,Total Width,Total Depth,Total Height,Parent Width,Parent Depth,Parent Height,Child Width,Child Depth,Child Height,Short Description,Description\n"
+            want_md = "Name,File,Category,Tags,Deprecated,Orphan,Cost,Mass,Width,Depth,Height,Short Description,Description\n"
             self.assertEqual(got_md, want_md)
 
     def test_sheet_all(self) -> None:
@@ -435,25 +435,16 @@ template_02 = "テンプレート 02"
                     """\
 [label]
 SHEET_HEAD_NAME = "Name"
-SHEET_HEAD_FILE_PARENT = "Parent File"
-SHEET_HEAD_FILE_CHILD = "Child File"
+SHEET_HEAD_FILE = "File"
 SHEET_HEAD_CATEGORY = "Category"
 SHEET_HEAD_TAGS = "Tags"
 SHEET_HEAD_DEPRECATED = "Deprecated"
 SHEET_HEAD_ORPHAN = "Orphan"
 SHEET_HEAD_COST = "Cost"
-SHEET_HEAD_MASS_TOTAL = "Total Mass"
-SHEET_HEAD_MASS_PARENT = "Parent Mass"
-SHEET_HEAD_MASS_CHILD = "Child Mass"
-SHEET_HEAD_DIMS_TOTAL_WIDTH = "Total Width"
-SHEET_HEAD_DIMS_TOTAL_DEPTH = "Total Depth"
-SHEET_HEAD_DIMS_TOTAL_HEIGHT = "Total Height"
-SHEET_HEAD_DIMS_PARENT_WIDTH = "Parent Width"
-SHEET_HEAD_DIMS_PARENT_DEPTH = "Parent Depth"
-SHEET_HEAD_DIMS_PARENT_HEIGHT = "Parent Height"
-SHEET_HEAD_DIMS_CHILD_WIDTH = "Child Width"
-SHEET_HEAD_DIMS_CHILD_DEPTH = "Child Depth"
-SHEET_HEAD_DIMS_CHILD_HEIGHT = "Child Height"
+SHEET_HEAD_MASS = "Mass"
+SHEET_HEAD_DIMS_WIDTH = "Width"
+SHEET_HEAD_DIMS_DEPTH = "Depth"
+SHEET_HEAD_DIMS_HEIGHT = "Height"
 SHEET_HEAD_SDESC = "Short Description"
 SHEET_HEAD_DESC = "Description"
 """
@@ -498,9 +489,9 @@ template_02 = "テンプレート 02"
                 got_md = fp.read()
 
             want_md = """\
-Name,Parent File,Child File,Category,Tags,Deprecated,Orphan,Cost,Total Mass,Parent Mass,Child Mass,Total Width,Total Depth,Total Height,Parent Width,Parent Depth,Parent Height,Child Width,Child Depth,Child Height,Short Description,Description
-テスト 01,test_01.xml,,Blocks,,FALSE,FALSE,0,1,1,,1,1,1,1,1,1,,,,テンプレート 01,
-テスト 02,test_02.xml,,Blocks,,FALSE,FALSE,0,2,2,,1,1,1,1,1,1,,,,テンプレート 02,
+Name,File,Category,Tags,Deprecated,Orphan,Cost,Mass,Width,Depth,Height,Short Description,Description
+テスト 01,test_01.xml,Blocks,,FALSE,FALSE,0,1,1,1,1,テンプレート 01,
+テスト 02,test_02.xml,Blocks,,FALSE,FALSE,0,2,1,1,1,テンプレート 02,
 """
             self.assertEqual(got_md, want_md)
 
@@ -538,25 +529,16 @@ Name,Parent File,Child File,Category,Tags,Deprecated,Orphan,Cost,Total Mass,Pare
                     """\
 [label]
 SHEET_HEAD_NAME = "Name"
-SHEET_HEAD_FILE_PARENT = "Parent File"
-SHEET_HEAD_FILE_CHILD = "Child File"
+SHEET_HEAD_FILE = "File"
 SHEET_HEAD_CATEGORY = "Category"
 SHEET_HEAD_TAGS = "Tags"
 SHEET_HEAD_DEPRECATED = "Deprecated"
 SHEET_HEAD_ORPHAN = "Orphan"
 SHEET_HEAD_COST = "Cost"
-SHEET_HEAD_MASS_TOTAL = "Total Mass"
-SHEET_HEAD_MASS_PARENT = "Parent Mass"
-SHEET_HEAD_MASS_CHILD = "Child Mass"
-SHEET_HEAD_DIMS_TOTAL_WIDTH = "Total Width"
-SHEET_HEAD_DIMS_TOTAL_DEPTH = "Total Depth"
-SHEET_HEAD_DIMS_TOTAL_HEIGHT = "Total Height"
-SHEET_HEAD_DIMS_PARENT_WIDTH = "Parent Width"
-SHEET_HEAD_DIMS_PARENT_DEPTH = "Parent Depth"
-SHEET_HEAD_DIMS_PARENT_HEIGHT = "Parent Height"
-SHEET_HEAD_DIMS_CHILD_WIDTH = "Child Width"
-SHEET_HEAD_DIMS_CHILD_DEPTH = "Child Depth"
-SHEET_HEAD_DIMS_CHILD_HEIGHT = "Child Height"
+SHEET_HEAD_MASS = "Mass"
+SHEET_HEAD_DIMS_WIDTH = "Width"
+SHEET_HEAD_DIMS_DEPTH = "Depth"
+SHEET_HEAD_DIMS_HEIGHT = "Height"
 SHEET_HEAD_SDESC = "Short Description"
 SHEET_HEAD_DESC = "Description"
 """
@@ -599,9 +581,9 @@ template_02 = "テンプレート 02"
                 got_md = fp.read()
 
             want_md = """\
-Name,Parent File,Child File,Category,Tags,Deprecated,Orphan,Cost,Total Mass,Parent Mass,Child Mass,Total Width,Total Depth,Total Height,Parent Width,Parent Depth,Parent Height,Child Width,Child Depth,Child Height,Short Description,Description
-テスト 01,test_01.xml,,Blocks,,FALSE,FALSE,0,1,1,,1,1,1,1,1,1,,,,テンプレート 01,
-テスト 02,test_02.xml,,Blocks,,FALSE,FALSE,0,2,2,,1,1,1,1,1,1,,,,テンプレート 02,
+Name,File,Category,Tags,Deprecated,Orphan,Cost,Mass,Width,Depth,Height,Short Description,Description
+テスト 01,test_01.xml,Blocks,,FALSE,FALSE,0,1,1,1,1,テンプレート 01,
+テスト 02,test_02.xml,Blocks,,FALSE,FALSE,0,2,1,1,1,テンプレート 02,
 """
             want_md = want_md.replace("\n", "\r\n")
             self.assertEqual(got_md, want_md)
@@ -640,25 +622,16 @@ Name,Parent File,Child File,Category,Tags,Deprecated,Orphan,Cost,Total Mass,Pare
                     """\
 [label]
 SHEET_HEAD_NAME = "Name"
-SHEET_HEAD_FILE_PARENT = "Parent File"
-SHEET_HEAD_FILE_CHILD = "Child File"
+SHEET_HEAD_FILE = "File"
 SHEET_HEAD_CATEGORY = "Category"
 SHEET_HEAD_TAGS = "Tags"
 SHEET_HEAD_DEPRECATED = "Deprecated"
 SHEET_HEAD_ORPHAN = "Orphan"
 SHEET_HEAD_COST = "Cost"
-SHEET_HEAD_MASS_TOTAL = "Total Mass"
-SHEET_HEAD_MASS_PARENT = "Parent Mass"
-SHEET_HEAD_MASS_CHILD = "Child Mass"
-SHEET_HEAD_DIMS_TOTAL_WIDTH = "Total Width"
-SHEET_HEAD_DIMS_TOTAL_DEPTH = "Total Depth"
-SHEET_HEAD_DIMS_TOTAL_HEIGHT = "Total Height"
-SHEET_HEAD_DIMS_PARENT_WIDTH = "Parent Width"
-SHEET_HEAD_DIMS_PARENT_DEPTH = "Parent Depth"
-SHEET_HEAD_DIMS_PARENT_HEIGHT = "Parent Height"
-SHEET_HEAD_DIMS_CHILD_WIDTH = "Child Width"
-SHEET_HEAD_DIMS_CHILD_DEPTH = "Child Depth"
-SHEET_HEAD_DIMS_CHILD_HEIGHT = "Child Height"
+SHEET_HEAD_MASS = "Mass"
+SHEET_HEAD_DIMS_WIDTH = "Width"
+SHEET_HEAD_DIMS_DEPTH = "Depth"
+SHEET_HEAD_DIMS_HEIGHT = "Height"
 SHEET_HEAD_SDESC = "Short Description"
 SHEET_HEAD_DESC = "Description"
 """
@@ -717,28 +690,28 @@ template_02 = "テンプレート 02"
                 input_show_deprecated=True,
                 input_show_orphan=True,
                 want_csv="""\
-Name,Parent File,Child File,Category,Tags,Deprecated,Orphan,Cost,Total Mass,Parent Mass,Child Mass,Total Width,Total Depth,Total Height,Parent Width,Parent Depth,Parent Height,Child Width,Child Depth,Child Height,Short Description,Description
-,01_normal.xml,,Blocks,,FALSE,FALSE,0,0,0,,1,1,1,1,1,1,,,,,
-,02_deprecated.xml,,Blocks,,TRUE,FALSE,0,0,0,,1,1,1,1,1,1,,,,,
-,03_orphan.xml,,Blocks,,FALSE,TRUE,0,0,0,,1,1,1,1,1,1,,,,,
+Name,File,Category,Tags,Deprecated,Orphan,Cost,Mass,Width,Depth,Height,Short Description,Description
+,01_normal.xml,Blocks,,FALSE,FALSE,0,0,1,1,1,,
+,02_deprecated.xml,Blocks,,TRUE,FALSE,0,0,1,1,1,,
+,03_orphan.xml,Blocks,,FALSE,TRUE,0,0,1,1,1,,
 """,
             ),
             tt(
                 input_show_deprecated=False,
                 input_show_orphan=True,
                 want_csv="""\
-Name,Parent File,Child File,Category,Tags,Deprecated,Orphan,Cost,Total Mass,Parent Mass,Child Mass,Total Width,Total Depth,Total Height,Parent Width,Parent Depth,Parent Height,Child Width,Child Depth,Child Height,Short Description,Description
-,01_normal.xml,,Blocks,,FALSE,FALSE,0,0,0,,1,1,1,1,1,1,,,,,
-,03_orphan.xml,,Blocks,,FALSE,TRUE,0,0,0,,1,1,1,1,1,1,,,,,
+Name,File,Category,Tags,Deprecated,Orphan,Cost,Mass,Width,Depth,Height,Short Description,Description
+,01_normal.xml,Blocks,,FALSE,FALSE,0,0,1,1,1,,
+,03_orphan.xml,Blocks,,FALSE,TRUE,0,0,1,1,1,,
 """,
             ),
             tt(
                 input_show_deprecated=True,
                 input_show_orphan=False,
                 want_csv="""\
-Name,Parent File,Child File,Category,Tags,Deprecated,Orphan,Cost,Total Mass,Parent Mass,Child Mass,Total Width,Total Depth,Total Height,Parent Width,Parent Depth,Parent Height,Child Width,Child Depth,Child Height,Short Description,Description
-,01_normal.xml,,Blocks,,FALSE,FALSE,0,0,0,,1,1,1,1,1,1,,,,,
-,02_deprecated.xml,,Blocks,,TRUE,FALSE,0,0,0,,1,1,1,1,1,1,,,,,
+Name,File,Category,Tags,Deprecated,Orphan,Cost,Mass,Width,Depth,Height,Short Description,Description
+,01_normal.xml,Blocks,,FALSE,FALSE,0,0,1,1,1,,
+,02_deprecated.xml,Blocks,,TRUE,FALSE,0,0,1,1,1,,
 """,
             ),
         ]:
