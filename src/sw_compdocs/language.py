@@ -91,9 +91,7 @@ class Language(container.Sequence[Translation]):
         reader = csv.reader(f, dialect=LanguageTSVDialect)
         try:
             try:
-                header = next(reader, None)
-                if header != ["id", "description", "en", "local"]:
-                    raise LanguageTSVError("invalid header")
+                next(reader, None)  # skip header
 
                 trans_list: list[Translation] = []
                 for record in reader:

@@ -214,21 +214,6 @@ class TestLanguageFromIO(unittest.TestCase):
 
         for tc in [
             tt(
-                input_f=[],
-                want_exc_msg="invalid header",
-                want_exc_line=0,
-            ),
-            tt(
-                input_f=["id,description,en,local\n"],
-                want_exc_msg="invalid header",
-                want_exc_line=1,
-            ),
-            tt(
-                input_f=["id\tdescription\ten\tlocal_\n"],
-                want_exc_msg="invalid header",
-                want_exc_line=1,
-            ),
-            tt(
                 input_f=["id\tdescription\ten\tlocal\n", "\t\t\n"],
                 want_exc_msg="invalid number of fields",
                 want_exc_line=2,
@@ -284,13 +269,13 @@ class TestLanguageFromFile(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp_dir:
             temp_file = pathlib.Path(temp_dir, "language.tsv")
             with open(temp_file, mode="wt", encoding="utf-8", newline="") as f:
-                f.write("")
+                f.write("\na")
 
             with self.assertRaises(sw_compdocs.language.LanguageTSVError) as cm:
                 sw_compdocs.language.Language.from_file(temp_file)
-            self.assertEqual(cm.exception.msg, "invalid header")
+            self.assertEqual(cm.exception.msg, "invalid number of fields")
             self.assertEqual(cm.exception.file, temp_file)
-            self.assertEqual(cm.exception.line, 0)
+            self.assertEqual(cm.exception.line, 2)
 
     def test_encode(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -352,10 +337,10 @@ class TestLanguageFromStr(unittest.TestCase):
 
     def test_error(self) -> None:
         with self.assertRaises(sw_compdocs.language.LanguageTSVError) as cm:
-            sw_compdocs.language.Language.from_str("")
-        self.assertEqual(cm.exception.msg, "invalid header")
+            sw_compdocs.language.Language.from_str("\na")
+        self.assertEqual(cm.exception.msg, "invalid number of fields")
         self.assertIs(cm.exception.file, None)
-        self.assertEqual(cm.exception.line, 0)
+        self.assertEqual(cm.exception.line, 2)
 
 
 class TestLanguageFindIDAll(unittest.TestCase):
