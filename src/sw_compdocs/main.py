@@ -218,18 +218,18 @@ def main(
         "--show-deprecated",
         action=ShowHideAction,
         default=True,
-        help="show deprecated components (default: show)",
+        help="show or hide deprecated components (default: show)",
     )
     argp.add_argument(
         "--show-orphan",
         action=ShowHideAction,
         default=False,
-        help="show orphan components (default: hide)",
+        help="show or hide orphan components (default: hide)",
     )
     argp.add_argument(
         "-s",
         "--label",
-        help="toml file containing label table",
+        help="TOML-formatted label resource file",
     )
     argp.add_argument(
         "-l",
@@ -239,7 +239,7 @@ def main(
     argp.add_argument(
         "-k",
         "--keybindings",
-        help="toml file containing keybindings table",
+        help="TOML-formatted keybindings resource file",
     )
     argp.add_argument(
         "-m",
