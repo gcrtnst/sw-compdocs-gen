@@ -10,7 +10,7 @@ requires-python = ">= 3.12"
 dependencies = ["lxml"]
 
 [project.optional-dependencies]
-dev = ["types-lxml", "ruff", "tomli-w"]
+dev = ["types-lxml", "ruff", "pyright", "tomli-w"]
 
 [project.scripts]
 sw_compdocs = "sw_compdocs.main:main"

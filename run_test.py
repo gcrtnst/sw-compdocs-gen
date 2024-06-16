@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import pathlib
-import shutil
 import subprocess
 import sys
 
@@ -42,20 +41,17 @@ def main() -> None:
     warn = warn or result.returncode != 0
 
     print("==> Running pyright")
-    pyright = shutil.which("pyright")
-    if pyright is None:
-        print("pyright is not found in PATH")
-        warn = True
-    else:
-        args = [
-            pyright,
-            "--project",
-            str(pyproject_file),
-            "--pythonpath",
-            sys.executable,
-        ]
-        result = subprocess.run(args)
-        warn = warn or result.returncode != 0
+    args = [
+        sys.executable,
+        "-m",
+        "pyright",
+        "--project",
+        str(pyproject_file),
+        "--pythonpath",
+        sys.executable,
+    ]
+    result = subprocess.run(args)
+    warn = warn or result.returncode != 0
 
     print("==> Running unittest")
     args = [
