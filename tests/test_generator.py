@@ -2399,7 +2399,7 @@ class TestGenerateDocumentCategory(unittest.TestCase):
                     sw_compdocs.component.Component(
                         defn=sw_compdocs.component.Definition(
                             key="blocks_1",
-                            name=sw_compdocs.language.Text(en="Blocks_3"),
+                            name=sw_compdocs.language.Text(en="Blocks_C"),
                             value=1,
                             category=sw_compdocs.component.Category.BLOCKS,
                         )
@@ -2407,7 +2407,7 @@ class TestGenerateDocumentCategory(unittest.TestCase):
                     sw_compdocs.component.Component(
                         defn=sw_compdocs.component.Definition(
                             key="blocks_2",
-                            name=sw_compdocs.language.Text(en="Blocks_2"),
+                            name=sw_compdocs.language.Text(en="Blocks_B"),
                             value=2,
                             category=sw_compdocs.component.Category.BLOCKS,
                         )
@@ -2415,7 +2415,7 @@ class TestGenerateDocumentCategory(unittest.TestCase):
                     sw_compdocs.component.Component(
                         defn=sw_compdocs.component.Definition(
                             key="blocks_3",
-                            name=sw_compdocs.language.Text(en="Blocks_1"),
+                            name=sw_compdocs.language.Text(en="Blocks_a"),
                             value=3,
                             category=sw_compdocs.component.Category.BLOCKS,
                         )
@@ -2427,7 +2427,7 @@ class TestGenerateDocumentCategory(unittest.TestCase):
                 want_doc=sw_compdocs.document.Document(
                     [
                         sw_compdocs.document.Heading("Blocks", level=1),
-                        sw_compdocs.document.Heading("Blocks_1", level=2),
+                        sw_compdocs.document.Heading("Blocks_a", level=2),
                         sw_compdocs.document.Heading("PROPERTIES", level=3),
                         sw_compdocs.document.UnorderedList(
                             [
@@ -2438,7 +2438,7 @@ class TestGenerateDocumentCategory(unittest.TestCase):
                                 sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
                             ]
                         ),
-                        sw_compdocs.document.Heading("Blocks_2", level=2),
+                        sw_compdocs.document.Heading("Blocks_B", level=2),
                         sw_compdocs.document.Heading("PROPERTIES", level=3),
                         sw_compdocs.document.UnorderedList(
                             [
@@ -2449,7 +2449,7 @@ class TestGenerateDocumentCategory(unittest.TestCase):
                                 sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
                             ]
                         ),
-                        sw_compdocs.document.Heading("Blocks_3", level=2),
+                        sw_compdocs.document.Heading("Blocks_C", level=2),
                         sw_compdocs.document.Heading("PROPERTIES", level=3),
                         sw_compdocs.document.UnorderedList(
                             [
@@ -3649,7 +3649,7 @@ class TestGenerateSheet(unittest.TestCase):
                     sw_compdocs.component.Component(
                         defn=sw_compdocs.component.Definition(
                             key=None,
-                            name=sw_compdocs.language.Text(en="A"),
+                            name=sw_compdocs.language.Text(en="a"),
                             category=sw_compdocs.component.Category.VEHICLE_CONTROL,
                             value=2,
                         )
@@ -3657,7 +3657,7 @@ class TestGenerateSheet(unittest.TestCase):
                     sw_compdocs.component.Component(
                         defn=sw_compdocs.component.Definition(
                             key="z",
-                            name=sw_compdocs.language.Text(en="A"),
+                            name=sw_compdocs.language.Text(en="a"),
                             category=sw_compdocs.component.Category.VEHICLE_CONTROL,
                             value=3,
                         )
@@ -3665,7 +3665,7 @@ class TestGenerateSheet(unittest.TestCase):
                     sw_compdocs.component.Component(
                         defn=sw_compdocs.component.Definition(
                             key="a",
-                            name=sw_compdocs.language.Text(en="A"),
+                            name=sw_compdocs.language.Text(en="a"),
                             category=sw_compdocs.component.Category.VEHICLE_CONTROL,
                             value=4,
                         )
@@ -3713,7 +3713,7 @@ class TestGenerateSheet(unittest.TestCase):
                         "",  # Description
                     ],
                     [
-                        "A",  # Name
+                        "a",  # Name
                         "",  # File
                         "Vehicle Control",  # Category
                         "",  # Tags
@@ -3729,7 +3729,7 @@ class TestGenerateSheet(unittest.TestCase):
                         "",  # Description
                     ],
                     [
-                        "A",  # Name
+                        "a",  # Name
                         "",  # File
                         "Vehicle Control",  # Category
                         "",  # Tags
@@ -3745,7 +3745,7 @@ class TestGenerateSheet(unittest.TestCase):
                         "",  # Description
                     ],
                     [
-                        "A",  # Name
+                        "a",  # Name
                         "",  # File
                         "Vehicle Control",  # Category
                         "",  # Tags

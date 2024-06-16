@@ -426,7 +426,7 @@ def generate_document_category(
     bind: collections.abc.Mapping[str, str] | None = None,
 ) -> document.Document:
     def sort_key_component(comp: component.Component) -> tuple[str, bool, str]:
-        return comp.name().en, comp.defn.key is None, comp.defn.key or ""
+        return comp.name().en.upper(), comp.defn.key is None, comp.defn.key or ""
 
     comp_list = list(comp_list)
     for comp in comp_list:
@@ -551,7 +551,7 @@ def generate_sheet(
     def sort_key(comp: component.Component) -> tuple[int, str, bool, str]:
         return (
             comp.category().value,
-            comp.name().en,
+            comp.name().en.upper(),
             comp.defn.key is None,
             comp.defn.key or "",
         )
