@@ -157,7 +157,7 @@ template_02 = "テンプレート 02"
                 out_newline="\r\n",
             )
 
-            out_file = pathlib.Path(out_dir, "Blocks.md")
+            out_file = pathlib.Path(out_dir, "00_BLOCKS.md")
             with open(out_file, mode="r", encoding="shift-jis", newline="\r\n") as fp:
                 got_md = fp.read()
 
@@ -267,7 +267,7 @@ template_02 = "テンプレート 02"
                 out_mode="document",
             )
 
-            out_file = pathlib.Path(out_dir, "Blocks.md")
+            out_file = pathlib.Path(out_dir, "00_BLOCKS.md")
             with open(out_file, mode="r", encoding="utf-8", newline="\n") as fp:
                 got_md = fp.read()
 
@@ -379,7 +379,7 @@ template_02 = "テンプレート 02"
                     out_newline="\r\n",
                 )
 
-            out_file = pathlib.Path(out_dir, "Blocks.md")
+            out_file = pathlib.Path(out_dir, "00_BLOCKS.md")
             self.assertEqual(ctx.exception.filename, out_file)
 
     def test_sheet_empty(self) -> None:
@@ -1416,7 +1416,7 @@ template_02 = "テンプレート 02"
             self.assertEqual(stdout.getvalue(), "")
             self.assertEqual(stderr.getvalue(), "")
 
-            out_file = pathlib.Path(out_dir, "Blocks.md")
+            out_file = pathlib.Path(out_dir, "00_BLOCKS.md")
             with open(out_file, mode="r", encoding="shift-jis", newline="\r\n") as fp:
                 got_md = fp.read()
             got_md = got_md.replace("\r\n", "\n")

@@ -2752,7 +2752,7 @@ class TestGenerateDocument(unittest.TestCase):
                 input_lang=None,
                 input_bind=None,
                 want_doc_dict={
-                    "Blocks": sw_compdocs.document.Document(
+                    "00_BLOCKS": sw_compdocs.document.Document(
                         [
                             sw_compdocs.document.Heading("Blocks", level=1),
                             sw_compdocs.document.Heading("Blocks_1", level=2),
@@ -2874,7 +2874,7 @@ class TestGenerateDocument(unittest.TestCase):
                 input_lang=None,
                 input_bind=None,
                 want_doc_dict={
-                    "Blocks": sw_compdocs.document.Document(
+                    "00_BLOCKS": sw_compdocs.document.Document(
                         [
                             sw_compdocs.document.Heading("Blocks", level=1),
                             sw_compdocs.document.Heading("BLOCKS_0", level=2),
@@ -2890,7 +2890,7 @@ class TestGenerateDocument(unittest.TestCase):
                             ),
                         ]
                     ),
-                    "Vehicle Control": sw_compdocs.document.Document(
+                    "01_VEHICLE_CONTROL": sw_compdocs.document.Document(
                         [
                             sw_compdocs.document.Heading("Vehicle Control", level=1),
                             sw_compdocs.document.Heading("VEHICLE_CONTROL_0", level=2),
@@ -2906,7 +2906,7 @@ class TestGenerateDocument(unittest.TestCase):
                             ),
                         ]
                     ),
-                    "Mechanics": sw_compdocs.document.Document(
+                    "02_MECHANICS": sw_compdocs.document.Document(
                         [
                             sw_compdocs.document.Heading("Mechanics", level=1),
                             sw_compdocs.document.Heading("MECHANICS_0", level=2),
@@ -2922,7 +2922,7 @@ class TestGenerateDocument(unittest.TestCase):
                             ),
                         ]
                     ),
-                    "Propulsion": sw_compdocs.document.Document(
+                    "03_PROPULSION": sw_compdocs.document.Document(
                         [
                             sw_compdocs.document.Heading("Propulsion", level=1),
                             sw_compdocs.document.Heading("PROPULSION_0", level=2),
@@ -2938,7 +2938,7 @@ class TestGenerateDocument(unittest.TestCase):
                             ),
                         ]
                     ),
-                    "Specialist Equipment": sw_compdocs.document.Document(
+                    "04_SPECIALIST_EQUIPMENT": sw_compdocs.document.Document(
                         [
                             sw_compdocs.document.Heading(
                                 "Specialist Equipment", level=1
@@ -2958,7 +2958,7 @@ class TestGenerateDocument(unittest.TestCase):
                             ),
                         ]
                     ),
-                    "Logic": sw_compdocs.document.Document(
+                    "05_LOGIC": sw_compdocs.document.Document(
                         [
                             sw_compdocs.document.Heading("Logic", level=1),
                             sw_compdocs.document.Heading("LOGIC_0", level=2),
@@ -2974,7 +2974,7 @@ class TestGenerateDocument(unittest.TestCase):
                             ),
                         ]
                     ),
-                    "Displays": sw_compdocs.document.Document(
+                    "06_DISPLAYS": sw_compdocs.document.Document(
                         [
                             sw_compdocs.document.Heading("Displays", level=1),
                             sw_compdocs.document.Heading("DISPLAYS_0", level=2),
@@ -2990,7 +2990,7 @@ class TestGenerateDocument(unittest.TestCase):
                             ),
                         ]
                     ),
-                    "Sensors": sw_compdocs.document.Document(
+                    "07_SENSORS": sw_compdocs.document.Document(
                         [
                             sw_compdocs.document.Heading("Sensors", level=1),
                             sw_compdocs.document.Heading("SENSORS_0", level=2),
@@ -3006,7 +3006,7 @@ class TestGenerateDocument(unittest.TestCase):
                             ),
                         ]
                     ),
-                    "Decorative": sw_compdocs.document.Document(
+                    "08_DECORATIVE": sw_compdocs.document.Document(
                         [
                             sw_compdocs.document.Heading("Decorative", level=1),
                             sw_compdocs.document.Heading("DECORATIVE_0", level=2),
@@ -3022,7 +3022,7 @@ class TestGenerateDocument(unittest.TestCase):
                             ),
                         ]
                     ),
-                    "Fluid": sw_compdocs.document.Document(
+                    "09_FLUID": sw_compdocs.document.Document(
                         [
                             sw_compdocs.document.Heading("Fluid", level=1),
                             sw_compdocs.document.Heading("FLUID_0", level=2),
@@ -3038,7 +3038,7 @@ class TestGenerateDocument(unittest.TestCase):
                             ),
                         ]
                     ),
-                    "Electric": sw_compdocs.document.Document(
+                    "10_ELECTRIC": sw_compdocs.document.Document(
                         [
                             sw_compdocs.document.Heading("Electric", level=1),
                             sw_compdocs.document.Heading("ELECTRIC_0", level=2),
@@ -3054,7 +3054,7 @@ class TestGenerateDocument(unittest.TestCase):
                             ),
                         ]
                     ),
-                    "Jet Engines": sw_compdocs.document.Document(
+                    "11_JET_ENGINES": sw_compdocs.document.Document(
                         [
                             sw_compdocs.document.Heading("Jet Engines", level=1),
                             sw_compdocs.document.Heading("JET_ENGINES_0", level=2),
@@ -3070,7 +3070,7 @@ class TestGenerateDocument(unittest.TestCase):
                             ),
                         ]
                     ),
-                    "Weapons": sw_compdocs.document.Document(
+                    "12_WEAPONS": sw_compdocs.document.Document(
                         [
                             sw_compdocs.document.Heading("Weapons", level=1),
                             sw_compdocs.document.Heading("WEAPONS_0", level=2),
@@ -3086,7 +3086,7 @@ class TestGenerateDocument(unittest.TestCase):
                             ),
                         ]
                     ),
-                    "Modular Engines": sw_compdocs.document.Document(
+                    "13_MODULAR_ENGINES": sw_compdocs.document.Document(
                         [
                             sw_compdocs.document.Heading("Modular Engines", level=1),
                             sw_compdocs.document.Heading("MODULAR_ENGINES_0", level=2),
@@ -3102,7 +3102,7 @@ class TestGenerateDocument(unittest.TestCase):
                             ),
                         ]
                     ),
-                    "Industry": sw_compdocs.document.Document(
+                    "14_INDUSTRY": sw_compdocs.document.Document(
                         [
                             sw_compdocs.document.Heading("Industry", level=1),
                             sw_compdocs.document.Heading("INDUSTRY_0", level=2),
@@ -3118,7 +3118,7 @@ class TestGenerateDocument(unittest.TestCase):
                             ),
                         ]
                     ),
-                    "Windows": sw_compdocs.document.Document(
+                    "15_WINDOWS": sw_compdocs.document.Document(
                         [
                             sw_compdocs.document.Heading("Windows", level=1),
                             sw_compdocs.document.Heading("WINDOWS_0", level=2),
@@ -3181,7 +3181,7 @@ class TestGenerateDocument(unittest.TestCase):
                 ),
                 input_bind={"s_desc": "foo", "desc": "bar"},
                 want_doc_dict={
-                    "Blocks": sw_compdocs.document.Document(
+                    "00_BLOCKS": sw_compdocs.document.Document(
                         [
                             sw_compdocs.document.Heading("Blocks", level=1),
                             sw_compdocs.document.Heading("テスト", level=2),

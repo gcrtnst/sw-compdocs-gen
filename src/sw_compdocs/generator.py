@@ -471,7 +471,7 @@ def generate_document(
     for category in category_list:
         category_comp_list = category_comp_dict[category]
 
-        doc_name = str(category)
+        doc_name = f"{category.value:02d}_{category.name}"
         doc = generate_document_category(
             category,
             category_comp_list,
