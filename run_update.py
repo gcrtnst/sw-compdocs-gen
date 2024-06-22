@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import io
 import pathlib
 import sw_compdocs.resource
 import tomli_w
@@ -7,11 +8,17 @@ import tomllib
 
 
 def _dump_toml(toml_dict: dict[str, dict[str, str]], toml_file: pathlib.Path) -> None:
-    # tomli-w may not generate valid TOML. Validate output with tomllib.
-    tomllib.loads(tomli_w.dumps(toml_dict))
+    with io.BytesIO() as bio:
+        tomli_w.dump(toml_dict, bio)
+        toml_bin = bio.getvalue()
+
+    with io.BytesIO(toml_bin) as bio:
+        load_dict = tomllib.load(bio)
+    if load_dict != toml_dict:
+        raise Exception
 
     with open(toml_file, mode="wb") as fp:
-        tomli_w.dump(toml_dict, fp)
+        fp.write(toml_bin)
 
 
 def main() -> None:
