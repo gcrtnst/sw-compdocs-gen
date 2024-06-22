@@ -10,7 +10,7 @@ def main() -> None:
     repo_dir = pathlib.Path(__file__).parent
     pyproject_file = pathlib.Path(repo_dir, "pyproject.toml")
 
-    print("==> Running ruff check")
+    print("==> Running ruff check", flush=True)
     args = [
         sys.executable,
         "-m",
@@ -25,7 +25,7 @@ def main() -> None:
     result = subprocess.run(args)
     warn = warn or result.returncode != 0
 
-    print("==> Running ruff format")
+    print("==> Running ruff format", flush=True)
     args = [
         sys.executable,
         "-m",
@@ -40,7 +40,7 @@ def main() -> None:
     result = subprocess.run(args)
     warn = warn or result.returncode != 0
 
-    print("==> Running pyright")
+    print("==> Running pyright", flush=True)
     args = [
         sys.executable,
         "-m",
@@ -53,7 +53,7 @@ def main() -> None:
     result = subprocess.run(args)
     warn = warn or result.returncode != 0
 
-    print("==> Running unittest")
+    print("==> Running unittest", flush=True)
     args = [
         sys.executable,
         "-m",
@@ -65,7 +65,7 @@ def main() -> None:
     result = subprocess.run(args)
     warn = warn or result.returncode != 0
 
-    print("==> " + ("FAIL" if warn else "PASS"))
+    print("==> " + ("FAIL" if warn else "PASS"), flush=True)
     sys.exit(1 if warn else 0)
 
 
