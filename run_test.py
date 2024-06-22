@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
 
+import argparse
 import pathlib
 import subprocess
 import sys
 
 
 def main() -> None:
+    argp = argparse.ArgumentParser(allow_abbrev=False)
+    argp.parse_args()
+
     warn = False
     repo_dir = pathlib.Path(__file__).parent
     pyproject_file = pathlib.Path(repo_dir, "pyproject.toml")
