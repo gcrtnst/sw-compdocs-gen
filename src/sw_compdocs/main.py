@@ -114,7 +114,7 @@ def run(
     out_path: _types.StrOrBytesPath,
     defn_dir: _types.StrOrBytesPath,
     show_deprecated: bool = True,
-    show_orphan: bool = False,
+    show_orphaned: bool = False,
     label_file: _types.StrOrBytesPath | None = None,
     lang_file: _types.StrOrBytesPath | None = None,
     bind_file: _types.StrOrBytesPath | None = None,
@@ -135,7 +135,9 @@ def run(
         for comp in comp_list
         if (
             (show_deprecated or component.Flags.IS_DEPRECATED not in comp.defn.flags)
-            and (show_orphan or component.Flags.MULTIBODY_CHILD not in comp.defn.flags)
+            and (
+                show_orphaned or component.Flags.MULTIBODY_CHILD not in comp.defn.flags
+            )
         )
     ]
 
@@ -221,10 +223,10 @@ def main(
         help="show or hide deprecated components (default: show)",
     )
     argp.add_argument(
-        "--show-orphan",
+        "--show-orphaned",
         action=ShowHideAction,
         default=False,
-        help="show or hide orphan components (default: hide)",
+        help="show or hide orphaned components (default: hide)",
     )
     argp.add_argument(
         "-s",
@@ -273,8 +275,8 @@ def main(
     if not isinstance(argv_show_deprecated, bool):
         raise Exception
 
-    argv_show_orphan: object = argv.show_orphan
-    if not isinstance(argv_show_orphan, bool):
+    argv_show_orphaned: object = argv.show_orphaned
+    if not isinstance(argv_show_orphaned, bool):
         raise Exception
 
     argv_label: object = argv.label
@@ -323,7 +325,7 @@ def main(
             out_path=argv_output,
             defn_dir=argv_definitions,
             show_deprecated=argv_show_deprecated,
-            show_orphan=argv_show_orphan,
+            show_orphaned=argv_show_orphaned,
             label_file=argv_label,
             lang_file=argv_language,
             bind_file=argv_keybindings,
