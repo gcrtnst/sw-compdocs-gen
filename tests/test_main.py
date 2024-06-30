@@ -1145,7 +1145,7 @@ class TestMain(unittest.TestCase):
         self.assertEqual(
             mock_call_args,
             unittest.mock.call(
-                out_file="path/to/output",
+                out_path="path/to/output",
                 defn_dir=str(definitions),
                 show_deprecated=True,
                 show_orphaned=False,
