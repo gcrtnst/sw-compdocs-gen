@@ -34,7 +34,7 @@ sw_compdocs -d path/to/definitions/ output_dir/
 - `--show-deprecated`, `--hide-deprecated`
   - Controls whether to include deprecated components in the output.
   - Displayed by default.
-- `--show-orphan`, `--hide-orphan`
+- `--show-orphaned`, `--hide-orphaned`
   - Controls whether to include orphaned components in the output.
   - Orphaned components are multibody child components without a corresponding parent component.
   - Hidden by default.

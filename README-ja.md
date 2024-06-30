@@ -34,7 +34,7 @@ sw_compdocs -d path/to/definitions/ output_dir/
 - `--show-deprecated`, `--hide-deprecated`
   - 非推奨の部品を表示するかどうかを制御します。
   - デフォルトでは表示となります。
-- `--show-orphan`, `--hide-orphan`
+- `--show-orphaned`, `--hide-orphaned`
   - 孤児の部品を表示するかどうかを制御します。
   - 孤児の部品とは、対応するマルチボディ親部品が存在しないマルチボディ子部品のことです。
   - デフォルトでは非表示となります。
