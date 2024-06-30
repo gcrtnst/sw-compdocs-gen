@@ -375,7 +375,7 @@ def generate_document_component(
     if component.Flags.MULTIBODY_CHILD in comp.defn.flags:
         doc.append(
             document.Callout(
-                _label_get(label, "DOCUMENT_ORPHAN_TEXT"),
+                _label_get(label, "DOCUMENT_ORPHANED_TEXT"),
                 kind=document.CalloutKind.WARNING,
             )
         )

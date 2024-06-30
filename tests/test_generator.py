@@ -1635,7 +1635,7 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                             kind=sw_compdocs.document.CalloutKind.WARNING,
                         ),
                         sw_compdocs.document.Callout(
-                            "DOCUMENT_ORPHAN_TEXT",
+                            "DOCUMENT_ORPHANED_TEXT",
                             kind=sw_compdocs.document.CalloutKind.WARNING,
                         ),
                         sw_compdocs.document.Heading("PROPERTIES", level=2),
@@ -1718,7 +1718,7 @@ class TestGenerateDocumentComponent(unittest.TestCase):
             tt(
                 input_label={
                     "DOCUMENT_DEPRECATED_TEXT": "この部品は非推奨です。",
-                    "DOCUMENT_ORPHAN_TEXT": "この部品は孤児です。親部品が見当たりません。",
+                    "DOCUMENT_ORPHANED_TEXT": "この部品は孤児です。親部品が見当たりません。",
                     "DOCUMENT_PROP_MASS": "重量: {}",
                     "DOCUMENT_PROP_DIMS": "サイズ (WxDxH): {}",
                     "DOCUMENT_PROP_COST": "値段: ${}",

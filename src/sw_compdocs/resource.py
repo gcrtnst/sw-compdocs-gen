@@ -30,7 +30,7 @@ default_label: typing.Final[collections.abc.Mapping[str, str]] = {
     "DOCUMENT_LOGIC_TABLE_MULTIBODY_BODY_PARENT": "Parent",
     "DOCUMENT_LOGIC_TABLE_MULTIBODY_BODY_CHILD": "Child",
     "DOCUMENT_DEPRECATED_TEXT": "This component is deprecated.",
-    "DOCUMENT_ORPHAN_TEXT": "This component is orphan. No parent component found.",
+    "DOCUMENT_ORPHANED_TEXT": "This component is orphan. No parent component found.",
     "SHEET_HEAD_NAME": "Name",
     "SHEET_HEAD_FILE": "File",
     "SHEET_HEAD_CATEGORY": "Category",
