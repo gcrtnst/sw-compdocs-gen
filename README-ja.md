@@ -3,6 +3,8 @@
 # sw-compdocs-gen
 Stormworks 部品定義ファイルから Markdown ドキュメントを自動生成するツールです。
 
+本ツールで生成したドキュメントを [sw-compdocs](https://github.com/gcrtnst/sw-compdocs) リポジトリにて公開しています。
+
 ## インストール
 1. [Python](https://www.python.org/) の最新安定版をインストール
 2. `pip install git+https://github.com/gcrtnst/sw-compdocs-gen.git`
