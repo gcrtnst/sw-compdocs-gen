@@ -3240,7 +3240,7 @@ class TestGenerateSheetComponent(unittest.TestCase):
                     "",  # Tags
                     "FALSE",  # Multibody
                     "FALSE",  # Deprecated
-                    "FALSE",  # Orphan
+                    "FALSE",  # Orphaned
                     "0",  # Cost
                     "0",  # Mass
                     "1",  # Width
@@ -3278,7 +3278,7 @@ class TestGenerateSheetComponent(unittest.TestCase):
                     "tags",  # Tags
                     "FALSE",  # Multibody
                     "FALSE",  # Deprecated
-                    "FALSE",  # Orphan
+                    "FALSE",  # Orphaned
                     "2",  # Cost
                     "0.25",  # Mass
                     "3",  # Width
@@ -3322,7 +3322,7 @@ class TestGenerateSheetComponent(unittest.TestCase):
                     "tags",  # Tags
                     "TRUE",  # Multibody
                     "FALSE",  # Deprecated
-                    "FALSE",  # Orphan
+                    "FALSE",  # Orphaned
                     "2",  # Cost
                     "1.5",  # Mass
                     "9",  # Width
@@ -3350,7 +3350,7 @@ class TestGenerateSheetComponent(unittest.TestCase):
                     "",  # Tags
                     "TRUE",  # Multibody
                     "FALSE",  # Deprecated
-                    "FALSE",  # Orphan
+                    "FALSE",  # Orphaned
                     "0",  # Cost
                     "0",  # Mass
                     "1",  # Width
@@ -3375,7 +3375,7 @@ class TestGenerateSheetComponent(unittest.TestCase):
                     "",  # Tags
                     "FALSE",  # Multibody
                     "TRUE",  # Deprecated
-                    "FALSE",  # Orphan
+                    "FALSE",  # Orphaned
                     "0",  # Cost
                     "0",  # Mass
                     "1",  # Width
@@ -3400,7 +3400,7 @@ class TestGenerateSheetComponent(unittest.TestCase):
                     "",  # Tags
                     "FALSE",  # Multibody
                     "FALSE",  # Deprecated
-                    "TRUE",  # Orphan
+                    "TRUE",  # Orphaned
                     "0",  # Cost
                     "0",  # Mass
                     "1",  # Width
@@ -3448,7 +3448,7 @@ class TestGenerateSheetComponent(unittest.TestCase):
                     "",  # Tags
                     "FALSE",  # Multibody
                     "FALSE",  # Deprecated
-                    "FALSE",  # Orphan
+                    "FALSE",  # Orphaned
                     "0",  # Cost
                     "0",  # Mass
                     "1",  # Width
@@ -3507,7 +3507,7 @@ class TestGenerateSheetComponentList(unittest.TestCase):
                         "",  # Tags
                         "FALSE",  # Multibody
                         "FALSE",  # Deprecated
-                        "FALSE",  # Orphan
+                        "FALSE",  # Orphaned
                         "0",  # Cost
                         "0",  # Mass
                         "1",  # Width
@@ -3523,7 +3523,7 @@ class TestGenerateSheetComponentList(unittest.TestCase):
                         "",  # Tags
                         "FALSE",  # Multibody
                         "FALSE",  # Deprecated
-                        "FALSE",  # Orphan
+                        "FALSE",  # Orphaned
                         "0",  # Cost
                         "0",  # Mass
                         "1",  # Width
@@ -3539,7 +3539,7 @@ class TestGenerateSheetComponentList(unittest.TestCase):
                         "",  # Tags
                         "FALSE",  # Multibody
                         "FALSE",  # Deprecated
-                        "FALSE",  # Orphan
+                        "FALSE",  # Orphaned
                         "0",  # Cost
                         "0",  # Mass
                         "1",  # Width
@@ -3600,7 +3600,7 @@ class TestGenerateSheetComponentList(unittest.TestCase):
                         "tags",  # Tags
                         "FALSE",  # Multibody
                         "FALSE",  # Deprecated
-                        "FALSE",  # Orphan
+                        "FALSE",  # Orphaned
                         "2",  # Cost
                         "1",  # Mass
                         "3",  # Width
@@ -3703,7 +3703,7 @@ class TestGenerateSheet(unittest.TestCase):
                         "",  # Tags
                         "FALSE",  # Multibody
                         "FALSE",  # Deprecated
-                        "FALSE",  # Orphan
+                        "FALSE",  # Orphaned
                         "5",  # Cost
                         "0",  # Mass
                         "1",  # Width
@@ -3719,7 +3719,7 @@ class TestGenerateSheet(unittest.TestCase):
                         "",  # Tags
                         "FALSE",  # Multibody
                         "FALSE",  # Deprecated
-                        "FALSE",  # Orphan
+                        "FALSE",  # Orphaned
                         "4",  # Cost
                         "0",  # Mass
                         "1",  # Width
@@ -3735,7 +3735,7 @@ class TestGenerateSheet(unittest.TestCase):
                         "",  # Tags
                         "FALSE",  # Multibody
                         "FALSE",  # Deprecated
-                        "FALSE",  # Orphan
+                        "FALSE",  # Orphaned
                         "3",  # Cost
                         "0",  # Mass
                         "1",  # Width
@@ -3751,7 +3751,7 @@ class TestGenerateSheet(unittest.TestCase):
                         "",  # Tags
                         "FALSE",  # Multibody
                         "FALSE",  # Deprecated
-                        "FALSE",  # Orphan
+                        "FALSE",  # Orphaned
                         "2",  # Cost
                         "0",  # Mass
                         "1",  # Width
@@ -3767,7 +3767,7 @@ class TestGenerateSheet(unittest.TestCase):
                         "",  # Tags
                         "FALSE",  # Multibody
                         "FALSE",  # Deprecated
-                        "FALSE",  # Orphan
+                        "FALSE",  # Orphaned
                         "1",  # Cost
                         "0",  # Mass
                         "1",  # Width
@@ -3786,7 +3786,7 @@ class TestGenerateSheet(unittest.TestCase):
                     "SHEET_HEAD_TAGS": "Tags",
                     "SHEET_HEAD_MULTIBODY": "Multibody",
                     "SHEET_HEAD_DEPRECATED": "Deprecated",
-                    "SHEET_HEAD_ORPHAN": "Orphan",
+                    "SHEET_HEAD_ORPHAN": "Orphaned",
                     "SHEET_HEAD_COST": "Cost",
                     "SHEET_HEAD_MASS": "Mass",
                     "SHEET_HEAD_DIMS_WIDTH": "Width",
@@ -3844,7 +3844,7 @@ class TestGenerateSheet(unittest.TestCase):
                         "Tags",
                         "Multibody",
                         "Deprecated",
-                        "Orphan",
+                        "Orphaned",
                         "Cost",
                         "Mass",
                         "Width",
@@ -3860,7 +3860,7 @@ class TestGenerateSheet(unittest.TestCase):
                         "tags",  # Tags
                         "FALSE",  # Multibody
                         "FALSE",  # Deprecated
-                        "FALSE",  # Orphan
+                        "FALSE",  # Orphaned
                         "2",  # Cost
                         "1",  # Mass
                         "3",  # Width
@@ -3889,7 +3889,7 @@ class TestGenerateSheet(unittest.TestCase):
             "SHEET_HEAD_TAGS": "Tags",
             "SHEET_HEAD_MULTIBODY": "Multibody",
             "SHEET_HEAD_DEPRECATED": "Deprecated",
-            "SHEET_HEAD_ORPHAN": "Orphan",
+            "SHEET_HEAD_ORPHAN": "Orphaned",
             "SHEET_HEAD_COST": "Cost",
             "SHEET_HEAD_MASS": "Mass",
             "SHEET_HEAD_DIMS_WIDTH": "Width",
