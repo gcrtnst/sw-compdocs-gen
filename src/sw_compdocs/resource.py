@@ -37,7 +37,7 @@ default_label: typing.Final[collections.abc.Mapping[str, str]] = {
     "SHEET_HEAD_TAGS": "Tags",
     "SHEET_HEAD_MULTIBODY": "Multibody",
     "SHEET_HEAD_DEPRECATED": "Deprecated",
-    "SHEET_HEAD_ORPHAN": "Orphaned",
+    "SHEET_HEAD_ORPHANED": "Orphaned",
     "SHEET_HEAD_COST": "Cost",
     "SHEET_HEAD_MASS": "Mass",
     "SHEET_HEAD_DIMS_WIDTH": "Width",

@@ -566,7 +566,7 @@ def generate_sheet(
         _label_get(label, "SHEET_HEAD_TAGS"),
         _label_get(label, "SHEET_HEAD_MULTIBODY"),
         _label_get(label, "SHEET_HEAD_DEPRECATED"),
-        _label_get(label, "SHEET_HEAD_ORPHAN"),
+        _label_get(label, "SHEET_HEAD_ORPHANED"),
         _label_get(label, "SHEET_HEAD_COST"),
         _label_get(label, "SHEET_HEAD_MASS"),
         _label_get(label, "SHEET_HEAD_DIMS_WIDTH"),
