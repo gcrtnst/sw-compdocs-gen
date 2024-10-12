@@ -2392,6 +2392,108 @@ class TestGenerateDocumentCategory(unittest.TestCase):
                     ],
                 ),
             ),
+            # sort deprecated and orphaned
+            tt(
+                input_category=sw_compdocs.component.Category.BLOCKS,
+                input_comp_list=[
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(
+                            name=sw_compdocs.language.Text(en="Blocks_A"),
+                            category=sw_compdocs.component.Category.BLOCKS,
+                            flags=sw_compdocs.component.Flags.MULTIBODY_CHILD
+                            | sw_compdocs.component.Flags.IS_DEPRECATED,
+                        )
+                    ),
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(
+                            name=sw_compdocs.language.Text(en="Blocks_B"),
+                            category=sw_compdocs.component.Category.BLOCKS,
+                            flags=sw_compdocs.component.Flags.MULTIBODY_CHILD,
+                        )
+                    ),
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(
+                            name=sw_compdocs.language.Text(en="Blocks_C"),
+                            category=sw_compdocs.component.Category.BLOCKS,
+                            flags=sw_compdocs.component.Flags.IS_DEPRECATED,
+                        )
+                    ),
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(
+                            name=sw_compdocs.language.Text(en="Blocks_D"),
+                            category=sw_compdocs.component.Category.BLOCKS,
+                        )
+                    ),
+                ],
+                input_label=None,
+                input_lang=None,
+                input_bind=None,
+                want_doc=sw_compdocs.document.Document(
+                    [
+                        sw_compdocs.document.Heading("Blocks", level=1),
+                        sw_compdocs.document.Heading("Blocks_D", level=2),
+                        sw_compdocs.document.Heading("PROPERTIES", level=3),
+                        sw_compdocs.document.UnorderedList(
+                            [
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
+                            ]
+                        ),
+                        sw_compdocs.document.Heading("Blocks_C", level=2),
+                        sw_compdocs.document.Callout(
+                            "DOCUMENT_DEPRECATED_TEXT",
+                            kind=sw_compdocs.document.CalloutKind.WARNING,
+                        ),
+                        sw_compdocs.document.Heading("PROPERTIES", level=3),
+                        sw_compdocs.document.UnorderedList(
+                            [
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
+                            ]
+                        ),
+                        sw_compdocs.document.Heading("Blocks_B", level=2),
+                        sw_compdocs.document.Callout(
+                            "DOCUMENT_ORPHANED_TEXT",
+                            kind=sw_compdocs.document.CalloutKind.WARNING,
+                        ),
+                        sw_compdocs.document.Heading("PROPERTIES", level=3),
+                        sw_compdocs.document.UnorderedList(
+                            [
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
+                            ]
+                        ),
+                        sw_compdocs.document.Heading("Blocks_A", level=2),
+                        sw_compdocs.document.Callout(
+                            "DOCUMENT_DEPRECATED_TEXT",
+                            kind=sw_compdocs.document.CalloutKind.WARNING,
+                        ),
+                        sw_compdocs.document.Callout(
+                            "DOCUMENT_ORPHANED_TEXT",
+                            kind=sw_compdocs.document.CalloutKind.WARNING,
+                        ),
+                        sw_compdocs.document.Heading("PROPERTIES", level=3),
+                        sw_compdocs.document.UnorderedList(
+                            [
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_MASS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_DIMS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_COST"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_TAGS"),
+                                sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
+                            ]
+                        ),
+                    ],
+                ),
+            ),
             # sort defn_list name
             tt(
                 input_category=sw_compdocs.component.Category.BLOCKS,
@@ -3641,30 +3743,32 @@ class TestGenerateSheet(unittest.TestCase):
                     sw_compdocs.component.Component(
                         defn=sw_compdocs.component.Definition(
                             key="a",
-                            name=sw_compdocs.language.Text(en="Z"),
+                            name=sw_compdocs.language.Text(en="a"),
                             category=sw_compdocs.component.Category.VEHICLE_CONTROL,
                             value=1,
+                            flags=sw_compdocs.component.Flags.MULTIBODY_CHILD,
                         )
                     ),
                     sw_compdocs.component.Component(
                         defn=sw_compdocs.component.Definition(
-                            key=None,
+                            key="a",
                             name=sw_compdocs.language.Text(en="a"),
                             category=sw_compdocs.component.Category.VEHICLE_CONTROL,
                             value=2,
+                            flags=sw_compdocs.component.Flags.IS_DEPRECATED,
                         )
                     ),
                     sw_compdocs.component.Component(
                         defn=sw_compdocs.component.Definition(
-                            key="z",
-                            name=sw_compdocs.language.Text(en="a"),
+                            key="a",
+                            name=sw_compdocs.language.Text(en="Z"),
                             category=sw_compdocs.component.Category.VEHICLE_CONTROL,
                             value=3,
                         )
                     ),
                     sw_compdocs.component.Component(
                         defn=sw_compdocs.component.Definition(
-                            key="a",
+                            key=None,
                             name=sw_compdocs.language.Text(en="a"),
                             category=sw_compdocs.component.Category.VEHICLE_CONTROL,
                             value=4,
@@ -3673,9 +3777,25 @@ class TestGenerateSheet(unittest.TestCase):
                     sw_compdocs.component.Component(
                         defn=sw_compdocs.component.Definition(
                             key="z",
+                            name=sw_compdocs.language.Text(en="a"),
+                            category=sw_compdocs.component.Category.VEHICLE_CONTROL,
+                            value=5,
+                        )
+                    ),
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(
+                            key="a",
+                            name=sw_compdocs.language.Text(en="a"),
+                            category=sw_compdocs.component.Category.VEHICLE_CONTROL,
+                            value=6,
+                        )
+                    ),
+                    sw_compdocs.component.Component(
+                        defn=sw_compdocs.component.Definition(
+                            key="z",
                             name=sw_compdocs.language.Text(en="Z"),
                             category=sw_compdocs.component.Category.BLOCKS,
-                            value=5,
+                            value=7,
                         )
                     ),
                 ],
@@ -3700,6 +3820,38 @@ class TestGenerateSheet(unittest.TestCase):
                         "Z",  # Name
                         "",  # File
                         "Blocks",  # Category
+                        "",  # Tags
+                        "FALSE",  # Multibody
+                        "FALSE",  # Deprecated
+                        "FALSE",  # Orphaned
+                        "7",  # Cost
+                        "0",  # Mass
+                        "1",  # Width
+                        "1",  # Depth
+                        "1",  # Height
+                        "",  # Short Description
+                        "",  # Description
+                    ],
+                    [
+                        "a",  # Name
+                        "",  # File
+                        "Vehicle Control",  # Category
+                        "",  # Tags
+                        "FALSE",  # Multibody
+                        "FALSE",  # Deprecated
+                        "FALSE",  # Orphaned
+                        "6",  # Cost
+                        "0",  # Mass
+                        "1",  # Width
+                        "1",  # Depth
+                        "1",  # Height
+                        "",  # Short Description
+                        "",  # Description
+                    ],
+                    [
+                        "a",  # Name
+                        "",  # File
+                        "Vehicle Control",  # Category
                         "",  # Tags
                         "FALSE",  # Multibody
                         "FALSE",  # Deprecated
@@ -3729,7 +3881,7 @@ class TestGenerateSheet(unittest.TestCase):
                         "",  # Description
                     ],
                     [
-                        "a",  # Name
+                        "Z",  # Name
                         "",  # File
                         "Vehicle Control",  # Category
                         "",  # Tags
@@ -3750,7 +3902,7 @@ class TestGenerateSheet(unittest.TestCase):
                         "Vehicle Control",  # Category
                         "",  # Tags
                         "FALSE",  # Multibody
-                        "FALSE",  # Deprecated
+                        "TRUE",  # Deprecated
                         "FALSE",  # Orphaned
                         "2",  # Cost
                         "0",  # Mass
@@ -3761,13 +3913,13 @@ class TestGenerateSheet(unittest.TestCase):
                         "",  # Description
                     ],
                     [
-                        "Z",  # Name
+                        "a",  # Name
                         "",  # File
                         "Vehicle Control",  # Category
                         "",  # Tags
                         "FALSE",  # Multibody
                         "FALSE",  # Deprecated
-                        "FALSE",  # Orphaned
+                        "TRUE",  # Orphaned
                         "1",  # Cost
                         "0",  # Mass
                         "1",  # Width

@@ -425,8 +425,16 @@ def generate_document_category(
     lang: language.Language | None = None,
     bind: collections.abc.Mapping[str, str] | None = None,
 ) -> document.Document:
-    def sort_key_component(comp: component.Component) -> tuple[str, bool, str]:
-        return comp.name().en.upper(), comp.defn.key is None, comp.defn.key or ""
+    def sort_key_component(
+        comp: component.Component,
+    ) -> tuple[bool, bool, str, bool, str]:
+        return (
+            component.Flags.MULTIBODY_CHILD in comp.defn.flags,
+            component.Flags.IS_DEPRECATED in comp.defn.flags,
+            comp.name().en.upper(),
+            comp.defn.key is None,
+            comp.defn.key or "",
+        )
 
     comp_list = list(comp_list)
     for comp in comp_list:
@@ -548,9 +556,11 @@ def generate_sheet(
     lang: language.Language | None = None,
     bind: collections.abc.Mapping[str, str] | None = None,
 ) -> list[list[str]]:
-    def sort_key(comp: component.Component) -> tuple[int, str, bool, str]:
+    def sort_key(comp: component.Component) -> tuple[int, bool, bool, str, bool, str]:
         return (
             comp.category().value,
+            component.Flags.MULTIBODY_CHILD in comp.defn.flags,
+            component.Flags.IS_DEPRECATED in comp.defn.flags,
             comp.name().en.upper(),
             comp.defn.key is None,
             comp.defn.key or "",
