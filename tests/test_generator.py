@@ -1629,7 +1629,7 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                 ),
                 want_doc=sw_compdocs.document.Document(
                     [
-                        sw_compdocs.document.Heading(""),
+                        sw_compdocs.document.Heading(" (Deprecated)"),
                         sw_compdocs.document.Callout(
                             "DOCUMENT_DEPRECATED_TEXT",
                             kind=sw_compdocs.document.CalloutKind.WARNING,
@@ -1816,7 +1816,7 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                 ),
                 want_doc=sw_compdocs.document.Document(
                     [
-                        sw_compdocs.document.Heading("部品名"),
+                        sw_compdocs.document.Heading("部品名 (Deprecated)"),
                         sw_compdocs.document.Callout(
                             "この部品は非推奨です。",
                             kind=sw_compdocs.document.CalloutKind.WARNING,
@@ -2442,7 +2442,7 @@ class TestGenerateDocumentCategory(unittest.TestCase):
                                 sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
                             ]
                         ),
-                        sw_compdocs.document.Heading("Blocks_C", level=2),
+                        sw_compdocs.document.Heading("Blocks_C (Deprecated)", level=2),
                         sw_compdocs.document.Callout(
                             "DOCUMENT_DEPRECATED_TEXT",
                             kind=sw_compdocs.document.CalloutKind.WARNING,
@@ -2472,7 +2472,7 @@ class TestGenerateDocumentCategory(unittest.TestCase):
                                 sw_compdocs.document.ListItem("DOCUMENT_PROP_FILE"),
                             ]
                         ),
-                        sw_compdocs.document.Heading("Blocks_A", level=2),
+                        sw_compdocs.document.Heading("Blocks_A (Deprecated)", level=2),
                         sw_compdocs.document.Callout(
                             "DOCUMENT_DEPRECATED_TEXT",
                             kind=sw_compdocs.document.CalloutKind.WARNING,
@@ -3471,7 +3471,7 @@ class TestGenerateSheetComponent(unittest.TestCase):
                     )
                 ),
                 want_record=[
-                    "",  # Name
+                    " (Deprecated)",  # Name
                     "",  # File
                     "Blocks",  # Category
                     "",  # Tags
@@ -3897,7 +3897,7 @@ class TestGenerateSheet(unittest.TestCase):
                         "",  # Description
                     ],
                     [
-                        "a",  # Name
+                        "a (Deprecated)",  # Name
                         "",  # File
                         "Vehicle Control",  # Category
                         "",  # Tags

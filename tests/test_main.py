@@ -695,7 +695,7 @@ template_02 = "テンプレート 02"
                 want_csv="""\
 Name,File,Category,Tags,Multibody,Deprecated,Orphaned,Cost,Mass,Width,Depth,Height,Short Description,Description
 ,01_normal.xml,Blocks,,FALSE,FALSE,FALSE,0,0,1,1,1,,
-,02_deprecated.xml,Blocks,,FALSE,TRUE,FALSE,0,0,1,1,1,,
+ (Deprecated),02_deprecated.xml,Blocks,,FALSE,TRUE,FALSE,0,0,1,1,1,,
 ,03_orphan.xml,Blocks,,FALSE,FALSE,TRUE,0,0,1,1,1,,
 """,
             ),
@@ -714,7 +714,7 @@ Name,File,Category,Tags,Multibody,Deprecated,Orphaned,Cost,Mass,Width,Depth,Heig
                 want_csv="""\
 Name,File,Category,Tags,Multibody,Deprecated,Orphaned,Cost,Mass,Width,Depth,Height,Short Description,Description
 ,01_normal.xml,Blocks,,FALSE,FALSE,FALSE,0,0,1,1,1,,
-,02_deprecated.xml,Blocks,,FALSE,TRUE,FALSE,0,0,1,1,1,,
+ (Deprecated),02_deprecated.xml,Blocks,,FALSE,TRUE,FALSE,0,0,1,1,1,,
 """,
             ),
         ]:

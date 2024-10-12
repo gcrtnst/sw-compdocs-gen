@@ -362,6 +362,8 @@ def generate_document_component(
     doc = document.Document()
 
     comp_name = _lang_translate(lang, comp.name())
+    if component.Flags.IS_DEPRECATED in comp.defn.flags:
+        comp_name += " (Deprecated)"
     doc.append(document.Heading(comp_name))
 
     if component.Flags.IS_DEPRECATED in comp.defn.flags:
@@ -498,6 +500,8 @@ def generate_sheet_component(
     bind: collections.abc.Mapping[str, str] | None = None,
 ) -> list[str]:
     comp_name = _lang_translate(lang, comp.name())
+    if component.Flags.IS_DEPRECATED in comp.defn.flags:
+        comp_name += " (Deprecated)"
 
     comp_file = ""
     if comp.defn.file is not None:
