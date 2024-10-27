@@ -1135,6 +1135,43 @@ class TestVoxelPosFromXMLElem(unittest.TestCase):
                 self.assertEqual(ctx.exception.xpath, ".")
 
 
+class TestVoxelFromXMLElem(unittest.TestCase):
+    def test_pass(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_elem", lxml.etree._Element),
+                ("want", sw_compdocs.component.Voxel),
+            ],
+        )
+
+        for tc in [
+            tt(
+                input_elem=lxml.etree.fromstring("<voxel/>"),
+                want=sw_compdocs.component.Voxel(),
+            ),
+            tt(
+                input_elem=lxml.etree.fromstring(
+                    '<voxel><position x="1" y="2" z="3"/></voxel>'
+                ),
+                want=sw_compdocs.component.Voxel(
+                    position=sw_compdocs.component.VoxelPos(x=1, y=2, z=3)
+                ),
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                got = sw_compdocs.component.Voxel.from_xml_elem(tc.input_elem)
+                self.assertEqual(got, tc.want)
+
+    def test_exc_xml(self) -> None:
+        elem = lxml.etree.fromstring('<voxel><position x="invalid"/></voxel>')
+        with self.assertRaises(sw_compdocs.component.DefinitionXMLError) as ctx:
+            sw_compdocs.component.Voxel.from_xml_elem(elem)
+        self.assertEqual(ctx.exception.msg, "invalid voxel x 'invalid'")
+        self.assertEqual(ctx.exception.file, None)
+        self.assertEqual(ctx.exception.xpath, "./position")
+
+
 class TestDefinitionFromXMLElem(unittest.TestCase):
     def test_pass_clock(self) -> None:
         elem = lxml.etree.fromstring(

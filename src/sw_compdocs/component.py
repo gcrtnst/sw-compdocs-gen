@@ -328,6 +328,24 @@ class VoxelPos:
 
 
 @dataclasses.dataclass
+class Voxel:
+    _: dataclasses.KW_ONLY
+    position: VoxelPos = dataclasses.field(default_factory=VoxelPos)
+
+    @classmethod
+    def from_xml_elem(cls, elem: lxml.etree._Element) -> typing.Self:
+        position_elem = elem.find("position")
+        if position_elem is None:
+            position_elem = lxml.etree.Element("position")
+        try:
+            position = VoxelPos.from_xml_elem(position_elem)
+        except DefinitionXMLError as exc:
+            exc.prepend_xpath("position")
+            raise
+        return cls(position=position)
+
+
+@dataclasses.dataclass
 class Definition:
     _: dataclasses.KW_ONLY
     file: _types.StrOrBytesPath | None = None
