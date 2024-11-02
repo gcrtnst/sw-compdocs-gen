@@ -377,6 +377,7 @@ class Definition:
         default_factory=TooltipProperties
     )
     logic_nodes: LogicNodeList = dataclasses.field(default_factory=LogicNodeList)
+    voxels: VoxelList = dataclasses.field(default_factory=VoxelList)
     voxel_min: VoxelPos = dataclasses.field(default_factory=VoxelPos)
     voxel_max: VoxelPos = dataclasses.field(default_factory=VoxelPos)
     voxel_location_child: VoxelPos = dataclasses.field(default_factory=VoxelPos)
@@ -457,6 +458,16 @@ class Definition:
             exc.prepend_xpath("logic_nodes")
             raise
 
+        voxels_elem = elem.find("voxels")
+        if voxels_elem is None:
+            voxels_elem = lxml.etree.Element("voxels")
+        try:
+            voxels = VoxelList.from_xml_elem(voxels_elem)
+        except DefinitionXMLError as exc:
+            exc.file = file
+            exc.prepend_xpath("voxels")
+            raise
+
         voxel_min_elem = elem.find("voxel_min")
         if voxel_min_elem is None:
             voxel_min_elem = lxml.etree.Element("voxel_min")
@@ -498,6 +509,7 @@ class Definition:
             child_name=child_name,
             tooltip_properties=tooltip_properties,
             logic_nodes=logic_nodes,
+            voxels=voxels,
             voxel_min=voxel_min,
             voxel_max=voxel_max,
             voxel_location_child=voxel_location_child,

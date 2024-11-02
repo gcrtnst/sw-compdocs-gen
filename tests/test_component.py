@@ -1239,6 +1239,14 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
 		<logic_node label="Backlight" mode="1" type="0" description="Enables the backlight when receiving an on signal."/>
 		<logic_node label="Electric" mode="1" type="4" description="Electrical power connection." flags="0"/>
 	</logic_nodes>
+	<voxels>
+		<voxel>
+			<position x="0" y="0" z="0"/>
+		</voxel>
+		<voxel>
+			<position x="0" y="1" z="0"/>
+		</voxel>
+	</voxels>
 	<voxel_min x="0" y="0" z="0"/>
 	<voxel_max x="0" y="1" z="0"/>
 	<voxel_location_child x="0" y="0" z="0"/>
@@ -1313,6 +1321,19 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
                 ],
             ),
         )
+        self.assertEqual(
+            defn.voxels,
+            sw_compdocs.component.VoxelList(
+                [
+                    sw_compdocs.component.Voxel(
+                        position=sw_compdocs.component.VoxelPos(x=0, y=0, z=0)
+                    ),
+                    sw_compdocs.component.Voxel(
+                        position=sw_compdocs.component.VoxelPos(x=0, y=1, z=0)
+                    ),
+                ]
+            ),
+        )
         self.assertEqual(defn.voxel_min, sw_compdocs.component.VoxelPos(x=0, y=0, z=0))
         self.assertEqual(defn.voxel_max, sw_compdocs.component.VoxelPos(x=0, y=1, z=0))
         self.assertEqual(
@@ -1322,8 +1343,16 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
     def test_pass_pivot(self) -> None:
         elem = lxml.etree.fromstring(
             """\
-<definition name="Pivot" category="2" type="7" mass="1" value="20" flags="64" tags="hinge" hild_name="multibody_pivot_b">
+<definition name="Pivot" category="2" type="7" mass="1" value="20" flags="64" tags="hinge" child_name="multibody_pivot_b">
 	<logic_nodes/>
+	<voxels>
+		<voxel>
+			<position x="0" y="0" z="0"/>
+		</voxel>
+		<voxel>
+			<position x="0" y="1" z="0"/>
+		</voxel>
+	</voxels>
 	<voxel_min x="0" y="0" z="0"/>
 	<voxel_max x="0" y="1" z="0"/>
 	<voxel_location_child x="0" y="2" z="0"/>
@@ -1363,6 +1392,19 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
             defn.logic_nodes,
             sw_compdocs.component.LogicNodeList(),
         )
+        self.assertEqual(
+            defn.voxels,
+            sw_compdocs.component.VoxelList(
+                [
+                    sw_compdocs.component.Voxel(
+                        position=sw_compdocs.component.VoxelPos(x=0, y=0, z=0)
+                    ),
+                    sw_compdocs.component.Voxel(
+                        position=sw_compdocs.component.VoxelPos(x=0, y=1, z=0)
+                    ),
+                ]
+            ),
+        )
         self.assertEqual(defn.voxel_min, sw_compdocs.component.VoxelPos(x=0, y=0, z=0))
         self.assertEqual(defn.voxel_max, sw_compdocs.component.VoxelPos(x=0, y=1, z=0))
         self.assertEqual(
@@ -1385,6 +1427,7 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
             defn.tooltip_properties, sw_compdocs.component.TooltipProperties()
         )
         self.assertEqual(defn.logic_nodes, sw_compdocs.component.LogicNodeList())
+        self.assertEqual(defn.voxels, sw_compdocs.component.VoxelList())
         self.assertEqual(defn.voxel_min, sw_compdocs.component.VoxelPos())
         self.assertEqual(defn.voxel_max, sw_compdocs.component.VoxelPos())
         self.assertEqual(defn.voxel_location_child, sw_compdocs.component.VoxelPos())
@@ -1409,6 +1452,7 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
             ),
         )
         self.assertEqual(defn.logic_nodes, sw_compdocs.component.LogicNodeList())
+        self.assertEqual(defn.voxels, sw_compdocs.component.VoxelList())
         self.assertEqual(defn.voxel_min, sw_compdocs.component.VoxelPos())
         self.assertEqual(defn.voxel_max, sw_compdocs.component.VoxelPos())
         self.assertEqual(defn.voxel_location_child, sw_compdocs.component.VoxelPos())
@@ -1469,6 +1513,15 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
                 want_msg="invalid logic node mode '999'",
                 want_file="file",
                 want_xpath="./logic_nodes/logic_node[1]",
+            ),
+            tt(
+                input_elem=lxml.etree.fromstring(
+                    """<definition><voxels><voxel><position x="invalid"/></voxel></voxels></definition>"""
+                ),
+                input_file="file",
+                want_msg="invalid voxel x 'invalid'",
+                want_file="file",
+                want_xpath="./voxels/voxel[1]/position",
             ),
             tt(
                 input_elem=lxml.etree.fromstring(
