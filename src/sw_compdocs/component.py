@@ -345,6 +345,22 @@ class Voxel:
         return cls(position=position)
 
 
+class VoxelList(container.MutableSequence[Voxel]):
+    @classmethod
+    def from_xml_elem(cls, elem: lxml.etree._Element) -> typing.Self:
+        def generate() -> collections.abc.Iterator[Voxel]:
+            tag = "voxel"
+            for idx, sub in enumerate(elem.findall(tag)):
+                try:
+                    voxel = Voxel.from_xml_elem(sub)
+                except DefinitionXMLError as exc:
+                    exc.prepend_xpath(f"{tag}[{idx + 1}]")
+                    raise
+                yield voxel
+
+        return cls(generate())
+
+
 @dataclasses.dataclass
 class Definition:
     _: dataclasses.KW_ONLY
