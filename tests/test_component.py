@@ -1645,6 +1645,154 @@ class TestDefinitionUpdateID(unittest.TestCase):
                 self.assertEqual(defn, tc.want_defn)
 
 
+class TestDefinitionGetVoxelMin(unittest.TestCase):
+    def test(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_defn", sw_compdocs.component.Definition),
+                ("want_voxel_min", sw_compdocs.component.VoxelPos),
+            ],
+        )
+
+        for tc in [
+            tt(
+                input_defn=sw_compdocs.component.Definition(),
+                want_voxel_min=sw_compdocs.component.VoxelPos(),
+            ),
+            tt(
+                input_defn=sw_compdocs.component.Definition(
+                    voxels=sw_compdocs.component.VoxelList(
+                        [
+                            sw_compdocs.component.Voxel(
+                                position=sw_compdocs.component.VoxelPos(x=1, y=2, z=3)
+                            ),
+                        ]
+                    ),
+                ),
+                want_voxel_min=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
+            ),
+            tt(
+                input_defn=sw_compdocs.component.Definition(
+                    voxels=sw_compdocs.component.VoxelList(
+                        [
+                            sw_compdocs.component.Voxel(
+                                position=sw_compdocs.component.VoxelPos(x=1, y=2, z=3)
+                            ),
+                            sw_compdocs.component.Voxel(
+                                position=sw_compdocs.component.VoxelPos(x=-1, y=2, z=3)
+                            ),
+                            sw_compdocs.component.Voxel(
+                                position=sw_compdocs.component.VoxelPos(x=1, y=-2, z=3)
+                            ),
+                            sw_compdocs.component.Voxel(
+                                position=sw_compdocs.component.VoxelPos(x=1, y=2, z=-3)
+                            ),
+                        ]
+                    ),
+                ),
+                want_voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                got_voxel_min = tc.input_defn.get_voxel_min()
+                self.assertEqual(got_voxel_min, tc.want_voxel_min)
+
+    def test_copy(self) -> None:
+        defn = sw_compdocs.component.Definition(
+            voxels=sw_compdocs.component.VoxelList(
+                [
+                    sw_compdocs.component.Voxel(
+                        position=sw_compdocs.component.VoxelPos(x=1, y=2, z=3)
+                    ),
+                ]
+            )
+        )
+        voxel_min = defn.get_voxel_min()
+        voxel_min.x = -1
+        voxel_min.y = -2
+        voxel_min.z = -3
+        self.assertEqual(defn.voxels[0].position.x, 1)
+        self.assertEqual(defn.voxels[0].position.y, 2)
+        self.assertEqual(defn.voxels[0].position.z, 3)
+
+
+class TestDefinitionGetVoxelMax(unittest.TestCase):
+    def test(self) -> None:
+        tt = typing.NamedTuple(
+            "tt",
+            [
+                ("input_defn", sw_compdocs.component.Definition),
+                ("want_voxel_max", sw_compdocs.component.VoxelPos),
+            ],
+        )
+
+        for tc in [
+            tt(
+                input_defn=sw_compdocs.component.Definition(),
+                want_voxel_max=sw_compdocs.component.VoxelPos(),
+            ),
+            tt(
+                input_defn=sw_compdocs.component.Definition(
+                    voxels=sw_compdocs.component.VoxelList(
+                        [
+                            sw_compdocs.component.Voxel(
+                                position=sw_compdocs.component.VoxelPos(
+                                    x=-1, y=-2, z=-3
+                                )
+                            ),
+                        ]
+                    )
+                ),
+                want_voxel_max=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
+            ),
+            tt(
+                input_defn=sw_compdocs.component.Definition(
+                    voxels=sw_compdocs.component.VoxelList(
+                        [
+                            sw_compdocs.component.Voxel(
+                                position=sw_compdocs.component.VoxelPos(
+                                    x=-1, y=-2, z=-3
+                                )
+                            ),
+                            sw_compdocs.component.Voxel(
+                                position=sw_compdocs.component.VoxelPos(x=1, y=-2, z=-3)
+                            ),
+                            sw_compdocs.component.Voxel(
+                                position=sw_compdocs.component.VoxelPos(x=-1, y=2, z=-3)
+                            ),
+                            sw_compdocs.component.Voxel(
+                                position=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=3)
+                            ),
+                        ]
+                    )
+                ),
+                want_voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
+            ),
+        ]:
+            with self.subTest(tc=tc):
+                got_voxel_max = tc.input_defn.get_voxel_max()
+                self.assertEqual(got_voxel_max, tc.want_voxel_max)
+
+    def test_copy(self) -> None:
+        defn = sw_compdocs.component.Definition(
+            voxels=sw_compdocs.component.VoxelList(
+                [
+                    sw_compdocs.component.Voxel(
+                        position=sw_compdocs.component.VoxelPos(x=1, y=2, z=3)
+                    ),
+                ]
+            )
+        )
+        voxel_max = defn.get_voxel_max()
+        voxel_max.x = -1
+        voxel_max.y = -2
+        voxel_max.z = -3
+        self.assertEqual(defn.voxels[0].position.x, 1)
+        self.assertEqual(defn.voxels[0].position.y, 2)
+        self.assertEqual(defn.voxels[0].position.z, 3)
+
+
 class TestComponentName(unittest.TestCase):
     def test(self) -> None:
         comp = sw_compdocs.component.Component(

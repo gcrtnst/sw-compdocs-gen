@@ -525,6 +525,32 @@ class Definition:
         self.name.id = f"def_{key}_name" if key is not None else None
         self.key = key
 
+    def get_voxel_min(self) -> VoxelPos:
+        voxel_min = None
+        for voxel in self.voxels:
+            if voxel_min is None:
+                voxel_min = dataclasses.replace(voxel.position)
+                continue
+            voxel_min.x = min(voxel_min.x, voxel.position.x)
+            voxel_min.y = min(voxel_min.y, voxel.position.y)
+            voxel_min.z = min(voxel_min.z, voxel.position.z)
+        if voxel_min is None:
+            voxel_min = VoxelPos()
+        return voxel_min
+
+    def get_voxel_max(self) -> VoxelPos:
+        voxel_max = None
+        for voxel in self.voxels:
+            if voxel_max is None:
+                voxel_max = dataclasses.replace(voxel.position)
+                continue
+            voxel_max.x = max(voxel_max.x, voxel.position.x)
+            voxel_max.y = max(voxel_max.y, voxel.position.y)
+            voxel_max.z = max(voxel_max.z, voxel.position.z)
+        if voxel_max is None:
+            voxel_max = VoxelPos()
+        return voxel_max
+
 
 @dataclasses.dataclass
 class Component:
