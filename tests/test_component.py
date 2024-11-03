@@ -1247,8 +1247,6 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
 			<position x="0" y="1" z="0"/>
 		</voxel>
 	</voxels>
-	<voxel_min x="0" y="0" z="0"/>
-	<voxel_max x="0" y="1" z="0"/>
 	<voxel_location_child x="0" y="0" z="0"/>
 </definition>
 """
@@ -1334,8 +1332,6 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
                 ]
             ),
         )
-        self.assertEqual(defn.voxel_min, sw_compdocs.component.VoxelPos(x=0, y=0, z=0))
-        self.assertEqual(defn.voxel_max, sw_compdocs.component.VoxelPos(x=0, y=1, z=0))
         self.assertEqual(
             defn.voxel_location_child, sw_compdocs.component.VoxelPos(x=0, y=0, z=0)
         )
@@ -1353,8 +1349,6 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
 			<position x="0" y="1" z="0"/>
 		</voxel>
 	</voxels>
-	<voxel_min x="0" y="0" z="0"/>
-	<voxel_max x="0" y="1" z="0"/>
 	<voxel_location_child x="0" y="2" z="0"/>
 	<tooltip_properties description="The pivot can rotate to 0.25 turns in both directions." short_description="A basic pivot that can move freely."/>
 </definition>
@@ -1405,8 +1399,6 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
                 ]
             ),
         )
-        self.assertEqual(defn.voxel_min, sw_compdocs.component.VoxelPos(x=0, y=0, z=0))
-        self.assertEqual(defn.voxel_max, sw_compdocs.component.VoxelPos(x=0, y=1, z=0))
         self.assertEqual(
             defn.voxel_location_child, sw_compdocs.component.VoxelPos(x=0, y=2, z=0)
         )
@@ -1428,8 +1420,6 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
         )
         self.assertEqual(defn.logic_nodes, sw_compdocs.component.LogicNodeList())
         self.assertEqual(defn.voxels, sw_compdocs.component.VoxelList())
-        self.assertEqual(defn.voxel_min, sw_compdocs.component.VoxelPos())
-        self.assertEqual(defn.voxel_max, sw_compdocs.component.VoxelPos())
         self.assertEqual(defn.voxel_location_child, sw_compdocs.component.VoxelPos())
 
     def test_pass_empty_key(self) -> None:
@@ -1453,8 +1443,6 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
         )
         self.assertEqual(defn.logic_nodes, sw_compdocs.component.LogicNodeList())
         self.assertEqual(defn.voxels, sw_compdocs.component.VoxelList())
-        self.assertEqual(defn.voxel_min, sw_compdocs.component.VoxelPos())
-        self.assertEqual(defn.voxel_max, sw_compdocs.component.VoxelPos())
         self.assertEqual(defn.voxel_location_child, sw_compdocs.component.VoxelPos())
 
     def test_exc_xml(self) -> None:
@@ -1522,24 +1510,6 @@ class TestDefinitionFromXMLElem(unittest.TestCase):
                 want_msg="invalid voxel x 'invalid'",
                 want_file="file",
                 want_xpath="./voxels/voxel[1]/position",
-            ),
-            tt(
-                input_elem=lxml.etree.fromstring(
-                    """<definition><voxel_min x="nan"/></definition>"""
-                ),
-                input_file="file",
-                want_msg="invalid voxel x 'nan'",
-                want_file="file",
-                want_xpath="./voxel_min",
-            ),
-            tt(
-                input_elem=lxml.etree.fromstring(
-                    """<definition><voxel_max x="nan"/></definition>"""
-                ),
-                input_file="file",
-                want_msg="invalid voxel x 'nan'",
-                want_file="file",
-                want_xpath="./voxel_max",
             ),
             tt(
                 input_elem=lxml.etree.fromstring(
@@ -2326,7 +2296,7 @@ class TestParseXMLFile(unittest.TestCase):
                     """\
 <?xml version="1.0" encoding="UTF-8"?>
 <definition>
-    <voxel_min x="invalid"/>
+    <voxel_location_child x="invalid"/>
 </definition>
 """
                 )
@@ -2344,7 +2314,9 @@ class TestParseXMLFile(unittest.TestCase):
                         sw_compdocs.component.parse_xml_file(path)
                     self.assertEqual(ctx.exception.msg, "invalid voxel x 'invalid'")
                     self.assertEqual(ctx.exception.file, path)
-                    self.assertEqual(ctx.exception.xpath, "/definition/voxel_min")
+                    self.assertEqual(
+                        ctx.exception.xpath, "/definition/voxel_location_child"
+                    )
 
     def test_exc_parse(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -2424,7 +2396,7 @@ class TestParseXMLStr(unittest.TestCase):
             sw_compdocs.component.parse_xml_str(
                 """\
 <definition>
-    <voxel_min x="invalid"/>
+    <voxel_location_child x="invalid"/>
 </definition>
 """,
                 key="key",
@@ -2432,7 +2404,7 @@ class TestParseXMLStr(unittest.TestCase):
 
         self.assertEqual(ctx.exception.msg, "invalid voxel x 'invalid'")
         self.assertEqual(ctx.exception.file, None)
-        self.assertEqual(ctx.exception.xpath, "/definition/voxel_min")
+        self.assertEqual(ctx.exception.xpath, "/definition/voxel_location_child")
 
     def test_exc_parse(self) -> None:
         with self.assertRaises(sw_compdocs.component.DefinitionXMLError) as ctx:
