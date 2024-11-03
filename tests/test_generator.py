@@ -342,8 +342,20 @@ class TestGenerateDocumentPropertyList(unittest.TestCase):
                         mass=10.0,
                         value=100,
                         tags="tags",
-                        voxel_min=sw_compdocs.component.VoxelPos(x=0, y=-1, z=-2),
-                        voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=2),
+                        voxels=sw_compdocs.component.VoxelList(
+                            [
+                                sw_compdocs.component.Voxel(
+                                    position=sw_compdocs.component.VoxelPos(
+                                        x=0, y=-1, z=-2
+                                    )
+                                ),
+                                sw_compdocs.component.Voxel(
+                                    position=sw_compdocs.component.VoxelPos(
+                                        x=0, y=1, z=2
+                                    )
+                                ),
+                            ]
+                        ),
                     )
                 ),
                 input_label={
@@ -377,8 +389,20 @@ class TestGenerateDocumentPropertyList(unittest.TestCase):
                         mass=9.0,
                         value=100,
                         tags="parent",
-                        voxel_min=sw_compdocs.component.VoxelPos(x=0, y=-1, z=-2),
-                        voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=2),
+                        voxels=sw_compdocs.component.VoxelList(
+                            [
+                                sw_compdocs.component.Voxel(
+                                    position=sw_compdocs.component.VoxelPos(
+                                        x=0, y=-1, z=-2
+                                    )
+                                ),
+                                sw_compdocs.component.Voxel(
+                                    position=sw_compdocs.component.VoxelPos(
+                                        x=0, y=1, z=2
+                                    )
+                                ),
+                            ]
+                        ),
                         voxel_location_child=sw_compdocs.component.VoxelPos(
                             x=-5, y=0, z=0
                         ),
@@ -388,8 +412,20 @@ class TestGenerateDocumentPropertyList(unittest.TestCase):
                         mass=1.0,
                         value=200,
                         tags="child",
-                        voxel_min=sw_compdocs.component.VoxelPos(x=0, y=-3, z=-4),
-                        voxel_max=sw_compdocs.component.VoxelPos(x=0, y=3, z=4),
+                        voxels=sw_compdocs.component.VoxelList(
+                            [
+                                sw_compdocs.component.Voxel(
+                                    position=sw_compdocs.component.VoxelPos(
+                                        x=0, y=-3, z=-4
+                                    )
+                                ),
+                                sw_compdocs.component.Voxel(
+                                    position=sw_compdocs.component.VoxelPos(
+                                        x=0, y=3, z=4
+                                    )
+                                ),
+                            ]
+                        ),
                     ),
                 ),
                 input_label={
@@ -2020,8 +2056,20 @@ class TestGenerateDocumentComponent(unittest.TestCase):
                                 ),
                             ],
                         ),
-                        voxel_min=sw_compdocs.component.VoxelPos(x=0, y=0, z=0),
-                        voxel_max=sw_compdocs.component.VoxelPos(x=0, y=1, z=0),
+                        voxels=sw_compdocs.component.VoxelList(
+                            [
+                                sw_compdocs.component.Voxel(
+                                    position=sw_compdocs.component.VoxelPos(
+                                        x=0, y=0, z=0
+                                    )
+                                ),
+                                sw_compdocs.component.Voxel(
+                                    position=sw_compdocs.component.VoxelPos(
+                                        x=0, y=1, z=0
+                                    )
+                                ),
+                            ]
+                        ),
                     )
                 ),
                 want_doc=sw_compdocs.document.Document(
@@ -3369,8 +3417,20 @@ class TestGenerateSheetComponent(unittest.TestCase):
                             ),
                             description=sw_compdocs.language.Text(en="description"),
                         ),
-                        voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
-                        voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
+                        voxels=sw_compdocs.component.VoxelList(
+                            [
+                                sw_compdocs.component.Voxel(
+                                    position=sw_compdocs.component.VoxelPos(
+                                        x=-1, y=-2, z=-3
+                                    )
+                                ),
+                                sw_compdocs.component.Voxel(
+                                    position=sw_compdocs.component.VoxelPos(
+                                        x=1, y=2, z=3
+                                    )
+                                ),
+                            ]
+                        ),
                     )
                 ),
                 want_record=[
@@ -3407,14 +3467,38 @@ class TestGenerateSheetComponent(unittest.TestCase):
                             ),
                             description=sw_compdocs.language.Text(en="description"),
                         ),
-                        voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
-                        voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
+                        voxels=sw_compdocs.component.VoxelList(
+                            [
+                                sw_compdocs.component.Voxel(
+                                    position=sw_compdocs.component.VoxelPos(
+                                        x=-1, y=-2, z=-3
+                                    )
+                                ),
+                                sw_compdocs.component.Voxel(
+                                    position=sw_compdocs.component.VoxelPos(
+                                        x=1, y=2, z=3
+                                    )
+                                ),
+                            ]
+                        ),
                     ),
                     child=sw_compdocs.component.Definition(
                         file="multibody_b.xml",
                         mass=0.25,
-                        voxel_min=sw_compdocs.component.VoxelPos(x=-4, y=-5, z=-6),
-                        voxel_max=sw_compdocs.component.VoxelPos(x=4, y=5, z=6),
+                        voxels=sw_compdocs.component.VoxelList(
+                            [
+                                sw_compdocs.component.Voxel(
+                                    position=sw_compdocs.component.VoxelPos(
+                                        x=-4, y=-5, z=-6
+                                    )
+                                ),
+                                sw_compdocs.component.Voxel(
+                                    position=sw_compdocs.component.VoxelPos(
+                                        x=4, y=5, z=6
+                                    )
+                                ),
+                            ]
+                        ),
                     ),
                 ),
                 want_record=[
@@ -3671,8 +3755,20 @@ class TestGenerateSheetComponentList(unittest.TestCase):
                                     id="def_test_desc"
                                 ),
                             ),
-                            voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
-                            voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
+                            voxels=sw_compdocs.component.VoxelList(
+                                [
+                                    sw_compdocs.component.Voxel(
+                                        position=sw_compdocs.component.VoxelPos(
+                                            x=-1, y=-2, z=-3
+                                        )
+                                    ),
+                                    sw_compdocs.component.Voxel(
+                                        position=sw_compdocs.component.VoxelPos(
+                                            x=1, y=2, z=3
+                                        )
+                                    ),
+                                ]
+                            ),
                         )
                     )
                 ],
@@ -3983,8 +4079,20 @@ class TestGenerateSheet(unittest.TestCase):
                                     id="def_test_desc"
                                 ),
                             ),
-                            voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
-                            voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
+                            voxels=sw_compdocs.component.VoxelList(
+                                [
+                                    sw_compdocs.component.Voxel(
+                                        position=sw_compdocs.component.VoxelPos(
+                                            x=-1, y=-2, z=-3
+                                        )
+                                    ),
+                                    sw_compdocs.component.Voxel(
+                                        position=sw_compdocs.component.VoxelPos(
+                                            x=1, y=2, z=3
+                                        )
+                                    ),
+                                ]
+                            ),
                         )
                     )
                 ],

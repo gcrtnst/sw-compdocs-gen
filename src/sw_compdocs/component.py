@@ -579,10 +579,10 @@ class Component:
         return self.defn.tags
 
     def voxel_min(self) -> VoxelPos:
-        return dataclasses.replace(self.defn.voxel_min)
+        return self.defn.get_voxel_min()
 
     def voxel_max(self) -> VoxelPos:
-        return dataclasses.replace(self.defn.voxel_max)
+        return self.defn.get_voxel_max()
 
 
 @dataclasses.dataclass
@@ -593,34 +593,38 @@ class Multibody(Component):
         return self.defn.mass + self.child.mass
 
     def voxel_min(self) -> VoxelPos:
+        parent_voxel_min = self.defn.get_voxel_min()
+        child_voxel_min = self.child.get_voxel_min()
         return VoxelPos(
             x=min(
-                self.defn.voxel_min.x,
-                self.defn.voxel_location_child.x + self.child.voxel_min.x,
+                parent_voxel_min.x,
+                self.defn.voxel_location_child.x + child_voxel_min.x,
             ),
             y=min(
-                self.defn.voxel_min.y,
-                self.defn.voxel_location_child.y + self.child.voxel_min.y,
+                parent_voxel_min.y,
+                self.defn.voxel_location_child.y + child_voxel_min.y,
             ),
             z=min(
-                self.defn.voxel_min.z,
-                self.defn.voxel_location_child.z + self.child.voxel_min.z,
+                parent_voxel_min.z,
+                self.defn.voxel_location_child.z + child_voxel_min.z,
             ),
         )
 
     def voxel_max(self) -> VoxelPos:
+        parent_voxel_max = self.defn.get_voxel_max()
+        child_voxel_max = self.child.get_voxel_max()
         return VoxelPos(
             x=max(
-                self.defn.voxel_max.x,
-                self.defn.voxel_location_child.x + self.child.voxel_max.x,
+                parent_voxel_max.x,
+                self.defn.voxel_location_child.x + child_voxel_max.x,
             ),
             y=max(
-                self.defn.voxel_max.y,
-                self.defn.voxel_location_child.y + self.child.voxel_max.y,
+                parent_voxel_max.y,
+                self.defn.voxel_location_child.y + child_voxel_max.y,
             ),
             z=max(
-                self.defn.voxel_max.z,
-                self.defn.voxel_location_child.z + self.child.voxel_max.z,
+                parent_voxel_max.z,
+                self.defn.voxel_location_child.z + child_voxel_max.z,
             ),
         )
 

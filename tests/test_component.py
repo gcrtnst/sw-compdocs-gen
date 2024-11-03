@@ -1885,23 +1885,40 @@ class TestComponentVoxelMin(unittest.TestCase):
     def test(self) -> None:
         comp = sw_compdocs.component.Component(
             defn=sw_compdocs.component.Definition(
-                voxel_min=sw_compdocs.component.VoxelPos(x=1, y=2, z=3)
+                voxels=sw_compdocs.component.VoxelList(
+                    [
+                        sw_compdocs.component.Voxel(
+                            position=sw_compdocs.component.VoxelPos(x=1, y=2, z=3)
+                        ),
+                        sw_compdocs.component.Voxel(
+                            position=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3)
+                        ),
+                    ]
+                ),
             )
         )
 
         voxel_min = comp.voxel_min()
-        self.assertEqual(voxel_min, sw_compdocs.component.VoxelPos(x=1, y=2, z=3))
+        self.assertEqual(voxel_min, sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3))
 
         voxel_min.x = 0
-        self.assertEqual(comp.voxel_min().x, 1)
-        self.assertEqual(comp.defn.voxel_min.x, 1)
+        self.assertEqual(comp.voxel_min().x, -1)
 
 
 class TestComponentVoxelMax(unittest.TestCase):
     def test(self) -> None:
         comp = sw_compdocs.component.Component(
             defn=sw_compdocs.component.Definition(
-                voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3)
+                voxels=sw_compdocs.component.VoxelList(
+                    [
+                        sw_compdocs.component.Voxel(
+                            position=sw_compdocs.component.VoxelPos(x=1, y=2, z=3)
+                        ),
+                        sw_compdocs.component.Voxel(
+                            position=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3)
+                        ),
+                    ]
+                ),
             )
         )
 
@@ -1910,7 +1927,6 @@ class TestComponentVoxelMax(unittest.TestCase):
 
         voxel_max.x = 0
         self.assertEqual(comp.voxel_max().x, 1)
-        self.assertEqual(comp.defn.voxel_max.x, 1)
 
 
 class TestMultibodyMass(unittest.TestCase):
@@ -1936,7 +1952,20 @@ class TestMultibodyVoxelMin(unittest.TestCase):
             tt(
                 input_comp=sw_compdocs.component.Multibody(
                     defn=sw_compdocs.component.Definition(
-                        voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
+                        voxels=sw_compdocs.component.VoxelList(
+                            [
+                                sw_compdocs.component.Voxel(
+                                    position=sw_compdocs.component.VoxelPos(
+                                        x=1, y=2, z=3
+                                    )
+                                ),
+                                sw_compdocs.component.Voxel(
+                                    position=sw_compdocs.component.VoxelPos(
+                                        x=-1, y=-2, z=-3
+                                    )
+                                ),
+                            ]
+                        ),
                         voxel_location_child=sw_compdocs.component.VoxelPos(
                             x=1, y=2, z=3
                         ),
@@ -1948,11 +1977,33 @@ class TestMultibodyVoxelMin(unittest.TestCase):
             tt(
                 input_comp=sw_compdocs.component.Multibody(
                     defn=sw_compdocs.component.Definition(
-                        voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
+                        voxels=sw_compdocs.component.VoxelList(
+                            [
+                                sw_compdocs.component.Voxel(
+                                    position=sw_compdocs.component.VoxelPos(
+                                        x=1, y=2, z=3
+                                    )
+                                ),
+                                sw_compdocs.component.Voxel(
+                                    position=sw_compdocs.component.VoxelPos(
+                                        x=-1, y=-2, z=-3
+                                    )
+                                ),
+                            ]
+                        ),
                         voxel_location_child=sw_compdocs.component.VoxelPos(x=-4),
                     ),
                     child=sw_compdocs.component.Definition(
-                        voxel_min=sw_compdocs.component.VoxelPos(x=-5),
+                        voxels=sw_compdocs.component.VoxelList(
+                            [
+                                sw_compdocs.component.Voxel(
+                                    position=sw_compdocs.component.VoxelPos(x=5)
+                                ),
+                                sw_compdocs.component.Voxel(
+                                    position=sw_compdocs.component.VoxelPos(x=-5)
+                                ),
+                            ]
+                        ),
                     ),
                 ),
                 want_voxel_min=sw_compdocs.component.VoxelPos(x=-9, y=-2, z=-3),
@@ -1960,11 +2011,33 @@ class TestMultibodyVoxelMin(unittest.TestCase):
             tt(
                 input_comp=sw_compdocs.component.Multibody(
                     defn=sw_compdocs.component.Definition(
-                        voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
+                        voxels=sw_compdocs.component.VoxelList(
+                            [
+                                sw_compdocs.component.Voxel(
+                                    position=sw_compdocs.component.VoxelPos(
+                                        x=1, y=2, z=3
+                                    )
+                                ),
+                                sw_compdocs.component.Voxel(
+                                    position=sw_compdocs.component.VoxelPos(
+                                        x=-1, y=-2, z=-3
+                                    )
+                                ),
+                            ]
+                        ),
                         voxel_location_child=sw_compdocs.component.VoxelPos(y=-4),
                     ),
                     child=sw_compdocs.component.Definition(
-                        voxel_min=sw_compdocs.component.VoxelPos(y=-5),
+                        voxels=sw_compdocs.component.VoxelList(
+                            [
+                                sw_compdocs.component.Voxel(
+                                    position=sw_compdocs.component.VoxelPos(y=5)
+                                ),
+                                sw_compdocs.component.Voxel(
+                                    position=sw_compdocs.component.VoxelPos(y=-5)
+                                ),
+                            ]
+                        ),
                     ),
                 ),
                 want_voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-9, z=-3),
@@ -1972,11 +2045,33 @@ class TestMultibodyVoxelMin(unittest.TestCase):
             tt(
                 input_comp=sw_compdocs.component.Multibody(
                     defn=sw_compdocs.component.Definition(
-                        voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-3),
+                        voxels=sw_compdocs.component.VoxelList(
+                            [
+                                sw_compdocs.component.Voxel(
+                                    position=sw_compdocs.component.VoxelPos(
+                                        x=1, y=2, z=3
+                                    )
+                                ),
+                                sw_compdocs.component.Voxel(
+                                    position=sw_compdocs.component.VoxelPos(
+                                        x=-1, y=-2, z=-3
+                                    )
+                                ),
+                            ]
+                        ),
                         voxel_location_child=sw_compdocs.component.VoxelPos(z=-4),
                     ),
                     child=sw_compdocs.component.Definition(
-                        voxel_min=sw_compdocs.component.VoxelPos(z=-5),
+                        voxels=sw_compdocs.component.VoxelList(
+                            [
+                                sw_compdocs.component.Voxel(
+                                    position=sw_compdocs.component.VoxelPos(z=5)
+                                ),
+                                sw_compdocs.component.Voxel(
+                                    position=sw_compdocs.component.VoxelPos(z=-5)
+                                ),
+                            ]
+                        ),
                     ),
                 ),
                 want_voxel_min=sw_compdocs.component.VoxelPos(x=-1, y=-2, z=-9),
@@ -2001,7 +2096,20 @@ class TestMultibodyVoxelMax(unittest.TestCase):
             tt(
                 input_comp=sw_compdocs.component.Multibody(
                     defn=sw_compdocs.component.Definition(
-                        voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
+                        voxels=sw_compdocs.component.VoxelList(
+                            [
+                                sw_compdocs.component.Voxel(
+                                    position=sw_compdocs.component.VoxelPos(
+                                        x=1, y=2, z=3
+                                    )
+                                ),
+                                sw_compdocs.component.Voxel(
+                                    position=sw_compdocs.component.VoxelPos(
+                                        x=-1, y=-2, z=-3
+                                    )
+                                ),
+                            ]
+                        ),
                         voxel_location_child=sw_compdocs.component.VoxelPos(
                             x=-1, y=-2, z=-3
                         ),
@@ -2013,11 +2121,33 @@ class TestMultibodyVoxelMax(unittest.TestCase):
             tt(
                 input_comp=sw_compdocs.component.Multibody(
                     defn=sw_compdocs.component.Definition(
-                        voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
+                        voxels=sw_compdocs.component.VoxelList(
+                            [
+                                sw_compdocs.component.Voxel(
+                                    position=sw_compdocs.component.VoxelPos(
+                                        x=1, y=2, z=3
+                                    )
+                                ),
+                                sw_compdocs.component.Voxel(
+                                    position=sw_compdocs.component.VoxelPos(
+                                        x=-1, y=-2, z=-3
+                                    )
+                                ),
+                            ]
+                        ),
                         voxel_location_child=sw_compdocs.component.VoxelPos(x=4),
                     ),
                     child=sw_compdocs.component.Definition(
-                        voxel_max=sw_compdocs.component.VoxelPos(x=5),
+                        voxels=sw_compdocs.component.VoxelList(
+                            [
+                                sw_compdocs.component.Voxel(
+                                    position=sw_compdocs.component.VoxelPos(x=5)
+                                ),
+                                sw_compdocs.component.Voxel(
+                                    position=sw_compdocs.component.VoxelPos(x=-5)
+                                ),
+                            ]
+                        ),
                     ),
                 ),
                 want_voxel_max=sw_compdocs.component.VoxelPos(x=9, y=2, z=3),
@@ -2025,11 +2155,33 @@ class TestMultibodyVoxelMax(unittest.TestCase):
             tt(
                 input_comp=sw_compdocs.component.Multibody(
                     defn=sw_compdocs.component.Definition(
-                        voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
+                        voxels=sw_compdocs.component.VoxelList(
+                            [
+                                sw_compdocs.component.Voxel(
+                                    position=sw_compdocs.component.VoxelPos(
+                                        x=1, y=2, z=3
+                                    )
+                                ),
+                                sw_compdocs.component.Voxel(
+                                    position=sw_compdocs.component.VoxelPos(
+                                        x=-1, y=-2, z=-3
+                                    )
+                                ),
+                            ]
+                        ),
                         voxel_location_child=sw_compdocs.component.VoxelPos(y=4),
                     ),
                     child=sw_compdocs.component.Definition(
-                        voxel_max=sw_compdocs.component.VoxelPos(y=5),
+                        voxels=sw_compdocs.component.VoxelList(
+                            [
+                                sw_compdocs.component.Voxel(
+                                    position=sw_compdocs.component.VoxelPos(y=5)
+                                ),
+                                sw_compdocs.component.Voxel(
+                                    position=sw_compdocs.component.VoxelPos(y=-5)
+                                ),
+                            ]
+                        ),
                     ),
                 ),
                 want_voxel_max=sw_compdocs.component.VoxelPos(x=1, y=9, z=3),
@@ -2037,11 +2189,33 @@ class TestMultibodyVoxelMax(unittest.TestCase):
             tt(
                 input_comp=sw_compdocs.component.Multibody(
                     defn=sw_compdocs.component.Definition(
-                        voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=3),
+                        voxels=sw_compdocs.component.VoxelList(
+                            [
+                                sw_compdocs.component.Voxel(
+                                    position=sw_compdocs.component.VoxelPos(
+                                        x=1, y=2, z=3
+                                    )
+                                ),
+                                sw_compdocs.component.Voxel(
+                                    position=sw_compdocs.component.VoxelPos(
+                                        x=-1, y=-2, z=-3
+                                    )
+                                ),
+                            ]
+                        ),
                         voxel_location_child=sw_compdocs.component.VoxelPos(z=4),
                     ),
                     child=sw_compdocs.component.Definition(
-                        voxel_max=sw_compdocs.component.VoxelPos(z=5),
+                        voxels=sw_compdocs.component.VoxelList(
+                            [
+                                sw_compdocs.component.Voxel(
+                                    position=sw_compdocs.component.VoxelPos(z=5)
+                                ),
+                                sw_compdocs.component.Voxel(
+                                    position=sw_compdocs.component.VoxelPos(z=-5)
+                                ),
+                            ]
+                        ),
                     ),
                 ),
                 want_voxel_max=sw_compdocs.component.VoxelPos(x=1, y=2, z=9),
