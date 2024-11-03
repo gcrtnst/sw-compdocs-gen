@@ -501,7 +501,7 @@ class Definition:
         self.name.id = f"def_{key}_name" if key is not None else None
         self.key = key
 
-    def get_voxel_min(self) -> VoxelPos:
+    def voxel_min(self) -> VoxelPos:
         voxel_min = None
         for voxel in self.voxels:
             if voxel_min is None:
@@ -514,7 +514,7 @@ class Definition:
             voxel_min = VoxelPos()
         return voxel_min
 
-    def get_voxel_max(self) -> VoxelPos:
+    def voxel_max(self) -> VoxelPos:
         voxel_max = None
         for voxel in self.voxels:
             if voxel_max is None:
@@ -555,10 +555,10 @@ class Component:
         return self.defn.tags
 
     def voxel_min(self) -> VoxelPos:
-        return self.defn.get_voxel_min()
+        return self.defn.voxel_min()
 
     def voxel_max(self) -> VoxelPos:
-        return self.defn.get_voxel_max()
+        return self.defn.voxel_max()
 
 
 @dataclasses.dataclass
@@ -569,8 +569,8 @@ class Multibody(Component):
         return self.defn.mass + self.child.mass
 
     def voxel_min(self) -> VoxelPos:
-        parent_voxel_min = self.defn.get_voxel_min()
-        child_voxel_min = self.child.get_voxel_min()
+        parent_voxel_min = self.defn.voxel_min()
+        child_voxel_min = self.child.voxel_min()
         return VoxelPos(
             x=min(
                 parent_voxel_min.x,
@@ -587,8 +587,8 @@ class Multibody(Component):
         )
 
     def voxel_max(self) -> VoxelPos:
-        parent_voxel_max = self.defn.get_voxel_max()
-        child_voxel_max = self.child.get_voxel_max()
+        parent_voxel_max = self.defn.voxel_max()
+        child_voxel_max = self.child.voxel_max()
         return VoxelPos(
             x=max(
                 parent_voxel_max.x,

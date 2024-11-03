@@ -1615,7 +1615,7 @@ class TestDefinitionUpdateID(unittest.TestCase):
                 self.assertEqual(defn, tc.want_defn)
 
 
-class TestDefinitionGetVoxelMin(unittest.TestCase):
+class TestDefinitionVoxelMin(unittest.TestCase):
     def test(self) -> None:
         tt = typing.NamedTuple(
             "tt",
@@ -1665,7 +1665,7 @@ class TestDefinitionGetVoxelMin(unittest.TestCase):
             ),
         ]:
             with self.subTest(tc=tc):
-                got_voxel_min = tc.input_defn.get_voxel_min()
+                got_voxel_min = tc.input_defn.voxel_min()
                 self.assertEqual(got_voxel_min, tc.want_voxel_min)
 
     def test_copy(self) -> None:
@@ -1678,7 +1678,7 @@ class TestDefinitionGetVoxelMin(unittest.TestCase):
                 ]
             )
         )
-        voxel_min = defn.get_voxel_min()
+        voxel_min = defn.voxel_min()
         voxel_min.x = -1
         voxel_min.y = -2
         voxel_min.z = -3
@@ -1687,7 +1687,7 @@ class TestDefinitionGetVoxelMin(unittest.TestCase):
         self.assertEqual(defn.voxels[0].position.z, 3)
 
 
-class TestDefinitionGetVoxelMax(unittest.TestCase):
+class TestDefinitionVoxelMax(unittest.TestCase):
     def test(self) -> None:
         tt = typing.NamedTuple(
             "tt",
@@ -1741,7 +1741,7 @@ class TestDefinitionGetVoxelMax(unittest.TestCase):
             ),
         ]:
             with self.subTest(tc=tc):
-                got_voxel_max = tc.input_defn.get_voxel_max()
+                got_voxel_max = tc.input_defn.voxel_max()
                 self.assertEqual(got_voxel_max, tc.want_voxel_max)
 
     def test_copy(self) -> None:
@@ -1754,7 +1754,7 @@ class TestDefinitionGetVoxelMax(unittest.TestCase):
                 ]
             )
         )
-        voxel_max = defn.get_voxel_max()
+        voxel_max = defn.voxel_max()
         voxel_max.x = -1
         voxel_max.y = -2
         voxel_max.z = -3

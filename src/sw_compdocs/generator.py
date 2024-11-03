@@ -137,8 +137,8 @@ def generate_document_property_list(
     dims = _label_get(label, "DOCUMENT_PROP_DIMS", dims)
     dims = document.ListItem(dims)
     if isinstance(comp, component.Multibody):
-        comp_parent_voxel_max = comp.defn.get_voxel_max()
-        comp_parent_voxel_min = comp.defn.get_voxel_min()
+        comp_parent_voxel_max = comp.defn.voxel_max()
+        comp_parent_voxel_min = comp.defn.voxel_min()
         dims_parent_w = comp_parent_voxel_max.x - comp_parent_voxel_min.x + 1
         dims_parent_h = comp_parent_voxel_max.y - comp_parent_voxel_min.y + 1
         dims_parent_d = comp_parent_voxel_max.z - comp_parent_voxel_min.z + 1
@@ -147,8 +147,8 @@ def generate_document_property_list(
         dims_parent = document.ListItem(dims_parent)
         dims.l.append(dims_parent)
 
-        comp_child_voxel_max = comp.child.get_voxel_max()
-        comp_child_voxel_min = comp.child.get_voxel_min()
+        comp_child_voxel_max = comp.child.voxel_max()
+        comp_child_voxel_min = comp.child.voxel_min()
         dims_child_w = comp_child_voxel_max.x - comp_child_voxel_min.x + 1
         dims_child_h = comp_child_voxel_max.y - comp_child_voxel_min.y + 1
         dims_child_d = comp_child_voxel_max.z - comp_child_voxel_min.z + 1
