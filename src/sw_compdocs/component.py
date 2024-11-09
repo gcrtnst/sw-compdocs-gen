@@ -626,6 +626,8 @@ def _parse_xml_root(
         exc.file = file
         exc.prepend_xpath("/")
         raise exc
+    if not isinstance(elem.tag, str):
+        raise Exception
 
     if elem.tag != "definition":
         exc = DefinitionXMLError(f"invalid xml root tag {elem.tag!r}")
