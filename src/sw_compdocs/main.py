@@ -167,7 +167,6 @@ def run(
 
 
 def format_os_error(exc: OSError) -> str:
-    exc_strerror = typing.cast(object, exc.strerror)
     exc_filename: object = exc.filename
     exc_filename2: object = exc.filename2
     if exc_filename is None and exc_filename2 is not None:
@@ -178,7 +177,7 @@ def format_os_error(exc: OSError) -> str:
     if _types.is_pathlike(exc_filename2):
         exc_filename2 = os.fsdecode(exc_filename2)
 
-    if exc_strerror is None:
+    if exc.strerror is None:
         return str(exc)
     if exc_filename is None:
         return exc.strerror
