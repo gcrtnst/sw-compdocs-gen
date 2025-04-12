@@ -1,10 +1,8 @@
 import collections.abc
-import sw_compdocs._types
 import sw_compdocs.component
 import sw_compdocs.document
 import sw_compdocs.generator
 import sw_compdocs.language
-import sw_compdocs.template
 import typing
 import unittest
 

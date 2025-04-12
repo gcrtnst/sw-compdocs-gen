@@ -29,12 +29,12 @@ class Paragraph(Block):
 @dataclasses.dataclass
 class ListItem:
     s: str
-    l: list[typing.Self] = dataclasses.field(default_factory=list)
+    l: list[typing.Self] = dataclasses.field(default_factory=list[typing.Self])
 
 
 @dataclasses.dataclass
 class UnorderedList(Block):
-    l: list[ListItem] = dataclasses.field(default_factory=list)
+    l: list[ListItem] = dataclasses.field(default_factory=list[ListItem])
 
 
 class TableDataRow(container.Sequence[str]):
